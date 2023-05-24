@@ -1,10 +1,19 @@
-import React from 'react';
+import React, { ChangeEvent } from 'react';
 import { Link } from 'react-router-dom';
 import InputText from '../Common/InputText';
-import Footer from 'components/Footer.tsx';
+import Footer from '../Footer';
 import logo from 'assets/img/login_logo.gif';
 
-const LogInComponent = ({ autoLogin, handleChange, userLogIn, guestLogIn, openFindPopUp, checkAuto }) => {
+type Props = {
+  autoLogin: boolean,
+  handleChange: (e: ChangeEvent<HTMLInputElement>) => void,
+  userLogIn: () => void,
+  guestLogIn: () => void,
+  openFindPopUp: () => void,
+  checkAuto: (e: ChangeEvent<HTMLInputElement>) => void,
+}
+
+const LogInComponent: React.FC<Props> = ({ autoLogin, handleChange, userLogIn, guestLogIn, openFindPopUp, checkAuto }: Props) => {
   return (
     <div className="login-wrapper">
       <div className="logo-wrapper">

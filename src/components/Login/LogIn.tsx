@@ -124,8 +124,6 @@ function LogIn() {
                   title={''}
                   contents={errText}
                   isAction={false}
-                  cancel={false}
-                  confirm={false}
                 />
       }
       {popUp &&
