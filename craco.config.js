@@ -1,29 +1,36 @@
-const CKEditorWebpackPlugin = require("@ckeditor/ckeditor5-dev-webpack-plugin");
-const { styles } = require("@ckeditor/ckeditor5-dev-utils");
+const { CKEditorTranslationsPlugin } = require('@ckeditor/ckeditor5-dev-translations');
+const { styles } = require('@ckeditor/ckeditor5-dev-utils');
 
 module.exports = {
   webpack: {
     configure: (config, { env, paths }) => {
-      config.plugins.push(new CKEditorWebpackPlugin({ language: "ko", addMainLanguageTranslationsToAllAssets: true}));
+      config.plugins.push(new CKEditorTranslationsPlugin({ language: 'ko', addMainLanguageTranslationsToAllAssets: true}));
 
       const regExpThemeIconSvg = /ckeditor5-[^/\\]+[/\\]theme[/\\]icons[/\\][^/\\]+\.svg$/;
       const regExpThemeCss = /ckeditor5-[^/\\]+[/\\]theme[/\\].+\.css/;
       const cssRegex = /\.css$/;
       const cssModuleRegex = /\.module\.css$/;
       config.module.rules.push(
-        { test: regExpThemeIconSvg, use: ["raw-loader"] },
+        { test: regExpThemeIconSvg, use: ['raw-loader'] },
         {
           test: regExpThemeCss,
           use: [
             {
-              loader: "style-loader",
+              loader: 'style-loader',
               //   options: { injectType: "singletonStyleTag" }
+              options: {
+                injectType: 'singletonStyleTag',
+                attributes: {
+                  'data-cke': true
+                }
+              }
             },
+            'css-loader',
             {
-              loader: "postcss-loader",
+              loader: 'postcss-loader',
               options: styles.getPostCssConfig({
                 themeImporter: {
-                  themePath: require.resolve("@ckeditor/ckeditor5-theme-lark"),
+                  themePath: require.resolve('@ckeditor/ckeditor5-theme-lark'),
                 },
                 minify: true,
               }),
@@ -47,7 +54,7 @@ module.exports = {
             }
 
             if (
-              String(subRule.loader).includes("file-loader") &&
+              String(subRule.loader).includes('file-loader') &&
               Array.isArray(subRule.exclude)
             ) {
               subRule.exclude.push(regExpThemeIconSvg, regExpThemeCss);

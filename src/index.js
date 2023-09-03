@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import 'react-app-polyfill/ie11';
 import { Router } from 'react-router-dom';
 import { createStore } from 'redux';
@@ -29,14 +30,15 @@ if (process.env.NODE_ENV === 'production') {
 
 const store = createStore(reducers);
 
-ReactDOM.render(
-  // <CookiesProvider>
+// After
+const container = document.getElementById('root');
+const root = createRoot(container); // createRoot(container!) if you use TypeScript
+root.render(
   <Provider store={store}>
     <Router basename="/page" history={history} >
       <App />
     </Router>
   </Provider>
-  // </CookiesProvider>
-  ,
-  document.getElementById('root'));
+);
+
 serviceWorker.unregister();
