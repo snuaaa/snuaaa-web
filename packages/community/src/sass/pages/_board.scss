@@ -302,6 +302,10 @@
 .sa-ck {
   font-family: "Minguk-Regular";
   font-size: 0.9rem;
+
+  .ck.ck-voice-label {
+    display: none;
+}
   .ck.ck-content {
     min-height: 300px;
     line-height: 150%;
@@ -341,12 +345,24 @@
 .sa-viewer {
   .ck {
     &.ck-content {
-      border: none;
+      border: #C4C4C4;
     }
     &.ck-toolbar {
       border: none;
     }
   }
+}
+
+.sa-editor {
+  border: 1px solid #C4C4C4;
+  // .ck {
+  //   &.ck-content {
+  //     border: #C4C4C4;
+  //   }
+  //   &.ck-toolbar {
+  //     border: none;
+  //   }
+  // }
 }
 
 .docboard-top-menu-wrapper {
