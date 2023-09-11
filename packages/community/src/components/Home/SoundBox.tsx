@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import ContentType from '../../types/ContentType';
-import Editor2 from '../Common/Editor2';
+import Editor from '../Common/Editor';
 
 const SoundBox = ({ soundBoxInfo }: { soundBoxInfo: ContentType }) => {
 
@@ -16,7 +16,7 @@ const SoundBox = ({ soundBoxInfo }: { soundBoxInfo: ContentType }) => {
                 <Link to={`/post/${soundBoxInfo.content_id}`}>
                   <h5>{soundBoxInfo.title}</h5>
                 </Link>
-                <Editor2 text={soundBoxInfo.text} setText={() => { return; }} readOnly />
+                <Editor text={soundBoxInfo.text} setText={() => { return; }} readOnly />
               </>
           }
         </div>

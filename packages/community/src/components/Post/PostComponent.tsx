@@ -8,7 +8,7 @@ import history from '../../common/history';
 import FileIcon from '../../components/Common/FileIcon';
 import ContentType from '../../types/ContentType';
 import FileType from '../../types/FileType';
-import Editor2 from '../Common/Editor2';
+import Editor from '../Common/Editor';
 
 type PostComponentProps = {
     content: ContentType,
@@ -76,7 +76,7 @@ const PostComponent: React.FC<PostComponentProps> = (
         </div>
       </div>
       <div className="post-content">
-        <Editor2 text={content.text} setText={() => { return; }} readOnly />
+        <Editor text={content.text} setText={() => { return; }} readOnly />
       </div>
       {makeFileList()}
       <ProfileMini userInfo={user} />

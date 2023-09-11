@@ -1,5 +1,5 @@
 import React, { ChangeEvent } from 'react';
-import Editor2 from '../Common/Editor2';
+import Editor from '../Common/Editor';
 import ContentType from '../../types/ContentType';
 import AttachFile from './AttachFile';
 import FileType from '../../types/FileType';
@@ -61,7 +61,7 @@ function EditPost(props: EditPostProps) {
       </div>
       <div className="writepost-content">
         {/* <Editor text={props.postInfo.text} editText={props.handleEdittingText} /> */}
-        <Editor2 text={props.postInfo.text} setText={props.handleEdittingText} readOnly={false} />
+        <Editor text={props.postInfo.text} setText={props.handleEdittingText} readOnly={false} />
 
       </div>
       {props.postInfo.attachedFiles && makeFileList()}
