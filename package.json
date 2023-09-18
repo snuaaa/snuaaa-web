@@ -10,5 +10,8 @@
   },
   "contributors": [
     "Sooyeon Ahn"
-  ]
+  ],
+  "scripts": {
+    "build": "yarn workspace @snuaaa/editor build && yarn workspace @snuaaa/community-web build"
+  }
 }
