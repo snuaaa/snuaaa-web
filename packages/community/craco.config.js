@@ -1,10 +1,9 @@
-const { CKEditorTranslationsPlugin } = require('@ckeditor/ckeditor5-dev-translations');
-const { styles } = require('@ckeditor/ckeditor5-dev-utils');
+// const { CKEditorTranslationsPlugin } = require('@ckeditor/ckeditor5-dev-translations');
 
 module.exports = {
   webpack: {
     configure: (config, { env, paths }) => {
-      config.plugins.push(new CKEditorTranslationsPlugin({ language: 'ko', addMainLanguageTranslationsToAllAssets: true}));
+      // config.plugins.push(new CKEditorTranslationsPlugin({ language: 'ko', addMainLanguageTranslationsToAllAssets: true}));
 
       const regExpThemeIconSvg = /ckeditor5-[^/\\]+[/\\]theme[/\\]icons[/\\][^/\\]+\.svg$/;
       const regExpThemeCss = /ckeditor5-[^/\\]+[/\\]theme[/\\].+\.css/;
@@ -26,15 +25,6 @@ module.exports = {
               }
             },
             'css-loader',
-            {
-              loader: 'postcss-loader',
-              options: styles.getPostCssConfig({
-                themeImporter: {
-                  themePath: require.resolve('@ckeditor/ckeditor5-theme-lark'),
-                },
-                minify: true,
-              }),
-            },
           ],
         }
       );
