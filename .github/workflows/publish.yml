@@ -23,5 +23,6 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          preCommands: yarn build
           command: pages deploy build --project-name=snuaaa-web
           workingDirectory: packages/community
