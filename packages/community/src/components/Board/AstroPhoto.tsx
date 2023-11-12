@@ -1,5 +1,4 @@
-import React, { ChangeEvent, useState, useEffect } from 'react';
-import { Location } from 'history';
+import React, { ChangeEvent, useState, useEffect, useCallback } from 'react';
 
 import CreatePhoto from '../Photo/CreatePhoto';
 import CreateAlbum from '../Album/CreateAlbum';
@@ -10,14 +9,12 @@ import Loading from '../../components/Common/Loading';
 import Paginator from '../../components/Common/Paginator';
 import PhotoBoardService from '../../services/PhotoBoardService';
 import BoardType from '../../types/BoardType';
-import ContentType from '../../types/ContentType';
 import BoardName from '../../components/Board/BoardName';
 import AuthContext from '../../contexts/AuthContext';
 import AlbumType from '../../types/AlbumType';
 import PhotoType from '../../types/PhotoType';
 import { useLocation, useHistory } from 'react-router';
 
-const TAG = 'ASTROPHOTO';
 const ALBUMROWNUM = 12;
 
 type AstroPhotoProps = {
@@ -43,12 +40,7 @@ function AstroPhoto({ boardInfo }: AstroPhotoProps) {
   const history = useHistory();
   const location = useLocation<LocationState>();
 
-  useEffect(() => {
-    fetch();
-  }, [location]);
-
-
-  const fetch = async () => {
+  const fetch = useCallback(async () => {
 
     const isViewAlbums = (location.state && location.state.isViewAlbums) ? true : false;
     const pageIdx = (location.state && location.state.page) ? location.state.page : 1;
@@ -84,8 +76,11 @@ function AstroPhoto({ boardInfo }: AstroPhotoProps) {
           console.error(err);
         });
     }
-  };
+  }, [boardInfo.board_id, location.state]);
 
+  useEffect(() => {
+    fetch();
+  }, [fetch, location]);
 
   const setIsViewAlbums = (isViewAlbums: boolean) => {
     history.replace({

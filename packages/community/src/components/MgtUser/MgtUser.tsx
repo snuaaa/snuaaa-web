@@ -1,10 +1,10 @@
-import React, { useEffect, useState, MouseEvent } from 'react';
+import React, { useEffect, useState, MouseEvent, useCallback } from 'react';
 import UserService from '../../services/UserService';
 import UserType from '../../types/UserType';
 import { convertFullDate, convertDateWithDay } from '../../utils/convertDate';
 import { UsersSearchType } from '../../types/SearchTypes';
 import Paginator from '../Common/Paginator';
-import { useLocation, useHistory } from 'react-router';
+import { useHistory } from 'react-router';
 
 const USER_ROW_NUM = 20;
 
@@ -17,11 +17,7 @@ function MgtUser() {
   const history = useHistory();
   // const location = useLocation();
 
-  useEffect(() => {
-    fetch();
-  }, [searchOption]);
-
-  const fetch = async () => {
+  const fetch = useCallback(async () => {
     try {
       const res = await UserService.retrieveUsers(searchOption);
       setUserInfo(res.data.userInfo);
@@ -34,7 +30,13 @@ function MgtUser() {
         history.goBack();
       }
     }
-  };
+  }, [history, searchOption]);
+
+  useEffect(() => {
+    fetch();
+  }, [fetch, searchOption]);
+
+
 
   const makeUserList = () => {
     if (userInfo && userInfo.length > 0) {

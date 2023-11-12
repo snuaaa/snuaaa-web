@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import { createRoot } from 'react-dom/client';
 import 'react-app-polyfill/ie11';
 import { Router } from 'react-router-dom';

@@ -1,4 +1,4 @@
-import React, { ChangeEvent, KeyboardEvent, useState, useEffect } from 'react';
+import React, { ChangeEvent, KeyboardEvent, useState, useEffect, useCallback } from 'react';
 
 import Loading from '../../components/Common/Loading';
 import PostList from '../../components/Post/PostList';
@@ -53,26 +53,7 @@ function PostBoard({ boardInfo }: PostBoardProps) {
     keyword: ''
   });
 
-  useEffect(() => {
-    fetch();
-  }, [location]);
-
-  useEffect(() => {
-    if (location.state && location.state.searchInfo) {
-      setSearchInfo(location.state.searchInfo);
-    }
-  }, []);
-
-  const clickPage = (idx: number) => {
-    history.push({
-      state: {
-        ...location.state,
-        page: idx
-      }
-    });
-  };
-
-  const fetch = async () => {
+  const fetch = useCallback(async () => {
 
     const searchInfo = location.state && location.state.searchInfo;
     let pageIdx = location.state && location.state.page;
@@ -96,7 +77,27 @@ function PostBoard({ boardInfo }: PostBoardProps) {
     catch (err) {
       console.error(err);
     }
+  }, [boardInfo.board_id, location.state]);
+
+  useEffect(() => {
+    fetch();
+  }, [fetch, location]);
+
+  useEffect(() => {
+    if (location.state && location.state.searchInfo) {
+      setSearchInfo(location.state.searchInfo);
+    }
+  }, [location.state]);
+
+  const clickPage = (idx: number) => {
+    history.push({
+      state: {
+        ...location.state,
+        page: idx
+      }
+    });
   };
+
 
   const handleSearchOption = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchInfo({

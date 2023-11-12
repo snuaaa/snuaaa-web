@@ -1,11 +1,9 @@
-import React, { useContext, useState, useEffect, ChangeEvent } from 'react';
+import React, { useContext, useState, useEffect, ChangeEvent, useCallback } from 'react';
 
 import UserService from '../../services/UserService';
 import Loading from '../Common/Loading';
 import ProfileComponent from './ProfileComponent';
 import AuthContext from '../../contexts/AuthContext';
-
-const TAG = 'PROFILE';
 
 type InputFormat = {
     label: string;
@@ -89,11 +87,7 @@ function EditProfile() {
   const [isProfileImgChanged, setIsProfileImgChanged] = useState<boolean>(false);
   const [isShow, setIsShow] = useState<boolean>(false);
 
-  useEffect(() => {
-    fetch();
-  }, []);
-
-  const fetch = async () => {
+  const fetch = useCallback(async () => {
 
     setIsShow(false);
 
@@ -144,7 +138,11 @@ function EditProfile() {
       .catch((err) => {
         console.error(err);
       });
-  };
+  }, [userInfo]);
+
+  useEffect(() => {
+    fetch();
+  }, [fetch]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
 
@@ -223,7 +221,6 @@ function EditProfile() {
     return valid;
   };
 
-  console.log(`[${TAG}] render..`);
   return (
     isShow ?
       <ProfileComponent

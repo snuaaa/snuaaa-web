@@ -15,22 +15,15 @@ import PhotoInfo from '../../components/Photo/PhotoInfo';
 import Image from '../../components/Common/AaaImage';
 import EditPhotoInfo from '../../components/Photo/EditPhotoInfo';
 
-import ContentType from '../../types/ContentType';
 import TagType from '../../types/TagType';
 
 import ContentService from '../../services/ContentService';
 import AlbumService from '../../services/AlbumService';
 import PhotoService from '../../services/PhotoService';
 import AuthContext from '../../contexts/AuthContext';
-import AlbumType from '../../types/AlbumType';
 import PhotoType from '../../types/PhotoType';
 
-const TAG = 'PHOTO';
 const VISIBLE_TIME = 3;
-
-type LocationState = {
-    backgroundLocation: string
-}
 
 type PhotoProps = {
     match: match<{ photo_id: string }>;

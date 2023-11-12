@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Loading from '../Common/Loading';
 import MyProfile from './MyProfile';
 import MyPostList from './MyPostList';
@@ -26,12 +26,7 @@ function UserInfo ({user_uuid, isMyinfo} : UserInfoProps) {
   const [isShow, setIsShow] = useState<boolean>(false);
   const [userContentView, setUserContentView] = useState<number>(MyPageViewEnum.POST);
 
-  useEffect(() => {
-    fetch();
-  }, [userContentView]);
-
-
-  const fetch = async () => {
+  const fetch = useCallback(async () => {
 
     setIsShow(false);
 
@@ -69,7 +64,12 @@ function UserInfo ({user_uuid, isMyinfo} : UserInfoProps) {
         console.error('contentView Exception');
       }
     }
-  };
+  }, [userContentView, userInfo, user_uuid]);
+
+  useEffect(() => {
+    fetch();
+  }, [fetch, userContentView]);
+
 
   const makeMyContentsList = () => {
 

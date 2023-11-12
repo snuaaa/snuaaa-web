@@ -1,5 +1,5 @@
 
-import React, { useState, ChangeEvent } from 'react';
+import React, { ChangeEvent } from 'react';
 import CrtDocuType from '../../types/CrtDocuType';
 import AttachFile from '../Post/AttachFile';
 import BoardType from '../../types/BoardType';

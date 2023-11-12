@@ -5,8 +5,6 @@ import defaultStarAlbumCover from 'assets/img/default_photo_img_star.png';
 import Image from '../Common/AaaImage';
 import AlbumType from '../../types/AlbumType';
 
-const TAG = 'ALBUMLIST';
-
 type AlbumListProps = {
     board_id: string;
     albums: AlbumType[];

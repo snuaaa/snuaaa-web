@@ -3,8 +3,6 @@ import EditMyInfo from './EditMyInfo';
 import UserInfo from './UserInfo';
 import { useParams } from 'react-router';
 
-const TAG = 'MYPAGE';
-
 function MyPage() {
 
   const params = useParams<{index: string}>();
@@ -15,7 +13,6 @@ function MyPage() {
     else return <UserInfo isMyinfo={true} />;
   };
 
-  console.log('[%s] render..', TAG);
   return (
     <div className="my-page-wrapper">
       {renderComponent()}

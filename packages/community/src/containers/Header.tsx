@@ -8,9 +8,6 @@ import BoardContext from '../contexts/BoardContext';
 import { useHistory } from 'react-router';
 import AuthContext from '../contexts/AuthContext';
 
-
-const TAG = 'HEADER';
-
 function Header() {
 
   const [isShowPopupUser, setIsShowPopupUser] = useState(false);

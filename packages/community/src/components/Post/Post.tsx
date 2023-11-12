@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ChangeEvent, useContext } from 'react';
+import React, { useState, useEffect, ChangeEvent, useContext, useCallback } from 'react';
 import { Redirect, match } from 'react-router';
 
 import ContentStateEnum from '../../common/ContentStateEnum';
@@ -15,7 +15,6 @@ import AuthContext from '../../contexts/AuthContext';
 import ProgressBar from '../Common/ProgressBar';
 import FileService from '../../services/FileService';
 
-const TAG = 'POST';
 const MAX_SIZE = 20 * 1024 * 1024;
 
 type PostProps = {
@@ -34,11 +33,7 @@ function Post(props: PostProps) {
   const authContext = useContext(AuthContext);
   let currentSize = 0;
 
-  useEffect(() => {
-    fetch();
-  }, []);
-
-  const fetch = async () => {
+  const fetch = useCallback( async () => {
     const post_id = Number(props.match.params.post_id);
 
     setPostState(ContentStateEnum.LOADING);
@@ -61,7 +56,13 @@ function Post(props: PostProps) {
           history.goBack();
         }
       });
-  };
+  }, [props.match.params.post_id]);
+
+  useEffect(() => {
+    fetch();
+  }, [fetch]);
+
+
 
   const updatePost = async () => {
     const post_id = Number(props.match.params.post_id);

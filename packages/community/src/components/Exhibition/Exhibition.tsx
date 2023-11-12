@@ -10,8 +10,6 @@ import AuthContext from '../../contexts/AuthContext';
 import ExhibitionType from '../../types/ExhibitionType';
 import ExhibitPhotoType from '../../types/ExhibitPhotoType';
 
-const TAG = 'EXHIBITION';
-
 type ExhibitionProps = {
     match: match<{ exhibition_id: string }>;
 }
@@ -28,7 +26,6 @@ class Exhibition extends React.Component<ExhibitionProps, ExhibitionState> {
 
   constructor(props: ExhibitionProps) {
     super(props);
-    console.log(`[${TAG}] Constructor`);
     // this.photos = [];
     this.exhibitionInfo = undefined;
     this.exhibitPhotos = [];

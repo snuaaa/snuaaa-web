@@ -1,5 +1,4 @@
 import { AaaService } from './index';
-import { AxiosPromise } from 'axios';
 
 const FileService = {
 

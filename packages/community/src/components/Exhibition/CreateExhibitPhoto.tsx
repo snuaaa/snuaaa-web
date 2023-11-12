@@ -7,7 +7,6 @@ import CrtExhibitPhotoType from '../../types/CrtExhibitPhotoType';
 import { List } from 'immutable';
 import UserType from '../../types/UserType';
 
-const TAG = 'CREATEPHOTO';
 const MAX_SIZE = 100 * 1024 * 1024;
 
 const defaultPhotoInfo: CrtExhibitPhotoType = {
@@ -208,7 +207,7 @@ function CreateExhibitPhoto({ board_id, exhibition_id, exhibition_no, togglePopU
             await ExhibitionService.createExhibitPhoto(exhibition_id, photosForm);
           }
           catch (err) {
-            console.error(`[${TAG}] ${err}`);
+            console.error(err);
             throw err;
           }
         }

@@ -5,12 +5,9 @@ import PostBoard from '../Board/PostBoard';
 import DocuBoard from '../Board/DocuBoard';
 import ExhibitBoard from '../Board/ExhibitBoard';
 import Loading from '../../components/Common/Loading';
-import history from '../../common/history';
 import Memory from '../Board/Memory';
 import AstroPhoto from '../Board/AstroPhoto';
 import BoardContext from '../../contexts/BoardContext';
-
-const TAG = 'BOARD';
 
 function Board() {
 

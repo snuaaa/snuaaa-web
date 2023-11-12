@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ReactChild, MouseEvent } from 'react';
+import React, { useState, ReactChild, MouseEvent } from 'react';
 import { Link } from 'react-router-dom';
 import UserType from '../../types/UserType';
 import AaaImage from './AaaImage';

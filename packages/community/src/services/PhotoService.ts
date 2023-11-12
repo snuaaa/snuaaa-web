@@ -1,6 +1,5 @@
 import { AaaService } from './index';
 import { AxiosPromise } from 'axios';
-import ContentType from '../types/ContentType';
 import TagType from '../types/TagType';
 import PhotoType from '../types/PhotoType';
 

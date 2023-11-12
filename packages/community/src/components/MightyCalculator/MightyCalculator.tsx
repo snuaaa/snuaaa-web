@@ -1,14 +1,6 @@
 import React, { useState, ChangeEvent, KeyboardEvent, useEffect } from 'react';
 import { Prompt } from 'react-router';
 
-const CardSuitEnum = {
-  SPADE: 'S',
-  CLOVER: 'C',
-  HEART: 'H',
-  DIAMOND: 'D',
-  JOKER: 'J'
-};
-
 const CalculatorStateEnum = {
   INIT: 0,
   READY: 1,
@@ -24,12 +16,6 @@ const InputStateEnum = {
   INPUT_FULFILLMENT: 3,
   END: 4
 };
-
-interface Card {
-    id: string;
-    suit: string;
-    power: number;
-}
 
 interface MightyUser {
     id: number;
@@ -108,7 +94,7 @@ function MightyCalculator() {
       setCalState(CalculatorStateEnum.READY);
       setInputState(InputStateEnum.SELECT_DECLARER);
     }
-  }, [inputState]);
+  }, [allSetInfo, calState, currentSet, editingSet, inputState]);
 
   const calculateScore = (setInfo: MightySet) => {
     let defaultScore = 0;

@@ -2,12 +2,9 @@ import React from 'react';
 import BoardService from 'services/BoardService.ts';
 import DatePicker from 'react-datepicker';
 
-const TAG = 'CREATE_EXHIBITION';
-
 class CreateExhibition extends React.Component {
 
   constructor(props) {
-    console.log('[%s] constructor', TAG);
     super(props);
 
     this.state = {
@@ -37,7 +34,6 @@ class CreateExhibition extends React.Component {
   };
 
   submit = async () => {
-    console.log('[%s] createAlbum', TAG);
     const { title, text, exhibition_no, slogan, date_start, date_end, place, poster } = this.state;
     const { fetch, close, board_id } = this.props;
 
@@ -93,8 +89,6 @@ class CreateExhibition extends React.Component {
   };
 
   render() {
-    console.log('[%s] render', TAG);
-
     const { handleChange, submit, handleDateStart, handleDateEnd, uploadPoster } = this;
     const { text, exhibition_no, slogan, date_start, date_end, place } = this.state;
     const { close } = this.props;

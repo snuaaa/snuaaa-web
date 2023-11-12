@@ -5,7 +5,6 @@ import ContentStateEnum from '../../common/ContentStateEnum';
 import { breakLine } from '../../utils/breakLine';
 import { convertDate, convertFullDate } from '../../utils/convertDate';
 import ActionDrawer from '../Common/ActionDrawer';
-import ContentType from '../../types/ContentType';
 import 'react-datepicker/dist/react-datepicker.css';
 import PhotoType from '../../types/PhotoType';
 import ExhibitPhotoType from '../../types/ExhibitPhotoType';

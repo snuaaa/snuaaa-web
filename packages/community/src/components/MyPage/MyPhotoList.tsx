@@ -2,7 +2,6 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Image from '../Common/AaaImage';
 import history from '../../common/history';
-import ContentType from '../../types/ContentType';
 import defaultPhotoCover from 'assets/img/default_photo_img.png';
 import PhotoType from '../../types/PhotoType';
 

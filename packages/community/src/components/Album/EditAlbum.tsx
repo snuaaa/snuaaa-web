@@ -3,12 +3,9 @@ import React, { ChangeEvent } from 'react';
 import EditAlbumComponent from '../../components/Album/EditAlbumComponent';
 import ContentStateEnum from '../../common/ContentStateEnum';
 import AlbumService from '../../services/AlbumService';
-import ContentType from '../../types/ContentType';
 import { RecordOf, Record } from 'immutable';
 import CategoryType from '../../types/CategoryType';
 import AlbumType from '../../types/AlbumType';
-
-const TAG = 'EDITALBUM';
 
 type EditAlbumProps = {
     albumInfo: AlbumType;
@@ -25,7 +22,6 @@ class EditAlbum extends React.Component<EditAlbumProps, EditAlbumState> {
 
   constructor(props: EditAlbumProps) {
     super(props);
-    console.log(`[${TAG}] constructor`);
 
     this.state = {
       albumInfo: Record(props.albumInfo)()
@@ -76,7 +72,6 @@ class EditAlbum extends React.Component<EditAlbumProps, EditAlbumState> {
             
       await AlbumService.updateAlbum(albumInfo.content_id, albumInfo.toJSON())
         .then(() => {
-          console.log('[%s] Update Album Success', TAG);
           this.props.setAlbumState(ContentStateEnum.READY);
           this.props.fetch();
         })
@@ -89,7 +84,6 @@ class EditAlbum extends React.Component<EditAlbumProps, EditAlbumState> {
 
 
   render() {
-    console.log('[%s] render', TAG);
     const { categoryInfo } = this.props;
     const { albumInfo } = this.state;
 

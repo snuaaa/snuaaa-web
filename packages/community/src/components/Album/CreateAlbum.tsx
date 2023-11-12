@@ -1,10 +1,9 @@
-import React, { useState, ChangeEvent, useEffect } from 'react';
+import React, { useState, ChangeEvent } from 'react';
 import EditAlbumComponent from '../../components/Album/EditAlbumComponent';
 import PhotoBoardService from '../../services/PhotoBoardService';
 import CrtAlbumType from '../../types/CrtAlbumType';
 import CategoryType from '../../types/CategoryType';
 import useBlockBackgroundScroll from '../../hooks/useBlockBackgroundScroll';
-const TAG = 'CREATEALBUM';
 
 type CreateAlbumProps = {
     board_id: string;
@@ -54,7 +53,6 @@ function CreateAlbum(props: CreateAlbumProps) {
     else {
       await PhotoBoardService.createAlbum(props.board_id, albumInfo)
         .then(() => {
-          console.log('[%s] Create Album Success', TAG);
           props.togglePopUp();
           props.fetch();
         })

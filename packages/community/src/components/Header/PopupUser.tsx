@@ -21,7 +21,7 @@ function PopupUser({ profile_path, togglePopup, logout }: PopupUserProps) {
       window.removeEventListener('click', togglePopup);
       document.body.classList.remove('enif-overflow-hidden-mobile');
     };
-  }, []);
+  }, [togglePopup]);
 
   return (
     <div className="popup-user-wrapper" onClick={(e) => e.stopPropagation()}>

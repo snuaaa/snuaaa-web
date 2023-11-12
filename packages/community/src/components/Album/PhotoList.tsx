@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Image from '../../components/Common/AaaImage';
 import history from '../../common/history';
@@ -19,16 +19,7 @@ function PhotoList({ photos }: PhotoListProps) {
   const [limit, setLimit] = useState<number>(LIMIT_UNIT);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(onIntersect);
-    if (target.current) {
-      observer.observe(target.current);
-    }
-    return () => observer.disconnect();
-  }, []);
-
-
-  const onIntersect = async ([entry]: IntersectionObserverEntry[], observer: IntersectionObserver) => {
+  const onIntersect = useCallback(async ([entry]: IntersectionObserverEntry[], observer: IntersectionObserver) => {
     if (entry.isIntersecting) {
       setIsLoading(true);
       await fakeFetch();
@@ -38,7 +29,15 @@ function PhotoList({ photos }: PhotoListProps) {
     else {
       setIsLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(onIntersect);
+    if (target.current) {
+      observer.observe(target.current);
+    }
+    return () => observer.disconnect();
+  }, [onIntersect]);
 
   const increaseLimit = () => {
     setLimit(prevLimit => prevLimit + LIMIT_UNIT);
@@ -74,6 +73,7 @@ function PhotoList({ photos }: PhotoListProps) {
             </div>
           );
         }
+        return null;
       });
     }
   };

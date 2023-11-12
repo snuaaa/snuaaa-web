@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { Location } from 'history';
+import React, { useState, useEffect, useCallback } from 'react';
 
 import HomeService from '../../services/HomeService';
 import Loading from '../Common/Loading';
@@ -10,8 +9,6 @@ import BoardStateEnum from '../../common/BoardStateEnum';
 import ContentType from '../../types/ContentType';
 import { useHistory, useLocation } from 'react-router';
 
-
-const TAG = 'ALLPOST';
 const POSTROWNUM = 10;
 
 type LocationState = {
@@ -27,11 +24,6 @@ function AllPosts() {
   const location = useLocation<LocationState>();
   const pageIdx = (location.state && location.state.page) ? location.state.page : 1;
 
-  useEffect(() => {
-    fetch();
-  }, [location]);
-
-
   const clickPage = (idx: number) => {
     history.push({
       state: {
@@ -40,7 +32,7 @@ function AllPosts() {
     });
   };
 
-  const fetch = async () => {
+  const fetch = useCallback(async () => {
 
     setBoardState(BoardStateEnum.LOADING);
     await HomeService.retrieveAllPosts(pageIdx)
@@ -52,8 +44,11 @@ function AllPosts() {
       .catch((err: Error) => {
         console.error(err);
       });
-  };
+  }, [pageIdx]);
 
+  useEffect(() => {
+    fetch();
+  }, [fetch, location]);
 
   return (
     <>

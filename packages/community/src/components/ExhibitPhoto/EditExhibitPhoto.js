@@ -4,12 +4,10 @@ import UserService from 'services/UserService.ts';
 import ExhibitPhotoService from 'services/ExhibitPhotoService';
 import EditExhibitPhotoComponent from 'components/ExhibitBoard/EditExhibitPhotoComponent';
 
-const TAG = 'EDIT_EXHIBIT_PHOTO';
 
 class EditExhibitPhoto extends React.Component {
 
   constructor(props) {
-    console.log(`[${TAG}] constructor`);
     super(props);
     this.boardTags = props.boardTagInfo;
 
@@ -126,8 +124,6 @@ class EditExhibitPhoto extends React.Component {
   };
 
   render() {
-    console.log('[%s] render', TAG);
-
     const { handleChange, handleDate, handlePhotographer, selectPhotographer, removePhotographer, submit } = this;
     const { setPhotoState } = this.props;
     const { title, text, order, photographer, photographer_alt, date, location, camera, lens, focal_length

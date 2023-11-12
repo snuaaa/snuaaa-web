@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Image from '../Common/AaaImage';
 import ExhibitionType from '../../types/ExhibitionType';
@@ -47,6 +47,7 @@ function NewExhibitions({ board_id, exhibitions }: NewExhibitionsProps) {
             </div>
           );
         }
+        return null;
       });
     }
   };

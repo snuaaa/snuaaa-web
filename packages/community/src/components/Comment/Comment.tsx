@@ -1,11 +1,9 @@
-import React, { ChangeEvent, useState, useEffect, useContext, useRef } from 'react';
+import React, { ChangeEvent, useState, useEffect, useContext, useRef, useCallback } from 'react';
 
 import CommentList from './CommentList';
 import CommentService from '../../services/CommentService';
 import AuthContext from '../../contexts/AuthContext';
 import CommentType from '../../types/CommentType';
-
-const TAG = 'COMMENT';
 
 type CommentProps = {
     parent_id: number;
@@ -21,13 +19,7 @@ function Comment({ parent_id }: CommentProps) {
   const authContext = useContext(AuthContext);
   const textareaTarget = useRef<HTMLTextAreaElement>(null);
 
-  useEffect(() => {
-    fetch();
-  }, [parent_id]);
-
-
-  const fetch = async () => {
-
+  const fetch = useCallback(async () => {
     await CommentService.retrieveComments(parent_id)
       .then((res) => {
         setComments(res.data);
@@ -35,7 +27,13 @@ function Comment({ parent_id }: CommentProps) {
       .catch((err: Error) => {
         console.error(err);
       });
-  };
+  }, [parent_id]);
+
+
+  useEffect(() => {
+    fetch();
+  }, [fetch, parent_id]);
+
 
   const setEditingComment = (comment_id: number, text: string) => {
     setEditingCommentId(comment_id);

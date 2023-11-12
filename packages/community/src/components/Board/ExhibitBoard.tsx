@@ -11,8 +11,6 @@ import AuthContext from '../../contexts/AuthContext';
 import ExhibitionType from '../../types/ExhibitionType';
 import CreateExhibition from '../ExhibitBoard/CreateExhibition';
 
-const TAG = 'EXHIBITBOARD';
-
 type ExhibitBoardProps = {
     boardInfo: BoardType;
 }
@@ -27,7 +25,6 @@ class ExhibitBoard extends React.Component<ExhibitBoardProps, ExhibitBoardState>
 
   constructor(props: ExhibitBoardProps) {
     super(props);
-    console.log(`[${TAG}] Constructor`);
     this.exhibitions = [];
     this.state = {
       boardState: BoardStateEnum.LOADING
@@ -35,7 +32,6 @@ class ExhibitBoard extends React.Component<ExhibitBoardProps, ExhibitBoardState>
   }
 
   componentDidMount() {
-    console.log(`[${TAG}] ComponentDidMount`);
     this.fetch();
   }
 
@@ -63,33 +59,31 @@ class ExhibitBoard extends React.Component<ExhibitBoardProps, ExhibitBoardState>
     const { exhibitions } = this;
     if (exhibitions && exhibitions.length > 0) {
       return exhibitions.map((content) => {
-        if (content.exhibition) {
-          return (
-            <Link to={`/exhibition/${content.content_id}`}>
-              <div className="exhibition-unit">
-                <div className="hanger"></div>
-                <div className="poster-wrapper">
-                  <Image className="img-poster" imgSrc={content.exhibition.poster_thumbnail_path} />
-                </div>
-                <div className="desc-wrapper">
-                  <div className="desc">
-                    <p>제{content.exhibition.exhibition_no}회 천체사진전</p>
-                    <h5>{content.exhibition.slogan}</h5>
-                    <p className="desc-small">{convertDateWithDay(content.exhibition.date_start)} ~ {convertDateWithDay(content.exhibition.date_end)}</p>
-                    <p className="desc-small">{content.exhibition.place}</p>
-                  </div>
+        if (!content.exhibition) return null;
+        
+        return (
+          <Link to={`/exhibition/${content.content_id}`}>
+            <div className="exhibition-unit">
+              <div className="hanger"></div>
+              <div className="poster-wrapper">
+                <Image className="img-poster" imgSrc={content.exhibition.poster_thumbnail_path} />
+              </div>
+              <div className="desc-wrapper">
+                <div className="desc">
+                  <p>제{content.exhibition.exhibition_no}회 천체사진전</p>
+                  <h5>{content.exhibition.slogan}</h5>
+                  <p className="desc-small">{convertDateWithDay(content.exhibition.date_start)} ~ {convertDateWithDay(content.exhibition.date_end)}</p>
+                  <p className="desc-small">{content.exhibition.place}</p>
                 </div>
               </div>
-            </Link>
-          );
-        }
+            </div>
+          </Link>
+        );        
       });
     }
   };
 
   render() {
-    console.log(`[${TAG}] render.. `);
-
     const { makeExhibitionList } = this;
     const { boardInfo } = this.props;
     const { boardState } = this.state;
@@ -114,28 +108,28 @@ class ExhibitBoard extends React.Component<ExhibitBoardProps, ExhibitBoardState>
                         <div className="board-search-wrapper">
                           {
                             authContext.authInfo.user.grade <= boardInfo.lv_write &&
-                                                        <button className="board-btn-write" onClick={() => this.setBoardState(BoardStateEnum.WRITING)}>
-                                                          <i className="ri-gallery-line enif-f-1p2x"></i>
-                                                          <>사진전 생성</>
-                                                        </button>
+                              <button className="board-btn-write" onClick={() => this.setBoardState(BoardStateEnum.WRITING)}>
+                                <i className="ri-gallery-line enif-f-1p2x"></i>
+                                <>사진전 생성</>
+                              </button>
                           }
                         </div>
                         {
                           (boardState === BoardStateEnum.READY || boardState === BoardStateEnum.WRITING) &&
-                                                    <>
-                                                      <div className="exhibition-list-wrapper">
-                                                        {makeExhibitionList()}
-                                                      </div>
-                                                    </>
+                            <>
+                              <div className="exhibition-list-wrapper">
+                                {makeExhibitionList()}
+                              </div>
+                            </>
                         }
                         {
                           boardState === BoardStateEnum.WRITING &&
-                                                    <CreateExhibition
-                                                      board_id={boardInfo.board_id}
-                                                      boardInfo={boardInfo}
-                                                      // confirm={() => }
-                                                      close={() => this.setBoardState(BoardStateEnum.READY)}
-                                                      fetch={this.fetch} />
+                            <CreateExhibition
+                              board_id={boardInfo.board_id}
+                              boardInfo={boardInfo}
+                              // confirm={() => }
+                              close={() => this.setBoardState(BoardStateEnum.READY)}
+                              fetch={this.fetch} />
                         }
                       </div>
                     );
@@ -152,11 +146,5 @@ class ExhibitBoard extends React.Component<ExhibitBoardProps, ExhibitBoardState>
     );
   }
 }
-
-const mapStateToProps = (state: any) => {
-  return {
-    level: state.authentication.level,
-  };
-};
 
 export default ExhibitBoard;

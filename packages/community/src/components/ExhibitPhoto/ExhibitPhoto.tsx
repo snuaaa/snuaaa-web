@@ -1,13 +1,10 @@
-import React, { useState, useEffect, createRef } from 'react';
-import { Redirect, match, useLocation, useRouteMatch, useHistory } from 'react-router';
+import React, { useState, useEffect, createRef, useCallback } from 'react';
+import { Redirect, useLocation, useRouteMatch, useHistory } from 'react-router';
 import ExhibitPhotoService from '../../services/ExhibitPhotoService';
-import Loading from '../Common/Loading';
 import ContentStateEnum from '../../common/ContentStateEnum';
 // import history from '../../common/history';
 import FullScreenPortal from '../../containers/FullScreenPortal';
-import Image from '../Common/AaaImage';
 import ExhibitPhotoComponent from '../ExhibitBoard/ExhibitPhotoComponent';
-import { Location } from 'history';
 import { RecordOf, Record } from 'immutable';
 import AuthContext from '../../contexts/AuthContext';
 import ExhibitPhotoType from '../../types/ExhibitPhotoType';
@@ -32,15 +29,7 @@ function ExhibitPhoto() {
 
   useBlockBackgroundScroll();
 
-  useEffect(() => {
-    fetch();
-    document.onfullscreenchange = function (e) {
-      toggleFullScreen();
-    };
-  }, [location]);
-
-
-  const fetch = async () => {
+  const fetch = useCallback(async () => {
     const exhibitPhoto_id = Number(match.params.exhibitPhoto_id);
 
     setPhotoState(ContentStateEnum.LOADING);
@@ -62,7 +51,20 @@ function ExhibitPhoto() {
           setPhotoState(ContentStateEnum.ERROR);
         }
       });
-  };
+  }, [history, match.params.exhibitPhoto_id]);
+
+  const toggleFullScreen = useCallback(() => {
+    setIsFullscreen(!isFullscreen);
+  }, [isFullscreen]);
+
+  useEffect(() => {
+    fetch();
+    document.onfullscreenchange = function (e) {
+      toggleFullScreen();
+    };
+  }, [fetch, location, toggleFullScreen]);
+
+
 
   const moveToPhoto = (direction: number) => {
     if (contentInfo && exhibitPhotosInfo && exhibitPhotosInfo.length > 0) {
@@ -107,9 +109,6 @@ function ExhibitPhoto() {
     }
   };
 
-  const toggleFullScreen = () => {
-    setIsFullscreen(!isFullscreen);
-  };
 
   const clickFullscreen = () => {
     const elem = fullscreenRef.current;

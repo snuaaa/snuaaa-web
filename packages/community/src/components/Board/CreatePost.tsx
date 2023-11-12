@@ -4,7 +4,6 @@ import PostService from '../../services/PostService';
 import CrtPostType from '../../types/CrtPostType';
 import ContentService from '../../services/ContentService';
 
-const TAG = 'CREATEPOST';
 const MAX_SIZE = 20 * 1024 * 1024;
 
 type CreatePostProps = {

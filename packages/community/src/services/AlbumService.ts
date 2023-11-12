@@ -1,6 +1,5 @@
 import { AaaService } from './index';
 import { AxiosPromise } from 'axios';
-import CrtPhotoType from '../types/CrtPhotoType';
 import AlbumType from '../types/AlbumType';
 import CategoryType from '../types/CategoryType';
 import TagType from '../types/TagType';

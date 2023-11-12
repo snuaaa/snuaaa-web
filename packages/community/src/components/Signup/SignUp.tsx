@@ -6,9 +6,6 @@ import SignUpFailure from './SignUpFailure';
 import Loading from '../Common/Loading';
 import AuthService from '../../services/AuthService';
 import SignUpInputType from '../../types/SignUpInputType';
-import { useHistory } from 'react-router';
-
-const TAG = 'SINGUP';
 
 const defaultFormat: SignUpInputType = {
   id: {
@@ -228,7 +225,7 @@ function SignUp() {
   const checkValid = () => {
     let valid = true;
 
-    for (const [key, value] of Object.entries(userInfo)) {
+    for (const [, value] of Object.entries(userInfo)) {
       if(value.isRequired) {
         valid = valid && value.valid;
       }

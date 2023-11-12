@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, useEffect } from 'react';
+import React, { useState, ChangeEvent } from 'react';
 import DocuService from '../../services/DocuService';
 import CrtDocuType from '../../types/CrtDocuType';
 import CreateDocuComponent from '../../components/Document/CreateDocuComponent';
@@ -6,7 +6,6 @@ import BoardType from '../../types/BoardType';
 import ContentService from '../../services/ContentService';
 import useBlockBackgroundScroll from '../../hooks/useBlockBackgroundScroll';
 
-const TAG = 'CREATEDOCU';
 const MAX_SIZE = 20 * 1024 * 1024;
 
 type CreateDocuProps = {

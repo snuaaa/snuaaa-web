@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 import HomeService from '../../services/HomeService';
 import Loading from '../Common/Loading';
@@ -9,10 +9,7 @@ import BoardStateEnum from '../../common/BoardStateEnum';
 import CommentType from '../../types/CommentType';
 import { useLocation, useHistory } from 'react-router';
 
-
-const TAG = 'ALLCOMMENTS';
 const COMMENTROWNUM = 10;
-
 
 type LocationState = {
     page: number
@@ -27,11 +24,6 @@ function AllComments() {
   const location = useLocation<LocationState>();
   const pageIdx = (location.state && location.state.page) ? location.state.page : 1;
 
-  useEffect(() => {
-    fetch();
-  }, [location]);
-
-
   const clickPage = (idx: number) => {
     history.push({
       state: {
@@ -40,8 +32,7 @@ function AllComments() {
     });
   };
 
-  const fetch = async () => {
-
+  const fetch = useCallback(async () => {
     setBoardState(BoardStateEnum.LOADING);
     await HomeService.retrieveAllComments(pageIdx)
       .then((res) => {
@@ -52,7 +43,11 @@ function AllComments() {
       .catch((err: Error) => {
         console.error(err);
       });
-  };
+  }, [pageIdx]);
+
+  useEffect(() => {
+    fetch();
+  }, [fetch, location]);
 
   return (
     <>

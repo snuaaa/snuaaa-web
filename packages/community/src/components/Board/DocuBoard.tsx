@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState, useEffect } from 'react';
+import React, { ChangeEvent, useState, useEffect, useCallback } from 'react';
 
 import Loading from '../../components/Common/Loading';
 import SelectBox from '../../components/Common/SelectBox';
@@ -13,7 +13,6 @@ import ContentType from '../../types/ContentType';
 import AuthContext from '../../contexts/AuthContext';
 import { useLocation, useHistory } from 'react-router';
 
-const TAG = 'DOCUBOARD';
 const DOCROWNUM = 10;
 
 type DocuBoardProps = {
@@ -37,12 +36,7 @@ function DocuBoard({ boardInfo }: DocuBoardProps) {
   const [documents, setDocuments] = useState<ContentType[]>([]);
   const [docCount, setDocCount] = useState<number>(0);
 
-  useEffect(() => {
-    fetch();
-  }, [location]);
-
-
-  const fetch = async () => {
+  const fetch = useCallback(async () => {
     const category = (location.state && location.state.category) ? location.state.category : '';
     const generation = (location.state && location.state.generation) ? location.state.generation : 0;
     const pageIdx = (location.state && location.state.page) ? location.state.page : 1;
@@ -57,25 +51,11 @@ function DocuBoard({ boardInfo }: DocuBoardProps) {
       .catch((err) => {
         console.error(err);
       });
-  };
+  }, [location.state]);
 
-  const clickCategory = (ctg_id: string) => {
-    history.push({
-      state: {
-        category: ctg_id,
-        page: 1
-      }
-    });
-  };
-
-  const clickAll = () => {
-    history.push({
-      state: {
-        category: '',
-        page: 1
-      }
-    });
-  };
+  useEffect(() => {
+    fetch();
+  }, [fetch, location]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
 

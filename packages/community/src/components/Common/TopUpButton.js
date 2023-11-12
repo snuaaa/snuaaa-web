@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 const VISIBLE_TIME = 3;
 
@@ -10,7 +10,7 @@ function TopUpButton() {
   let timer = VISIBLE_TIME;
   let lastScrollTop = window.pageYOffset;
 
-  const handleScroll = function () {
+  const handleScroll = useCallback(() => {
     let tmpScrollTop = window.pageYOffset;
     // console.log(document.documentElement.scrollTop);
     if (lastScrollTop > tmpScrollTop) {
@@ -19,10 +19,13 @@ function TopUpButton() {
     else {
       setIsTop(false);
     }
+    // TODO: fix
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     lastScrollTop = tmpScrollTop;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     timer = VISIBLE_TIME;       
     setIsVisible(true);
-  };
+  }, []);
 
   useEffect(() => {
     const tick = setInterval(() => {
@@ -39,7 +42,7 @@ function TopUpButton() {
       clearInterval(tick);
       window.removeEventListener('scroll', handleScroll, true);
     };
-  }, []);
+  }, [handleScroll, timer]);
 
   let btnClass = isVisible ? 'enif-visible' : 'enif-unvisible';
   let iconClass = isTop ? 'ri-arrow-up-s-line' : 'ri-arrow-down-s-line';

@@ -1,6 +1,5 @@
 import React, { Ref } from 'react';
 
-import ActionDrawer from '../Common/ActionDrawer';
 import Image from '../Common/AaaImage';
 import ExhibitPhotoType from '../../types/ExhibitPhotoType';
 import ExhibitPhotoInfo from '../ExhibitPhoto/ExhibitPhotoInfo';

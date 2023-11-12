@@ -1,7 +1,5 @@
 import React, { ChangeEvent } from 'react';
 import DatePicker from 'react-datepicker';
-import ContentType from '../../types/ContentType';
-import { RecordOf } from 'immutable';
 import 'react-datepicker/dist/react-datepicker.css';
 import CrtPhotoType from '../../types/CrtPhotoType';
 

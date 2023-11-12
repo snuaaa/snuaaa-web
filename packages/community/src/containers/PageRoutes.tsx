@@ -1,5 +1,5 @@
 import React, { lazy } from 'react';
-import { Route, RouteProps, Switch, useLocation } from 'react-router-dom';
+import { Route, Switch, useLocation } from 'react-router-dom';
 import Header from '../containers/Header';
 import Footer from '../components/Footer';
 import SideBar from '../components/Home/SideBar';

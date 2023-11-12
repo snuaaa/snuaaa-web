@@ -16,8 +16,6 @@ import AlbumType from '../../types/AlbumType';
 import PhotoType from '../../types/PhotoType';
 import ExhibitionType from '../../types/ExhibitionType';
 
-const TAG = 'HOME';
-
 type HomeInfo = {
     soundBoxData?: any;
     recentPosts?: ContentType[];

@@ -1,17 +1,11 @@
-import axios, { AxiosResponse, AxiosPromise } from 'axios';
+import axios, { AxiosPromise } from 'axios';
 import { getToken } from '../utils/tokenManager';
 
 const SERVER_URL = process.env.REACT_APP_SERVER_URL;
 
 axios.defaults.headers.common['Authorization'] = 'Bearer ' + getToken();
 
-
-interface IAaaService {
-    get: (url: string) => AxiosPromise;
-}
-
 export const AaaService: any = {
-    
  
   get: function(url: string) {
     return axios.get(`${SERVER_URL}api/${url}`);

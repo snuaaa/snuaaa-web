@@ -2,7 +2,6 @@ import React, { ChangeEvent } from 'react';
 import ContentStateEnum from '../../common/ContentStateEnum';
 
 import ReactDatePicker from 'react-datepicker';
-import ContentType from '../../types/ContentType';
 import 'react-datepicker/dist/react-datepicker.css';
 import TagType from '../../types/TagType';
 import { Prompt } from 'react-router';

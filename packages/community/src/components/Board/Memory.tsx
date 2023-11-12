@@ -1,21 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { Location } from 'history';
+import React, { useState, useEffect, useCallback } from 'react';
 
 import CreateAlbum from '../Album/CreateAlbum';
 import AlbumList from '../../components/PhotoBoard/AlbumList';
 import Category from '../../components/Common/Category';
 import Loading from '../../components/Common/Loading';
 import Paginator from '../../components/Common/Paginator';
-import history from '../../common/history';
 import PhotoBoardService from '../../services/PhotoBoardService';
-import ContentType from '../../types/ContentType';
 import BoardType from '../../types/BoardType';
 import BoardName from '../../components/Board/BoardName';
 import AuthContext from '../../contexts/AuthContext';
 import AlbumType from '../../types/AlbumType';
 import { useHistory, useLocation } from 'react-router';
 
-const TAG = 'MEMORY';
 const ALBUMROWNUM = 12;
 
 type MemoryProps = {
@@ -40,11 +36,7 @@ function Memory({ boardInfo }: MemoryProps) {
   const history = useHistory();
   const location = useLocation<LocationState>();
 
-  useEffect(() => {
-    fetch();
-  }, [location]);
-
-  const fetch = async () => {
+  const fetch = useCallback(async () => {
 
     const pageIdx = location.state && location.state.page ? location.state.page : 1;
     const category = (location.state && location.state.category) ? location.state.category : undefined;
@@ -57,9 +49,14 @@ function Memory({ boardInfo }: MemoryProps) {
         setIsReady(true);
       })
       .catch((err: Error) => {
-        console.error(`[${TAG}] Retrieve Photos Fail >> ${err}`);
+        console.error(err);
       });
-  };
+  }, [boardInfo.board_id, location.state]);
+
+  useEffect(() => {
+    fetch();
+  }, [fetch, location]);
+
 
   const clickCategory = (ctg_id: string) => {
     history.push({

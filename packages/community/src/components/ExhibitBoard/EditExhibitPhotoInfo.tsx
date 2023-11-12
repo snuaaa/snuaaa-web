@@ -1,7 +1,5 @@
 import React, { ChangeEvent, useState } from 'react';
-import ContentStateEnum from '../../common/ContentStateEnum';
 
-import ReactDatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Prompt } from 'react-router';
 import ExhibitPhotoType from '../../types/ExhibitPhotoType';

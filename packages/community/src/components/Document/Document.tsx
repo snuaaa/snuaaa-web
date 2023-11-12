@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ChangeEvent, useContext } from 'react';
+import React, { useState, useEffect, ChangeEvent, useContext, useCallback } from 'react';
 import { Redirect, useRouteMatch } from 'react-router';
 
 import ContentStateEnum from '../../common/ContentStateEnum';
@@ -11,7 +11,6 @@ import ContentType from '../../types/ContentType';
 import AuthContext from '../../contexts/AuthContext';
 import FileService from '../../services/FileService';
 
-const TAG = 'DOCU';
 const MAX_SIZE = 20 * 1024 * 1024;
 
 function Docu() {
@@ -21,17 +20,13 @@ function Docu() {
   const [likeInfo, setLikeInfo] = useState<boolean>(false);
   const [docState, setDocState] = useState<number>(ContentStateEnum.LOADING);
   const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
-  const [progress, setProgress] = useState<number>(0);
+  const [, setProgress] = useState<number>(0);
   const [removedFiles, setRemovedFiles] = useState<number[]>([]);
   const [editingDocData, setEditingDocData] = useState<ContentType>();
   const authContext = useContext(AuthContext);
   let currentSize = 0;
 
-  useEffect(() => {
-    fetch();
-  }, []);
-
-  const fetch = async () => {
+  const fetch = useCallback(async () => {
     const doc_id = Number(match.params.doc_id);
     await DocuService.retrieveDocument(doc_id)
       .then((res) => {
@@ -44,7 +39,12 @@ function Docu() {
         console.error(err);
         setDocState(ContentStateEnum.ERROR);
       });
-  };
+  }, [match.params.doc_id]);
+
+  useEffect(() => {
+    fetch();
+  }, [fetch]);
+
   const handleEditting = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     if (editingDocData && (e.target.name === 'title' || e.target.name === 'text')) {
       setEditingDocData({

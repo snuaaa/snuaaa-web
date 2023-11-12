@@ -2,12 +2,11 @@ import React, { ChangeEvent } from 'react';
 import CreatePhotoComponent from '../../components/Photo/CreatePhotoComponent';
 import PhotoBoardService from '../../services/PhotoBoardService';
 import AlbumService from '../../services/AlbumService';
-import immutable, { Map, RecordOf, Record, List, setIn } from 'immutable';
+import { List } from 'immutable';
 import CrtPhotoType from '../../types/CrtPhotoType';
 import TagType from '../../types/TagType';
 import ProgressBar from '../../components/Common/ProgressBar';
 
-const TAG = 'CREATEPHOTO';
 const MAX_SIZE = 100 * 1024 * 1024;
 
 type CreatePhotoProps = {
@@ -28,18 +27,6 @@ type CreatePhotoState = {
     isUploading: boolean,
 }
 
-const recordPhotoInfo: Record.Factory<CrtPhotoType> = Record<CrtPhotoType>({
-  title: '',
-  text: '',
-  location: '',
-  camera: '',
-  lens: '',
-  focal_length: '',
-  f_stop: '',
-  exposure_time: '',
-  iso: ''
-});
-
 class CreatePhoto extends React.Component<CreatePhotoProps, CreatePhotoState> {
 
   currentSize: number;
@@ -47,7 +34,6 @@ class CreatePhoto extends React.Component<CreatePhotoProps, CreatePhotoState> {
 
   constructor(props: CreatePhotoProps) {
     super(props);
-    console.log('[%s] constructor', TAG);
 
     this.currentSize = 0;
     this.imgUrls = [];
@@ -242,7 +228,7 @@ class CreatePhoto extends React.Component<CreatePhotoProps, CreatePhotoState> {
       fetch();
     }
     catch (err) {
-      console.error(`[${TAG}] ${err}`);
+      console.error(err);
       alert('사진 생성 실패');
       this.setState({
         isUploading: false
@@ -251,7 +237,6 @@ class CreatePhoto extends React.Component<CreatePhotoProps, CreatePhotoState> {
   };
 
   render() {
-    console.log('[%s] render', TAG);
     const { handleChange, handleDate, uploadFile, clickTag, imgUrls, setImgIdx, removeImg, checkForm } = this;
     const { tags, togglePopUp } = this.props;
     const { imgIdx, progress, photoInfo, isUploading, uploadIdx } = this.state;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Redirect, useHistory, useLocation } from 'react-router';
 
 import './App.scss';
@@ -30,17 +30,7 @@ function App() {
   const history = useHistory();
   const location = useLocation();
 
-  useEffect(() => {
-    if (navigator.userAgent.toLowerCase().indexOf('msie') !== -1) {
-      alert('MicroSoft Internet Explorer에서는 홈페이지가 정상 동작하지 않을 수 있습니다.');
-    }
-    else if ((navigator.appName == 'Netscape' && navigator.userAgent.search('Trident') != -1)) {
-      alert('MicroSoft Internet Explorer에서는 홈페이지가 정상 동작하지 않을 수 있습니다.');
-    }
-    checkToken();
-  }, []);
-
-  const checkToken = async () => {
+  const checkToken = useCallback(async () => {
     const accessToken = getToken();
     if (!accessToken) {
       //토큰이 없으면 logout
@@ -72,7 +62,17 @@ function App() {
           authLogout();
         });
     }
-  };
+  }, [history]);
+
+  useEffect(() => {
+    if (navigator.userAgent.toLowerCase().indexOf('msie') !== -1) {
+      alert('MicroSoft Internet Explorer에서는 홈페이지가 정상 동작하지 않을 수 있습니다.');
+    }
+    else if ((navigator.appName === 'Netscape' && navigator.userAgent.search('Trident') !== -1)) {
+      alert('MicroSoft Internet Explorer에서는 홈페이지가 정상 동작하지 않을 수 있습니다.');
+    }
+    checkToken();
+  }, [checkToken]);
 
   const authLogin = (token: string, autoLogin: boolean, userInfo: UserType) => {
     setToken(token, autoLogin);

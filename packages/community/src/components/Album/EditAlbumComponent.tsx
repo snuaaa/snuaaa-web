@@ -1,7 +1,5 @@
 import React, { ChangeEvent } from 'react';
 import CategoryType from '../../types/CategoryType';
-import { RecordOf } from 'immutable';
-import ContentType from '../../types/ContentType';
 
 type EditAlbumComponentProps = {
     caption: string;

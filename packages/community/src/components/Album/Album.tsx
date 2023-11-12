@@ -9,14 +9,11 @@ import CreatePhoto from '../../components/Photo/CreatePhoto';
 import BoardName from '../../components/Board/BoardName';
 import AlbumService from '../../services/AlbumService';
 import history from '../../common/history';
-import ContentType from '../../types/ContentType';
 import CategoryType from '../../types/CategoryType';
 import TagType from '../../types/TagType';
 import AuthContext from '../../contexts/AuthContext';
 import AlbumType from '../../types/AlbumType';
 import PhotoType from '../../types/PhotoType';
-
-const TAG = 'ALBUM';
 
 type AlbumProps = {
     match: match<{ album_id: string }>;
@@ -38,7 +35,6 @@ class Album extends React.Component<AlbumProps, AlbumState> {
 
   constructor(props: AlbumProps) {
     super(props);
-    console.log(`[${TAG}] Constructor`);
     this.photos = [];
     this.albumInfo = undefined;
     this.categoryInfo = undefined;

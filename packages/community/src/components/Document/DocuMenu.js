@@ -1,7 +1,5 @@
 import React from 'react';
 
-const TAG = 'DOCUMENU';
-
 class DocuMenu extends React.Component {
 
   constructor(props) {
@@ -36,7 +34,6 @@ class DocuMenu extends React.Component {
 
 
   render() {
-    console.log('[%s] render', TAG);
     return (
       <div className="documenu-wrapper">
         <div className="doc-gen-list-handler" onClick={this.leftHandler}>&lt;&lt;</div>

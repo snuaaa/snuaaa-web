@@ -11,7 +11,7 @@ function Tag({ clickAll, clickTag, tags, selectedTags }) {
     else {
       setSelectedAll(false);
     }
-  });
+  }, [selectedTags.length]);
 
   const makeTagList = (tags, type) => {
     const tagList = tags
