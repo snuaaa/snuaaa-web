@@ -16,7 +16,7 @@ jobs:
           node-version: 16.x
       - run: yarn install --frozen-lockfile
 
-      - run: yarn build
+      - run: yarn build:editor
 
       - name: Deploy
         uses: cloudflare/wrangler-action@v3
