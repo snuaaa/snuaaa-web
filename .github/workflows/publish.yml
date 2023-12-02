@@ -37,9 +37,3 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy build --project-name=snuaaa-web
           workingDirectory: packages/community
-          secrets: |
-            SECRET1
-            SECRET2
-        env:
-          SECRET1: ${{ secrets.SECRET1 }}
-          SECRET2: ${{ secrets.SECRET2 }}
