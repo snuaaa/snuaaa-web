@@ -3,6 +3,8 @@ name: Deploy
 on:
   push:
     branches:
+      - main
+      - develop
       - feat/update-packages
 
 jobs:
@@ -14,15 +16,30 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16.x
-      - run: yarn install --frozen-lockfile
 
-      - run: yarn build:editor
+      - name: Set environment
+        run: |
+          if [[ "${{ github.base_ref }}" == "main "]]; then
+            echo "REACT_APP_SERVER_URL=${{ secrets.SERVER_URL_PROD }}" >> packages/community/.env
+          else
+            echo "REACT_APP_SERVER_URL=${{ secrets.SERVER_URL_DEV }}" >> packages/community/.env
+          fi
+
+      - name: Install packages and build
+        run: |
+          yarn install --frozen-lockfile
+          yarn build
 
       - name: Deploy
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          preCommands: yarn build
           command: pages deploy build --project-name=snuaaa-web
           workingDirectory: packages/community
+          secrets: |
+            SECRET1
+            SECRET2
+        env:
+          SECRET1: ${{ secrets.SECRET1 }}
+          SECRET2: ${{ secrets.SECRET2 }}
