@@ -19,7 +19,7 @@ jobs:
 
       - name: Set environment
         run: |
-          if [[ "${{ github.base_ref }}" == "main "]]; then
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
             echo "REACT_APP_SERVER_URL=${{ secrets.SERVER_URL_PROD }}" >> packages/community/.env
           else
             echo "REACT_APP_SERVER_URL=${{ secrets.SERVER_URL_DEV }}" >> packages/community/.env
