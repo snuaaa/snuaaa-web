@@ -1,8 +1,8 @@
 {
-  "name": "snuaaa-react",
+  "name": "snuaaa-web",
   "version": "1.0.0",
   "private": true,
-  "homepage": "https://our.snuaaa.net/",
+  "workspaces": ["packages/*"],
   "license": "UNLICENSED",
   "author": {
     "name": "Youngjae Kim",
@@ -11,67 +11,8 @@
   "contributors": [
     "Sooyeon Ahn"
   ],
-  "dependencies": {
-    "@ckeditor/ckeditor5-basic-styles": "^27.1.0",
-    "@ckeditor/ckeditor5-block-quote": "^27.1.0",
-    "@ckeditor/ckeditor5-dev-utils": "^24.4.2",
-    "@ckeditor/ckeditor5-dev-webpack-plugin": "^24.4.2",
-    "@ckeditor/ckeditor5-editor-classic": "^27.1.0",
-    "@ckeditor/ckeditor5-essentials": "^27.1.0",
-    "@ckeditor/ckeditor5-heading": "^27.1.0",
-    "@ckeditor/ckeditor5-image": "^27.1.0",
-    "@ckeditor/ckeditor5-indent": "^27.1.0",
-    "@ckeditor/ckeditor5-link": "^27.1.0",
-    "@ckeditor/ckeditor5-list": "^27.1.0",
-    "@ckeditor/ckeditor5-media-embed": "^27.1.0",
-    "@ckeditor/ckeditor5-paragraph": "^27.1.0",
-    "@ckeditor/ckeditor5-react": "^3.0.3",
-    "@ckeditor/ckeditor5-table": "^27.1.0",
-    "@ckeditor/ckeditor5-theme-lark": "^27.1.0",
-    "@craco/craco": "^6.4.3",
-    "@testing-library/jest-dom": "^5.16.4",
-    "@testing-library/react": "^11.2.7",
-    "@testing-library/user-event": "^12.7.2",
-    "@types/jest": "^26.0.24",
-    "@types/node": "^12.20.52",
-    "@types/react": "^17.0.45",
-    "@types/react-datepicker": "^3.1.8",
-    "@types/react-dom": "^17.0.17",
-    "@types/react-router": "^5.1.18",
-    "@types/react-router-dom": "^5.3.3",
-    "@types/styled-components": "^5.1.25",
-    "axios": "^0.21.4",
-    "immutable": "^4.0.0",
-    "node-sass": "^7.0.1",
-    "normalize.css": "^8.0.1",
-    "react": "^17.0.1",
-    "react-datepicker": "^3.8.0",
-    "react-dom": "^17.0.1",
-    "react-redux": "^7.2.8",
-    "react-router": "^5.3.1",
-    "react-router-dom": "^5.3.1",
-    "react-scripts": "4.0.2",
-    "remixicon": "^2.5.0",
-    "typescript": "^4.6.4",
-    "universal-cookie": "^4.0.4",
-    "web-vitals": "^1.1.2"
-  },
   "scripts": {
-    "start": "craco start",
-    "build": "craco build",
-    "test": "craco test",
-    "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not ie <= 11",
-    "not op_mini all"
-  ]
+    "build": "yarn workspace @snuaaa/editor build && yarn workspace @snuaaa/community-web build",
+    "build:editor": "yarn workspace @snuaaa/editor build"
+  }
 }
