@@ -6,36 +6,53 @@ import ExhibitPhotoInfo from '../ExhibitPhoto/ExhibitPhotoInfo';
 import EditExhibitPhotoInfo from './EditExhibitPhotoInfo';
 
 type ExhibitPhotoComponentProps = {
-    contentInfo: ExhibitPhotoType;
-    my_id: number;
-    fullscreenRef: Ref<HTMLDivElement>;
-    clickFullscreen: () => void;
-    moveToPrev: () => void;
-    moveToNext: () => void;
-    editPhoto: () => void;
-    cancelEdit: () => void;
-    deletePhoto: () => void;
-    isEditting: boolean;
-    isFullscreen: boolean;
-    fetch: () => void;
-    close: () => void;
-}
+  contentInfo: ExhibitPhotoType;
+  my_id: number;
+  fullscreenRef: Ref<HTMLDivElement>;
+  clickFullscreen: () => void;
+  moveToPrev: () => void;
+  moveToNext: () => void;
+  editPhoto: () => void;
+  cancelEdit: () => void;
+  deletePhoto: () => void;
+  isEditting: boolean;
+  isFullscreen: boolean;
+  fetch: () => void;
+  close: () => void;
+};
 
-function ExhibitPhotoComponent({ contentInfo, my_id, isEditting, isFullscreen,
-  fullscreenRef, clickFullscreen, moveToPrev, moveToNext,
-  editPhoto, cancelEdit, deletePhoto, fetch, close }: ExhibitPhotoComponentProps) {
-
-  const exhibitionInfo = contentInfo
-        && contentInfo.exhibitPhoto
-        && contentInfo.parent
-        && contentInfo.parent.exhibition;
+function ExhibitPhotoComponent({
+  contentInfo,
+  my_id,
+  isEditting,
+  isFullscreen,
+  fullscreenRef,
+  clickFullscreen,
+  moveToPrev,
+  moveToNext,
+  editPhoto,
+  cancelEdit,
+  deletePhoto,
+  fetch,
+  close,
+}: ExhibitPhotoComponentProps) {
+  const exhibitionInfo =
+    contentInfo &&
+    contentInfo.exhibitPhoto &&
+    contentInfo.parent &&
+    contentInfo.parent.exhibition;
   const exhibitPhotoInfo = contentInfo;
-  const fullscreenClass = isFullscreen ? 'ri-fullscreen-exit-fill' : 'ri-fullscreen-fill';
+  const fullscreenClass = isFullscreen
+    ? 'ri-fullscreen-exit-fill'
+    : 'ri-fullscreen-fill';
 
   return (
     <>
       <div className="enif-popup photo-popup" onClick={close}>
-        <div className="photo-section-wrapper" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="photo-section-wrapper"
+          onClick={(e) => e.stopPropagation()}
+        >
           <div className="photo-alb-title-wrp">
             <div className="photo-alb-title">
               <h5>{exhibitionInfo ? exhibitionInfo.slogan : 'slogan'}</h5>&nbsp;
@@ -48,7 +65,7 @@ function ExhibitPhotoComponent({ contentInfo, my_id, isEditting, isFullscreen,
           </div>
           <div className="photo-section-bottom">
             <div className="photo-section-left">
-              <div className="photo-img-wrapper" ref={fullscreenRef} >
+              <div className="photo-img-wrapper" ref={fullscreenRef}>
                 <div className="photo-move-action prev" onClick={moveToPrev}>
                   <i className="ri-arrow-left-s-line ri-icons enif-pointer"></i>
                 </div>
@@ -57,26 +74,28 @@ function ExhibitPhotoComponent({ contentInfo, my_id, isEditting, isFullscreen,
                   <i className="ri-arrow-right-s-line ri-icons enif-pointer"></i>
                 </div>
                 <div className="photo-action-fullscreen-wrapper">
-                  <i className={`${fullscreenClass} enif-pointer enif-f-1p2x`} onClick={clickFullscreen}></i>
+                  <i
+                    className={`${fullscreenClass} enif-pointer enif-f-1p2x`}
+                    onClick={clickFullscreen}
+                  ></i>
                 </div>
               </div>
             </div>
             <div className="photo-section-right">
-              {
-                isEditting ?
-                  <EditExhibitPhotoInfo
-                    exhibitPhotoInfo={contentInfo}
-                    fetch={fetch}
-                    cancel={cancelEdit}
-                  />
-                  :
-                  <ExhibitPhotoInfo
-                    photoInfo={contentInfo}
-                    my_id={my_id}
-                    setEditState={editPhoto}
-                    deletePhoto={deletePhoto}
-                  />
-              }
+              {isEditting ? (
+                <EditExhibitPhotoInfo
+                  exhibitPhotoInfo={contentInfo}
+                  fetch={fetch}
+                  cancel={cancelEdit}
+                />
+              ) : (
+                <ExhibitPhotoInfo
+                  photoInfo={contentInfo}
+                  my_id={my_id}
+                  setEditState={editPhoto}
+                  deletePhoto={deletePhoto}
+                />
+              )}
               {/* <div className="photo-contents-wrapper">
                                 {
                                     userInfo && (my_id === userInfo.user_id) &&
@@ -177,11 +196,9 @@ function ExhibitPhotoComponent({ contentInfo, my_id, isEditting, isFullscreen,
                                 </div>
                             </div> */}
             </div>
-
           </div>
         </div>
       </div>
-
     </>
   );
 }

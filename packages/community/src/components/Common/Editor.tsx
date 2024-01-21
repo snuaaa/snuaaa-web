@@ -1,14 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 
 import * as service from '../../services/index';
 import { Editor as CustomEditor, Viewer as CustomViewer } from '@snuaaa/editor';
 
-
 const SERVER_URL = process.env.REACT_APP_SERVER_URL;
 
 class MyUploadAdapter {
-
   private loader: any;
 
   constructor(loader: any) {
@@ -19,26 +18,27 @@ class MyUploadAdapter {
   // Starts the upload process.
   upload() {
     // Update the loader's progress.
-    return this.loader.file
-      .then((uploadFile: any) => {
-        return new Promise((resolve, reject) => {
-          const data = new FormData();
-          data.append('attachedImage', uploadFile);
+    return this.loader.file.then((uploadFile: File) => {
+      return new Promise((resolve, reject) => {
+        const data = new FormData();
+        data.append('attachedImage', uploadFile);
 
-          service.createAttachedImage(data)
-            .then(response => {
-              if (response.data.result === 'success') {
-                resolve({
-                  default: `${SERVER_URL}static/${response.data.imgPath}`
-                });
-              } else {
-                reject(response.data.message);
-              }
-            }).catch(response => {
-              reject('Upload failed');
-            });
-        });
+        service
+          .createAttachedImage(data)
+          .then((response) => {
+            if (response.data.result === 'success') {
+              resolve({
+                default: `${SERVER_URL}static/${response.data.imgPath}`,
+              });
+            } else {
+              reject(response.data.message);
+            }
+          })
+          .catch((response) => {
+            reject('Upload failed');
+          });
       });
+    });
   }
 
   // Aborts the upload process.
@@ -60,13 +60,12 @@ type Props = {
   text: string;
   setText: (text: string) => void;
   readOnly: boolean;
-}
+};
 
 function Editor2({ text, setText, readOnly }: Props) {
-
   const editorConfiguration = {
     extraPlugins: [MyCustomUploadAdapterPlugin],
-  }
+  };
 
   return (
     <div className={`sa-ck ${readOnly ? 'sa-viewer' : 'sa-editor'}`}>
@@ -75,7 +74,7 @@ function Editor2({ text, setText, readOnly }: Props) {
         config={editorConfiguration}
         data={text}
         disabled={readOnly}
-        onReady={editor => {
+        onReady={(editor) => {
           // You can store the "editor" and use when it is needed.
         }}
         onChange={(event, editor) => {

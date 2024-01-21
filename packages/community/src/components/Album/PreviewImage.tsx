@@ -1,19 +1,11 @@
 import React from 'react';
 
 type PreviewImageProps = {
-    imgUrl: string;
-}
+  imgUrl: string;
+};
 
 function PreviewImage({ imgUrl }: PreviewImageProps) {
-
-  return (
-    <>
-      {
-        imgUrl &&
-                <img src={imgUrl} alt="previewImg" />
-      }
-    </>
-  );
+  return <>{imgUrl && <img src={imgUrl} alt="previewImg" />}</>;
 }
 
 export default PreviewImage;

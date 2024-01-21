@@ -5,11 +5,6 @@ import { Router } from 'react-router-dom';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 import history from 'common/history';
-// import '@fortawesome/fontawesome-free/css/all.css';
-// import '@fortawesome/free-solid-svg-icons';
-// import '@fortawesome/fontawesome-common-types/all.css';
-// import '@fortawesome/free-solid-svg-icons'
-// import '@fortawesome/free-solid-svg-icons/all.css'
 // import { CookiesProvider } from 'react-cookie';
 
 import './index.css';
@@ -22,7 +17,9 @@ if (process.env.NODE_ENV === 'production') {
   console.log('production mode');
   window.dataLayer = window.dataLayer || [];
   // eslint-disable-next-line no-inner-declarations
-  function gtag() { window.dataLayer.push(arguments); }
+  function gtag() {
+    window.dataLayer.push(arguments);
+  }
   gtag('js', new Date());
   gtag('config', 'UA-154430849-1');
 }
@@ -34,10 +31,10 @@ const container = document.getElementById('root');
 const root = createRoot(container); // createRoot(container!) if you use TypeScript
 root.render(
   <Provider store={store}>
-    <Router basename="/page" history={history} >
+    <Router basename="/page" history={history}>
       <App />
     </Router>
-  </Provider>
+  </Provider>,
 );
 
 serviceWorker.unregister();

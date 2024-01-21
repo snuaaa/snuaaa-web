@@ -5,7 +5,6 @@ const SignUp = lazy(() => import('../components/Signup/SignUp'));
 const LogIn = lazy(() => import('../components/Login/LogIn'));
 
 function AuthRoutes() {
-
   return (
     <Switch>
       <Route path="/auth/login" component={LogIn} />

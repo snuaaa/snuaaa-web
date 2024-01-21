@@ -23,31 +23,35 @@ const MyPage = lazy(() => import('../components/MyPage/MyPage'));
 const UserPage = lazy(() => import('../components/UserPage/UserPage'));
 const AllPosts = lazy(() => import('../components/AllPosts/AllPosts'));
 const AllComments = lazy(() => import('../components/AllComments/AllComments'));
-const MightyCalculator = lazy(() => import('../components/MightyCalculator/MightyCalculator'));
+const MightyCalculator = lazy(
+  () => import('../components/MightyCalculator/MightyCalculator'),
+);
 const MgtUser = lazy(() => import('../components/MgtUser/MgtUser'));
 
-
 type LocationState = {
-    background: Location,
-    modal: boolean,
-    backgroundLocation: Location
-}
+  background: Location;
+  modal: boolean;
+  backgroundLocation: Location;
+};
 
 function PageRoutes() {
-
   const location = useLocation<LocationState>();
 
-  let background: Location = location.state && location.state.background
-    ? location.state.background
-    : { pathname: '/', search: '', key: '', hash: '', state: '' };
+  let background: Location =
+    location.state && location.state.background
+      ? location.state.background
+      : { pathname: '/', search: '', key: '', hash: '', state: '' };
   let isModal = false;
 
-  if ((location.state && location.state.modal)
-        || location.pathname.includes('/photo/')
-        || location.pathname.includes('/exhibitPhoto/')) {
-    background = location.state && location.state.backgroundLocation
-      ? location.state.backgroundLocation
-      : { pathname: '/', search: '', key: '', hash: '', state: '' };
+  if (
+    (location.state && location.state.modal) ||
+    location.pathname.includes('/photo/') ||
+    location.pathname.includes('/exhibitPhoto/')
+  ) {
+    background =
+      location.state && location.state.backgroundLocation
+        ? location.state.backgroundLocation
+        : { pathname: '/', search: '', key: '', hash: '', state: '' };
     isModal = true;
   }
 
@@ -77,18 +81,19 @@ function PageRoutes() {
             <Route path="/mgt/user" component={MgtUser} />
             <Route component={Home} />
           </Switch>
-          {
-            isModal &&
-                        <Switch>
-                          <Route path="/photo/:photo_id" component={Photo} />
-                          <Route path="/exhibitPhoto/:exhibitPhoto_id" component={ExhibitPhoto} />
-                        </Switch>
-          }
+          {isModal && (
+            <Switch>
+              <Route path="/photo/:photo_id" component={Photo} />
+              <Route
+                path="/exhibitPhoto/:exhibitPhoto_id"
+                component={ExhibitPhoto}
+              />
+            </Switch>
+          )}
         </section>
       </div>
       <TopUpButton />
       <Footer />
-
     </>
   );
 }

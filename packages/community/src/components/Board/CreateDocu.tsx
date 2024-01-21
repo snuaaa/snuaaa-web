@@ -9,13 +9,12 @@ import useBlockBackgroundScroll from '../../hooks/useBlockBackgroundScroll';
 const MAX_SIZE = 20 * 1024 * 1024;
 
 type CreateDocuProps = {
-    fetch: () => void;
-    boardInfo: BoardType;
-    close: () => void;
-}
+  fetch: () => void;
+  boardInfo: BoardType;
+  close: () => void;
+};
 
 function CreateDocu(props: CreateDocuProps) {
-
   const today = new Date();
   let currentGen = 2 * (today.getFullYear() - 1980);
   if (today.getMonth() > 5) currentGen++;
@@ -25,7 +24,7 @@ function CreateDocu(props: CreateDocuProps) {
     category_id: '',
     generation: currentGen,
     text: '',
-    title: ''
+    title: '',
   });
   const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
   const [progress, setProgress] = useState<number>(0);
@@ -33,11 +32,13 @@ function CreateDocu(props: CreateDocuProps) {
   const [uploadIdx, setUploadIdx] = useState<number>(0);
 
   useBlockBackgroundScroll();
-    
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     setDocuInfo({
       ...docuInfo,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -46,16 +47,14 @@ function CreateDocu(props: CreateDocuProps) {
       if (e.target.files.length + attachedFiles.length > 5) {
         alert('파일은 최대 5개까지만 첨부해주세요.');
         e.target.value = '';
-      }
-      else if (e.target.files) {
+      } else if (e.target.files) {
         let tmpSize = currentSize;
         for (let i = 0; i < e.target.files.length; i++) {
           tmpSize += e.target.files[i].size;
         }
         if (tmpSize > MAX_SIZE) {
           alert('한 번에 20MB 이상의 파일은 업로드 할 수 없습니다.');
-        }
-        else {
+        } else {
           currentSize = tmpSize;
           const newFiles: File[] = [];
           for (let i = 0; i < e.target.files.length; i++) {
@@ -74,14 +73,14 @@ function CreateDocu(props: CreateDocuProps) {
     setAttachedFiles(
       attachedFiles.filter((file, i) => {
         return index !== i;
-      })
+      }),
     );
   };
 
   const uploadProgress = (e: ProgressEvent) => {
     const totalLength = e.lengthComputable && e.total;
     if (totalLength) {
-      setProgress(Math.round(e.loaded / totalLength * 100));
+      setProgress(Math.round((e.loaded / totalLength) * 100));
     }
   };
 
@@ -90,14 +89,11 @@ function CreateDocu(props: CreateDocuProps) {
 
     if (!docuInfo.title) {
       alert('제목을 입력해주세요');
-    }
-    else if (!docuInfo.category_id) {
+    } else if (!docuInfo.category_id) {
       alert('카테고리를 선택해주세요');
-    }
-    else if (attachedFiles.length === 0) {
+    } else if (attachedFiles.length === 0) {
       alert('파일을 첨부해주세요');
-    }
-    else {
+    } else {
       // const formData = new FormData();
       // formData.append('generation', docuInfo.generation.toString());
       // formData.append('category_id', docuInfo.category_id);
@@ -105,24 +101,29 @@ function CreateDocu(props: CreateDocuProps) {
       // formData.append('text', docuInfo.title);
       setIsUploading(true);
       try {
-        const res = await DocuService.createDocument(boardInfo.board_id, docuInfo);
+        const res = await DocuService.createDocument(
+          boardInfo.board_id,
+          docuInfo,
+        );
         if (attachedFiles.length > 0) {
           for (let i = 0, max = attachedFiles.length; i < max; i++) {
             const fileFormData = new FormData();
             fileFormData.append('attachedFile', attachedFiles[i]);
-            await ContentService.createFile(res.data.content_id, fileFormData, uploadProgress);
+            await ContentService.createFile(
+              res.data.content_id,
+              fileFormData,
+              uploadProgress,
+            );
             setUploadIdx(uploadIdx + 1);
           }
         }
         setIsUploading(false);
         fetch();
-      }
-      catch (err) {
+      } catch (err) {
         console.error(err);
       }
     }
   };
-
 
   return (
     <CreateDocuComponent

@@ -6,30 +6,34 @@ import PhotoType from '../../types/PhotoType';
 import SpinningLoader from '../Common/SpinningLoader';
 
 type PhotoListProps = {
-    photos: PhotoType[];
-}
+  photos: PhotoType[];
+};
 
 const LIMIT_UNIT = 12;
 
-const fakeFetch = (delay = 500) => new Promise(res => setTimeout(res, delay));
+const fakeFetch = (delay = 500) => new Promise((res) => setTimeout(res, delay));
 
 function PhotoList({ photos }: PhotoListProps) {
-
   const target = useRef<HTMLDivElement>(null);
   const [limit, setLimit] = useState<number>(LIMIT_UNIT);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const onIntersect = useCallback(async ([entry]: IntersectionObserverEntry[], observer: IntersectionObserver) => {
-    if (entry.isIntersecting) {
-      setIsLoading(true);
-      await fakeFetch();
-      increaseLimit();
-      setIsLoading(false);
-    }
-    else {
-      setIsLoading(false);
-    }
-  }, []);
+  const onIntersect = useCallback(
+    async (
+      [entry]: IntersectionObserverEntry[],
+      observer: IntersectionObserver,
+    ) => {
+      if (entry.isIntersecting) {
+        setIsLoading(true);
+        await fakeFetch();
+        increaseLimit();
+        setIsLoading(false);
+      } else {
+        setIsLoading(false);
+      }
+    },
+    [],
+  );
 
   useEffect(() => {
     const observer = new IntersectionObserver(onIntersect);
@@ -40,7 +44,7 @@ function PhotoList({ photos }: PhotoListProps) {
   }, [onIntersect]);
 
   const increaseLimit = () => {
-    setLimit(prevLimit => prevLimit + LIMIT_UNIT);
+    setLimit((prevLimit) => prevLimit + LIMIT_UNIT);
   };
 
   const makePhotoList = (photos: PhotoType[]) => {
@@ -51,13 +55,15 @@ function PhotoList({ photos }: PhotoListProps) {
         if (index < limit) {
           return (
             <div className="photo-wrapper" key={contentInfo.content_id}>
-              <Link to={{
-                pathname: `/photo/${contentInfo.content_id}`,
-                state: {
-                  modal: true,
-                  backgroundLocation: history.location
-                }
-              }} >
+              <Link
+                to={{
+                  pathname: `/photo/${contentInfo.content_id}`,
+                  state: {
+                    modal: true,
+                    backgroundLocation: history.location,
+                  },
+                }}
+              >
                 <div className="photo-cover">
                   <div className="photo-cover-unit">
                     <i className="ri-heart-fill"></i>
@@ -80,14 +86,9 @@ function PhotoList({ photos }: PhotoListProps) {
 
   return (
     <>
-      <div className="photo-list-wrapper">
-        {makePhotoList(photos)}
-      </div>
+      <div className="photo-list-wrapper">{makePhotoList(photos)}</div>
       <div className="photo-list-loader-wrapper" ref={target}>
-        {
-          isLoading && limit < photos.length &&
-                    <SpinningLoader size={40} />
-        }
+        {isLoading && limit < photos.length && <SpinningLoader size={40} />}
       </div>
     </>
   );

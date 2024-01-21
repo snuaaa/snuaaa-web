@@ -3,36 +3,33 @@ import UserService from '../../services/UserService';
 import InputField from '../Common/InputField';
 
 type InputFormat = {
-    value: string;
-    valid?: boolean | null;
-    regExp?: string;
-}
+  value: string;
+  valid?: boolean | null;
+  regExp?: string;
+};
 
 const defaultPwFormat: InputFormat = {
   value: '',
   valid: null,
-  regExp: '^(?=.*[A-Za-z])(?=.*[0-9])[A-Za-z0-9^()@$!%*#?&]{8,20}$'
+  regExp: '^(?=.*[A-Za-z])(?=.*[0-9])[A-Za-z0-9^()@$!%*#?&]{8,20}$',
 };
 
 const defaultNPwFormat: InputFormat = {
   value: '',
   valid: null,
-  regExp: '^(?=.*[A-Za-z])(?=.*[0-9])[A-Za-z0-9^()@$!%*#?&]{8,20}$'
+  regExp: '^(?=.*[A-Za-z])(?=.*[0-9])[A-Za-z0-9^()@$!%*#?&]{8,20}$',
 };
 
 const defaultNPwCfFormat: InputFormat = {
   value: '',
-  valid: null
+  valid: null,
 };
 
-
 function EditPassword() {
-
   // const [userInfo, setUserInfo] = useState<InputFormat[]>(defaultUserFormat);
   const [pwInfo, setPwInfo] = useState<InputFormat>(defaultPwFormat);
   const [nPwInfo, setNPwInfo] = useState<InputFormat>(defaultNPwFormat);
   const [nPwCfInfo, setNPwCfInfo] = useState<InputFormat>(defaultNPwCfFormat);
-
 
   const checkReg = (info: InputFormat, value: string) => {
     if (info.regExp) {
@@ -51,43 +48,39 @@ function EditPassword() {
   };
 
   const handleNPw = (e: ChangeEvent<HTMLInputElement>) => {
-
     const valid = checkReg(nPwInfo, e.target.value);
     const corr = e.target.value === nPwCfInfo.value;
 
     setNPwInfo({
       ...nPwInfo,
       value: e.target.value,
-      valid: valid
+      valid: valid,
     });
     setNPwCfInfo({
       ...nPwCfInfo,
-      valid: corr
+      valid: corr,
     });
   };
 
   const handleNPwCf = (e: ChangeEvent<HTMLInputElement>) => {
-
     const corr = nPwInfo.value === e.target.value;
 
     setNPwCfInfo({
       ...nPwCfInfo,
       value: e.target.value,
-      valid: corr
+      valid: corr,
     });
   };
 
   const checkValid = () => {
     return pwInfo.valid && nPwInfo.valid && nPwCfInfo.valid;
-
   };
 
   const submit = async () => {
-
     const data = {
       password: pwInfo.value,
       newPassword: nPwInfo.value,
-      newPasswordCf: nPwCfInfo.value
+      newPasswordCf: nPwCfInfo.value,
     };
 
     await UserService.updatePassword(data)
@@ -95,30 +88,25 @@ function EditPassword() {
         alert('비밀번호가 변경되었습니다.');
         window.location.reload();
       })
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .catch((err: any) => {
         if (err.response && err.response.data) {
           if (err.response.data.code === 1011) {
             alert('현재 비밀번호가 일치하지 않습니다.');
-          }
-          else if (err.response.data.code === 1012) {
+          } else if (err.response.data.code === 1012) {
             alert('새 비밀번호를 입력해주세요.');
-          }
-          else if (err.response.data.code === 1013) {
+          } else if (err.response.data.code === 1013) {
             alert('비밀번호 확인이 일치하지 않습니다.');
-          }
-          else if (err.response.data.code === 1014) {
+          } else if (err.response.data.code === 1014) {
             alert('비밀번호 양식이 일치하지 않습니다.');
-          }
-          else {
+          } else {
             alert('비밀번호 변경 실패.');
           }
-        }
-        else {
+        } else {
           alert('비밀번호 변경 실패.');
         }
         console.error(err);
       });
-
   };
 
   return (
@@ -141,7 +129,8 @@ function EditPassword() {
         valid={nPwInfo.valid}
         required={true}
         handleChange={handleNPw}
-        invalidMessage="8-20자리의 영문/숫자/특수문자" />
+        invalidMessage="8-20자리의 영문/숫자/특수문자"
+      />
       <InputField
         label="새 비밀번호 확인"
         name="nPwCf"
@@ -150,16 +139,16 @@ function EditPassword() {
         valid={nPwCfInfo.valid}
         required={true}
         handleChange={handleNPwCf}
-        invalidMessage="새 비밀번호와 일치하지 않습니다." />
+        invalidMessage="새 비밀번호와 일치하지 않습니다."
+      />
 
       <div className="btn-wrapper">
-        <button className="btn-save" disabled={!checkValid()} onClick={submit}>저장</button>
+        <button className="btn-save" disabled={!checkValid()} onClick={submit}>
+          저장
+        </button>
       </div>
     </div>
-
   );
-
 }
-
 
 export default EditPassword;

@@ -4,7 +4,7 @@ const ContentStateEnum = Object.freeze({
   READY: 1,
   EDITTING: 2,
   CREATING: 3,
-  DELETED: 9
+  DELETED: 9,
 });
 
 export default ContentStateEnum;

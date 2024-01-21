@@ -1,8 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { AaaService } from './index';
 
 const AuthService = {
-
-  checkToken : function () {
+  checkToken: function () {
     return AaaService.get('auth/check');
   },
 
@@ -20,7 +20,7 @@ const AuthService = {
 
   guestLogIn: function () {
     return AaaService.get('auth/login/guest');
-  }
+  },
 };
 
 export default AuthService;

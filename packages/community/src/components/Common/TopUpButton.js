@@ -3,7 +3,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 const VISIBLE_TIME = 3;
 
 function TopUpButton() {
-
   const [isVisible, setIsVisible] = useState(true);
   const [isTop, setIsTop] = useState(false);
 
@@ -15,15 +14,14 @@ function TopUpButton() {
     // console.log(document.documentElement.scrollTop);
     if (lastScrollTop > tmpScrollTop) {
       setIsTop(true);
-    }
-    else {
+    } else {
       setIsTop(false);
     }
     // TODO: fix
     // eslint-disable-next-line react-hooks/exhaustive-deps
     lastScrollTop = tmpScrollTop;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    timer = VISIBLE_TIME;       
+    timer = VISIBLE_TIME;
     setIsVisible(true);
   }, []);
 
@@ -31,8 +29,7 @@ function TopUpButton() {
     const tick = setInterval(() => {
       if (timer < 0) {
         setIsVisible(false);
-      }
-      else {
+      } else {
         timer--;
       }
     }, 1000);
@@ -47,7 +44,10 @@ function TopUpButton() {
   let btnClass = isVisible ? 'enif-visible' : 'enif-unvisible';
   let iconClass = isTop ? 'ri-arrow-up-s-line' : 'ri-arrow-down-s-line';
   return (
-    <a href={isTop ? '#aaa-top' : '#aaa-bottom'} className={`btn-top-up-link btn-top-up-mobile enif-hide-desktop ${btnClass}`}>
+    <a
+      href={isTop ? '#aaa-top' : '#aaa-bottom'}
+      className={`btn-top-up-link btn-top-up-mobile enif-hide-desktop ${btnClass}`}
+    >
       <div className="btn-top-up">
         <i className={`${iconClass} enif-pointer enif-f-1p2x`}></i>
       </div>

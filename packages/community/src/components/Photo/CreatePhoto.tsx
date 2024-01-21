@@ -10,25 +10,24 @@ import ProgressBar from '../../components/Common/ProgressBar';
 const MAX_SIZE = 100 * 1024 * 1024;
 
 type CreatePhotoProps = {
-    board_id: string;
-    tags?: TagType[];
-    album_id?: number;
-    setReadyState: () => void;
-    togglePopUp: () => void;
-    fetch: () => void;
-}
+  board_id: string;
+  tags?: TagType[];
+  album_id?: number;
+  setReadyState: () => void;
+  togglePopUp: () => void;
+  fetch: () => void;
+};
 
 type CreatePhotoState = {
-    photoInfo: List<CrtPhotoType>;
-    uploadPhotos: File[];
-    imgIdx: number,
-    progress: number,
-    uploadIdx: number,
-    isUploading: boolean,
-}
+  photoInfo: List<CrtPhotoType>;
+  uploadPhotos: File[];
+  imgIdx: number;
+  progress: number;
+  uploadIdx: number;
+  isUploading: boolean;
+};
 
 class CreatePhoto extends React.Component<CreatePhotoProps, CreatePhotoState> {
-
   currentSize: number;
   imgUrls: string[];
 
@@ -43,7 +42,7 @@ class CreatePhoto extends React.Component<CreatePhotoProps, CreatePhotoState> {
       imgIdx: -1,
       progress: 0,
       uploadIdx: 0,
-      isUploading: false
+      isUploading: false,
     };
   }
 
@@ -59,11 +58,10 @@ class CreatePhoto extends React.Component<CreatePhotoProps, CreatePhotoState> {
     const { photoInfo, imgIdx } = this.state;
     const name: string = e.target.name;
     this.setState({
-      photoInfo: photoInfo.set(imgIdx,
-        {
-          ...photoInfo.get(imgIdx),
-          [name]: e.target.value
-        })
+      photoInfo: photoInfo.set(imgIdx, {
+        ...photoInfo.get(imgIdx),
+        [name]: e.target.value,
+      }),
     });
   };
 
@@ -71,11 +69,10 @@ class CreatePhoto extends React.Component<CreatePhotoProps, CreatePhotoState> {
     const { photoInfo, imgIdx } = this.state;
     if (imgIdx >= 0 && imgIdx < photoInfo.size && photoInfo.get(imgIdx)) {
       this.setState({
-        photoInfo: photoInfo.set(imgIdx,
-          {
-            ...photoInfo.get(imgIdx),
-            'date': date
-          })
+        photoInfo: photoInfo.set(imgIdx, {
+          ...photoInfo.get(imgIdx),
+          date: date,
+        }),
       });
     }
   };
@@ -84,11 +81,9 @@ class CreatePhoto extends React.Component<CreatePhotoProps, CreatePhotoState> {
     const { board_id } = this.props;
     const { uploadPhotos, photoInfo } = this.state;
     if (e.target.files) {
-
       if (uploadPhotos.length + e.target.files.length > 20) {
         alert('한 번에 20장 이상의 사진은 업로드 할 수 없습니다.');
-      }
-      else {
+      } else {
         let tmpSize = this.currentSize;
         for (let i = 0; i < e.target.files.length; i++) {
           tmpSize += e.target.files[i].size;
@@ -96,8 +91,7 @@ class CreatePhoto extends React.Component<CreatePhotoProps, CreatePhotoState> {
 
         if (tmpSize > MAX_SIZE) {
           alert('한 번에 100MB 이상의 사진은 업로드 할 수 없습니다.');
-        }
-        else {
+        } else {
           this.currentSize = tmpSize;
           const nUploadPhotos = [];
           const nPhotoInfos = [];
@@ -115,13 +109,13 @@ class CreatePhoto extends React.Component<CreatePhotoProps, CreatePhotoState> {
               f_stop: '',
               exposure_time: '',
               iso: '',
-              tags: []
+              tags: [],
             });
             this.imgUrls.push(URL.createObjectURL(e.target.files[i]));
           }
           this.setState({
             photoInfo: photoInfo.concat(nPhotoInfos),
-            uploadPhotos: uploadPhotos.concat(nUploadPhotos)
+            uploadPhotos: uploadPhotos.concat(nUploadPhotos),
           });
           // this.imgUrls.push(...(e.target.files.map(file => URL.createObjectURL(file))))
         }
@@ -130,7 +124,6 @@ class CreatePhoto extends React.Component<CreatePhotoProps, CreatePhotoState> {
   };
 
   setImgIdx = (index: number) => {
-
     this.setState({
       imgIdx: index,
     });
@@ -146,7 +139,7 @@ class CreatePhoto extends React.Component<CreatePhotoProps, CreatePhotoState> {
       photoInfo: photoInfo.delete(index),
       uploadPhotos: uploadPhotos.filter((value, idx) => {
         return index !== idx;
-      })
+      }),
     });
   };
 
@@ -159,20 +152,17 @@ class CreatePhoto extends React.Component<CreatePhotoProps, CreatePhotoState> {
     if (info && info.tags) {
       if (info.tags.includes(tagId)) {
         this.setState({
-          photoInfo: photoInfo.set(imgIdx,
-            {
-              ...photoInfo.get(imgIdx),
-              'tags': info.tags.filter(tag => tagId !== tag)
-            })
+          photoInfo: photoInfo.set(imgIdx, {
+            ...photoInfo.get(imgIdx),
+            tags: info.tags.filter((tag) => tagId !== tag),
+          }),
         });
-      }
-      else {
+      } else {
         this.setState({
-          photoInfo: photoInfo.set(imgIdx,
-            {
-              ...photoInfo.get(imgIdx),
-              'tags': info.tags.concat(tagId)
-            })
+          photoInfo: photoInfo.set(imgIdx, {
+            ...photoInfo.get(imgIdx),
+            tags: info.tags.concat(tagId),
+          }),
         });
       }
     }
@@ -181,8 +171,7 @@ class CreatePhoto extends React.Component<CreatePhotoProps, CreatePhotoState> {
   checkForm = () => {
     if (!this.state.uploadPhotos) {
       alert('사진을 첨부해주세요');
-    }
-    else {
+    } else {
       this.createPhotos();
     }
   };
@@ -193,20 +182,20 @@ class CreatePhoto extends React.Component<CreatePhotoProps, CreatePhotoState> {
     if (totalLength) {
       // this.updateProgressBarValue(Math.round( (progressEvent.loaded * 100) / totalLength ));
       this.setState({
-        progress: Math.round(e.loaded / totalLength * 100)
+        progress: Math.round((e.loaded / totalLength) * 100),
       });
     }
   };
 
   createPhotos = async () => {
-
-    const { fetch, togglePopUp, board_id, album_id, setReadyState } = this.props;
+    const { fetch, togglePopUp, board_id, album_id, setReadyState } =
+      this.props;
     const { photoInfo, uploadPhotos } = this.state;
     const { uploadProgress } = this;
 
     setReadyState();
     this.setState({
-      isUploading: true
+      isUploading: true,
     });
 
     try {
@@ -215,29 +204,43 @@ class CreatePhoto extends React.Component<CreatePhotoProps, CreatePhotoState> {
         photosForm.append('photoInfo', JSON.stringify(photoInfo.get(i)));
         photosForm.append('uploadPhoto', uploadPhotos[i]);
         if (album_id) {
-          await AlbumService.createPhotosInAlbum(album_id, photosForm, uploadProgress);
-        }
-        else {
-          await PhotoBoardService.createPhotosInPhotoBoard(board_id, photosForm);
+          await AlbumService.createPhotosInAlbum(
+            album_id,
+            photosForm,
+            uploadProgress,
+          );
+        } else {
+          await PhotoBoardService.createPhotosInPhotoBoard(
+            board_id,
+            photosForm,
+          );
         }
         this.setState({
-          uploadIdx: this.state.uploadIdx + 1
+          uploadIdx: this.state.uploadIdx + 1,
         });
       }
       togglePopUp();
       fetch();
-    }
-    catch (err) {
+    } catch (err) {
       console.error(err);
       alert('사진 생성 실패');
       this.setState({
-        isUploading: false
+        isUploading: false,
       });
     }
   };
 
   render() {
-    const { handleChange, handleDate, uploadFile, clickTag, imgUrls, setImgIdx, removeImg, checkForm } = this;
+    const {
+      handleChange,
+      handleDate,
+      uploadFile,
+      clickTag,
+      imgUrls,
+      setImgIdx,
+      removeImg,
+      checkForm,
+    } = this;
     const { tags, togglePopUp } = this.props;
     const { imgIdx, progress, photoInfo, isUploading, uploadIdx } = this.state;
 
@@ -258,13 +261,13 @@ class CreatePhoto extends React.Component<CreatePhotoProps, CreatePhotoState> {
           photoInfo={photoInfo.get(imgIdx)}
           isUploading={isUploading}
         />
-        {
-          isUploading &&
-                    <ProgressBar
-                      loadedPercentage={progress}
-                      currentIdx={uploadIdx}
-                      totalIdx={photoInfo.size}/>
-        }
+        {isUploading && (
+          <ProgressBar
+            loadedPercentage={progress}
+            currentIdx={uploadIdx}
+            totalIdx={photoInfo.size}
+          />
+        )}
       </>
     );
   }

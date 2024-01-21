@@ -3,7 +3,6 @@ import BoardService from 'services/BoardService.ts';
 import DatePicker from 'react-datepicker';
 
 class CreateExhibition extends React.Component {
-
   constructor(props) {
     super(props);
 
@@ -15,7 +14,7 @@ class CreateExhibition extends React.Component {
       date_start: '',
       date_end: '',
       place: '',
-      poster: null
+      poster: null,
     };
   }
 
@@ -29,18 +28,33 @@ class CreateExhibition extends React.Component {
 
   handleChange = (e) => {
     this.setState({
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
   submit = async () => {
-    const { title, text, exhibition_no, slogan, date_start, date_end, place, poster } = this.state;
+    const {
+      title,
+      text,
+      exhibition_no,
+      slogan,
+      date_start,
+      date_end,
+      place,
+      poster,
+    } = this.state;
     const { fetch, close, board_id } = this.props;
 
-    if (!exhibition_no || !slogan || !date_start || !date_end || !place || !poster) {
+    if (
+      !exhibition_no ||
+      !slogan ||
+      !date_start ||
+      !date_end ||
+      !place ||
+      !poster
+    ) {
       alert('모든 항목을 입력해주세요.');
-    }
-    else {
+    } else {
       const data = new FormData();
       data.append('title', title);
       data.append('text', text);
@@ -65,32 +79,38 @@ class CreateExhibition extends React.Component {
 
   handleDateStart = (date) => {
     this.setState({
-      date_start: date
+      date_start: date,
     });
   };
 
   handleDateEnd = (date) => {
     this.setState({
-      date_end: date
+      date_end: date,
     });
   };
 
   uploadPoster = (e) => {
     if (e.target.files[0]) {
       this.setState({
-        poster: e.target.files[0]
+        poster: e.target.files[0],
       });
-    }
-    else {
+    } else {
       this.setState({
-        poster: null
+        poster: null,
       });
     }
   };
 
   render() {
-    const { handleChange, submit, handleDateStart, handleDateEnd, uploadPoster } = this;
-    const { text, exhibition_no, slogan, date_start, date_end, place } = this.state;
+    const {
+      handleChange,
+      submit,
+      handleDateStart,
+      handleDateEnd,
+      uploadPoster,
+    } = this;
+    const { text, exhibition_no, slogan, date_start, date_end, place } =
+      this.state;
     const { close } = this.props;
     return (
       <div className="enif-popup">
@@ -99,25 +119,53 @@ class CreateExhibition extends React.Component {
           <div className="crt-exhibition-input-wrapper">
             <div className="crt-exhibition-input-unit">
               <label>회차</label>
-              <input type="number" name="exhibition_no" onChange={handleChange} value={exhibition_no} />
+              <input
+                type="number"
+                name="exhibition_no"
+                onChange={handleChange}
+                value={exhibition_no}
+              />
             </div>
             <div className="crt-exhibition-input-unit">
               <label>슬로건</label>
-              <input type="text" name="slogan" onChange={handleChange} value={slogan} />
+              <input
+                type="text"
+                name="slogan"
+                onChange={handleChange}
+                value={slogan}
+              />
             </div>
             <div className="crt-exhibition-input-unit">
               <label>기간</label>
-              <DatePicker selected={date_start} onChange={handleDateStart} dateFormat="yyyy/MM/dd" />
+              <DatePicker
+                selected={date_start}
+                onChange={handleDateStart}
+                dateFormat="yyyy/MM/dd"
+              />
               <p>~</p>
-              <DatePicker selected={date_end} onChange={handleDateEnd} dateFormat="yyyy/MM/dd" />
+              <DatePicker
+                selected={date_end}
+                onChange={handleDateEnd}
+                dateFormat="yyyy/MM/dd"
+              />
             </div>
             <div className="crt-exhibition-input-unit">
               <label>장소</label>
-              <input type="text" name="place" onChange={handleChange} value={place} />
+              <input
+                type="text"
+                name="place"
+                onChange={handleChange}
+                value={place}
+              />
             </div>
             <div className="crt-exhibition-input-unit">
               <label>포스터</label>
-              <input type="file" name="poster" accept="image/*" onChange={uploadPoster} />
+              <input
+                type="file"
+                name="poster"
+                accept="image/*"
+                onChange={uploadPoster}
+              />
             </div>
             <div className="crt-exhibition-input-unit">
               <label>추가설명</label>
@@ -125,12 +173,15 @@ class CreateExhibition extends React.Component {
             </div>
           </div>
           <div>
-            <button className="enif-btn-common enif-btn-ok" onClick={submit}>OK</button>
-            <button className="enif-btn-common enif-btn-cancel" onClick={close} >CANCEL</button>
+            <button className="enif-btn-common enif-btn-ok" onClick={submit}>
+              OK
+            </button>
+            <button className="enif-btn-common enif-btn-cancel" onClick={close}>
+              CANCEL
+            </button>
           </div>
         </div>
       </div>
-
     );
   }
 }

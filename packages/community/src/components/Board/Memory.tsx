@@ -15,17 +15,15 @@ import { useHistory, useLocation } from 'react-router';
 const ALBUMROWNUM = 12;
 
 type MemoryProps = {
-    boardInfo: BoardType;
-}
+  boardInfo: BoardType;
+};
 
 type LocationState = {
-    page: number,
-    category: string
-}
-
+  page: number;
+  category: string;
+};
 
 function Memory({ boardInfo }: MemoryProps) {
-
   // let albums: AlbumType[] = [];
   // let albumCount: number = 0;
 
@@ -37,13 +35,20 @@ function Memory({ boardInfo }: MemoryProps) {
   const location = useLocation<LocationState>();
 
   const fetch = useCallback(async () => {
-
-    const pageIdx = location.state && location.state.page ? location.state.page : 1;
-    const category = (location.state && location.state.category) ? location.state.category : undefined;
+    const pageIdx =
+      location.state && location.state.page ? location.state.page : 1;
+    const category =
+      location.state && location.state.category
+        ? location.state.category
+        : undefined;
 
     setIsReady(false);
-    await PhotoBoardService.retrieveAlbumsInPhotoBoard(boardInfo.board_id, pageIdx, category)
-      .then((res: any) => {
+    await PhotoBoardService.retrieveAlbumsInPhotoBoard(
+      boardInfo.board_id,
+      pageIdx,
+      category,
+    )
+      .then((res) => {
         setAlbums(res.data.albumInfo);
         setAlbumCount(res.data.albumCount);
         setIsReady(true);
@@ -57,13 +62,12 @@ function Memory({ boardInfo }: MemoryProps) {
     fetch();
   }, [fetch, location]);
 
-
   const clickCategory = (ctg_id: string) => {
     history.push({
       state: {
         category: ctg_id,
-        page: 1
-      }
+        page: 1,
+      },
     });
   };
 
@@ -71,8 +75,8 @@ function Memory({ boardInfo }: MemoryProps) {
     history.push({
       state: {
         category: null,
-        page: 1
-      }
+        page: 1,
+      },
     });
   };
 
@@ -81,80 +85,88 @@ function Memory({ boardInfo }: MemoryProps) {
   };
 
   const clickPage = (idx: number) => {
-
-    const category = (location.state && location.state.category) ? location.state.category : null;
+    const category =
+      location.state && location.state.category
+        ? location.state.category
+        : null;
     history.push({
       state: {
         category: category,
-        page: idx
-      }
+        page: idx,
+      },
     });
   };
 
-  const pageIdx = location.state && location.state.page ? location.state.page : 1;
-  const category = (location.state && location.state.category) ? location.state.category : undefined;
+  const pageIdx =
+    location.state && location.state.page ? location.state.page : 1;
+  const category =
+    location.state && location.state.category
+      ? location.state.category
+      : undefined;
 
   return (
     <AuthContext.Consumer>
-      {
-        authContext => (
-          <div className="board-wrapper photoboard-wrapper">
-
-            <BoardName board_id={boardInfo.board_id} board_name={boardInfo.board_name} />
-            <div className="board-desc">
-              {boardInfo.board_desc}
+      {(authContext) => (
+        <div className="board-wrapper photoboard-wrapper">
+          <BoardName
+            board_id={boardInfo.board_id}
+            board_name={boardInfo.board_name}
+          />
+          <div className="board-desc">{boardInfo.board_desc}</div>
+          <Category
+            categories={boardInfo.categories}
+            selected={category}
+            clickAll={clickAll}
+            clickCategory={clickCategory}
+          />
+          <div className="board-search-wrapper">
+            <div className="board-search-input">
+              <i className="ri-search-line enif-f-1x"></i>
+              <input type="text" />
             </div>
-            <Category categories={boardInfo.categories} selected={category} clickAll={clickAll} clickCategory={clickCategory} />
-            <div className="board-search-wrapper">
-              <div className="board-search-input">
-                <i className="ri-search-line enif-f-1x"></i>
-                <input type="text" />
-              </div>
-              <div>
-                {
-                  authContext.authInfo.user.grade <= boardInfo.lv_write &&
-                                    <button className="board-btn-write" onClick={() => togglePopUp()}>
-                                      <i className="ri-gallery-line enif-f-1p2x"></i>앨범 생성
-                                    </button>
-                }
-              </div>
+            <div>
+              {authContext.authInfo.user.grade <= boardInfo.lv_write && (
+                <button
+                  className="board-btn-write"
+                  onClick={() => togglePopUp()}
+                >
+                  <i className="ri-gallery-line enif-f-1p2x"></i>앨범 생성
+                </button>
+              )}
             </div>
-
-            {(() => {
-              if (isReady) {
-                return (
-                  <>
-                    <div className="enif-divider"></div>
-                    <AlbumList
-                      board_id={boardInfo.board_id}
-                      albums={albums} />
-                    {
-                      popUpState &&
-                                            <CreateAlbum
-                                              board_id={boardInfo.board_id}
-                                              categories={boardInfo.categories}
-                                              fetch={fetch}
-                                              togglePopUp={togglePopUp} />
-                    }
-                    {
-                      albumCount > 0 &&
-                                            <Paginator
-                                              pageIdx={pageIdx}
-                                              pageNum={Math.ceil(albumCount / ALBUMROWNUM)}
-                                              clickPage={clickPage} />
-                    }
-                  </>);
-              }
-              else {
-                return <Loading />;
-              }
-            })()}
           </div>
-        )
-      }
+
+          {(() => {
+            if (isReady) {
+              return (
+                <>
+                  <div className="enif-divider"></div>
+                  <AlbumList board_id={boardInfo.board_id} albums={albums} />
+                  {popUpState && (
+                    <CreateAlbum
+                      board_id={boardInfo.board_id}
+                      categories={boardInfo.categories}
+                      fetch={fetch}
+                      togglePopUp={togglePopUp}
+                    />
+                  )}
+                  {albumCount > 0 && (
+                    <Paginator
+                      pageIdx={pageIdx}
+                      pageNum={Math.ceil(albumCount / ALBUMROWNUM)}
+                      clickPage={clickPage}
+                    />
+                  )}
+                </>
+              );
+            } else {
+              return <Loading />;
+            }
+          })()}
+        </div>
+      )}
     </AuthContext.Consumer>
   );
 }
-
 
 export default Memory;

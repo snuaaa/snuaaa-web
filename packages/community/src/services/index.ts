@@ -5,38 +5,40 @@ const SERVER_URL = process.env.REACT_APP_SERVER_URL;
 
 axios.defaults.headers.common['Authorization'] = 'Bearer ' + getToken();
 
-export const AaaService: any = {
- 
-  get: function(url: string) {
+export const AaaService = {
+  get: function (url: string) {
     return axios.get(`${SERVER_URL}api/${url}`);
   },
-    
-  post: function(url: string, data: unknown): AxiosPromise {
+
+  post: function (url: string, data: unknown): AxiosPromise {
     return axios.post(`${SERVER_URL}api/${url}`, data);
   },
 
-  postWithProgress: function(url: string, data: unknown, cb: (pg: ProgressEvent)=> void) {
+  postWithProgress: function (
+    url: string,
+    data: unknown,
+    cb: (pg: ProgressEvent) => void,
+  ) {
     return axios.post(`${SERVER_URL}api/${url}`, data, {
-      onUploadProgress: cb
+      onUploadProgress: cb,
     });
   },
 
-  patch: function(url: string, data: unknown): AxiosPromise {
+  patch: function (url: string, data: unknown): AxiosPromise {
     return axios.patch(`${SERVER_URL}api/${url}`, data);
   },
-    
-  delete: function(url: string): AxiosPromise {
+
+  delete: function (url: string): AxiosPromise {
     return axios.delete(`${SERVER_URL}api/${url}`);
-  }
+  },
 };
 
-
 // export class AaaService<T> {
-    
+
 //     get = function(url: string): AxiosPromise<T> {
 //         return axios.get(`${SERVER_URL}api/${url}`)
 //     }
-    
+
 //     post = function(url: string, data: object): AxiosPromise<T> {
 //         return axios.post(`${SERVER_URL}api/${url}`, data)
 //     }
@@ -44,13 +46,13 @@ export const AaaService: any = {
 //     patch = function(url: string, data: object): AxiosPromise<T> {
 //         return axios.patch(`${SERVER_URL}api/${url}`, data)
 //     }
-    
+
 //     delete = function(url: string): AxiosPromise<T> {
 //         return axios.delete(`${SERVER_URL}api/${url}`)
 //     }
 // }
 
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function createAttachedImage(data: any) {
   return axios.post(SERVER_URL + 'api/image', data);
 }

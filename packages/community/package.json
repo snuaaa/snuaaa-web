@@ -1,6 +1,6 @@
 {
   "name": "@snuaaa/community-web",
-  "version": "1.0.0",
+  "version": "1.1.1",
   "private": true,
   "homepage": "https://our.snuaaa.net/",
   "license": "UNLICENSED",
@@ -14,7 +14,7 @@
   "dependencies": {
     "@ckeditor/ckeditor5-react": "^6.1.0",
     "@craco/craco": "^7.1.0",
-    "@snuaaa/editor": "1.0.0",
+    "@snuaaa/editor": "1.1.1",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.7.2",
@@ -45,6 +45,8 @@
     "start": "craco start",
     "build": "craco build",
     "test": "craco test",
+    "lint": "eslint src/**/* --ext .js,.jsx,.ts,.tsx",
+    "lint:fix": "eslint  src/**/* --ext .js,.jsx,.ts,.tsx --fix",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -60,6 +62,9 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "prettier": "^3.2.4"
   }
 }

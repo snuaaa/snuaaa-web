@@ -8,7 +8,7 @@ const defaultRiseSet: RiseSetType = {
   moonrise: 0,
   moonset: 0,
   sunrise: 0,
-  sunset: 0
+  sunset: 0,
 };
 
 const RiseSetContext = React.createContext(defaultRiseSet);

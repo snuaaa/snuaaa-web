@@ -1,4 +1,11 @@
-import React, { ChangeEvent, useState, useEffect, useContext, useRef, useCallback } from 'react';
+import React, {
+  ChangeEvent,
+  useState,
+  useEffect,
+  useContext,
+  useRef,
+  useCallback,
+} from 'react';
 
 import CommentList from './CommentList';
 import CommentService from '../../services/CommentService';
@@ -6,11 +13,10 @@ import AuthContext from '../../contexts/AuthContext';
 import CommentType from '../../types/CommentType';
 
 type CommentProps = {
-    parent_id: number;
-}
+  parent_id: number;
+};
 
 function Comment({ parent_id }: CommentProps) {
-
   const [comments, setComments] = useState<CommentType[]>([]);
   const [text, setText] = useState<string>('');
   const [editingCommentId, setEditingCommentId] = useState<number>(0);
@@ -29,11 +35,9 @@ function Comment({ parent_id }: CommentProps) {
       });
   }, [parent_id]);
 
-
   useEffect(() => {
     fetch();
   }, [fetch, parent_id]);
-
 
   const setEditingComment = (comment_id: number, text: string) => {
     setEditingCommentId(comment_id);
@@ -41,17 +45,15 @@ function Comment({ parent_id }: CommentProps) {
   };
 
   const createComment = async () => {
-
     if (!text) {
       alert('내용을 입력하세요.');
-    }
-    else {
+    } else {
       const commentInfo = {
         parent_comment_id: parentCommentId ? parentCommentId : null,
-        text: text
+        text: text,
       };
       await CommentService.createComment(parent_id, commentInfo)
-        .then((res: any) => {
+        .then(() => {
           setText('');
           fetch();
         })
@@ -63,17 +65,15 @@ function Comment({ parent_id }: CommentProps) {
   };
 
   const updateComment = async (comment_id: number) => {
-
     if (!editingCommentText) {
       alert('내용을 입력하세요.');
-    }
-    else {
+    } else {
       const commentInfo = {
-        text: editingCommentText
+        text: editingCommentText,
       };
 
       await CommentService.updateComment(comment_id, commentInfo)
-        .then((res: any) => {
+        .then(() => {
           setEditingCommentId(0);
           setEditingCommentText('');
           fetch();
@@ -86,7 +86,6 @@ function Comment({ parent_id }: CommentProps) {
   };
 
   const deleteComment = async (comment_id: number) => {
-
     const goDrop = window.confirm('정말로 삭제하시겠습니까?');
     if (goDrop) {
       await CommentService.deleteComment(comment_id)
@@ -112,7 +111,7 @@ function Comment({ parent_id }: CommentProps) {
     setText('');
     setParentCommentId(parent_comment_id);
   };
-    
+
   const likeComment = async (comment_id: number) => {
     await CommentService.likeComment(comment_id)
       .then(() => {
@@ -122,8 +121,8 @@ function Comment({ parent_id }: CommentProps) {
         console.error(err);
       });
   };
-    
-  useEffect(() => {        
+
+  useEffect(() => {
     if (textareaTarget.current) {
       textareaTarget.current.focus();
     }
@@ -147,14 +146,19 @@ function Comment({ parent_id }: CommentProps) {
         textareaTarget={textareaTarget}
         handleChange={handleChange}
         onClickSubComment={onClickSubComment}
-        editingContentsChange={handleEditingCommentChange} />
-      {
-        parentCommentId <= 0 &&
-                <div className="comment-write">
-                  <textarea placeholder="댓글을 입력하세요" name="text" onChange={handleChange} value={text}></textarea>
-                  <button onClick={createComment}>ENTER</button>
-                </div>
-      }
+        editingContentsChange={handleEditingCommentChange}
+      />
+      {parentCommentId <= 0 && (
+        <div className="comment-write">
+          <textarea
+            placeholder="댓글을 입력하세요"
+            name="text"
+            onChange={handleChange}
+            value={text}
+          ></textarea>
+          <button onClick={createComment}>ENTER</button>
+        </div>
+      )}
     </div>
   );
 }

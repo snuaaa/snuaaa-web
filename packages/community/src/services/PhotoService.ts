@@ -4,16 +4,15 @@ import TagType from '../types/TagType';
 import PhotoType from '../types/PhotoType';
 
 const PhotoService = {
-
   retrievePhoto: function (photo_id: number): AxiosPromise<{
-        photoInfo: PhotoType,
-        likeInfo: boolean,
-        boardTagInfo: TagType[],
-        prevPhoto: PhotoType,
-        nextPhoto: PhotoType,
-        prevAlbumPhoto: PhotoType,
-        nextAlbumPhoto: PhotoType
-    }> {
+    photoInfo: PhotoType;
+    likeInfo: boolean;
+    boardTagInfo: TagType[];
+    prevPhoto: PhotoType;
+    nextPhoto: PhotoType;
+    prevAlbumPhoto: PhotoType;
+    nextAlbumPhoto: PhotoType;
+  }> {
     return AaaService.get(`photo/${photo_id}`);
   },
 
@@ -23,7 +22,7 @@ const PhotoService = {
 
   deletePhoto: function (photo_id: number) {
     return AaaService.delete(`photo/${photo_id}`);
-  }
+  },
 };
 
 export default PhotoService;

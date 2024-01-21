@@ -10,12 +10,14 @@ const initialAuth = {
       grade: 10,
       level: 0,
       profile_path: '',
-    }
+    },
   },
   authLogin: (token: string, autoLogin: boolean, userInfo: UserType) => {
     console.log(token);
   },
-  authLogout: () => { return; }
+  authLogout: () => {
+    return;
+  },
 };
 
 const AuthContext = React.createContext(initialAuth);

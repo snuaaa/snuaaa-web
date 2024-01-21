@@ -26,26 +26,25 @@ import PhotoType from '../../types/PhotoType';
 const VISIBLE_TIME = 3;
 
 type PhotoProps = {
-    match: match<{ photo_id: string }>;
-    my_id: number;
-    location: Location;
-}
+  match: match<{ photo_id: string }>;
+  my_id: number;
+  location: Location;
+};
 
 type PhotoState = {
-    likeInfo: boolean;
-    photoState: number;
-    isFullscreen: boolean;
-    contentInfo?: RecordOf<PhotoType>;
-    editContentInfo?: RecordOf<PhotoType>;
-    prevPhoto?: PhotoType,
-    nextPhoto?: PhotoType,
-    prevAlbumPhoto?: PhotoType,
-    nextAlbumPhoto?: PhotoType,
-    remainedTime: number;
-}
+  likeInfo: boolean;
+  photoState: number;
+  isFullscreen: boolean;
+  contentInfo?: RecordOf<PhotoType>;
+  editContentInfo?: RecordOf<PhotoType>;
+  prevPhoto?: PhotoType;
+  nextPhoto?: PhotoType;
+  prevAlbumPhoto?: PhotoType;
+  nextAlbumPhoto?: PhotoType;
+  remainedTime: number;
+};
 
 class Photo extends React.Component<PhotoProps, PhotoState> {
-
   boardTagInfo: TagType[];
   fullscreenRef: RefObject<HTMLDivElement>;
   timer: NodeJS.Timer | undefined;
@@ -64,7 +63,7 @@ class Photo extends React.Component<PhotoProps, PhotoState> {
       prevPhoto: undefined,
       nextPhoto: undefined,
       editContentInfo: undefined,
-      remainedTime: VISIBLE_TIME
+      remainedTime: VISIBLE_TIME,
     };
   }
 
@@ -79,7 +78,7 @@ class Photo extends React.Component<PhotoProps, PhotoState> {
     this.timer = setInterval(() => {
       if (this.state.remainedTime > 0) {
         this.setState({
-          remainedTime: this.state.remainedTime - 1
+          remainedTime: this.state.remainedTime - 1,
         });
       }
     }, 1000);
@@ -98,7 +97,6 @@ class Photo extends React.Component<PhotoProps, PhotoState> {
     }
   }
 
-
   fetch = async () => {
     const photo_id = Number(this.props.match.params.photo_id);
     this.setPhotoState(ContentStateEnum.LOADING);
@@ -115,16 +113,19 @@ class Photo extends React.Component<PhotoProps, PhotoState> {
             prevAlbumPhoto: res.data.prevAlbumPhoto,
             nextAlbumPhoto: res.data.nextAlbumPhoto,
             likeInfo: res.data.likeInfo,
-            photoState: ContentStateEnum.READY
+            photoState: ContentStateEnum.READY,
           });
         })
         .catch((err) => {
           console.error(err);
-          if (err.response && err.response.data && err.response.data.code === 4001) {
+          if (
+            err.response &&
+            err.response.data &&
+            err.response.data.code === 4001
+          ) {
             alert('권한이 없습니다.');
             history.goBack();
-          }
-          else {
+          } else {
             this.setPhotoState(ContentStateEnum.ERROR);
           }
         });
@@ -137,15 +138,14 @@ class Photo extends React.Component<PhotoProps, PhotoState> {
     const albumInfo = contentInfo && contentInfo.parent;
 
     const data = {
-      tn_photo_id: photo_id
+      tn_photo_id: photo_id,
     };
 
     if (!albumInfo || !albumInfo.content_id) {
       alert('섬네일로 설정할 수 없습니다.');
-    }
-    else {
+    } else {
       await AlbumService.updateAlbumThumbnail(albumInfo.content_id, data)
-        .then((res: any) => {
+        .then(() => {
           console.log('success');
         })
         .catch((err: Error) => {
@@ -157,7 +157,7 @@ class Photo extends React.Component<PhotoProps, PhotoState> {
 
   setPhotoState = (state: number) => {
     this.setState({
-      photoState: state
+      photoState: state,
     });
   };
 
@@ -170,19 +170,17 @@ class Photo extends React.Component<PhotoProps, PhotoState> {
         state: {
           modal: true,
           // backgroundLocation: location.state.backgroundLocation
-        }
+        },
       });
-    }
-    else if (direction === -1 && nextAlbumPhoto) {
+    } else if (direction === -1 && nextAlbumPhoto) {
       history.replace({
         pathname: `/photo/${nextAlbumPhoto.content_id}`,
         state: {
           modal: true,
           // backgroundLocation: location.state.backgroundLocation
-        }
+        },
       });
-    }
-    else {
+    } else {
       console.error('Cannot Move');
     }
   };
@@ -193,16 +191,14 @@ class Photo extends React.Component<PhotoProps, PhotoState> {
     if (direction === 1 && prevPhoto) {
       history.replace({
         pathname: `/photo/${prevPhoto.content_id}`,
-        state: history.location.state
+        state: history.location.state,
       });
-    }
-    else if (direction === -1 && nextPhoto) {
+    } else if (direction === -1 && nextPhoto) {
       history.replace({
         pathname: `/photo/${nextPhoto.content_id}`,
-        state: history.location.state
+        state: history.location.state,
       });
-    }
-    else {
+    } else {
       console.error('Cannot Move');
     }
   };
@@ -210,8 +206,7 @@ class Photo extends React.Component<PhotoProps, PhotoState> {
   closePhoto = () => {
     if (history.action === 'POP' && !history.location.state) {
       history.push('/');
-    }
-    else {
+    } else {
       history.goBack();
     }
   };
@@ -219,7 +214,7 @@ class Photo extends React.Component<PhotoProps, PhotoState> {
   toggleFullScreen = () => {
     const { isFullscreen } = this.state;
     this.setState({
-      isFullscreen: !isFullscreen
+      isFullscreen: !isFullscreen,
     });
   };
 
@@ -234,8 +229,7 @@ class Photo extends React.Component<PhotoProps, PhotoState> {
           document.exitFullscreen();
         }
       }
-    }
-    else {
+    } else {
       if (elem && elem.requestFullscreen) {
         elem.requestFullscreen();
       }
@@ -249,12 +243,14 @@ class Photo extends React.Component<PhotoProps, PhotoState> {
     if (editContentInfo) {
       if (name === 'title' || name === 'text') {
         this.setState({
-          editContentInfo: editContentInfo.set(name, e.target.value)
+          editContentInfo: editContentInfo.set(name, e.target.value),
         });
-      }
-      else {
+      } else {
         this.setState({
-          editContentInfo: editContentInfo.setIn(['photo', name], e.target.value)
+          editContentInfo: editContentInfo.setIn(
+            ['photo', name],
+            e.target.value,
+          ),
         });
       }
     }
@@ -265,7 +261,7 @@ class Photo extends React.Component<PhotoProps, PhotoState> {
 
     if (editContentInfo) {
       this.setState({
-        editContentInfo: editContentInfo.setIn(['photo', 'date'], date)
+        editContentInfo: editContentInfo.setIn(['photo', 'date'], date),
       });
     }
   };
@@ -274,7 +270,6 @@ class Photo extends React.Component<PhotoProps, PhotoState> {
     const tagId: string = e.target.id.replace('crt_', '');
     const { editContentInfo } = this.state;
     if (editContentInfo && editContentInfo.tags) {
-
       let isSelected = false;
 
       for (const tag of editContentInfo.tags) {
@@ -286,17 +281,23 @@ class Photo extends React.Component<PhotoProps, PhotoState> {
 
       if (isSelected) {
         this.setState({
-          editContentInfo: editContentInfo.set('tags', editContentInfo.tags.filter(tag => tagId !== tag.tag_id))
+          editContentInfo: editContentInfo.set(
+            'tags',
+            editContentInfo.tags.filter((tag) => tagId !== tag.tag_id),
+          ),
         });
-      }
-      else {
+      } else {
         this.setState({
-          editContentInfo: editContentInfo.set('tags', editContentInfo.tags.concat(this.boardTagInfo.filter(tag => tagId === tag.tag_id)))
+          editContentInfo: editContentInfo.set(
+            'tags',
+            editContentInfo.tags.concat(
+              this.boardTagInfo.filter((tag) => tagId === tag.tag_id),
+            ),
+          ),
         });
       }
     }
   };
-
 
   likePhoto = async () => {
     const { contentInfo, likeInfo } = this.state;
@@ -307,14 +308,19 @@ class Photo extends React.Component<PhotoProps, PhotoState> {
         if (contentInfo) {
           if (this.state.likeInfo) {
             this.setState({
-              contentInfo: contentInfo.set('like_num', contentInfo.like_num - 1),
-              likeInfo: !likeInfo
+              contentInfo: contentInfo.set(
+                'like_num',
+                contentInfo.like_num - 1,
+              ),
+              likeInfo: !likeInfo,
             });
-          }
-          else {
+          } else {
             this.setState({
-              contentInfo: contentInfo.set('like_num', contentInfo.like_num + 1),
-              likeInfo: !likeInfo
+              contentInfo: contentInfo.set(
+                'like_num',
+                contentInfo.like_num + 1,
+              ),
+              likeInfo: !likeInfo,
             });
           }
         }
@@ -343,7 +349,9 @@ class Photo extends React.Component<PhotoProps, PhotoState> {
   deletePhoto = async () => {
     const photo_id = Number(this.props.match.params.photo_id);
 
-    const goDrop = window.confirm('정말로 삭제하시겠습니까? 삭제한 게시글은 다시 복원할 수 없습니다.');
+    const goDrop = window.confirm(
+      '정말로 삭제하시겠습니까? 삭제한 게시글은 다시 복원할 수 없습니다.',
+    );
     if (goDrop) {
       await PhotoService.deletePhoto(photo_id)
         .then(() => {
@@ -358,125 +366,158 @@ class Photo extends React.Component<PhotoProps, PhotoState> {
 
   mouseOver = () => {
     this.setState({
-      remainedTime: VISIBLE_TIME
+      remainedTime: VISIBLE_TIME,
     });
   };
 
   render() {
-    const { contentInfo, editContentInfo, likeInfo, photoState, isFullscreen, remainedTime } = this.state;
+    const {
+      contentInfo,
+      editContentInfo,
+      likeInfo,
+      photoState,
+      isFullscreen,
+      remainedTime,
+    } = this.state;
     // const { my_id } = this.props;
-    const { setPhotoState, likePhoto, deletePhoto, updatePhoto, setAlbumThumbnail,
-      handleChange, handleDate, handleTag, closePhoto, boardTagInfo } = this;
+    const {
+      setPhotoState,
+      likePhoto,
+      deletePhoto,
+      updatePhoto,
+      setAlbumThumbnail,
+      handleChange,
+      handleDate,
+      handleTag,
+      closePhoto,
+      boardTagInfo,
+    } = this;
 
     const photo_id = Number(this.props.match.params.photo_id);
-    const fullscreenClass = isFullscreen ? 'ri-fullscreen-exit-fill' : 'ri-fullscreen-fill';
+    const fullscreenClass = isFullscreen
+      ? 'ri-fullscreen-exit-fill'
+      : 'ri-fullscreen-fill';
     let backLink: string;
     const photoInfo = contentInfo && contentInfo.photo;
     if (contentInfo && contentInfo.parent) {
       backLink = `/album/${contentInfo.parent.content_id}`;
-    }
-    else {
+    } else {
       backLink = '/board/brd32';
     }
 
     return (
       <AuthContext.Consumer>
-        {authContext => (
+        {(authContext) => (
           <FullScreenPortal>
-            {
-              contentInfo && editContentInfo && photoInfo &&
-                            <>
-                              <div className="enif-popup photo-popup" onClick={closePhoto}>
-                                <div className="photo-section-wrapper" onClick={(e) => e.stopPropagation()}>
-                                  <div className="photo-alb-title-wrp">
-                                    <i className="ri-arrow-left-s-line enif-pointer" onClick={() => this.moveToAlbum(-1)}></i>
-                                    <Link className="photo-alb-title" to={backLink}>
-                                      <i className="ri-gallery-line"></i>
-                                      <h5>{contentInfo.parent ? contentInfo.parent.title : '기본앨범'}</h5>
-                                    </Link>
-                                    <i className="ri-arrow-right-s-line enif-pointer" onClick={() => this.moveToAlbum(1)}></i>
-                                    <div className="enif-modal-close" onClick={closePhoto}>
-                                      <i className="ri-close-fill enif-f-1p5x enif-pointer"></i>
-                                    </div>
-                                  </div>
-                                  <div className="photo-section-bottom">
-                                    <div className="photo-section-left">
-                                      <div className="photo-img-wrapper" ref={this.fullscreenRef} onMouseMove={this.mouseOver} >
-                                        {
-                                          remainedTime > 0 &&
-                                                        <div className="photo-move-action prev">
-                                                          <button className="photo-move-btn" onClick={() => this.moveToPhoto(-1)}>
-                                                            <i className="ri-arrow-left-s-line ri-icons enif-pointer"></i>
-                                                          </button>
-                                                        </div>
-                                        }
-                                        <Image imgSrc={photoInfo.file_path} />
-                                        {
-                                          remainedTime > 0 &&
-                                                        <div className="photo-move-action next">
-                                                          <button className="photo-move-btn enif-flex-center" onClick={() => this.moveToPhoto(1)}>
-                                                            <i className="ri-arrow-right-s-line ri-icons enif-pointer"></i>
-                                                          </button>
-                                                        </div>
-                                        }
-                                        <div className="photo-action-fullscreen-wrapper enif-flex-center">
-                                          <i className={`${fullscreenClass} enif-pointer enif-f-1p2x`} onClick={this.clickFullscreen}></i>
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div className="photo-section-right">
-                                      {
-                                        photoState === ContentStateEnum.EDITTING ?
-                                          <EditPhotoInfo
-                                            photoInfo={editContentInfo}
-                                            boardTagInfo={boardTagInfo}
-                                            setPhotoState={setPhotoState}
-                                            updatePhoto={updatePhoto}
-                                            handleChange={handleChange}
-                                            handleDate={handleDate}
-                                            handleTag={handleTag} />
-                                          :
-                                          <>
-                                            <PhotoInfo
-                                              photoInfo={contentInfo}
-                                              likeInfo={likeInfo}
-                                              my_id={authContext.authInfo.user.user_id}
-                                              setPhotoState={setPhotoState}
-                                              likePhoto={likePhoto}
-                                              deletePhoto={deletePhoto}
-                                              setAlbumThumbnail={setAlbumThumbnail} />
-                                            <Comment parent_id={photo_id} />
-                                          </>
-                                      }
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
+            {contentInfo && editContentInfo && photoInfo && (
+              <>
+                <div className="enif-popup photo-popup" onClick={closePhoto}>
+                  <div
+                    className="photo-section-wrapper"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="photo-alb-title-wrp">
+                      <i
+                        className="ri-arrow-left-s-line enif-pointer"
+                        onClick={() => this.moveToAlbum(-1)}
+                      ></i>
+                      <Link className="photo-alb-title" to={backLink}>
+                        <i className="ri-gallery-line"></i>
+                        <h5>
+                          {contentInfo.parent
+                            ? contentInfo.parent.title
+                            : '기본앨범'}
+                        </h5>
+                      </Link>
+                      <i
+                        className="ri-arrow-right-s-line enif-pointer"
+                        onClick={() => this.moveToAlbum(1)}
+                      ></i>
+                      <div className="enif-modal-close" onClick={closePhoto}>
+                        <i className="ri-close-fill enif-f-1p5x enif-pointer"></i>
+                      </div>
+                    </div>
+                    <div className="photo-section-bottom">
+                      <div className="photo-section-left">
+                        <div
+                          className="photo-img-wrapper"
+                          ref={this.fullscreenRef}
+                          onMouseMove={this.mouseOver}
+                        >
+                          {remainedTime > 0 && (
+                            <div className="photo-move-action prev">
+                              <button
+                                className="photo-move-btn"
+                                onClick={() => this.moveToPhoto(-1)}
+                              >
+                                <i className="ri-arrow-left-s-line ri-icons enif-pointer"></i>
+                              </button>
+                            </div>
+                          )}
+                          <Image imgSrc={photoInfo.file_path} />
+                          {remainedTime > 0 && (
+                            <div className="photo-move-action next">
+                              <button
+                                className="photo-move-btn enif-flex-center"
+                                onClick={() => this.moveToPhoto(1)}
+                              >
+                                <i className="ri-arrow-right-s-line ri-icons enif-pointer"></i>
+                              </button>
+                            </div>
+                          )}
+                          <div className="photo-action-fullscreen-wrapper enif-flex-center">
+                            <i
+                              className={`${fullscreenClass} enif-pointer enif-f-1p2x`}
+                              onClick={this.clickFullscreen}
+                            ></i>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="photo-section-right">
+                        {photoState === ContentStateEnum.EDITTING ? (
+                          <EditPhotoInfo
+                            photoInfo={editContentInfo}
+                            boardTagInfo={boardTagInfo}
+                            setPhotoState={setPhotoState}
+                            updatePhoto={updatePhoto}
+                            handleChange={handleChange}
+                            handleDate={handleDate}
+                            handleTag={handleTag}
+                          />
+                        ) : (
+                          <>
+                            <PhotoInfo
+                              photoInfo={contentInfo}
+                              likeInfo={likeInfo}
+                              my_id={authContext.authInfo.user.user_id}
+                              setPhotoState={setPhotoState}
+                              likePhoto={likePhoto}
+                              deletePhoto={deletePhoto}
+                              setAlbumThumbnail={setAlbumThumbnail}
+                            />
+                            <Comment parent_id={photo_id} />
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
-                              {
-                                (() => {
-                                  if (photoState === ContentStateEnum.LOADING) {
-                                    return <Loading />;
-                                  }
-                                  else if (photoState === ContentStateEnum.DELETED) {
-                                    let backLink;
-                                    if (!contentInfo.parent) {
-                                      backLink = `/board/${contentInfo.board_id}`;
-                                    }
-                                    else {
-                                      backLink = `/album/${contentInfo.parent.content_id}`;
-                                    }
-                                    return (
-                                      <Redirect to={backLink} />
-                                    );
-                                  }
-                                  else return (
-                                    <div></div>
-                                  );
-                                })()
-                              }
-                            </>
-            }
+                {(() => {
+                  if (photoState === ContentStateEnum.LOADING) {
+                    return <Loading />;
+                  } else if (photoState === ContentStateEnum.DELETED) {
+                    let backLink;
+                    if (!contentInfo.parent) {
+                      backLink = `/board/${contentInfo.board_id}`;
+                    } else {
+                      backLink = `/album/${contentInfo.parent.content_id}`;
+                    }
+                    return <Redirect to={backLink} />;
+                  } else return <div></div>;
+                })()}
+              </>
+            )}
           </FullScreenPortal>
         )}
       </AuthContext.Consumer>
