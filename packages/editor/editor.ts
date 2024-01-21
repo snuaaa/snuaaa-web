@@ -8,6 +8,7 @@ import {
   Strikethrough,
   Underline,
 } from '@ckeditor/ckeditor5-basic-styles';
+import { FontColor, FontBackgroundColor } from '@ckeditor/ckeditor5-font'
 import { Link } from '@ckeditor/ckeditor5-link';
 import { List, TodoList } from '@ckeditor/ckeditor5-list';
 
@@ -34,6 +35,8 @@ const defaultBuiltinPlugins = [
   Bold,
   Strikethrough,
   Underline,
+  FontColor,
+  FontBackgroundColor,
   Link,
   TodoList,
   List,
@@ -54,11 +57,13 @@ const defaultBuiltinPlugins = [
 const defaultConfig = {
   toolbar: {
     items: [
-      'bold',
+      'heading',
       '|',
       'bold',
       'strikethrough',
       'underline',
+      'fontColor',
+      'fontBackgroundColor',
       '|',
       'link',
       'bulletedList',
@@ -68,20 +73,24 @@ const defaultConfig = {
       'indent',
       'outdent',
       '|',
-      'undo',
-      'redo',
-      '|',
       'imageUpload',
       'mediaembed',
       'insertTable',
+      '|',
+      'undo',
+      'redo',
     ],
   },
   image: {
     toolbar: [
-      'imageStyle:full',
-      'imageStyle:side',
+      'imageStyle:alignBlockLeft',
+      'imageStyle:block',
+      'imageStyle:alignBlockRight',
       '|',
-      'imageTextAlternative',
+      'imageStyle:alignLeft',
+      'imageStyle:alignRight',
+      '|',
+      'toggleImageCaption',
     ],
   },
   table: {
