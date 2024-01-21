@@ -5,44 +5,43 @@ import ContentType from '../types/ContentType';
 import RiseSetType from '../types/RiseSetType';
 
 const HomeService = {
-
-  retrieveSoundBox: function() {
+  retrieveSoundBox: function () {
     return AaaService.get('home/soundbox');
   },
 
-  retrieveRecentPosts: function() {
+  retrieveRecentPosts: function () {
     return AaaService.get('home/posts');
   },
 
-  retrieveAllPosts: function(pageIdx: number): AxiosPromise<{
-        postInfo: ContentType[],
-        postCount: number
-    }> {
+  retrieveAllPosts: function (pageIdx: number): AxiosPromise<{
+    postInfo: ContentType[];
+    postCount: number;
+  }> {
     return AaaService.get(`home/posts/all?page=${pageIdx}`);
   },
 
-  retrieveRecentComments: function() {
+  retrieveRecentComments: function () {
     return AaaService.get('home/comments');
   },
 
-  retrieveAllComments: function(pageIdx: number): AxiosPromise<{
-        commentInfo: CommentType[],
-        commentCount: number
-    }> {
+  retrieveAllComments: function (pageIdx: number): AxiosPromise<{
+    commentInfo: CommentType[];
+    commentCount: number;
+  }> {
     return AaaService.get(`home/comments/all?page=${pageIdx}`);
   },
 
-  retrieveRecentMemory: function() {
+  retrieveRecentMemory: function () {
     return AaaService.get('home/memory');
   },
 
-  retrieveRecentAstroPhoto: function() {
+  retrieveRecentAstroPhoto: function () {
     return AaaService.get('home/astrophoto');
   },
 
-  retrieveRiseSet: function(): AxiosPromise<RiseSetType> {
+  retrieveRiseSet: function (): AxiosPromise<RiseSetType> {
     return AaaService.get('home/riseset');
-  }
+  },
 };
 
 export default HomeService;

@@ -4,10 +4,8 @@ import { convertDate } from '../../utils/convertDate';
 import ContentType from '../../types/ContentType';
 
 function PostList({ posts }: { posts: ContentType[] }) {
-
   const makePostList = () => {
-
-    const postList = posts.map(post => {
+    const postList = posts.map((post) => {
       const content = post;
       const user = post.user;
 
@@ -59,7 +57,6 @@ function PostList({ posts }: { posts: ContentType[] }) {
         </div>
         {makePostList()}
       </div>
-
     </>
   );
 }

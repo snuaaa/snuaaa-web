@@ -16,30 +16,33 @@ import { useLocation, useHistory } from 'react-router';
 const DOCROWNUM = 10;
 
 type DocuBoardProps = {
-    boardInfo: BoardType;
-}
+  boardInfo: BoardType;
+};
 
 type LocationState = {
-    category: string;
-    generation: number;
-    page: number;
-}
-
+  category: string;
+  generation: number;
+  page: number;
+};
 
 function DocuBoard({ boardInfo }: DocuBoardProps) {
-
   // let docCount: number = 0;
   const history = useHistory();
   const location = useLocation<LocationState>();
-    
+
   const [boardState, setBoardState] = useState<number>(BoardStateEnum.LOADING);
   const [documents, setDocuments] = useState<ContentType[]>([]);
   const [docCount, setDocCount] = useState<number>(0);
 
   const fetch = useCallback(async () => {
-    const category = (location.state && location.state.category) ? location.state.category : '';
-    const generation = (location.state && location.state.generation) ? location.state.generation : 0;
-    const pageIdx = (location.state && location.state.page) ? location.state.page : 1;
+    const category =
+      location.state && location.state.category ? location.state.category : '';
+    const generation =
+      location.state && location.state.generation
+        ? location.state.generation
+        : 0;
+    const pageIdx =
+      location.state && location.state.page ? location.state.page : 1;
 
     setBoardState(BoardStateEnum.LOADING);
     await DocuService.retrieveDocuments(pageIdx, category, generation)
@@ -58,17 +61,20 @@ function DocuBoard({ boardInfo }: DocuBoardProps) {
   }, [fetch, location]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-
-    const category = (location.state && location.state.category) ? location.state.category : '';
-    const generation = (location.state && location.state.generation) ? location.state.generation : 0;
+    const category =
+      location.state && location.state.category ? location.state.category : '';
+    const generation =
+      location.state && location.state.generation
+        ? location.state.generation
+        : 0;
 
     if (e.target.name === 'category') {
       history.push({
         state: {
           category: e.target.value,
           generation: generation,
-          page: 1
-        }
+          page: 1,
+        },
       });
     }
     if (e.target.name === 'generation') {
@@ -76,39 +82,44 @@ function DocuBoard({ boardInfo }: DocuBoardProps) {
         state: {
           category: category,
           generation: e.target.value,
-          page: 1
-        }
+          page: 1,
+        },
       });
     }
   };
 
   const clickPage = (idx: number) => {
-
-    const category = (location.state && location.state.category) ? location.state.category : '';
-    const generation = (location.state && location.state.generation) ? location.state.generation : 0;
+    const category =
+      location.state && location.state.category ? location.state.category : '';
+    const generation =
+      location.state && location.state.generation
+        ? location.state.generation
+        : 0;
 
     history.push({
       state: {
         category: category,
         generation: generation,
-        page: idx
-      }
+        page: idx,
+      },
     });
   };
 
-
-  const category = (location.state && location.state.category) ? location.state.category : '';
-  const generation = (location.state && location.state.generation) ? location.state.generation : 0;
-  const pageIdx = (location.state && location.state.page) ? location.state.page : 1;
+  const category =
+    location.state && location.state.category ? location.state.category : '';
+  const generation =
+    location.state && location.state.generation ? location.state.generation : 0;
+  const pageIdx =
+    location.state && location.state.page ? location.state.page : 1;
 
   const categoryOptions = boardInfo.categories.map((category) => {
     return {
       id: category.category_id,
-      name: category.category_name
+      name: category.category_name,
     };
   });
 
-  const generationOptions: { id: number, name: string }[] = [];
+  const generationOptions: { id: number; name: string }[] = [];
   const today = new Date();
   let currentGen = 2 * (today.getFullYear() - 1980);
   if (today.getMonth() > 5) currentGen++;
@@ -116,71 +127,76 @@ function DocuBoard({ boardInfo }: DocuBoardProps) {
   for (let i = currentGen; i > 0; i--) {
     generationOptions.push({
       id: i,
-      name: i + '대'
+      name: i + '대',
     });
   }
 
   return (
     <AuthContext.Consumer>
-      {
-        authContext => (
-          <div className="board-wrapper">
-            <BoardName board_id={boardInfo.board_id} board_name={boardInfo.board_name} />
-            {/* <div className="docboard-top-menu-wrapper"> */}
-            <div className="board-search-wrapper">
-              <div className="board-select-wrapper">
-                <SelectBox
-                  selectName="category"
-                  optionList={categoryOptions}
-                  onSelect={handleChange}
-                  selectedOption={category} />
-                <SelectBox
-                  selectName="generation"
-                  optionList={generationOptions}
-                  onSelect={handleChange}
-                  selectedOption={generation} />
-              </div>
-              {
-                authContext.authInfo.user.grade <= boardInfo.lv_write &&
-                                <button className="board-btn-write" onClick={() => setBoardState(BoardStateEnum.WRITING)}>
-                                  <i className="ri-file-add-line enif-f-1p2x"></i>문서생성
-                                </button>
-              }
+      {(authContext) => (
+        <div className="board-wrapper">
+          <BoardName
+            board_id={boardInfo.board_id}
+            board_name={boardInfo.board_name}
+          />
+          {/* <div className="docboard-top-menu-wrapper"> */}
+          <div className="board-search-wrapper">
+            <div className="board-select-wrapper">
+              <SelectBox
+                selectName="category"
+                optionList={categoryOptions}
+                onSelect={handleChange}
+                selectedOption={category}
+              />
+              <SelectBox
+                selectName="generation"
+                optionList={generationOptions}
+                onSelect={handleChange}
+                selectedOption={generation}
+              />
             </div>
-            {/* </div> */}
-            {(() => {
-              if (boardState === BoardStateEnum.LOADING) {
-                return <Loading />;
-              }
-              else if (boardState === BoardStateEnum.READY || boardState === BoardStateEnum.WRITING) {
-                return (
-                  <>
-                    <DocuList documents={documents} />
-                    {docCount > 0 &&
-                                            <Paginator
-                                              pageIdx={pageIdx}
-                                              pageNum={Math.ceil(docCount / DOCROWNUM)}
-                                              clickPage={clickPage} />}
-                    {
-                      boardState === BoardStateEnum.WRITING &&
-                                            <CreateDocu
-                                              fetch={fetch}
-                                              boardInfo={boardInfo}
-                                              close={() => setBoardState(BoardStateEnum.READY)} />
-                    }
-                  </>
-                );
-              }
-              else {
-                return (
-                  <div>ERROR PAGE</div>
-                );
-              }
-            })()}
+            {authContext.authInfo.user.grade <= boardInfo.lv_write && (
+              <button
+                className="board-btn-write"
+                onClick={() => setBoardState(BoardStateEnum.WRITING)}
+              >
+                <i className="ri-file-add-line enif-f-1p2x"></i>문서생성
+              </button>
+            )}
           </div>
-
-        )
-      }
+          {/* </div> */}
+          {(() => {
+            if (boardState === BoardStateEnum.LOADING) {
+              return <Loading />;
+            } else if (
+              boardState === BoardStateEnum.READY ||
+              boardState === BoardStateEnum.WRITING
+            ) {
+              return (
+                <>
+                  <DocuList documents={documents} />
+                  {docCount > 0 && (
+                    <Paginator
+                      pageIdx={pageIdx}
+                      pageNum={Math.ceil(docCount / DOCROWNUM)}
+                      clickPage={clickPage}
+                    />
+                  )}
+                  {boardState === BoardStateEnum.WRITING && (
+                    <CreateDocu
+                      fetch={fetch}
+                      boardInfo={boardInfo}
+                      close={() => setBoardState(BoardStateEnum.READY)}
+                    />
+                  )}
+                </>
+              );
+            } else {
+              return <div>ERROR PAGE</div>;
+            }
+          })()}
+        </div>
+      )}
     </AuthContext.Consumer>
   );
 }

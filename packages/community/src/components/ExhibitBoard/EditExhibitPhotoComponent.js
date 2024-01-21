@@ -3,9 +3,18 @@ import Image from 'components/Common/AaaImage.tsx';
 import ContentsStateEnum from 'common/ContentStateEnum';
 import CreateExhibitPhotoInfo from './CreateExhibitPhotoInfo';
 
-const EditExhibitPhotoComponent = ({ photoInfo, photographer, handleChange, handleDate,
-  handlePhotographer, selectPhotographer, removePhotographer, setPhotoState, updatePhoto, searchUsers }) => {
-
+const EditExhibitPhotoComponent = ({
+  photoInfo,
+  photographer,
+  handleChange,
+  handleDate,
+  handlePhotographer,
+  selectPhotographer,
+  removePhotographer,
+  setPhotoState,
+  updatePhoto,
+  searchUsers,
+}) => {
   return (
     <div className="crt-photo-popup">
       <div className="crt-photo-wrp edt-photo-wrp">
@@ -36,11 +45,19 @@ const EditExhibitPhotoComponent = ({ photoInfo, photographer, handleChange, hand
               handleDate={handleDate}
               handlePhotographer={handlePhotographer}
               selectPhotographer={selectPhotographer}
-              removePhotographer={removePhotographer} />
+              removePhotographer={removePhotographer}
+            />
 
             <div className="crt-photo-btn-wrapper">
-              <button className="btn-cancel" onClick={() => setPhotoState(ContentsStateEnum.READY)}>취소</button>
-              <button className="btn-ok" onClick={updatePhoto}>완료</button>
+              <button
+                className="btn-cancel"
+                onClick={() => setPhotoState(ContentsStateEnum.READY)}
+              >
+                취소
+              </button>
+              <button className="btn-ok" onClick={updatePhoto}>
+                완료
+              </button>
             </div>
           </div>
         </div>

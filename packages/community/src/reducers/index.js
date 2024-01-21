@@ -3,7 +3,7 @@ import { combineReducers } from 'redux';
 import authentication from './authentication';
 
 const reducers = combineReducers({
-  authentication: authentication
+  authentication: authentication,
 });
 
 export default reducers;

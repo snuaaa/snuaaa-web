@@ -4,19 +4,16 @@ import { convertDate } from '../../utils/convertDate';
 import ContentType from '../../types/ContentType';
 
 const MyPostList = ({ posts }: { posts: ContentType[] }) => {
-
   const makePostList = () => {
-
     if (posts && posts.length > 0) {
-      return posts.map(post => {
+      return posts.map((post) => {
         const contentInfo = post;
         const boardInfo = post.board;
         return (
           <div className="my-post-wrapper" key={contentInfo.content_id}>
-            {
-              boardInfo &&
-                            <div className="my-post-boardname">{boardInfo.board_name}</div>
-            }
+            {boardInfo && (
+              <div className="my-post-boardname">{boardInfo.board_name}</div>
+            )}
             <div className="my-post-title">
               <Link to={`/post/${contentInfo.content_id}`}>
                 <h5>{contentInfo.title}</h5>

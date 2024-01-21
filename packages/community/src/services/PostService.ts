@@ -4,12 +4,11 @@ import ContentType from '../types/ContentType';
 import FileType from '../types/FileType';
 
 const PostService = {
-
   retrievePost: function (post_id: number): AxiosPromise<{
-        postInfo: ContentType,
-        likeInfo: boolean,
-        fileInfo: FileType[]
-    }> {
+    postInfo: ContentType;
+    likeInfo: boolean;
+    fileInfo: FileType[];
+  }> {
     return AaaService.get(`post/${post_id}`);
   },
 
@@ -23,7 +22,7 @@ const PostService = {
 
   createPost: function (board_id: string, data: any) {
     return AaaService.post(`board/${board_id}/post`, data);
-  }
+  },
 };
 
 export default PostService;

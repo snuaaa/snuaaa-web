@@ -4,7 +4,6 @@ import EditPassword from './EditPassword';
 import EditProfile from './EditProfile';
 
 function EditMyInfo() {
-
   const [isSelectInfo, setIsSelectInfo] = useState<boolean>(true);
 
   return (
@@ -17,15 +16,20 @@ function EditMyInfo() {
       </div>
 
       <div className="my-select-edit-wrapper">
-        <button className={`my-select-edit-btn ${isSelectInfo ? 'selected' : ''}`} onClick={() => setIsSelectInfo(true)}>개인정보</button>
-        <button className={`my-select-edit-btn ${isSelectInfo ? '' : 'selected'}`} onClick={() => setIsSelectInfo(false)}>비밀번호</button>
+        <button
+          className={`my-select-edit-btn ${isSelectInfo ? 'selected' : ''}`}
+          onClick={() => setIsSelectInfo(true)}
+        >
+          개인정보
+        </button>
+        <button
+          className={`my-select-edit-btn ${isSelectInfo ? '' : 'selected'}`}
+          onClick={() => setIsSelectInfo(false)}
+        >
+          비밀번호
+        </button>
       </div>
-      {
-        isSelectInfo ?
-          <EditProfile />
-          :
-          <EditPassword />
-      }
+      {isSelectInfo ? <EditProfile /> : <EditPassword />}
     </div>
   );
 }

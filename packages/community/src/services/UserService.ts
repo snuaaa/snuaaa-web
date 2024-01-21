@@ -7,14 +7,12 @@ import CommentType from '../types/CommentType';
 import PhotoType from '../types/PhotoType';
 
 const UserService = {
-
   retrieveUserInfo: function (user_uuid?: string): AxiosPromise<{
-        userInfo: UserType
-    }> {
+    userInfo: UserType;
+  }> {
     if (user_uuid) {
       return AaaService.get(`userinfo/${user_uuid}`);
-    }
-    else {
+    } else {
       return AaaService.get('userinfo');
     }
   },
@@ -28,9 +26,9 @@ const UserService = {
   },
 
   retrieveUsers: function (sortOption?: UsersSearchType): AxiosPromise<{
-        userInfo: UserType[],
-        count: number
-    }> {
+    userInfo: UserType[];
+    count: number;
+  }> {
     let query = '';
     if (sortOption) {
       // query += '/sort?'
@@ -46,34 +44,31 @@ const UserService = {
   },
 
   retrieveUserPosts: function (user_uuid?: string): AxiosPromise<{
-        postList: ContentType[]
-    }> {
+    postList: ContentType[];
+  }> {
     if (user_uuid) {
       return AaaService.get(`userinfo/${user_uuid}/posts`);
-    }
-    else {
+    } else {
       return AaaService.get('userinfo/posts');
     }
   },
 
   retrieveUserPhotos: function (user_uuid?: string): AxiosPromise<{
-        photoList: PhotoType[]
-    }> {
+    photoList: PhotoType[];
+  }> {
     if (user_uuid) {
       return AaaService.get(`userinfo/${user_uuid}/photos`);
-    }
-    else {
+    } else {
       return AaaService.get('userinfo/photos');
     }
   },
 
   retrieveUserComments: function (user_uuid?: string): AxiosPromise<{
-        commentList: CommentType[]
-    }> {
+    commentList: CommentType[];
+  }> {
     if (user_uuid) {
       return AaaService.get(`userinfo/${user_uuid}/comments`);
-    }
-    else {
+    } else {
       return AaaService.get('userinfo/comments');
     }
   },
@@ -94,9 +89,8 @@ const UserService = {
     if (name) {
       return AaaService.get(`userinfo/search/mini?name=${name}`);
     }
-  }
+  },
 };
-
 
 // class UserService extends AaaService<UserType> {
 

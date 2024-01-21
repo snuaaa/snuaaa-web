@@ -8,23 +8,22 @@ import CategoryType from '../../types/CategoryType';
 import AlbumType from '../../types/AlbumType';
 
 type EditAlbumProps = {
-    albumInfo: AlbumType;
-    categoryInfo?: CategoryType[];
-    setAlbumState: (state: number) => void;
-    fetch: () => void;
-}
+  albumInfo: AlbumType;
+  categoryInfo?: CategoryType[];
+  setAlbumState: (state: number) => void;
+  fetch: () => void;
+};
 
 type EditAlbumState = {
-    albumInfo: RecordOf<AlbumType>;
-}
+  albumInfo: RecordOf<AlbumType>;
+};
 
 class EditAlbum extends React.Component<EditAlbumProps, EditAlbumState> {
-
   constructor(props: EditAlbumProps) {
     super(props);
 
     this.state = {
-      albumInfo: Record(props.albumInfo)()
+      albumInfo: Record(props.albumInfo)(),
     };
   }
 
@@ -34,7 +33,7 @@ class EditAlbum extends React.Component<EditAlbumProps, EditAlbumState> {
 
     if (name === 'title' || name === 'text') {
       this.setState({
-        albumInfo: albumInfo.set(name, e.target.value)
+        albumInfo: albumInfo.set(name, e.target.value),
       });
     }
   };
@@ -42,7 +41,7 @@ class EditAlbum extends React.Component<EditAlbumProps, EditAlbumState> {
   setIsPrivate = (isPrivate: boolean) => {
     const { albumInfo } = this.state;
     this.setState({
-      albumInfo: albumInfo.setIn(['album', 'is_private'], isPrivate)
+      albumInfo: albumInfo.setIn(['album', 'is_private'], isPrivate),
     });
   };
 
@@ -50,26 +49,25 @@ class EditAlbum extends React.Component<EditAlbumProps, EditAlbumState> {
     const { albumInfo } = this.state;
 
     this.setState({
-      albumInfo: albumInfo.set('category_id', e.target.value)
+      albumInfo: albumInfo.set('category_id', e.target.value),
     });
   };
 
   updateAlbum = async () => {
-
     const { categoryInfo } = this.props;
     const { albumInfo } = this.state;
 
-    if(!albumInfo.album) {
+    if (!albumInfo.album) {
       alert('앨범 정보 오류');
-    }
-    else if(!albumInfo.title) {
+    } else if (!albumInfo.title) {
       alert('제목을 입력해 주세요');
-    }
-    else if(categoryInfo && categoryInfo.length > 0 && !albumInfo.category_id) {
+    } else if (
+      categoryInfo &&
+      categoryInfo.length > 0 &&
+      !albumInfo.category_id
+    ) {
       alert('카테고리를 선택해 주세요');
-    }
-    else {
-            
+    } else {
       await AlbumService.updateAlbum(albumInfo.content_id, albumInfo.toJSON())
         .then(() => {
           this.props.setAlbumState(ContentStateEnum.READY);
@@ -81,7 +79,6 @@ class EditAlbum extends React.Component<EditAlbumProps, EditAlbumState> {
         });
     }
   };
-
 
   render() {
     const { categoryInfo } = this.props;
@@ -102,9 +99,8 @@ class EditAlbum extends React.Component<EditAlbumProps, EditAlbumState> {
         confirmAlbum={() => this.updateAlbum()}
         cancelAlbum={() => this.props.setAlbumState(ContentStateEnum.READY)}
       />
-    ); 
+    );
   }
-
 }
 
 export default EditAlbum;

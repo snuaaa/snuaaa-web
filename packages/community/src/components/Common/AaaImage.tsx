@@ -6,11 +6,16 @@ type ImageProps = {
   className?: string;
   onClick?: () => void;
   local?: boolean;
-}
+};
 
-
-function AaaImage({ imgSrc, defaultImgSrc, className, onClick, local, ...rest }: ImageProps) {
-
+function AaaImage({
+  imgSrc,
+  defaultImgSrc,
+  className,
+  onClick,
+  local,
+  ...rest
+}: ImageProps) {
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
   useEffect(() => {
@@ -36,7 +41,8 @@ function AaaImage({ imgSrc, defaultImgSrc, className, onClick, local, ...rest }:
       alt="Img"
       onClick={onClick}
       onLoad={onLoad}
-      {...rest} />
+      {...rest}
+    />
   );
 }
 

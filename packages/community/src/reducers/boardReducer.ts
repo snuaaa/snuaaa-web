@@ -1,4 +1,3 @@
-
 import { boardActionType } from '../actions/boardAction';
 
 const initialState = {
@@ -6,17 +5,16 @@ const initialState = {
 };
 
 function boardReducer(state = initialState, action: any) {
-    
   switch (action.type) {
-  case boardActionType.SET_BOARD_INFO:
-    return {
-      boardInfo: action.boardInfo
-    };
-  case boardActionType.GET_BOARD_INFO:
-    return state;
-            
-  default:
-    return state;
+    case boardActionType.SET_BOARD_INFO:
+      return {
+        boardInfo: action.boardInfo,
+      };
+    case boardActionType.GET_BOARD_INFO:
+      return state;
+
+    default:
+      return state;
   }
 }
 

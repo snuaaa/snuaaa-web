@@ -1,18 +1,24 @@
 import React from 'react';
 
 type ThumbnailListProps = {
-    imgUrls: string[];
-    imgIdx: number;
-    setImgIdx: (idx: number) => void;
-    removeImg: (idx: number) => void;
-}
+  imgUrls: string[];
+  imgIdx: number;
+  setImgIdx: (idx: number) => void;
+  removeImg: (idx: number) => void;
+};
 
-function ThumbnailList({ imgUrls, imgIdx, setImgIdx, removeImg }: ThumbnailListProps) {
-
+function ThumbnailList({
+  imgUrls,
+  imgIdx,
+  setImgIdx,
+  removeImg,
+}: ThumbnailListProps) {
   const makeThumbnails = () => {
-
     const thumbnailList = imgUrls.map((imgUrl, index) => {
-      const imgClass = index === imgIdx ? 'photo-thumbnail selected' : 'photo-thumbnail default';
+      const imgClass =
+        index === imgIdx
+          ? 'photo-thumbnail selected'
+          : 'photo-thumbnail default';
       return (
         <div key={index} className="block-constant">
           <div className="remove-icon-wrapper" onClick={() => removeImg(index)}>
@@ -22,18 +28,15 @@ function ThumbnailList({ imgUrls, imgIdx, setImgIdx, removeImg }: ThumbnailListP
             className={imgClass}
             src={imgUrl}
             alt="thumbnail"
-            onClick={() => setImgIdx(index)} />
+            onClick={() => setImgIdx(index)}
+          />
         </div>
       );
     });
     return thumbnailList;
   };
 
-  return (
-    <>
-      {makeThumbnails()}
-    </>
-  );
+  return <>{makeThumbnails()}</>;
 }
 
 export default ThumbnailList;

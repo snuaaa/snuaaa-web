@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
 
 type AaaHistoryType = {
-    'year': number;
-    'occasion': {
-        'date': string;
-        'desc': string;
-    }[]
-}[]
+  year: number;
+  occasion: {
+    date: string;
+    desc: string;
+  }[];
+}[];
 
 function AaaHistory() {
-
   //TODO : User who is admin can be edit data.
   //TODO : convert to database from json
 
@@ -24,9 +23,7 @@ function AaaHistory() {
       });
   }, []);
 
-
   function makeHistoryList() {
-
     if (aaaHistory && aaaHistory.length > 0) {
       return aaaHistory.map((his) => {
         const occasions = his.occasion;

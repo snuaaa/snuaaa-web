@@ -5,26 +5,29 @@ import ContentType from '../../types/ContentType';
 import ContentTypeEnum from '../../common/ContentTypeEnum';
 
 const NewPosts = ({ posts }: { posts: ContentType[] }) => {
-
   const makePostList = () => {
-    return posts.map(post => {
+    return posts.map((post) => {
       const content = post;
       const boardInfo = post.board;
       return (
         <div className="new-post-list" key={content.content_id}>
           <div className="new-post-boardname">
-            {
-              boardInfo &&
-                            <Link to={`/board/${boardInfo.board_id}`}>
-                              {boardInfo.board_name}
-                            </Link>
-            }
+            {boardInfo && (
+              <Link to={`/board/${boardInfo.board_id}`}>
+                {boardInfo.board_name}
+              </Link>
+            )}
           </div>
           <div className="new-post-title">
-            <Link to={
-              content.type === ContentTypeEnum.POST ? `/post/${content.content_id}`
-                : content.type === ContentTypeEnum.DOCUMENT ? `/document/${content.content_id}`
-                  : '/'}>
+            <Link
+              to={
+                content.type === ContentTypeEnum.POST
+                  ? `/post/${content.content_id}`
+                  : content.type === ContentTypeEnum.DOCUMENT
+                    ? `/document/${content.content_id}`
+                    : '/'
+              }
+            >
               <h5>{`${content.title} `}</h5>
             </Link>
           </div>

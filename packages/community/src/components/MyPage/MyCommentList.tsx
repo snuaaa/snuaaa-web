@@ -6,39 +6,34 @@ import { LocationDescriptorObject } from 'history';
 import ContentTypeEnum from '../../common/ContentTypeEnum';
 
 type MyCommentListProps = {
-    comments: CommentType[];
-}
+  comments: CommentType[];
+};
 
-function MyCommentList ({ comments }: MyCommentListProps) {
-
+function MyCommentList({ comments }: MyCommentListProps) {
   const history = useHistory();
 
   const makeCommentList = () => {
-
     if (comments && comments.length > 0) {
-      return comments.map(comment => {
+      return comments.map((comment) => {
         const contentInfo = comment.content;
         const boardInfo = comment.content.board;
         let linkTo: string | LocationDescriptorObject;
         if (contentInfo.type === ContentTypeEnum.POST) {
           linkTo = `/post/${comment.parent_id}`;
-        }
-        else if (contentInfo.type === ContentTypeEnum.PHOTO) {
+        } else if (contentInfo.type === ContentTypeEnum.PHOTO) {
           linkTo = {
             pathname: `/photo/${comment.parent_id}`,
             state: {
               modal: true,
-              backgroundLocation: history.location
-            }
+              backgroundLocation: history.location,
+            },
           };
-        }
-        else if (contentInfo.type === ContentTypeEnum.DOCUMENT) {
+        } else if (contentInfo.type === ContentTypeEnum.DOCUMENT) {
           linkTo = `/document/${comment.parent_id}`;
-        }
-        else {
+        } else {
           linkTo = '/';
         }
-                
+
         return (
           <div className="my-cmt-wrapper" key={comment.comment_id}>
             <div className="my-cmt-boardname">

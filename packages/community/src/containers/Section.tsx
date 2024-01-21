@@ -19,11 +19,10 @@ const defaultRiseSet: RiseSetType = {
   moonrise: 0,
   moonset: 0,
   sunrise: 0,
-  sunset: 0
+  sunset: 0,
 };
 
 function Section() {
-
   const [boardsInfo, setBoardsInfo] = useState<BoardType[]>([]);
   const [riseSetInfo, setRiseSetInfo] = useState<RiseSetType>(defaultRiseSet);
   const authContext = useContext(AuthContext);
@@ -40,14 +39,15 @@ function Section() {
       setBoardsInfo(boardRes.data);
       const riseSetRes = await HomeService.retrieveRiseSet();
       setRiseSetInfo(riseSetRes.data);
-    }
-    catch (err) {
+    } catch (err) {
       console.error(err);
     }
   };
   return (
     <>
-      <BoardContext.Provider value={{ boardsInfo: boardsInfo, setBoardsInfo: setBoardsInfo }}>
+      <BoardContext.Provider
+        value={{ boardsInfo: boardsInfo, setBoardsInfo: setBoardsInfo }}
+      >
         <RiseSetContext.Provider value={riseSetInfo}>
           <Suspense fallback={<div>Loading pages...</div>}>
             <Switch>

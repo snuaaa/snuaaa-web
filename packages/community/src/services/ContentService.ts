@@ -2,11 +2,11 @@ import { AaaService } from './index';
 import { AxiosPromise } from 'axios';
 
 const ContentService = {
-
   createFile: function (
     content_id: number,
     data: FormData,
-    cb: (pg: ProgressEvent) => void): AxiosPromise<void> {
+    cb: (pg: ProgressEvent) => void,
+  ): AxiosPromise<void> {
     return AaaService.postWithProgress(`content/${content_id}/file`, data, cb);
   },
 
@@ -20,7 +20,7 @@ const ContentService = {
 
   createComment: function (parent_id: number, data: any) {
     return AaaService.post(`content/${parent_id}/comment`, data);
-  }
+  },
 };
 
 export default ContentService;

@@ -1,34 +1,43 @@
 import React, { ChangeEvent, FocusEvent } from 'react';
 
 type InputFieldProps = {
-    label: string;
-    name: string;
-    type?: string;
-    value: string;
-    valid?: boolean | null;
-    placeholder?: string;
-    pattern?: string;
-    disabled?: boolean;
-    maxLength?: number;
-    required?: boolean;
-    invalidMessage?: string;
-    handleChange: (e: ChangeEvent<HTMLInputElement>) => void;
-    handleBlur?: (e: FocusEvent<HTMLInputElement>) => void;
-}
+  label: string;
+  name: string;
+  type?: string;
+  value: string;
+  valid?: boolean | null;
+  placeholder?: string;
+  pattern?: string;
+  disabled?: boolean;
+  maxLength?: number;
+  required?: boolean;
+  invalidMessage?: string;
+  handleChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  handleBlur?: (e: FocusEvent<HTMLInputElement>) => void;
+};
 
-const InputField = ({ label, name, type, value, valid,
-  placeholder, pattern, disabled, maxLength, required,
-  invalidMessage, handleChange, handleBlur }: InputFieldProps) => {
-
+const InputField = ({
+  label,
+  name,
+  type,
+  value,
+  valid,
+  placeholder,
+  pattern,
+  disabled,
+  maxLength,
+  required,
+  invalidMessage,
+  handleChange,
+  handleBlur,
+}: InputFieldProps) => {
   // this.inputRef = React.createRef();
   let fieldClass;
   if (valid === true) {
     fieldClass = 'enif-input-field enif-input-valid';
-  }
-  else if (valid === false) {
+  } else if (valid === false) {
     fieldClass = 'enif-input-field enif-input-invalid';
-  }
-  else {
+  } else {
     fieldClass = 'enif-input-field';
   }
 
@@ -58,8 +67,6 @@ const InputField = ({ label, name, type, value, valid,
       {valid === false && <p>{invalidMessage}</p>}
     </div>
   );
-
 };
 
 export default InputField;
-

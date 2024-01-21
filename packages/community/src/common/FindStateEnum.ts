@@ -5,5 +5,5 @@ export const FindStateEnum = Object.freeze({
   IDFOUND: 2,
   IDNOTFOUND: 3,
   PWFOUND: 4,
-  PWNOTFOUND: 5
+  PWNOTFOUND: 5,
 });

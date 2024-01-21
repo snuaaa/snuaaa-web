@@ -1,7 +1,6 @@
 import { AaaService } from './index';
 
 const ExhibitionService = {
-
   retrieveExhibition: function (exhibition_id: number) {
     return AaaService.get(`exhibition/${exhibition_id}`);
   },
@@ -20,7 +19,7 @@ const ExhibitionService = {
 
   retrieveExhibitPhotosinExhibition: function (exhibition_id: number) {
     return AaaService.get(`exhibition/${exhibition_id}/exhibitPhotos`);
-  }
+  },
 };
 
 export default ExhibitionService;
