@@ -1,4 +1,4 @@
-import React, { useState, SyntheticEvent, useEffect } from 'react';
+import React, { useState, SyntheticEvent, useMemo } from 'react';
 
 type ImageProps = {
   imgSrc?: string;
@@ -18,26 +18,20 @@ function AaaImage({
 }: ImageProps) {
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
-  useEffect(() => {
-    setIsLoaded(false);
-  }, [imgSrc]);
-
-  let imgUrl;
-  if (local) {
-    imgUrl = imgSrc;
-  } else {
-    imgUrl = process.env.REACT_APP_SERVER_URL + 'static' + imgSrc;
-  }
+  const imgUrl = useMemo(() => {
+    return local
+      ? imgSrc
+      : process.env.REACT_APP_SERVER_URL + 'static' + imgSrc;
+  }, [imgSrc, local]);
 
   const onLoad = (e: SyntheticEvent) => {
-    // console.log(e)
     setIsLoaded(true);
   };
 
   return (
     <img
       src={imgSrc ? imgUrl : defaultImgSrc}
-      className={`${className ? className : ''} ${isLoaded ? 'aaa-img-loaded' : 'aaa-img-loading'}`}
+      className={`${className ?? ''} ${isLoaded ? 'aaa-img-loaded' : 'aaa-img-loading'}`}
       alt="Img"
       onClick={onClick}
       onLoad={onLoad}
