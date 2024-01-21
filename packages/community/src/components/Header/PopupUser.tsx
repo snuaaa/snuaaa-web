@@ -14,10 +14,10 @@ function PopupUser({ profile_path, togglePopup, logout }: PopupUserProps) {
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
-    window.addEventListener('click', togglePopup);
+    // window.addEventListener('click', togglePopup);
     document.body.classList.add('enif-overflow-hidden-mobile');
     return function () {
-      window.removeEventListener('click', togglePopup);
+      // window.removeEventListener('click', togglePopup);
       document.body.classList.remove('enif-overflow-hidden-mobile');
     };
   }, [togglePopup]);
