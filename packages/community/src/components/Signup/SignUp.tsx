@@ -177,10 +177,12 @@ function SignUp() {
 
   const checkDupId = () => {
     AuthService.duplicateCheck({ check_id: userInfo.id.value })
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .then((res: any) => {
         // Available ID
         setDupId(false);
       })
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .catch((res: any) => {
         // Existing ID
         setUserInfo({

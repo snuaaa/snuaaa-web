@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 
@@ -17,7 +18,7 @@ class MyUploadAdapter {
   // Starts the upload process.
   upload() {
     // Update the loader's progress.
-    return this.loader.file.then((uploadFile: any) => {
+    return this.loader.file.then((uploadFile: File) => {
       return new Promise((resolve, reject) => {
         const data = new FormData();
         data.append('attachedImage', uploadFile);

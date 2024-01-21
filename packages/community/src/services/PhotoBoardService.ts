@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { AaaService } from './index';
 import { AxiosPromise } from 'axios';
 import AlbumType from '../types/AlbumType';

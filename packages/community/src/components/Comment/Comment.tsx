@@ -53,7 +53,7 @@ function Comment({ parent_id }: CommentProps) {
         text: text,
       };
       await CommentService.createComment(parent_id, commentInfo)
-        .then((res: any) => {
+        .then(() => {
           setText('');
           fetch();
         })
@@ -73,7 +73,7 @@ function Comment({ parent_id }: CommentProps) {
       };
 
       await CommentService.updateComment(comment_id, commentInfo)
-        .then((res: any) => {
+        .then(() => {
           setEditingCommentId(0);
           setEditingCommentText('');
           fetch();

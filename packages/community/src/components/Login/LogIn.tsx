@@ -72,6 +72,7 @@ function LogIn() {
     setIsLoading(true);
 
     await AuthService.logIn(loginInfo)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .then((res: any) => {
         const { token, userInfo, autoLogin } = res.data;
         setIsLoading(false);
@@ -94,6 +95,7 @@ function LogIn() {
     setIsLoading(true);
 
     await AuthService.guestLogIn()
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .then((res: any) => {
         setIsLoading(false);
         const { token, userInfo, autoLogin } = res.data;

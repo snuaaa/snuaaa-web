@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { AaaService } from './index';
 import { AxiosPromise } from 'axios';
 import CommentType from '../types/CommentType';
@@ -20,7 +21,7 @@ const CommentService = {
   },
 
   likeComment(comment_id: number) {
-    return AaaService.post(`comment/${comment_id}/like`);
+    return AaaService.post(`comment/${comment_id}/like`, {});
   },
 };
 

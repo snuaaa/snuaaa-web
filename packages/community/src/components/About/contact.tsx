@@ -1,5 +1,6 @@
 import React, { RefCallback, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare const kakao: any;
 
 const Contact = () => {

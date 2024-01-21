@@ -26,6 +26,7 @@ const AlbumService = {
     return AaaService.patch(`album/${album_id}`, data);
   },
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   updateAlbumThumbnail: function (album_id: number, data: any) {
     return AaaService.patch(`album/${album_id}/thumbnail`, data);
   },

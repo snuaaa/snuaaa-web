@@ -101,6 +101,7 @@ function CreateExhibitPhoto({
 
   const fetchUsers = async (name: string) => {
     UserService.searchMini(name)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .then((res: any) => {
         setSearchUsers(res.data.userList);
       })

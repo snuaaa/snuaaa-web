@@ -88,6 +88,7 @@ function EditPassword() {
         alert('비밀번호가 변경되었습니다.');
         window.location.reload();
       })
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .catch((err: any) => {
         if (err.response && err.response.data) {
           if (err.response.data.code === 1011) {

@@ -11,6 +11,7 @@ const ExhibitPhotoService = {
     return AaaService.get(`exhibitPhoto/${exhibitPhoto_id}`);
   },
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   updateExhibitPhoto: function (exhibitPhoto_id: number, data: any) {
     return AaaService.patch(`exhibitPhoto/${exhibitPhoto_id}`, data);
   },
