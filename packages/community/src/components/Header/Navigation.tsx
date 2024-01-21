@@ -3,14 +3,13 @@ import { Link, NavLink } from 'react-router-dom';
 import BoardType from '../../types/BoardType';
 
 type NavigationProps = {
-    boards: BoardType[];
-}
+  boards: BoardType[];
+};
 
 function Navigation({ boards }: NavigationProps) {
-
   const activeStyle = {
     fontWeight: 900,
-    color: '#fad55f'
+    color: '#fad55f',
   };
 
   const noticeBoards: BoardType[] = [];
@@ -40,9 +39,7 @@ function Navigation({ boards }: NavigationProps) {
         </Link>
       );
     });
-    return (
-      <ul>{boardList}</ul>
-    );
+    return <ul>{boardList}</ul>;
   }
 
   return (
@@ -58,47 +55,73 @@ function Navigation({ boards }: NavigationProps) {
             </NavLink>
           </li>
           <li className="menu-nav">
-            <div className="menu-item-1"><span></span>A.A.A.</div>
+            <div className="menu-item-1">
+              <span></span>A.A.A.
+            </div>
             {
               <div className="menu-nav-sub">
                 <ul>
-                  <Link to='/about/aboutAAA'><li>AAA는?</li></Link>
-                  <Link to='/about/contact'><li>찾아오는길&amp;연락처</li></Link>
-                  <Link to='/about/equipment'><li>장비소개</li></Link>
-                  <Link to='/about/observation'><li>김태영<span> 기념</span> 관측소<span> 소개</span></li></Link>
-                  <Link to='/about/history'><li>동아리 발자취</li></Link>
-                  <Link to='/about/officers'><li><span>역대 </span>회장단/임원진</li></Link>
-                  <Link to='/about/regulation'><li>AAA회칙</li></Link>
-                  <a href="https://archive.snuaaa.net" target="_blank" rel="noopener noreferrer">
-                    <li>AAArchive<i className="ri-external-link-line"></i></li>
+                  <Link to="/about/aboutAAA">
+                    <li>AAA는?</li>
+                  </Link>
+                  <Link to="/about/contact">
+                    <li>찾아오는길&amp;연락처</li>
+                  </Link>
+                  <Link to="/about/equipment">
+                    <li>장비소개</li>
+                  </Link>
+                  <Link to="/about/observation">
+                    <li>
+                      김태영<span> 기념</span> 관측소<span> 소개</span>
+                    </li>
+                  </Link>
+                  <Link to="/about/history">
+                    <li>동아리 발자취</li>
+                  </Link>
+                  <Link to="/about/officers">
+                    <li>
+                      <span>역대 </span>회장단/임원진
+                    </li>
+                  </Link>
+                  <Link to="/about/regulation">
+                    <li>AAA회칙</li>
+                  </Link>
+                  <a
+                    href="https://archive.snuaaa.net"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <li>
+                      AAArchive<i className="ri-external-link-line"></i>
+                    </li>
                   </a>
                 </ul>
               </div>
             }
           </li>
           <li className="menu-nav">
-            <div className="menu-item-1"><span></span>A-Notice</div>
-            <div className="menu-nav-sub">
-              {makeBoardList(noticeBoards)}
+            <div className="menu-item-1">
+              <span></span>A-Notice
             </div>
+            <div className="menu-nav-sub">{makeBoardList(noticeBoards)}</div>
           </li>
           <li className="menu-nav">
-            <div className="menu-item-1"><span></span>A-Daily</div>
-            <div className="menu-nav-sub">
-              {makeBoardList(communityBoards)}
+            <div className="menu-item-1">
+              <span></span>A-Daily
             </div>
+            <div className="menu-nav-sub">{makeBoardList(communityBoards)}</div>
           </li>
           <li className="menu-nav">
-            <div className="menu-item-1"><span></span>A-Docu</div>
-            <div className="menu-nav-sub">
-              {makeBoardList(officialBoards)}
+            <div className="menu-item-1">
+              <span></span>A-Docu
             </div>
+            <div className="menu-nav-sub">{makeBoardList(officialBoards)}</div>
           </li>
           <li className="menu-nav">
-            <div className="menu-item-1"><span></span>A-Photo</div>
-            <div className="menu-nav-sub">
-              {makeBoardList(photoBoards)}
+            <div className="menu-item-1">
+              <span></span>A-Photo
             </div>
+            <div className="menu-nav-sub">{makeBoardList(photoBoards)}</div>
           </li>
         </ul>
       </nav>

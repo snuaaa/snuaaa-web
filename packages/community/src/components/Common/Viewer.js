@@ -25,20 +25,29 @@ import ImageResize from '@ckeditor/ckeditor5-image/src/imageresize';
 
 import Table from '@ckeditor/ckeditor5-table/src/table';
 
-
-
 const editorConfiguration = {
   plugins: [
-    Essentials, Heading, Paragraph,
-    Bold, Italic, Strikethrough, Underline, List, TodoList,
-    Indent, IndentBlock, BlockQuote,
-    Image, ImageResize, ImageCaption, ImageStyle,
-    Table],
+    Essentials,
+    Heading,
+    Paragraph,
+    Bold,
+    Italic,
+    Strikethrough,
+    Underline,
+    List,
+    TodoList,
+    Indent,
+    IndentBlock,
+    BlockQuote,
+    Image,
+    ImageResize,
+    ImageCaption,
+    ImageStyle,
+    Table,
+  ],
 };
 
-
 function Viewer({ text }) {
-
   return (
     <div className="sa-ck sa-viewer">
       <CKEditor

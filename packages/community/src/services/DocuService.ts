@@ -3,18 +3,21 @@ import { AxiosPromise } from 'axios';
 import ContentType from '../types/ContentType';
 
 const DocuService = {
-
   retrieveDocument: function (doc_id: number): AxiosPromise<{
-        docuInfo: ContentType,
-        likeInfo: boolean
-    }> {
+    docuInfo: ContentType;
+    likeInfo: boolean;
+  }> {
     return AaaService.get(`document/${doc_id}`);
   },
 
-  retrieveDocuments: function (pageIdx: number, ctg_id: string, generation: number): AxiosPromise<{
-        docInfo: ContentType[],
-        docCount: number
-    }> {
+  retrieveDocuments: function (
+    pageIdx: number,
+    ctg_id: string,
+    generation: number,
+  ): AxiosPromise<{
+    docInfo: ContentType[];
+    docCount: number;
+  }> {
     let categoryUrl = '';
     let genUrl = '';
     ctg_id && (categoryUrl = `&category=${ctg_id}`);
@@ -36,7 +39,7 @@ const DocuService = {
 
   createDocument: function (board_id: string, data: any) {
     return AaaService.post(`board/${board_id}/document`, data);
-  }
+  },
 };
 
 export default DocuService;

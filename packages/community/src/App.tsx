@@ -19,12 +19,10 @@ const initialAuth: AuthType = {
     grade: 10,
     level: 0,
     profile_path: '',
-  }
+  },
 };
 
-
 function App() {
-
   const [isReady, setIsReady] = useState<boolean>(false);
   const [authInfo, setAuthinfo] = useState<AuthType>(initialAuth);
   const history = useHistory();
@@ -37,13 +35,12 @@ function App() {
       history.replace({
         pathname: '/auth/login',
         state: {
-          accessLocation: history.location
-        }
+          accessLocation: history.location,
+        },
       });
       authLogout();
       setIsReady(true);
-    }
-    else {
+    } else {
       // 서버에 토큰 확인 , invalid => logout, valid => 로그인 유지(연장)
       await AuthService.checkToken()
         .then((res: any) => {
@@ -56,8 +53,8 @@ function App() {
           history.replace({
             pathname: '/auth/login',
             state: {
-              accessLocation: history.location
-            }
+              accessLocation: history.location,
+            },
           });
           authLogout();
         });
@@ -66,10 +63,16 @@ function App() {
 
   useEffect(() => {
     if (navigator.userAgent.toLowerCase().indexOf('msie') !== -1) {
-      alert('MicroSoft Internet Explorer에서는 홈페이지가 정상 동작하지 않을 수 있습니다.');
-    }
-    else if ((navigator.appName === 'Netscape' && navigator.userAgent.search('Trident') !== -1)) {
-      alert('MicroSoft Internet Explorer에서는 홈페이지가 정상 동작하지 않을 수 있습니다.');
+      alert(
+        'MicroSoft Internet Explorer에서는 홈페이지가 정상 동작하지 않을 수 있습니다.',
+      );
+    } else if (
+      navigator.appName === 'Netscape' &&
+      navigator.userAgent.search('Trident') !== -1
+    ) {
+      alert(
+        'MicroSoft Internet Explorer에서는 홈페이지가 정상 동작하지 않을 수 있습니다.',
+      );
     }
     checkToken();
   }, [checkToken]);
@@ -78,7 +81,7 @@ function App() {
     setToken(token, autoLogin);
     setAuthinfo({
       isLoggedIn: true,
-      user: userInfo
+      user: userInfo,
     });
     setIsReady(true);
   };
@@ -91,22 +94,26 @@ function App() {
 
   return (
     <div className="snuaaa-wrapper">
-      <AuthContext.Provider value={{
-        authInfo: authInfo,
-        authLogin: authLogin,
-        authLogout: authLogout
-      }}>
+      <AuthContext.Provider
+        value={{
+          authInfo: authInfo,
+          authLogin: authLogin,
+          authLogout: authLogout,
+        }}
+      >
         {(() => {
           if (!isReady) {
             return <Loading />;
-          }
-          else if (!authInfo.isLoggedIn && !(location.pathname === '/auth/login' || location.pathname === '/auth/signup')) {
-            return <Redirect to='/auth/login' />;
-          }
-          else {
-            return (
-              <Section />
-            );
+          } else if (
+            !authInfo.isLoggedIn &&
+            !(
+              location.pathname === '/auth/login' ||
+              location.pathname === '/auth/signup'
+            )
+          ) {
+            return <Redirect to="/auth/login" />;
+          } else {
+            return <Section />;
           }
         })()}
       </AuthContext.Provider>

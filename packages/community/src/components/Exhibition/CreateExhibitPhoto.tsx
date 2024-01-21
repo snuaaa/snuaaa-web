@@ -18,7 +18,7 @@ const defaultPhotoInfo: CrtExhibitPhotoType = {
     nickname: '',
     profile_path: '',
     level: 0,
-    grade: 10
+    grade: 10,
   },
   photographer_alt: '',
   date: undefined,
@@ -28,48 +28,57 @@ const defaultPhotoInfo: CrtExhibitPhotoType = {
   focal_length: '',
   f_stop: '',
   exposure_time: '',
-  iso: ''
+  iso: '',
 };
 
 type CreateExhibitPhotoProps = {
-    board_id: string
-    exhibition_id: number;
-    exhibition_no: number;
-    togglePopUp: () => void;
-    fetch: () => void;
-}
+  board_id: string;
+  exhibition_id: number;
+  exhibition_no: number;
+  togglePopUp: () => void;
+  fetch: () => void;
+};
 
-function CreateExhibitPhoto({ board_id, exhibition_id, exhibition_no, togglePopUp, fetch }: CreateExhibitPhotoProps) {
-
+function CreateExhibitPhoto({
+  board_id,
+  exhibition_id,
+  exhibition_no,
+  togglePopUp,
+  fetch,
+}: CreateExhibitPhotoProps) {
   useBlockBackgroundScroll();
   const [currentSize, setCurrentSize] = useState<number>(0);
   const [imgUrls, setImgUrls] = useState<string[]>([]);
-  const [photoInfos, setPhotoInfos] = useState<List<CrtExhibitPhotoType>>(List<CrtExhibitPhotoType>());
+  const [photoInfos, setPhotoInfos] =
+    useState<List<CrtExhibitPhotoType>>(List<CrtExhibitPhotoType>());
   const [uploadPhotos, setUploadPhotos] = useState<File[]>([]);
   const [imgIdx, setImgIdx] = useState<number>(-1);
   const [searchUsers, setSearchUsers] = useState<UserType[]>([]);
   const [btnDisabled, setBtnDisabled] = useState<boolean>(false);
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     const name: string = e.target.name;
     const photoInfo = photoInfos.get(imgIdx);
     if (photoInfo) {
-      setPhotoInfos(photoInfos.set(imgIdx,
-        {
+      setPhotoInfos(
+        photoInfos.set(imgIdx, {
           ...photoInfo,
-          [name]: e.target.value
-        }));
+          [name]: e.target.value,
+        }),
+      );
     }
   };
 
   const handleDate = (date: Date) => {
     const photoInfo = photoInfos.get(imgIdx);
     if (photoInfo) {
-      setPhotoInfos(photoInfos.set(imgIdx,
-        {
+      setPhotoInfos(
+        photoInfos.set(imgIdx, {
           ...photoInfo,
-          'date': date
-        })
+          date: date,
+        }),
       );
     }
   };
@@ -77,11 +86,11 @@ function CreateExhibitPhoto({ board_id, exhibition_id, exhibition_no, togglePopU
   const handlePhotographer = (e: ChangeEvent<HTMLInputElement>) => {
     const photoInfo = photoInfos.get(imgIdx);
     if (photoInfo) {
-      setPhotoInfos(photoInfos.set(imgIdx,
-        {
+      setPhotoInfos(
+        photoInfos.set(imgIdx, {
           ...photoInfo,
-          photographer_alt: e.target.value
-        })
+          photographer_alt: e.target.value,
+        }),
       );
     }
 
@@ -103,12 +112,12 @@ function CreateExhibitPhoto({ board_id, exhibition_id, exhibition_no, togglePopU
   const selectPhotographer = (index: number) => {
     const photoInfo = photoInfos.get(imgIdx);
     if (photoInfo) {
-      setPhotoInfos(photoInfos.set(imgIdx,
-        {
+      setPhotoInfos(
+        photoInfos.set(imgIdx, {
           ...photoInfo,
           photographer_alt: '',
           photographer: searchUsers[index],
-        })
+        }),
       );
     }
     setSearchUsers([]);
@@ -117,8 +126,8 @@ function CreateExhibitPhoto({ board_id, exhibition_id, exhibition_no, togglePopU
   const removePhotographer = () => {
     const photoInfo = photoInfos.get(imgIdx);
     if (photoInfo) {
-      setPhotoInfos(photoInfos.set(imgIdx,
-        {
+      setPhotoInfos(
+        photoInfos.set(imgIdx, {
           ...photoInfo,
           photographer: {
             user_id: -1,
@@ -126,8 +135,8 @@ function CreateExhibitPhoto({ board_id, exhibition_id, exhibition_no, togglePopU
             profile_path: '',
             level: 0,
             grade: 10,
-          }
-        })
+          },
+        }),
       );
     }
   };
@@ -136,8 +145,7 @@ function CreateExhibitPhoto({ board_id, exhibition_id, exhibition_no, togglePopU
     if (e.target.files) {
       if (uploadPhotos.length + e.target.files.length > 20) {
         alert('한 번에 20장 이상의 사진은 업로드 할 수 없습니다.');
-      }
-      else if (e.target.files) {
+      } else if (e.target.files) {
         let tmpSize = currentSize;
         for (let i = 0; i < e.target.files.length; i++) {
           tmpSize += e.target.files[i].size;
@@ -145,8 +153,7 @@ function CreateExhibitPhoto({ board_id, exhibition_id, exhibition_no, togglePopU
 
         if (tmpSize > MAX_SIZE) {
           alert('한 번에 100MB 이상의 사진은 업로드 할 수 없습니다.');
-        }
-        else {
+        } else {
           setCurrentSize(tmpSize);
           const nUploadPhotos = [];
           const nPhotoInfos = [];
@@ -167,23 +174,27 @@ function CreateExhibitPhoto({ board_id, exhibition_id, exhibition_no, togglePopU
   };
 
   const removeImg = (index: number) => {
-
-    setPhotoInfos(photoInfos.filter((value, idx) => {
-      return index !== idx;
-    }));
-    setImgUrls(imgUrls.filter((value, idx) => {
-      return index !== idx;
-    }));
-    setUploadPhotos(uploadPhotos.filter((value, idx) => {
-      return index !== idx;
-    }));
+    setPhotoInfos(
+      photoInfos.filter((value, idx) => {
+        return index !== idx;
+      }),
+    );
+    setImgUrls(
+      imgUrls.filter((value, idx) => {
+        return index !== idx;
+      }),
+    );
+    setUploadPhotos(
+      uploadPhotos.filter((value, idx) => {
+        return index !== idx;
+      }),
+    );
   };
 
   const checkForm = () => {
     if (!uploadPhotos || !uploadPhotos.length) {
       return false;
-    }
-    else {
+    } else {
       return true;
     }
   };
@@ -191,8 +202,7 @@ function CreateExhibitPhoto({ board_id, exhibition_id, exhibition_no, togglePopU
   const submit = async () => {
     if (!checkForm()) {
       alert('사진을 첨부해주세요');
-    }
-    else {
+    } else {
       setBtnDisabled(true);
 
       try {
@@ -204,17 +214,18 @@ function CreateExhibitPhoto({ board_id, exhibition_id, exhibition_no, togglePopU
           photosForm.append('exhibitPhoto', uploadPhotos[i]);
 
           try {
-            await ExhibitionService.createExhibitPhoto(exhibition_id, photosForm);
-          }
-          catch (err) {
+            await ExhibitionService.createExhibitPhoto(
+              exhibition_id,
+              photosForm,
+            );
+          } catch (err) {
             console.error(err);
             throw err;
           }
         }
         togglePopUp();
         fetch();
-      }
-      catch (err) {
+      } catch (err) {
         alert('사진 생성 실패');
         setBtnDisabled(false);
       }

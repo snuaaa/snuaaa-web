@@ -10,32 +10,41 @@ import UserService from '../../services/UserService';
 import ExhibitPhotoService from '../../services/ExhibitPhotoService';
 
 type EditExhibitPhotoInfoProps = {
-    exhibitPhotoInfo: ExhibitPhotoType;
-    fetch: () => void;
-    cancel: () => void;
-}
+  exhibitPhotoInfo: ExhibitPhotoType;
+  fetch: () => void;
+  cancel: () => void;
+};
 
-function EditExhibitPhotoInfo({ exhibitPhotoInfo, fetch, cancel }: EditExhibitPhotoInfoProps) {
-
+function EditExhibitPhotoInfo({
+  exhibitPhotoInfo,
+  fetch,
+  cancel,
+}: EditExhibitPhotoInfoProps) {
   const [searchUsers, setSearchUsers] = useState<UserType[]>([]);
-  const [edittingContentInfo, setEdittingContentInfo] = useState<CrtExhibitPhotoType>({
-    title: exhibitPhotoInfo.title,
-    text: exhibitPhotoInfo.text,
-    order: exhibitPhotoInfo.exhibitPhoto.order,
-    photographer: exhibitPhotoInfo.exhibitPhoto.photographer,
-    photographer_alt: exhibitPhotoInfo.exhibitPhoto.photographer_alt,
-    date: exhibitPhotoInfo.exhibitPhoto.date ? new Date(exhibitPhotoInfo.exhibitPhoto.date) : undefined,
-    location: exhibitPhotoInfo.exhibitPhoto.location,
-    camera: exhibitPhotoInfo.exhibitPhoto.camera,
-    lens: exhibitPhotoInfo.exhibitPhoto.lens,
-    focal_length: exhibitPhotoInfo.exhibitPhoto.focal_length,
-    f_stop: exhibitPhotoInfo.exhibitPhoto.f_stop,
-    exposure_time: exhibitPhotoInfo.exhibitPhoto.exposure_time,
-    iso: exhibitPhotoInfo.exhibitPhoto.iso,
-  });
+  const [edittingContentInfo, setEdittingContentInfo] =
+    useState<CrtExhibitPhotoType>({
+      title: exhibitPhotoInfo.title,
+      text: exhibitPhotoInfo.text,
+      order: exhibitPhotoInfo.exhibitPhoto.order,
+      photographer: exhibitPhotoInfo.exhibitPhoto.photographer,
+      photographer_alt: exhibitPhotoInfo.exhibitPhoto.photographer_alt,
+      date: exhibitPhotoInfo.exhibitPhoto.date
+        ? new Date(exhibitPhotoInfo.exhibitPhoto.date)
+        : undefined,
+      location: exhibitPhotoInfo.exhibitPhoto.location,
+      camera: exhibitPhotoInfo.exhibitPhoto.camera,
+      lens: exhibitPhotoInfo.exhibitPhoto.lens,
+      focal_length: exhibitPhotoInfo.exhibitPhoto.focal_length,
+      f_stop: exhibitPhotoInfo.exhibitPhoto.f_stop,
+      exposure_time: exhibitPhotoInfo.exhibitPhoto.exposure_time,
+      iso: exhibitPhotoInfo.exhibitPhoto.iso,
+    });
 
   const submit = async () => {
-    await ExhibitPhotoService.updateExhibitPhoto(exhibitPhotoInfo.content_id, edittingContentInfo)
+    await ExhibitPhotoService.updateExhibitPhoto(
+      exhibitPhotoInfo.content_id,
+      edittingContentInfo,
+    )
       .then(() => {
         fetch();
       })
@@ -45,35 +54,32 @@ function EditExhibitPhotoInfo({ exhibitPhotoInfo, fetch, cancel }: EditExhibitPh
       });
   };
 
-
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     const name: string = e.target.name;
-    setEdittingContentInfo(
-      {
-        ...edittingContentInfo,
-        [name]: e.target.value
-      });
+    setEdittingContentInfo({
+      ...edittingContentInfo,
+      [name]: e.target.value,
+    });
   };
 
   const handleDate = (date: Date) => {
-    setEdittingContentInfo(
-      {
-        ...edittingContentInfo,
-        'date': date
-      });
+    setEdittingContentInfo({
+      ...edittingContentInfo,
+      date: date,
+    });
   };
 
   const handlePhotographer = (e: ChangeEvent<HTMLInputElement>) => {
-    setEdittingContentInfo(
-      {
-        ...edittingContentInfo,
-        photographer_alt: e.target.value
-      });
+    setEdittingContentInfo({
+      ...edittingContentInfo,
+      photographer_alt: e.target.value,
+    });
     if (e.target.value) {
       fetchUsers(e.target.value);
     }
   };
-
 
   const fetchUsers = async (name: string) => {
     UserService.searchMini(name)
@@ -86,35 +92,36 @@ function EditExhibitPhotoInfo({ exhibitPhotoInfo, fetch, cancel }: EditExhibitPh
   };
 
   const selectPhotographer = (index: number) => {
-    setEdittingContentInfo(
-      {
-        ...edittingContentInfo,
-        photographer_alt: '',
-        photographer: searchUsers[index],
-      });
+    setEdittingContentInfo({
+      ...edittingContentInfo,
+      photographer_alt: '',
+      photographer: searchUsers[index],
+    });
     setSearchUsers([]);
   };
 
   const removePhotographer = () => {
-    setEdittingContentInfo(
-      {
-        ...edittingContentInfo,
-        photographer: {
-          user_id: -1,
-          nickname: '',
-          profile_path: '',
-          grade: 10,
-          level: 0
-        }
-      });
+    setEdittingContentInfo({
+      ...edittingContentInfo,
+      photographer: {
+        user_id: -1,
+        nickname: '',
+        profile_path: '',
+        grade: 10,
+        level: 0,
+      },
+    });
   };
 
   return (
     <>
       {
         <>
-          <Prompt when={true} message="작성 중인 내용은 저장되지 않습니다. 작성을 취소하시겠습니까?"></Prompt>
-          <div className="crt-photo-right-top" >
+          <Prompt
+            when={true}
+            message="작성 중인 내용은 저장되지 않습니다. 작성을 취소하시겠습니까?"
+          ></Prompt>
+          <div className="crt-photo-right-top">
             <CreateExhibitPhotoInfo
               photoInfo={edittingContentInfo}
               searchUsers={searchUsers}
@@ -122,11 +129,16 @@ function EditExhibitPhotoInfo({ exhibitPhotoInfo, fetch, cancel }: EditExhibitPh
               handleDate={handleDate}
               handlePhotographer={handlePhotographer}
               selectPhotographer={selectPhotographer}
-              removePhotographer={removePhotographer} />
+              removePhotographer={removePhotographer}
+            />
           </div>
           <div className="crt-photo-btn-wrapper">
-            <button className="btn-cancel" onClick={cancel}>취소</button>
-            <button className="btn-ok" disabled={false} onClick={submit}>완료</button>
+            <button className="btn-cancel" onClick={cancel}>
+              취소
+            </button>
+            <button className="btn-ok" disabled={false} onClick={submit}>
+              완료
+            </button>
           </div>
 
           {/* <div className="photo-input-area-wrapper">

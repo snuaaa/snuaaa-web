@@ -8,7 +8,7 @@ export function convertDate(date) {
   month = month < 10 ? '0' + month : month;
   day = day < 10 ? '0' + day : day;
 
-  return (year + '.' + month + '.' + day);
+  return year + '.' + month + '.' + day;
 }
 
 export function convertDateWithDay(date) {
@@ -21,11 +21,11 @@ export function convertDateWithDay(date) {
   month = month < 10 ? '0' + month : month;
   day = day < 10 ? '0' + day : day;
 
-  return (year + '.' + month + '.' + day);
+  return year + '.' + month + '.' + day;
 }
 
 export function convertFullDate(date) {
-  if(!date) {
+  if (!date) {
     return '';
   }
   let convertedDate = new Date(date);
@@ -41,7 +41,7 @@ export function convertFullDate(date) {
   hour = hour < 10 ? '0' + hour : hour;
   min = min < 10 ? '0' + min : min;
 
-  return (`${year}.${month}.${day} ${hour}:${min}`);
+  return `${year}.${month}.${day} ${hour}:${min}`;
 }
 
 export function convertTime(time) {
@@ -66,14 +66,11 @@ export function convertDynamicTime(time) {
 
   if (now.getTime() - convertedDate.getTime() > 24 * 60 * 60 * 1000) {
     return convertDate(time);
-  }
-  else if (now.getTime() - convertedDate.getTime() > 1 * 60 * 60 * 1000) {
+  } else if (now.getTime() - convertedDate.getTime() > 1 * 60 * 60 * 1000) {
     return `${Math.floor((now.getTime() - convertedDate.getTime()) / (60 * 60 * 1000))}시간 전`;
-  }
-  else if (now.getTime() - convertedDate.getTime() > 1 * 60 * 1000){
-    return `${Math.floor((now.getTime() - convertedDate.getTime()) / (60 * 1000))}분 전`;        
-  }
-  else {
+  } else if (now.getTime() - convertedDate.getTime() > 1 * 60 * 1000) {
+    return `${Math.floor((now.getTime() - convertedDate.getTime()) / (60 * 1000))}분 전`;
+  } else {
     return '방금';
   }
 }

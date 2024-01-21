@@ -6,51 +6,48 @@ import CategoryType from '../../types/CategoryType';
 import useBlockBackgroundScroll from '../../hooks/useBlockBackgroundScroll';
 
 type CreateAlbumProps = {
-    board_id: string;
-    categories?: CategoryType[];
-    togglePopUp: () => void;
-    fetch: () => void;
-}
+  board_id: string;
+  categories?: CategoryType[];
+  togglePopUp: () => void;
+  fetch: () => void;
+};
 function CreateAlbum(props: CreateAlbumProps) {
-
   useBlockBackgroundScroll();
   const [albumInfo, setAlbumInfo] = useState<CrtAlbumType>({
     title: '',
     text: '',
-    is_private: false
+    is_private: false,
   });
 
-
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     setAlbumInfo({
       ...albumInfo,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
   const handleCategoryChange = (e: ChangeEvent<HTMLInputElement>) => {
     setAlbumInfo({
       ...albumInfo,
-      category_id: e.target.value
+      category_id: e.target.value,
     });
   };
 
   const setIsPrivate = (isPrivate: boolean) => {
     setAlbumInfo({
       ...albumInfo,
-      is_private: isPrivate
+      is_private: isPrivate,
     });
   };
 
   const createAlbum = async () => {
-
     if (!albumInfo.title) {
       alert('제목을 입력해 주세요');
-    }
-    else if (props.categories && !albumInfo.category_id) {
+    } else if (props.categories && !albumInfo.category_id) {
       alert('카테고리를 선택해 주세요');
-    }
-    else {
+    } else {
       await PhotoBoardService.createAlbum(props.board_id, albumInfo)
         .then(() => {
           props.togglePopUp();

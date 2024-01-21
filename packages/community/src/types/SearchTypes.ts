@@ -1,8 +1,6 @@
-
 export interface UsersSearchType {
-    sort: string;
-    order: string;
-    limit?: number;
-    offset?: number;
+  sort: string;
+  order: string;
+  limit?: number;
+  offset?: number;
 }
-

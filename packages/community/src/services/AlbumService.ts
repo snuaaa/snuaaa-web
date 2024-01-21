@@ -6,19 +6,19 @@ import TagType from '../types/TagType';
 import ContentType from '../types/ContentType';
 
 const AlbumService = {
-
   createPhotosInAlbum: function (
     album_id: number,
     data: FormData,
-    cb: (pg: ProgressEvent) => void): AxiosPromise<void> {
+    cb: (pg: ProgressEvent) => void,
+  ): AxiosPromise<void> {
     return AaaService.postWithProgress(`album/${album_id}/photos`, data, cb);
   },
 
   retrieveAlbum: function (album_id: number): AxiosPromise<{
-        albumInfo: AlbumType,
-        categoryInfo: CategoryType[],
-        tagInfo: TagType[]
-    }> {
+    albumInfo: AlbumType;
+    categoryInfo: CategoryType[];
+    tagInfo: TagType[];
+  }> {
     return AaaService.get(`album/${album_id}`);
   },
 
@@ -36,7 +36,7 @@ const AlbumService = {
 
   retrievePhotosInAlbum: function (album_id: number) {
     return AaaService.get(`album/${album_id}/photos`);
-  }
+  },
 };
 
 export default AlbumService;

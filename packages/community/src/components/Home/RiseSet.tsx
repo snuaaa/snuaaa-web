@@ -3,7 +3,6 @@ import { convertDateWithDay, convertTime } from '../../utils/convertDate';
 import RiseSetContext from '../../contexts/RiseSetContext';
 
 function RiseSet() {
-
   const riseSetContext = useContext(RiseSetContext);
   const today = new Date();
 
@@ -11,7 +10,9 @@ function RiseSet() {
     <div className="rise-set-wrapper">
       <div className="moon-phase-wrapper">
         <div className="moon-container">
-          <div className={`phase-${Math.round(riseSetContext.lunAge * 100 / 29.7)} northern-hemisphere`}>
+          <div
+            className={`phase-${Math.round((riseSetContext.lunAge * 100) / 29.7)} northern-hemisphere`}
+          >
             <div className="half">
               <div className="ellipse white"></div>
               <div className="ellipse black"></div>
@@ -26,9 +27,18 @@ function RiseSet() {
       <h5>{convertDateWithDay(today)}</h5>
       <p>월령 {riseSetContext.lunAge}</p>
       <br />
-      <p>일출 {convertTime(riseSetContext.sunrise)} / 일몰 {convertTime(riseSetContext.sunset)}</p>
-      <p>월출 {convertTime(riseSetContext.moonrise)} / 월몰 {convertTime(riseSetContext.moonset)}</p>
-      <p>천문박명 {convertTime(riseSetContext.astm)} / {convertTime(riseSetContext.aste)} </p>
+      <p>
+        일출 {convertTime(riseSetContext.sunrise)} / 일몰{' '}
+        {convertTime(riseSetContext.sunset)}
+      </p>
+      <p>
+        월출 {convertTime(riseSetContext.moonrise)} / 월몰{' '}
+        {convertTime(riseSetContext.moonset)}
+      </p>
+      <p>
+        천문박명 {convertTime(riseSetContext.astm)} /{' '}
+        {convertTime(riseSetContext.aste)}{' '}
+      </p>
     </div>
   );
 }

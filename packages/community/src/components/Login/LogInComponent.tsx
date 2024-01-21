@@ -5,15 +5,22 @@ import Footer from '../Footer';
 import logo from 'assets/img/login_logo.gif';
 
 type Props = {
-  autoLogin: boolean,
-  handleChange: (e: ChangeEvent<HTMLInputElement>) => void,
-  userLogIn: () => void,
-  guestLogIn: () => void,
-  openFindPopUp: () => void,
-  checkAuto: (e: ChangeEvent<HTMLInputElement>) => void,
-}
+  autoLogin: boolean;
+  handleChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  userLogIn: () => void;
+  guestLogIn: () => void;
+  openFindPopUp: () => void;
+  checkAuto: (e: ChangeEvent<HTMLInputElement>) => void;
+};
 
-const LogInComponent: React.FC<Props> = ({ autoLogin, handleChange, userLogIn, guestLogIn, openFindPopUp, checkAuto }: Props) => {
+const LogInComponent: React.FC<Props> = ({
+  autoLogin,
+  handleChange,
+  userLogIn,
+  guestLogIn,
+  openFindPopUp,
+  checkAuto,
+}: Props) => {
   return (
     <div className="login-wrapper">
       <div className="logo-wrapper">
@@ -21,7 +28,12 @@ const LogInComponent: React.FC<Props> = ({ autoLogin, handleChange, userLogIn, g
       </div>
       <div className="inputs-wrapper">
         <div className="auto-checker">
-          <input type="checkbox" id="toggle" onChange={checkAuto} checked={autoLogin} />
+          <input
+            type="checkbox"
+            id="toggle"
+            onChange={checkAuto}
+            checked={autoLogin}
+          />
           <label htmlFor="toggle" className="toggle-switch" />
           <p className="auto-checker-text">자동 로그인</p>
         </div>
@@ -34,22 +46,34 @@ const LogInComponent: React.FC<Props> = ({ autoLogin, handleChange, userLogIn, g
               placeholder=" ID"
               isRequired={true}
             />
-            <input type="password" className="login-input" placeholder=" PASSWORD"
+            <input
+              type="password"
+              className="login-input"
+              placeholder=" PASSWORD"
               name="password"
               onChange={handleChange}
-              onKeyDown={(e) => { if (e.keyCode === 13) userLogIn(); }}
-              required />
+              onKeyDown={(e) => {
+                if (e.keyCode === 13) userLogIn();
+              }}
+              required
+            />
           </div>
-          <button className="login-btn" onClick={userLogIn}>로그인</button>
+          <button className="login-btn" onClick={userLogIn}>
+            로그인
+          </button>
         </div>
         <div>
-          <button className="btn-guest" onClick={guestLogIn}>Guest</button>
+          <button className="btn-guest" onClick={guestLogIn}>
+            Guest
+          </button>
         </div>
         <div className="menu-txt-wrapper">
           <Link to="/auth/signup">
             <p className="menu-txt-signup">회원가입</p>
           </Link>
-          <p className="menu-txt-find" onClick={openFindPopUp}>아이디 | 비밀번호 찾기</p>
+          <p className="menu-txt-find" onClick={openFindPopUp}>
+            아이디 | 비밀번호 찾기
+          </p>
         </div>
       </div>
       <Footer></Footer>

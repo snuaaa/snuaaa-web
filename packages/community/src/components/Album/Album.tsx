@@ -16,18 +16,17 @@ import AlbumType from '../../types/AlbumType';
 import PhotoType from '../../types/PhotoType';
 
 type AlbumProps = {
-    match: match<{ album_id: string }>;
-    location: Location;
-    // my_id: number;
-}
+  match: match<{ album_id: string }>;
+  location: Location;
+  // my_id: number;
+};
 
 type AlbumState = {
-    albumState: number;
-    popUpState: boolean;
-}
+  albumState: number;
+  popUpState: boolean;
+};
 
 class Album extends React.Component<AlbumProps, AlbumState> {
-
   photos: PhotoType[];
   albumInfo?: AlbumType;
   categoryInfo?: CategoryType[];
@@ -41,7 +40,7 @@ class Album extends React.Component<AlbumProps, AlbumState> {
     this.tagInfo = undefined;
     this.state = {
       albumState: ContentStateEnum.LOADING,
-      popUpState: false
+      popUpState: false,
     };
   }
 
@@ -59,7 +58,7 @@ class Album extends React.Component<AlbumProps, AlbumState> {
     const album_id = Number(this.props.match.params.album_id);
     await Promise.all([
       AlbumService.retrieveAlbum(album_id),
-      AlbumService.retrievePhotosInAlbum(album_id)
+      AlbumService.retrievePhotosInAlbum(album_id),
     ])
       .then((infos) => {
         this.albumInfo = infos[0].data.albumInfo;
@@ -67,16 +66,19 @@ class Album extends React.Component<AlbumProps, AlbumState> {
         this.tagInfo = infos[0].data.tagInfo;
         this.photos = infos[1].data;
         this.setState({
-          albumState: ContentStateEnum.READY
+          albumState: ContentStateEnum.READY,
         });
       })
       .catch((err) => {
         console.error(err);
-        if (err.response && err.response.data && err.response.data.code === 4001) {
+        if (
+          err.response &&
+          err.response.data &&
+          err.response.data.code === 4001
+        ) {
           alert('권한이 없습니다.');
           history.goBack();
-        }
-        else {
+        } else {
           this.setAlbumState(ContentStateEnum.ERROR);
           alert('해당 게시물이 존재하지 않습니다.');
           history.goBack();
@@ -85,9 +87,10 @@ class Album extends React.Component<AlbumProps, AlbumState> {
   };
 
   deleteAlbum = async () => {
-
     const album_id = Number(this.props.match.params.album_id);
-    const goDrop = window.confirm('정말로 삭제하시겠습니까? 삭제한 게시글은 다시 복원할 수 없습니다.');
+    const goDrop = window.confirm(
+      '정말로 삭제하시겠습니까? 삭제한 게시글은 다시 복원할 수 없습니다.',
+    );
     if (goDrop) {
       await AlbumService.deleteAlbum(album_id)
         .then(() => {
@@ -102,13 +105,13 @@ class Album extends React.Component<AlbumProps, AlbumState> {
 
   setAlbumState = (state: number) => {
     this.setState({
-      albumState: state
+      albumState: state,
     });
   };
 
   togglePopUp = () => {
     this.setState({
-      popUpState: !this.state.popUpState
+      popUpState: !this.state.popUpState,
     });
   };
 
@@ -118,12 +121,16 @@ class Album extends React.Component<AlbumProps, AlbumState> {
 
     return (
       <AuthContext.Consumer>
-        {
-          authContext => (() => {
+        {(authContext) =>
+          (() => {
             if (albumState === ContentStateEnum.LOADING) {
               return <Loading />;
-            }
-            else if ((albumState === ContentStateEnum.READY || albumState === ContentStateEnum.EDITTING) && this.albumInfo && this.albumInfo.album) {
+            } else if (
+              (albumState === ContentStateEnum.READY ||
+                albumState === ContentStateEnum.EDITTING) &&
+              this.albumInfo &&
+              this.albumInfo.album
+            ) {
               return (
                 <>
                   <BoardName
@@ -135,46 +142,51 @@ class Album extends React.Component<AlbumProps, AlbumState> {
                       albumInfo={this.albumInfo}
                       my_id={authContext.authInfo.user.user_id}
                       setAlbumState={this.setAlbumState}
-                      deleteAlbum={this.deleteAlbum} />
-                    {
-                      (!this.albumInfo.album.is_private || authContext.authInfo.user.user_id === this.albumInfo.user.user_id) &&
-                                            <button className="board-btn-write" onClick={this.togglePopUp}>
-                                              <i className="ri-image-line enif-f-1p2x"></i>사진 업로드
-                                            </button>
-
-                    }
+                      deleteAlbum={this.deleteAlbum}
+                    />
+                    {(!this.albumInfo.album.is_private ||
+                      authContext.authInfo.user.user_id ===
+                        this.albumInfo.user.user_id) && (
+                      <button
+                        className="board-btn-write"
+                        onClick={this.togglePopUp}
+                      >
+                        <i className="ri-image-line enif-f-1p2x"></i>사진 업로드
+                      </button>
+                    )}
                     <div className="enif-divider"></div>
                     <PhotoList photos={this.photos} />
-                    {
-                      popUpState &&
-                                            <CreatePhoto
-                                              album_id={this.albumInfo.content_id}
-                                              board_id={this.albumInfo.board_id}
-                                              tags={this.tagInfo}
-                                              fetch={this.fetch}
-                                              togglePopUp={this.togglePopUp}
-                                              setReadyState={() => this.setAlbumState(ContentStateEnum.READY)} />
-                    }
-                    {
-                      (albumState === ContentStateEnum.EDITTING) &&
-                                            <EditAlbum
-                                              // album_id={this.albumInfo.content_id}
-                                              albumInfo={this.albumInfo}
-                                              categoryInfo={this.categoryInfo}
-                                              fetch={this.fetch}
-                                              setAlbumState={this.setAlbumState} />
-                    }
+                    {popUpState && (
+                      <CreatePhoto
+                        album_id={this.albumInfo.content_id}
+                        board_id={this.albumInfo.board_id}
+                        tags={this.tagInfo}
+                        fetch={this.fetch}
+                        togglePopUp={this.togglePopUp}
+                        setReadyState={() =>
+                          this.setAlbumState(ContentStateEnum.READY)
+                        }
+                      />
+                    )}
+                    {albumState === ContentStateEnum.EDITTING && (
+                      <EditAlbum
+                        // album_id={this.albumInfo.content_id}
+                        albumInfo={this.albumInfo}
+                        categoryInfo={this.categoryInfo}
+                        fetch={this.fetch}
+                        setAlbumState={this.setAlbumState}
+                      />
+                    )}
                   </div>
                   {/* <Route path="/album/:album_id/photo/:photo_id" component={Photo} /> */}
                 </>
               );
-            }
-            else if (albumState === ContentStateEnum.DELETED && this.albumInfo) {
-              return (
-                <Redirect to={`/board/${this.albumInfo.board_id}`} />
-              );
-            }
-            else {
+            } else if (
+              albumState === ContentStateEnum.DELETED &&
+              this.albumInfo
+            ) {
+              return <Redirect to={`/board/${this.albumInfo.board_id}`} />;
+            } else {
               return <Loading />;
             }
           })()

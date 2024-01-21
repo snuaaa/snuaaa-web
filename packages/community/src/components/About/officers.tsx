@@ -2,7 +2,6 @@ import React from 'react';
 import officers from './officers_tmp.json';
 
 function Officers() {
-
   //TODO : User who is admin can be edit data.
   //TODO : convert to database from json
 
@@ -10,16 +9,10 @@ function Officers() {
     const officerList = officers.map((gen) => {
       return (
         <div className="gen-wrapper" key={gen.generation}>
-          <div className="generation">
-            {gen.generation}대
-          </div>
+          <div className="generation">{gen.generation}대</div>
           <div className="member">
-            <div className="president">
-              {gen.president}
-            </div>
-            <div className="officers">
-              {gen.officers}
-            </div>
+            <div className="president">{gen.president}</div>
+            <div className="officers">{gen.officers}</div>
           </div>
         </div>
       );
@@ -28,7 +21,6 @@ function Officers() {
   };
 
   return (
-
     <div className="intro-div-wrapper" id="officers">
       <div id="intro-top"></div>
       <h3>역대 회장단 / 임원진</h3>

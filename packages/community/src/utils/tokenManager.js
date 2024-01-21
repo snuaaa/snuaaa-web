@@ -12,12 +12,11 @@ export function setToken(token, isAutoLogin) {
   if (isAutoLogin) {
     cookieOption = {
       path: '/',
-      maxAge: 1200000
+      maxAge: 1200000,
     };
-  }
-  else {
+  } else {
     cookieOption = {
-      path: '/'
+      path: '/',
     };
   }
   cookies.set('token', token, cookieOption);
@@ -26,6 +25,6 @@ export function setToken(token, isAutoLogin) {
 
 export function removeToken() {
   cookies.remove('token', {
-    path: '/'
+    path: '/',
   });
 }

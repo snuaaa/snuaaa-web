@@ -17,17 +17,15 @@ import PhotoType from '../../types/PhotoType';
 import ExhibitionType from '../../types/ExhibitionType';
 
 type HomeInfo = {
-    soundBoxData?: any;
-    recentPosts?: ContentType[];
-    recentComments?: CommentType[];
-    recentMemory?: AlbumType[];
-    recentAstrophoto?: PhotoType[];
-    recentExhibitions?: ExhibitionType[]
-
-}
+  soundBoxData?: any;
+  recentPosts?: ContentType[];
+  recentComments?: CommentType[];
+  recentMemory?: AlbumType[];
+  recentAstrophoto?: PhotoType[];
+  recentExhibitions?: ExhibitionType[];
+};
 
 function Home() {
-
   const [isReady, setIsReady] = useState<boolean>(false);
   const [homeData, setHomeData] = useState<HomeInfo>({});
 
@@ -54,7 +52,7 @@ function Home() {
           recentComments: res[2].data,
           recentMemory: res[3].data,
           recentAstrophoto: res[4].data,
-          recentExhibitions: res[5].data
+          recentExhibitions: res[5].data,
         });
         // this.riseSetInfo = res[6].data;
         setIsReady(true);
@@ -66,46 +64,48 @@ function Home() {
 
   // console.log(isReady && soundBoxData && recentPosts && recentComments && recentAstrophoto && recentMemory && recentExhibitions)
 
-  return (
-    isReady ?
-      <div className="home-wrapper">
-        {
-          homeData.soundBoxData &&
-                    <SoundBox soundBoxInfo={homeData.soundBoxData} />
-        }
-        <div className="home-row-mobile">
-          <RiseSetMobile />
-          <ExtLinkMobile />
-        </div>
-        <div className="home-row">
-          {
-            homeData.recentPosts &&
-                        <NewPosts posts={homeData.recentPosts} />
-          }
-          {
-            homeData.recentComments &&
-                        <NewComments comments={homeData.recentComments} />
-          }
-        </div>
-        <div className="home-row">
-          {
-            homeData.recentAstrophoto &&
-                        <NewPhotos title="New 별사진" board_id="brd32" photos={homeData.recentAstrophoto} />
-          }
-          {
-            homeData.recentMemory &&
-                        <NewAlbums title="New 추억만들기" board_id="brd31" albums={homeData.recentMemory} />
-          }
-        </div>
-        <div className="home-row">
-          {
-            homeData.recentExhibitions &&
-                        <NewExhibitions board_id="brd41" exhibitions={homeData.recentExhibitions} />
-          }
-        </div>
+  return isReady ? (
+    <div className="home-wrapper">
+      {homeData.soundBoxData && (
+        <SoundBox soundBoxInfo={homeData.soundBoxData} />
+      )}
+      <div className="home-row-mobile">
+        <RiseSetMobile />
+        <ExtLinkMobile />
       </div>
-      :
-      <Loading />
+      <div className="home-row">
+        {homeData.recentPosts && <NewPosts posts={homeData.recentPosts} />}
+        {homeData.recentComments && (
+          <NewComments comments={homeData.recentComments} />
+        )}
+      </div>
+      <div className="home-row">
+        {homeData.recentAstrophoto && (
+          <NewPhotos
+            title="New 별사진"
+            board_id="brd32"
+            photos={homeData.recentAstrophoto}
+          />
+        )}
+        {homeData.recentMemory && (
+          <NewAlbums
+            title="New 추억만들기"
+            board_id="brd31"
+            albums={homeData.recentMemory}
+          />
+        )}
+      </div>
+      <div className="home-row">
+        {homeData.recentExhibitions && (
+          <NewExhibitions
+            board_id="brd41"
+            exhibitions={homeData.recentExhibitions}
+          />
+        )}
+      </div>
+    </div>
+  ) : (
+    <Loading />
   );
 }
 

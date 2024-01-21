@@ -5,13 +5,12 @@ import imgProfile from '../../assets/img/common/profile.png';
 import AuthContext from '../../contexts/AuthContext';
 
 type PopupUserProps = {
-    profile_path: string;
-    togglePopup: () => void;
-    logout: () => void;
-}
+  profile_path: string;
+  togglePopup: () => void;
+  logout: () => void;
+};
 
 function PopupUser({ profile_path, togglePopup, logout }: PopupUserProps) {
-
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
@@ -29,23 +28,31 @@ function PopupUser({ profile_path, togglePopup, logout }: PopupUserProps) {
         <i className="ri-icons ri-close-fill"></i>
       </div>
       <div className="popup-profile-wrapper">
-        <Image imgSrc={profile_path} defaultImgSrc={imgProfile} className="popup-profile" />
+        <Image
+          imgSrc={profile_path}
+          defaultImgSrc={imgProfile}
+          className="popup-profile"
+        />
       </div>
       <Link to="/mypage/info" onClick={togglePopup}>
         <p>My Page</p>
       </Link>
-      {
-        authContext.authInfo.user.grade <= 6 &&
-                <Link to="/mgt/user" onClick={togglePopup}>
-                  <p>
-                    {/* <i className="ri-admin-line"></i> */}
-                        회원 관리</p>
-                </Link>
-      }
-      <p onClick={() => {
-        logout();
-        togglePopup();
-      }}>Log out</p>
+      {authContext.authInfo.user.grade <= 6 && (
+        <Link to="/mgt/user" onClick={togglePopup}>
+          <p>
+            {/* <i className="ri-admin-line"></i> */}
+            회원 관리
+          </p>
+        </Link>
+      )}
+      <p
+        onClick={() => {
+          logout();
+          togglePopup();
+        }}
+      >
+        Log out
+      </p>
     </div>
   );
 }

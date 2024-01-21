@@ -1,4 +1,10 @@
-import React, { useContext, useState, useEffect, ChangeEvent, useCallback } from 'react';
+import React, {
+  useContext,
+  useState,
+  useEffect,
+  ChangeEvent,
+  useCallback,
+} from 'react';
 
 import UserService from '../../services/UserService';
 import Loading from '../Common/Loading';
@@ -6,12 +12,12 @@ import ProfileComponent from './ProfileComponent';
 import AuthContext from '../../contexts/AuthContext';
 
 type InputFormat = {
-    label: string;
-    value: string;
-    valid?: boolean | null;
-    isRequired: boolean;
-    regExp?: string;
-}
+  label: string;
+  value: string;
+  valid?: boolean | null;
+  isRequired: boolean;
+  regExp?: string;
+};
 
 const defaultUserFormat: InputFormat[] = [
   {
@@ -19,76 +25,76 @@ const defaultUserFormat: InputFormat[] = [
     value: '',
     valid: null,
     isRequired: true,
-    regExp: '^[A-Za-z0-9]{4,12}$'
+    regExp: '^[A-Za-z0-9]{4,12}$',
   },
   {
     label: 'nickname',
     value: '',
     valid: null,
     isRequired: true,
-    regExp: '^[A-Za-z0-9]{4,12}$'
+    regExp: '^[A-Za-z0-9]{4,12}$',
   },
   {
     label: 'username',
     value: '',
     valid: null,
     isRequired: true,
-    regExp: '^[가-힣]{2,6}$|^[A-Za-z ]{2,20}$'
+    regExp: '^[가-힣]{2,6}$|^[A-Za-z ]{2,20}$',
   },
   {
     label: 'email',
     value: '',
     valid: null,
     isRequired: true,
-    regExp: '^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)*$'
+    regExp:
+      '^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)*$',
   },
   {
     label: 'mobile',
     value: '',
     valid: null,
     isRequired: true,
-    regExp: '^[0-9]{1,8}-[0-9]{1,8}-[0-9]{1,8}$'
+    regExp: '^[0-9]{1,8}-[0-9]{1,8}-[0-9]{1,8}$',
   },
   {
     label: 'aaa_no',
     value: '',
     valid: null,
     isRequired: false,
-    regExp: '^[0-9]{2}[Aa]{3}-[0-9]{1,3}|[Aa]{3}[0-9]{2}-[0-9]{1,3}$'
+    regExp: '^[0-9]{2}[Aa]{3}-[0-9]{1,3}|[Aa]{3}[0-9]{2}-[0-9]{1,3}$',
   },
   {
     label: 'col_no',
     value: '',
     valid: null,
     isRequired: false,
-    regExp: '^[0-9]{2}$'
+    regExp: '^[0-9]{2}$',
   },
   {
     label: 'major',
     value: '',
     valid: null,
-    isRequired: false
+    isRequired: false,
   },
   {
     label: 'introduction',
     value: '',
     valid: null,
-    isRequired: false
-  }
+    isRequired: false,
+  },
 ];
 
 function EditProfile() {
-
   const authContext = useContext(AuthContext);
 
   const [userInfo, setUserInfo] = useState(defaultUserFormat);
   const [profileImg, setProfileImg] = useState<File>();
   const [profilePath, setProfilePath] = useState('');
-  const [isProfileImgChanged, setIsProfileImgChanged] = useState<boolean>(false);
+  const [isProfileImgChanged, setIsProfileImgChanged] =
+    useState<boolean>(false);
   const [isShow, setIsShow] = useState<boolean>(false);
 
   const fetch = useCallback(async () => {
-
     setIsShow(false);
 
     await UserService.retrieveUserInfo()
@@ -129,7 +135,7 @@ function EditProfile() {
               info.value = resUserInfo.introduction;
             }
             return { ...info, valid: true };
-          })
+          }),
         );
         setProfilePath(resUserInfo.profile_path);
         setIsProfileImgChanged(false);
@@ -144,23 +150,24 @@ function EditProfile() {
     fetch();
   }, [fetch]);
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-
-    setUserInfo(userInfo.map((info) => {
-      if (info.label === e.target.name) {
-        if (info.regExp) {
-          const re = new RegExp(info.regExp);
-          const valid = e.target.value ? re.test(e.target.value) : null;
-          return { ...info, value: e.target.value, valid: valid };
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    setUserInfo(
+      userInfo.map((info) => {
+        if (info.label === e.target.name) {
+          if (info.regExp) {
+            const re = new RegExp(info.regExp);
+            const valid = e.target.value ? re.test(e.target.value) : null;
+            return { ...info, value: e.target.value, valid: valid };
+          } else {
+            return { ...info, value: e.target.value };
+          }
+        } else {
+          return info;
         }
-        else {
-          return { ...info, value: e.target.value };
-        }
-      }
-      else {
-        return info;
-      }
-    }));
+      }),
+    );
   };
 
   const uploadProfileImg = (e: ChangeEvent<HTMLInputElement>) => {
@@ -172,7 +179,6 @@ function EditProfile() {
   };
 
   const updateInfo = async () => {
-
     setIsShow(false);
     const data = new FormData();
     userInfo.forEach((info) => {
@@ -214,26 +220,26 @@ function EditProfile() {
     let valid: boolean | null | undefined = true;
 
     userInfo.forEach((info) => {
-      if (info.isRequired || (info.valid !== null)) {
+      if (info.isRequired || info.valid !== null) {
         valid = valid && info.valid;
       }
     });
     return valid;
   };
 
-  return (
-    isShow ?
-      <ProfileComponent
-        userInfo={userInfo}
-        profilePath={profilePath}
-        handleChange={handleChange}
-        uploadProfileImg={uploadProfileImg}
-        isProfileImgChanged={isProfileImgChanged}
-        updateInfo={updateInfo}
-        deleteUser={deleteUser}
-        valid={checkValid()} />
-      :
-      <Loading />
+  return isShow ? (
+    <ProfileComponent
+      userInfo={userInfo}
+      profilePath={profilePath}
+      handleChange={handleChange}
+      uploadProfileImg={uploadProfileImg}
+      isProfileImgChanged={isProfileImgChanged}
+      updateInfo={updateInfo}
+      deleteUser={deleteUser}
+      valid={checkValid()}
+    />
+  ) : (
+    <Loading />
   );
 }
 

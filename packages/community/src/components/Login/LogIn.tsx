@@ -10,11 +10,15 @@ import AuthContext from '../../contexts/AuthContext';
 import { useHistory, Redirect, useLocation } from 'react-router';
 
 type LocationState = {
-    accessLocation: string
-}
+  accessLocation: string;
+};
 
 function LogIn() {
-  const [loginInfo, setLoginInfo] = useState({ id: '', password: '', autoLogin: false });
+  const [loginInfo, setLoginInfo] = useState({
+    id: '',
+    password: '',
+    autoLogin: false,
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [popUp, setPopUp] = useState(false);
   const [errPopUp, setErrPopUp] = useState(false);
@@ -38,7 +42,7 @@ function LogIn() {
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setLoginInfo({
       ...loginInfo,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -46,7 +50,7 @@ function LogIn() {
     setPopUp(e.target.checked);
     setLoginInfo({
       ...loginInfo,
-      autoLogin: e.target.checked
+      autoLogin: e.target.checked,
     });
   };
 
@@ -60,25 +64,21 @@ function LogIn() {
   const setAutoLogin = (isAuto: boolean) => {
     setLoginInfo({
       ...loginInfo,
-      autoLogin: isAuto
+      autoLogin: isAuto,
     });
   };
 
-
   const userLogIn = async () => {
-
     setIsLoading(true);
 
     await AuthService.logIn(loginInfo)
       .then((res: any) => {
-
         const { token, userInfo, autoLogin } = res.data;
         setIsLoading(false);
         authContext.authLogin(token, autoLogin, userInfo);
         if (location.state && location.state.accessLocation) {
           history.push(location.state.accessLocation);
-        }
-        else {
+        } else {
           history.push('/');
         }
       })
@@ -108,36 +108,25 @@ function LogIn() {
   };
 
   return (
-
     <>
       {isLoading && <Loading />}
-      {authContext.authInfo.isLoggedIn && <Redirect to='/' />}
-      {
-        findPopUp
-                && <FindIdPw
-                  cancel={() => setFindPopUp(false)}
-                />
-      }
-      {
-        errPopUp &&
-                <PopUp
-                  title={''}
-                  contents={errText}
-                  isAction={false}
-                />
-      }
-      {popUp &&
-                <PopUp
-                  title={popUpTitle}
-                  contents={popUpText}
-                  isAction={true}
-                  cancel={() => {
-                    setPopUp(false);
-                    setAutoLogin(false);
-                  }}
-                  confirm={() => {
-                    setPopUp(false);
-                  }} />}
+      {authContext.authInfo.isLoggedIn && <Redirect to="/" />}
+      {findPopUp && <FindIdPw cancel={() => setFindPopUp(false)} />}
+      {errPopUp && <PopUp title={''} contents={errText} isAction={false} />}
+      {popUp && (
+        <PopUp
+          title={popUpTitle}
+          contents={popUpText}
+          isAction={true}
+          cancel={() => {
+            setPopUp(false);
+            setAutoLogin(false);
+          }}
+          confirm={() => {
+            setPopUp(false);
+          }}
+        />
+      )}
       <FullScreenPortal>
         <LogInComponent
           autoLogin={loginInfo.autoLogin}
@@ -145,7 +134,8 @@ function LogIn() {
           userLogIn={userLogIn}
           guestLogIn={guestLogIn}
           openFindPopUp={() => setFindPopUp(true)}
-          checkAuto={checkAuto} />
+          checkAuto={checkAuto}
+        />
       </FullScreenPortal>
     </>
   );
