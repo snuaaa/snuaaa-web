@@ -5,7 +5,7 @@ const SERVER_URL = process.env.REACT_APP_SERVER_URL;
 
 axios.defaults.headers.common['Authorization'] = 'Bearer ' + getToken();
 
-export const AaaService: any = {
+export const AaaService = {
   get: function (url: string) {
     return axios.get(`${SERVER_URL}api/${url}`);
   },
@@ -52,6 +52,7 @@ export const AaaService: any = {
 //     }
 // }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function createAttachedImage(data: any) {
   return axios.post(SERVER_URL + 'api/image', data);
 }

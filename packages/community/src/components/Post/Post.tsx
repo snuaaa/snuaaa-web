@@ -49,6 +49,7 @@ function Post(props: PostProps) {
         setLikeInfo(res.data.likeInfo);
         setPostState(ContentStateEnum.READY);
       })
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .catch((err: any) => {
         console.error(err);
         if (

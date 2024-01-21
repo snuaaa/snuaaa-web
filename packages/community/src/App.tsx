@@ -43,6 +43,7 @@ function App() {
     } else {
       // 서버에 토큰 확인 , invalid => logout, valid => 로그인 유지(연장)
       await AuthService.checkToken()
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .then((res: any) => {
           const { token, userInfo, autoLogin } = res.data;
           authLogin(token, autoLogin, userInfo);

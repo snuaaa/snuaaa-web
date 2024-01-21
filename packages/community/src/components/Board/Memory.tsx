@@ -48,7 +48,7 @@ function Memory({ boardInfo }: MemoryProps) {
       pageIdx,
       category,
     )
-      .then((res: any) => {
+      .then((res) => {
         setAlbums(res.data.albumInfo);
         setAlbumCount(res.data.albumCount);
         setIsReady(true);

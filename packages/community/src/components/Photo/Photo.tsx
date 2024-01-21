@@ -145,7 +145,7 @@ class Photo extends React.Component<PhotoProps, PhotoState> {
       alert('섬네일로 설정할 수 없습니다.');
     } else {
       await AlbumService.updateAlbumThumbnail(albumInfo.content_id, data)
-        .then((res: any) => {
+        .then(() => {
           console.log('success');
         })
         .catch((err: Error) => {

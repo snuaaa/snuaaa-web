@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { AaaService } from './index';
 import UserType from '../types/UserType';
 import { AxiosPromise } from 'axios';
@@ -86,9 +87,7 @@ const UserService = {
   },
 
   searchMini: function (name: string) {
-    if (name) {
-      return AaaService.get(`userinfo/search/mini?name=${name}`);
-    }
+    return AaaService.get(`userinfo/search/mini?name=${name}`);
   },
 };
 

@@ -17,6 +17,7 @@ import PhotoType from '../../types/PhotoType';
 import ExhibitionType from '../../types/ExhibitionType';
 
 type HomeInfo = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   soundBoxData?: any;
   recentPosts?: ContentType[];
   recentComments?: CommentType[];

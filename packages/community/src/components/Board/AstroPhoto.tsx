@@ -121,7 +121,7 @@ function AstroPhoto({ boardInfo }: AstroPhotoProps) {
         state: {
           isViewAlbums: isViewAlbums,
           page: 1,
-          tags: selectedTags.filter((tag: any) => tagId !== tag),
+          tags: selectedTags.filter((tag) => tagId !== tag),
         },
       });
     } else {

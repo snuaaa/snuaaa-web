@@ -11,13 +11,14 @@ const ContentService = {
   },
 
   likeContent: function (content_id: number) {
-    return AaaService.post(`content/${content_id}/like`);
+    return AaaService.post(`content/${content_id}/like`, {});
   },
 
   retrieveComments: function (parent_id: number) {
     return AaaService.get(`content/${parent_id}/comments`);
   },
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   createComment: function (parent_id: number, data: any) {
     return AaaService.post(`content/${parent_id}/comment`, data);
   },
