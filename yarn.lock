@@ -1312,6 +1312,13 @@
   dependencies:
     ckeditor5 "^37.1.0"
 
+"@ckeditor/ckeditor5-font@37.1.0":
+  version "37.1.0"
+  resolved "https://registry.yarnpkg.com/@ckeditor/ckeditor5-font/-/ckeditor5-font-37.1.0.tgz#b961c83c2a2c1c9d17369631f366a5e67d717e0a"
+  integrity sha512-mkMEtYiPRkI6lDYG1/KK7/JaVrfU5THk4ZK9GS2H+EiUqO4sujjrwzVikPA001WbLNt3C1e+qwCo9PugW4KFlQ==
+  dependencies:
+    ckeditor5 "^37.1.0"
+
 "@ckeditor/ckeditor5-heading@^37.1.0":
   version "37.1.0"
   resolved "https://registry.yarnpkg.com/@ckeditor/ckeditor5-heading/-/ckeditor5-heading-37.1.0.tgz#025c2a59129379d41abffa37c764eeba83467f1b"
