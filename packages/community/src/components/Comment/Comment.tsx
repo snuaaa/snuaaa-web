@@ -10,14 +10,14 @@ import React, {
 import CommentList from './CommentList';
 import CommentService from '../../services/CommentService';
 import AuthContext from '../../contexts/AuthContext';
-import CommentType from '../../types/CommentType';
+import { Comment } from 'types';
 
 type CommentProps = {
   parent_id: number;
 };
 
-function Comment({ parent_id }: CommentProps) {
-  const [comments, setComments] = useState<CommentType[]>([]);
+function CommentSection({ parent_id }: CommentProps) {
+  const [comments, setComments] = useState<Comment[]>([]);
   const [text, setText] = useState<string>('');
   const [editingCommentId, setEditingCommentId] = useState<number>(0);
   const [editingCommentText, setEditingCommentText] = useState<string>('');
@@ -163,4 +163,4 @@ function Comment({ parent_id }: CommentProps) {
   );
 }
 
-export default Comment;
+export default CommentSection;

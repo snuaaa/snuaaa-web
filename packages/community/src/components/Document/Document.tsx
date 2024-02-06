@@ -13,21 +13,22 @@ import DocuComponent from './DocuComponent';
 import EditDocu from './EditDocu';
 import ContentService from '../../services/ContentService';
 import DocuService from '../../services/DocuService';
-import ContentType from '../../types/ContentType';
+
 import AuthContext from '../../contexts/AuthContext';
 import FileService from '../../services/FileService';
+import { Content } from 'types';
 
 const MAX_SIZE = 20 * 1024 * 1024;
 
 function Docu() {
   const match = useRouteMatch<{ doc_id: string }>();
-  const [docuInfo, setDocuInfo] = useState<ContentType>();
+  const [docuInfo, setDocuInfo] = useState<Content>();
   const [likeInfo, setLikeInfo] = useState<boolean>(false);
   const [docState, setDocState] = useState<number>(ContentStateEnum.LOADING);
   const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
   const [, setProgress] = useState<number>(0);
   const [removedFiles, setRemovedFiles] = useState<number[]>([]);
-  const [editingDocData, setEditingDocData] = useState<ContentType>();
+  const [editingDocData, setEditingDocData] = useState<Content>();
   const authContext = useContext(AuthContext);
   let currentSize = 0;
 

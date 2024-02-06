@@ -1,18 +1,17 @@
 import React, { lazy, Suspense, useState, useEffect, useContext } from 'react';
 import { Route, Switch } from 'react-router-dom';
 
-import BoardType from '../types/BoardType';
 import BoardService from '../services/BoardService';
 import BoardContext from '../contexts/BoardContext';
 import RiseSetContext from '../contexts/RiseSetContext';
 import AuthContext from '../contexts/AuthContext';
-import RiseSetType from '../types/RiseSetType';
-import HomeService from '../services/HomeService';
+import HomeService, { RiseSet } from '../services/HomeService';
+import { Board } from 'types';
 
 const AuthRoutes = lazy(() => import('./AuthRoutes'));
 const PageRoutes = lazy(() => import('./PageRoutes'));
 
-const defaultRiseSet: RiseSetType = {
+const defaultRiseSet: RiseSet = {
   aste: 0,
   astm: 0,
   lunAge: 0,
@@ -23,8 +22,8 @@ const defaultRiseSet: RiseSetType = {
 };
 
 function Section() {
-  const [boardsInfo, setBoardsInfo] = useState<BoardType[]>([]);
-  const [riseSetInfo, setRiseSetInfo] = useState<RiseSetType>(defaultRiseSet);
+  const [boardsInfo, setBoardsInfo] = useState<Board[]>([]);
+  const [riseSetInfo, setRiseSetInfo] = useState<RiseSet>(defaultRiseSet);
   const authContext = useContext(AuthContext);
 
   useEffect(() => {

@@ -1,12 +1,12 @@
 import React from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import Image from '../../components/Common/AaaImage';
-import ExhibitPhotoType from '../../types/ExhibitPhotoType';
+import { ExhibitPhoto } from 'types';
 
 function ExhibitPhotoList({
   exhibitPhotos,
 }: {
-  exhibitPhotos: ExhibitPhotoType[];
+  exhibitPhotos: ExhibitPhoto[];
 }) {
   const history = useHistory();
   const makePhotoList = () => {

@@ -1,11 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { Content } from 'types';
 import { AaaService } from './index';
 import { AxiosPromise } from 'axios';
-import ContentType from '../types/ContentType';
+
+export interface CreateDocuRequest {
+  title: string;
+  text: string;
+  generation: number;
+  category_id: string;
+}
 
 const DocuService = {
   retrieveDocument: function (doc_id: number): AxiosPromise<{
-    docuInfo: ContentType;
+    docuInfo: Content;
     likeInfo: boolean;
   }> {
     return AaaService.get(`document/${doc_id}`);
@@ -16,7 +23,7 @@ const DocuService = {
     ctg_id: string,
     generation: number,
   ): AxiosPromise<{
-    docInfo: ContentType[];
+    docInfo: Content[];
     docCount: number;
   }> {
     let categoryUrl = '';
@@ -38,7 +45,7 @@ const DocuService = {
     return AaaService.delete(`document/${doc_id}`);
   },
 
-  createDocument: function (board_id: string, data: any) {
+  createDocument: function (board_id: string, data: CreateDocuRequest) {
     return AaaService.post(`board/${board_id}/document`, data);
   },
 };

@@ -1,8 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { Album, Photo } from 'types';
 import { AaaService } from './index';
 import { AxiosPromise } from 'axios';
-import AlbumType from '../types/AlbumType';
-import PhotoType from '../types/PhotoType';
+
+export interface CreateAlbumRequest {
+  title: string;
+  text: string;
+  category_id?: string;
+  is_private: boolean;
+}
 
 const PhotoBoardService = {
   retrieveAlbumsInPhotoBoard: function (
@@ -10,7 +16,7 @@ const PhotoBoardService = {
     pageIdx: number,
     ctg_id?: string,
   ): AxiosPromise<{
-    albumInfo: AlbumType[];
+    albumInfo: Album[];
     albumCount: number;
   }> {
     if (!ctg_id) {
@@ -24,7 +30,7 @@ const PhotoBoardService = {
     }
   },
 
-  createAlbum: function (board_id: string, data: any) {
+  createAlbum: function (board_id: string, data: CreateAlbumRequest) {
     return AaaService.post(`photoboard/${board_id}/album`, data);
   },
 
@@ -33,7 +39,7 @@ const PhotoBoardService = {
     pageIdx: number,
     tags?: string[],
   ): AxiosPromise<{
-    photoInfo: PhotoType[];
+    photoInfo: Photo[];
     photoCount: number;
   }> {
     if (tags && tags.length > 0) {

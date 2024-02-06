@@ -6,12 +6,12 @@ import DownloadFile from './DownloadFile';
 import ActionDrawer from '../Common/ActionDrawer';
 import history from '../../common/history';
 import FileIcon from '../../components/Common/FileIcon';
-import ContentType from '../../types/ContentType';
-import FileType from '../../types/FileType';
+
 import Editor from '../Common/Editor';
+import { Content, File } from 'types';
 
 type PostComponentProps = {
-  content: ContentType;
+  content: Content;
   my_id: number;
   isLiked: boolean;
   likePost: () => void;
@@ -33,7 +33,7 @@ const PostComponent: React.FC<PostComponentProps> = ({
     if (content.attachedFiles && content.attachedFiles.length > 0) {
       return (
         <div className="file-download-wrapper">
-          {content.attachedFiles.map((file: FileType) => {
+          {content.attachedFiles.map((file: File) => {
             return (
               <div className="file-download-list" key={file.file_id}>
                 <DownloadFile

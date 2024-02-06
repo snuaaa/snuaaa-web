@@ -8,17 +8,17 @@ import Tag from '../../components/Common/Tag';
 import Loading from '../../components/Common/Loading';
 import Paginator from '../../components/Common/Paginator';
 import PhotoBoardService from '../../services/PhotoBoardService';
-import BoardType from '../../types/BoardType';
+
 import BoardName from '../../components/Board/BoardName';
 import AuthContext from '../../contexts/AuthContext';
-import AlbumType from '../../types/AlbumType';
-import PhotoType from '../../types/PhotoType';
+
 import { useLocation, useHistory } from 'react-router';
+import { Album, Board, Photo } from 'types';
 
 const ALBUMROWNUM = 12;
 
 type AstroPhotoProps = {
-  boardInfo: BoardType;
+  boardInfo: Board;
 };
 
 type LocationState = {
@@ -32,11 +32,11 @@ function AstroPhoto({ boardInfo }: AstroPhotoProps) {
   // let photos: PhotoType[] = [];
   // let count: number = 0;
 
-  const [albums, setAlbums] = useState<{ data: AlbumType[]; count: number }>({
+  const [albums, setAlbums] = useState<{ data: Album[]; count: number }>({
     data: [],
     count: 0,
   });
-  const [photos, setPhotos] = useState<{ data: PhotoType[]; count: number }>({
+  const [photos, setPhotos] = useState<{ data: Photo[]; count: number }>({
     data: [],
     count: 0,
   });

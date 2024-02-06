@@ -1,7 +1,6 @@
 import React, { useState, ChangeEvent } from 'react';
 import CreatePostComponent from '../../components/Post/CreatePostComponent';
-import PostService from '../../services/PostService';
-import CrtPostType from '../../types/CrtPostType';
+import PostService, { CreatePostRequest } from '../../services/PostService';
 import ContentService from '../../services/ContentService';
 
 const MAX_SIZE = 20 * 1024 * 1024;
@@ -14,7 +13,7 @@ type CreatePostProps = {
 
 function CreatePost(props: CreatePostProps) {
   let currentSize = 0;
-  const [postInfo, setPostInfo] = useState<CrtPostType>({
+  const [postInfo, setPostInfo] = useState<CreatePostRequest>({
     title: '',
     text: '',
   });

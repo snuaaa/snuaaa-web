@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AaaService } from './index';
 import { AxiosPromise } from 'axios';
-import CommentType from '../types/CommentType';
+import { Comment } from 'types';
 
 const CommentService = {
-  retrieveComments: function (parent_id: number): AxiosPromise<CommentType[]> {
+  retrieveComments: function (parent_id: number): AxiosPromise<Comment[]> {
     return AaaService.get(`content/${parent_id}/comments`);
   },
 

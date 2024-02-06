@@ -1,19 +1,21 @@
 import React, { useState, ChangeEvent } from 'react';
 import EditAlbumComponent from '../../components/Album/EditAlbumComponent';
-import PhotoBoardService from '../../services/PhotoBoardService';
-import CrtAlbumType from '../../types/CrtAlbumType';
-import CategoryType from '../../types/CategoryType';
+import PhotoBoardService, {
+  CreateAlbumRequest,
+} from '../../services/PhotoBoardService';
+
 import useBlockBackgroundScroll from '../../hooks/useBlockBackgroundScroll';
+import { Category } from 'types';
 
 type CreateAlbumProps = {
   board_id: string;
-  categories?: CategoryType[];
+  categories?: Category[];
   togglePopUp: () => void;
   fetch: () => void;
 };
 function CreateAlbum(props: CreateAlbumProps) {
   useBlockBackgroundScroll();
-  const [albumInfo, setAlbumInfo] = useState<CrtAlbumType>({
+  const [albumInfo, setAlbumInfo] = useState<CreateAlbumRequest>({
     title: '',
     text: '',
     is_private: false,

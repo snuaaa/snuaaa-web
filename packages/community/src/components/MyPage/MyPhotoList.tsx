@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom';
 import Image from '../Common/AaaImage';
 import history from '../../common/history';
 import defaultPhotoCover from 'assets/img/default_photo_img.png';
-import PhotoType from '../../types/PhotoType';
+import { Photo } from 'types';
 
-const MyPhotoList = ({ photos }: { photos: PhotoType[] }) => {
+const MyPhotoList = ({ photos }: { photos: Photo[] }) => {
   const makePhotoList = () => {
     if (photos && photos.length > 0) {
       return photos.map((photo) => {

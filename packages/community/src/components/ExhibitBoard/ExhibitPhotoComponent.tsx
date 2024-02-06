@@ -1,12 +1,13 @@
 import React, { Ref } from 'react';
 
 import Image from '../Common/AaaImage';
-import ExhibitPhotoType from '../../types/ExhibitPhotoType';
+
 import ExhibitPhotoInfo from '../ExhibitPhoto/ExhibitPhotoInfo';
 import EditExhibitPhotoInfo from './EditExhibitPhotoInfo';
+import { ExhibitPhoto } from 'types';
 
 type ExhibitPhotoComponentProps = {
-  contentInfo: ExhibitPhotoType;
+  contentInfo: ExhibitPhoto;
   my_id: number;
   fullscreenRef: Ref<HTMLDivElement>;
   clickFullscreen: () => void;

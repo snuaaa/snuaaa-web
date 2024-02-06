@@ -3,12 +3,12 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Image from '../Common/AaaImage';
 import imgDefaultProfile from 'assets/img/common/profile.png';
-import CrtExhibitPhotoType from '../../types/CrtExhibitPhotoType';
-import UserType from '../../types/UserType';
+import { User } from 'types';
+import { CreateExhibitPhotoRequest } from 'services/ExhibitPhotoService';
 
 type CreateExhibitPhotoInfoProps = {
-  photoInfo: CrtExhibitPhotoType;
-  searchUsers: UserType[];
+  photoInfo: CreateExhibitPhotoRequest;
+  searchUsers: User[];
   handleChange: (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => void;
@@ -27,7 +27,7 @@ function CreateExhibitPhotoInfo({
   removePhotographer,
   handlePhotographer,
 }: CreateExhibitPhotoInfoProps) {
-  const makeUserList = function (users: UserType[]) {
+  const makeUserList = function (users: User[]) {
     if (users && users.length > 0) {
       return users.map((user, index) => {
         return (

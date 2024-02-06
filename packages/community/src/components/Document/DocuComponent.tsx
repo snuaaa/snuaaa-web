@@ -7,11 +7,12 @@ import { breakLine } from '../../utils/breakLine';
 import ActionDrawer from '../Common/ActionDrawer';
 
 import FileIcon from '../../components/Common/FileIcon';
-import ContentType from '../../types/ContentType';
+
 import { useHistory } from 'react-router';
+import { Content } from 'types';
 
 type DocuComponentProps = {
-  docData: ContentType;
+  docData: Content;
   my_id: number;
   isLiked: boolean;
   likeDoc: () => Promise<void>;

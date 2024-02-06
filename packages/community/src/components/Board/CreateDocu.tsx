@@ -1,16 +1,16 @@
 import React, { useState, ChangeEvent } from 'react';
-import DocuService from '../../services/DocuService';
-import CrtDocuType from '../../types/CrtDocuType';
+import DocuService, { CreateDocuRequest } from '../../services/DocuService';
 import CreateDocuComponent from '../../components/Document/CreateDocuComponent';
-import BoardType from '../../types/BoardType';
+
 import ContentService from '../../services/ContentService';
 import useBlockBackgroundScroll from '../../hooks/useBlockBackgroundScroll';
+import { Board } from 'types';
 
 const MAX_SIZE = 20 * 1024 * 1024;
 
 type CreateDocuProps = {
   fetch: () => void;
-  boardInfo: BoardType;
+  boardInfo: Board;
   close: () => void;
 };
 
@@ -20,7 +20,7 @@ function CreateDocu(props: CreateDocuProps) {
   if (today.getMonth() > 5) currentGen++;
   let currentSize = 0;
 
-  const [docuInfo, setDocuInfo] = useState<CrtDocuType>({
+  const [docuInfo, setDocuInfo] = useState<CreateDocuRequest>({
     category_id: '',
     generation: currentGen,
     text: '',

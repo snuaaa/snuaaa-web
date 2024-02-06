@@ -1,9 +1,9 @@
 import React from 'react';
-import BoardType from '../types/BoardType';
+import { Board } from 'types';
 
 const defaultBoards: {
-  boardsInfo: BoardType[];
-  setBoardsInfo: (boards: BoardType[]) => void;
+  boardsInfo: Board[];
+  setBoardsInfo: (boards: Board[]) => void;
 } = {
   boardsInfo: [],
   setBoardsInfo: () => {

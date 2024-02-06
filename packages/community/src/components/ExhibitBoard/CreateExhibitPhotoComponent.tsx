@@ -2,8 +2,8 @@ import React, { ChangeEvent } from 'react';
 import CreateExhibitPhotoInfo from '../../components/ExhibitBoard/CreateExhibitPhotoInfo';
 import ThumbnailList from '../../components/Album/ThumbnailList';
 import PreviewImage from '../../components/Album/PreviewImage';
-import CrtExhibitPhototype from '../../types/CrtExhibitPhotoType';
-import UserType from '../../types/UserType';
+import { User } from 'types';
+import { CreateExhibitPhotoRequest } from 'services/ExhibitPhotoService';
 
 type CreateExhibitPhotoComponentProps = {
   handleChange: (
@@ -20,8 +20,8 @@ type CreateExhibitPhotoComponentProps = {
   checkForm: () => void;
   togglePopUp: () => void;
   imgIdx: number;
-  photoInfos: CrtExhibitPhototype[];
-  searchUsers: UserType[];
+  photoInfos: CreateExhibitPhotoRequest[];
+  searchUsers: User[];
   btnDisabled: boolean;
 };
 

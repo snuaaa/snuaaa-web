@@ -1,12 +1,12 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import Image from '../Common/AaaImage';
-import PhotoType from '../../types/PhotoType';
+import { Photo } from 'types';
 
 type NewPhotosProps = {
   title: string;
   board_id: string;
-  photos: PhotoType[];
+  photos: Photo[];
 };
 
 function NewPhotos({ title, board_id, photos }: NewPhotosProps) {

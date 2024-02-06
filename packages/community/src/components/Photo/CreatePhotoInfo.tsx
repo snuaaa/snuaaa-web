@@ -1,10 +1,10 @@
 import React, { ChangeEvent } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import CrtPhotoType from '../../types/CrtPhotoType';
+import { CreatePhotoRequest } from 'services/PhotoService';
 
 type CreatePhotoInfoProps = {
-  photoInfo: CrtPhotoType;
+  photoInfo: CreatePhotoRequest;
   handleChange: (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => void;

@@ -2,12 +2,12 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import defaultAlbumCover from 'assets/img/default_photo_img.png';
 import Image from '../Common/AaaImage';
-import AlbumType from '../../types/AlbumType';
+import { Album } from 'types';
 
 type NewAlbumsProps = {
   title: string;
   board_id: string;
-  albums: AlbumType[];
+  albums: Album[];
 };
 
 function NewAlbums({ title, board_id, albums }: NewAlbumsProps) {

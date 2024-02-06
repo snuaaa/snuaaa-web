@@ -4,13 +4,13 @@ import { breakLine } from '../../utils/breakLine';
 import { convertDynamicTime } from '../../utils/convertDate';
 import defaultProfile from 'assets/img/common/profile.png';
 import UserActionDrawer from '../../components/Common/UserActionDrawer';
-import CommentType from '../../types/CommentType';
-import UserType from '../../types/UserType';
+import { Comment } from 'types';
 import AuthContext from '../../contexts/AuthContext';
+import { User } from 'types';
 
 type CommentListProps = {
   my_id: number;
-  comments: CommentType[];
+  comments: Comment[];
   commentInEdit: number;
   editingContents: string;
   parentCommentId: number;
@@ -46,13 +46,13 @@ const CommentList = ({
 }: CommentListProps) => {
   const authContext = useContext(AuthContext);
 
-  const checkLike = (users: UserType[]) => {
+  const checkLike = (users: User[]) => {
     return users
       .map((user) => user.user_id)
       .includes(authContext.authInfo.user.user_id);
   };
 
-  const makeCommentList = (comments: CommentType[]) => {
+  const makeCommentList = (comments: Comment[]) => {
     if (comments && comments.length > 0) {
       const commentList = comments.map((comment) => {
         const user = comment.user;
@@ -154,7 +154,7 @@ const CommentList = ({
     }
   };
 
-  const makeSubCommentList = (comments: CommentType[]) => {
+  const makeSubCommentList = (comments: Comment[]) => {
     return comments.map((comment) => {
       return (
         <div key={comment.comment_id} className="comment-wrapper sub">

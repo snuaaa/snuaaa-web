@@ -9,11 +9,9 @@ import CreatePhoto from '../../components/Photo/CreatePhoto';
 import BoardName from '../../components/Board/BoardName';
 import AlbumService from '../../services/AlbumService';
 import history from '../../common/history';
-import CategoryType from '../../types/CategoryType';
-import TagType from '../../types/TagType';
+
 import AuthContext from '../../contexts/AuthContext';
-import AlbumType from '../../types/AlbumType';
-import PhotoType from '../../types/PhotoType';
+import { Album, Category, Photo, Tag } from 'types';
 
 type AlbumProps = {
   match: match<{ album_id: string }>;
@@ -26,11 +24,11 @@ type AlbumState = {
   popUpState: boolean;
 };
 
-class Album extends React.Component<AlbumProps, AlbumState> {
-  photos: PhotoType[];
-  albumInfo?: AlbumType;
-  categoryInfo?: CategoryType[];
-  tagInfo?: TagType[];
+class AlbumPage extends React.Component<AlbumProps, AlbumState> {
+  photos: Photo[];
+  albumInfo?: Album;
+  categoryInfo?: Category[];
+  tagInfo?: Tag[];
 
   constructor(props: AlbumProps) {
     super(props);
@@ -196,4 +194,4 @@ class Album extends React.Component<AlbumProps, AlbumState> {
   }
 }
 
-export default Album;
+export default AlbumPage;

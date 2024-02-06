@@ -1,9 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import ContentType from '../../types/ContentType';
 import Editor from '../Common/Editor';
+import { SoundBoxResponse } from 'services/HomeService';
 
-const SoundBox = ({ soundBoxInfo }: { soundBoxInfo: ContentType }) => {
+const SoundBox = ({ soundBoxInfo }: { soundBoxInfo: SoundBoxResponse }) => {
   return (
     <div className="soundbox-wrapper">
       <Link to="/board/brd01">

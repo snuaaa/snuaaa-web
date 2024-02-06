@@ -1,5 +1,5 @@
 import React from 'react';
-import UserType from '../types/UserType';
+import { User } from 'types';
 
 const initialAuth = {
   authInfo: {
@@ -12,7 +12,7 @@ const initialAuth = {
       profile_path: '',
     },
   },
-  authLogin: (token: string, autoLogin: boolean, userInfo: UserType) => {
+  authLogin: (token: string, autoLogin: boolean, userInfo: User) => {
     console.log(token);
   },
   authLogout: () => {

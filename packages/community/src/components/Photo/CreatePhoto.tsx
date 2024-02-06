@@ -3,15 +3,15 @@ import CreatePhotoComponent from '../../components/Photo/CreatePhotoComponent';
 import PhotoBoardService from '../../services/PhotoBoardService';
 import AlbumService from '../../services/AlbumService';
 import { List } from 'immutable';
-import CrtPhotoType from '../../types/CrtPhotoType';
-import TagType from '../../types/TagType';
 import ProgressBar from '../../components/Common/ProgressBar';
+import { Tag } from 'types';
+import { CreatePhotoRequest } from 'services/PhotoService';
 
 const MAX_SIZE = 100 * 1024 * 1024;
 
 type CreatePhotoProps = {
   board_id: string;
-  tags?: TagType[];
+  tags?: Tag[];
   album_id?: number;
   setReadyState: () => void;
   togglePopUp: () => void;
@@ -19,7 +19,7 @@ type CreatePhotoProps = {
 };
 
 type CreatePhotoState = {
-  photoInfo: List<CrtPhotoType>;
+  photoInfo: List<CreatePhotoRequest>;
   uploadPhotos: File[];
   imgIdx: number;
   progress: number;
@@ -37,7 +37,7 @@ class CreatePhoto extends React.Component<CreatePhotoProps, CreatePhotoState> {
     this.currentSize = 0;
     this.imgUrls = [];
     this.state = {
-      photoInfo: List<CrtPhotoType>(),
+      photoInfo: List<CreatePhotoRequest>(),
       uploadPhotos: [],
       imgIdx: -1,
       progress: 0,

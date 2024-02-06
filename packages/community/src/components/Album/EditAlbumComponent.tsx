@@ -1,5 +1,6 @@
 import React, { ChangeEvent } from 'react';
-import CategoryType from '../../types/CategoryType';
+
+import { Category } from 'types';
 
 type EditAlbumComponentProps = {
   caption: string;
@@ -9,7 +10,7 @@ type EditAlbumComponentProps = {
   isPrivate: boolean;
   checkedCategory?: string;
   setIsPrivate: (isPrv: boolean) => void;
-  categories?: CategoryType[];
+  categories?: Category[];
   handleCategory: (e: ChangeEvent<HTMLInputElement>) => void;
   handleChange: (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,

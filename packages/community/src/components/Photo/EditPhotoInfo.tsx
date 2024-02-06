@@ -3,13 +3,12 @@ import ContentStateEnum from '../../common/ContentStateEnum';
 
 import ReactDatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import TagType from '../../types/TagType';
 import { Prompt } from 'react-router';
-import PhotoType from '../../types/PhotoType';
+import { Photo, Tag } from 'types';
 
 type PhotoInfoProps = {
-  photoInfo: PhotoType;
-  boardTagInfo: TagType[];
+  photoInfo: Photo;
+  boardTagInfo: Tag[];
   setPhotoState: (state: number) => void;
   updatePhoto: () => void;
   handleChange: (

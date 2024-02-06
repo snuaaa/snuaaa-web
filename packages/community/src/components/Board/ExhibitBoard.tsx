@@ -6,13 +6,14 @@ import { convertDateWithDay } from '../../utils/convertDate';
 import BoardService from '../../services/BoardService';
 import BoardName from '../../components/Board/BoardName';
 import Image from '../../components/Common/AaaImage';
-import BoardType from '../../types/BoardType';
+
 import AuthContext from '../../contexts/AuthContext';
-import ExhibitionType from '../../types/ExhibitionType';
+
 import CreateExhibition from '../ExhibitBoard/CreateExhibition';
+import { Board, Exhibition } from 'types';
 
 type ExhibitBoardProps = {
-  boardInfo: BoardType;
+  boardInfo: Board;
 };
 
 type ExhibitBoardState = {
@@ -23,7 +24,7 @@ class ExhibitBoard extends React.Component<
   ExhibitBoardProps,
   ExhibitBoardState
 > {
-  exhibitions: ExhibitionType[];
+  exhibitions: Exhibition[];
 
   constructor(props: ExhibitBoardProps) {
     super(props);

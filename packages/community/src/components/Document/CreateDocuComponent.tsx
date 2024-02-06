@@ -1,12 +1,13 @@
 import React, { ChangeEvent } from 'react';
-import CrtDocuType from '../../types/CrtDocuType';
 import AttachFile from '../Post/AttachFile';
-import BoardType from '../../types/BoardType';
+
 import ProgressBar from '../Common/ProgressBar';
+import { Board } from 'types';
+import { CreateDocuRequest } from 'services/DocuService';
 
 type CreateDocuComponentProps = {
-  docuInfo: CrtDocuType;
-  boardInfo: BoardType;
+  docuInfo: CreateDocuRequest;
+  boardInfo: Board;
   attachedFiles: File[];
   isUploading: boolean;
   progress: number;

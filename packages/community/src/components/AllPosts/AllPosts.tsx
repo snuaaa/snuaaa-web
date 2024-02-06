@@ -6,8 +6,9 @@ import AllPostList from '../Post/AllPostList';
 import Paginator from '../Common/Paginator';
 import BoardName from '../Board/BoardName';
 import BoardStateEnum from '../../common/BoardStateEnum';
-import ContentType from '../../types/ContentType';
+
 import { useHistory, useLocation } from 'react-router';
+import { Content } from 'types';
 
 const POSTROWNUM = 10;
 
@@ -16,7 +17,7 @@ type LocationState = {
 };
 
 function AllPosts() {
-  const [posts, setPosts] = useState<ContentType[]>([]);
+  const [posts, setPosts] = useState<Content[]>([]);
   const [postCount, setPostCount] = useState<number>(0);
   const [boardState, setBoardState] = useState<number>(BoardStateEnum.LOADING);
   const history = useHistory();

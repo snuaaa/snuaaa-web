@@ -1,16 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { Board, Exhibition } from 'types';
 import { AaaService } from './index';
 import { AxiosPromise } from 'axios';
-import BoardType from '../types/BoardType';
-import ExhibitionType from '../types/ExhibitionType';
 
 const BoardService = {
-  retrieveBoards: function (): AxiosPromise<BoardType[]> {
+  retrieveBoards: function (): AxiosPromise<Board[]> {
     return AaaService.get('board');
   },
 
   retrieveBoardInfo: function (board_id: string): AxiosPromise<{
-    boardInfo: BoardType;
+    boardInfo: Board;
   }> {
     return AaaService.get(`board/${board_id}`);
   },
@@ -32,7 +31,7 @@ const BoardService = {
 
   retrieveExhibitionsInBoard: function (
     board_id: string,
-  ): AxiosPromise<ExhibitionType[]> {
+  ): AxiosPromise<Exhibition[]> {
     return AaaService.get(`board/${board_id}/exhibitions`);
   },
 

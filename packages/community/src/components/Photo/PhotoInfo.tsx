@@ -6,11 +6,11 @@ import { breakLine } from '../../utils/breakLine';
 import { convertDate, convertFullDate } from '../../utils/convertDate';
 import ActionDrawer from '../Common/ActionDrawer';
 import 'react-datepicker/dist/react-datepicker.css';
-import PhotoType from '../../types/PhotoType';
-import ExhibitPhotoType from '../../types/ExhibitPhotoType';
+
+import { ExhibitPhoto, Photo } from 'types';
 
 type PhotoInfoProps = {
-  photoInfo: PhotoType | ExhibitPhotoType;
+  photoInfo: Photo | ExhibitPhoto;
   likeInfo: boolean;
   my_id: number;
   setPhotoState: (state: number) => void;
@@ -30,10 +30,10 @@ const PhotoInfo = ({
 }: PhotoInfoProps) => {
   const content = photoInfo;
   let photo;
-  if ((photoInfo as PhotoType).photo) {
-    photo = (photoInfo as PhotoType).photo;
-  } else if ((photoInfo as ExhibitPhotoType).exhibitPhoto) {
-    photo = (photoInfo as ExhibitPhotoType).exhibitPhoto;
+  if ((photoInfo as Photo).photo) {
+    photo = (photoInfo as Photo).photo;
+  } else if ((photoInfo as ExhibitPhoto).exhibitPhoto) {
+    photo = (photoInfo as ExhibitPhoto).exhibitPhoto;
   }
   const userInfo = photoInfo && photoInfo.user;
   const tagInfo = photoInfo && photoInfo.tags;

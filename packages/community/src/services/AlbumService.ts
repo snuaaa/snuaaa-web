@@ -1,9 +1,6 @@
+import { Album, Category, Content, Tag } from 'types';
 import { AaaService } from './index';
 import { AxiosPromise } from 'axios';
-import AlbumType from '../types/AlbumType';
-import CategoryType from '../types/CategoryType';
-import TagType from '../types/TagType';
-import ContentType from '../types/ContentType';
 
 const AlbumService = {
   createPhotosInAlbum: function (
@@ -15,14 +12,14 @@ const AlbumService = {
   },
 
   retrieveAlbum: function (album_id: number): AxiosPromise<{
-    albumInfo: AlbumType;
-    categoryInfo: CategoryType[];
-    tagInfo: TagType[];
+    albumInfo: Album;
+    categoryInfo: Category[];
+    tagInfo: Tag[];
   }> {
     return AaaService.get(`album/${album_id}`);
   },
 
-  updateAlbum: function (album_id: number, data: ContentType) {
+  updateAlbum: function (album_id: number, data: Content) {
     return AaaService.patch(`album/${album_id}`, data);
   },
 
