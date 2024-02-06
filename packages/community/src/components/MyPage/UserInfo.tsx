@@ -7,10 +7,7 @@ import MyCommentList from './MyCommentList';
 import MyPageSelector from './MyPageSelector';
 import MyPageViewEnum from '../../common/MyPageViewEnum';
 import UserService from '../../services/UserService';
-import UserType from '../../types/UserType';
-import ContentType from '../../types/ContentType';
-import PhotoType from '../../types/PhotoType';
-import CommentType from '../../types/CommentType';
+import { Content, Comment, Photo, User } from 'types';
 
 type UserInfoProps = {
   user_uuid?: string;
@@ -18,10 +15,10 @@ type UserInfoProps = {
 };
 
 function UserInfo({ user_uuid, isMyinfo }: UserInfoProps) {
-  const [postList, setPostList] = useState<ContentType[]>([]);
-  const [photoList, setPhotoList] = useState<PhotoType[]>([]);
-  const [commentList, setCommentList] = useState<CommentType[]>([]);
-  const [userInfo, setUserInfo] = useState<UserType>();
+  const [postList, setPostList] = useState<Content[]>([]);
+  const [photoList, setPhotoList] = useState<Photo[]>([]);
+  const [commentList, setCommentList] = useState<Comment[]>([]);
+  const [userInfo, setUserInfo] = useState<User>();
   const [isShow, setIsShow] = useState<boolean>(false);
   const [userContentView, setUserContentView] = useState<number>(
     MyPageViewEnum.POST,

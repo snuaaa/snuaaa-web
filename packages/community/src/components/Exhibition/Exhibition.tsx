@@ -7,8 +7,7 @@ import CreateExhibitPhoto from './CreateExhibitPhoto';
 import ExhibitionInfo from '../ExhibitBoard/ExhibitionInfo';
 import ExhibitPhotoList from '../ExhibitBoard/ExhibitPhotoList';
 import AuthContext from '../../contexts/AuthContext';
-import ExhibitionType from '../../types/ExhibitionType';
-import ExhibitPhotoType from '../../types/ExhibitPhotoType';
+import { ExhibitPhoto, Exhibition } from 'types';
 
 type ExhibitionProps = {
   match: match<{ exhibition_id: string }>;
@@ -19,9 +18,9 @@ type ExhibitionState = {
   popUpState: boolean;
 };
 
-class Exhibition extends React.Component<ExhibitionProps, ExhibitionState> {
-  exhibitionInfo?: ExhibitionType;
-  exhibitPhotos: ExhibitPhotoType[];
+class ExhibitionPage extends React.Component<ExhibitionProps, ExhibitionState> {
+  exhibitionInfo?: Exhibition;
+  exhibitPhotos: ExhibitPhoto[];
 
   constructor(props: ExhibitionProps) {
     super(props);
@@ -157,4 +156,4 @@ class Exhibition extends React.Component<ExhibitionProps, ExhibitionState> {
   }
 }
 
-export default Exhibition;
+export default ExhibitionPage;

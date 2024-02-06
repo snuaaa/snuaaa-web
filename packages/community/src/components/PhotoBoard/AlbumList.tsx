@@ -3,11 +3,11 @@ import { Link } from 'react-router-dom';
 import defaultAlbumCover from 'assets/img/default_photo_img.png';
 import defaultStarAlbumCover from 'assets/img/default_photo_img_star.png';
 import Image from '../Common/AaaImage';
-import AlbumType from '../../types/AlbumType';
+import { Album } from 'types';
 
 type AlbumListProps = {
   board_id: string;
-  albums: AlbumType[];
+  albums: Album[];
 };
 
 function AlbumList({ board_id, albums }: AlbumListProps) {

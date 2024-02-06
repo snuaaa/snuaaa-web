@@ -2,15 +2,15 @@ import React, { ChangeEvent, useState } from 'react';
 
 import 'react-datepicker/dist/react-datepicker.css';
 import { Prompt } from 'react-router';
-import ExhibitPhotoType from '../../types/ExhibitPhotoType';
 import CreateExhibitPhotoInfo from './CreateExhibitPhotoInfo';
-import CrtExhibitPhotoType from '../../types/CrtExhibitPhotoType';
-import UserType from '../../types/UserType';
 import UserService from '../../services/UserService';
-import ExhibitPhotoService from '../../services/ExhibitPhotoService';
+import ExhibitPhotoService, {
+  CreateExhibitPhotoRequest,
+} from '../../services/ExhibitPhotoService';
+import { ExhibitPhoto, User } from 'types';
 
 type EditExhibitPhotoInfoProps = {
-  exhibitPhotoInfo: ExhibitPhotoType;
+  exhibitPhotoInfo: ExhibitPhoto;
   fetch: () => void;
   cancel: () => void;
 };
@@ -20,9 +20,9 @@ function EditExhibitPhotoInfo({
   fetch,
   cancel,
 }: EditExhibitPhotoInfoProps) {
-  const [searchUsers, setSearchUsers] = useState<UserType[]>([]);
+  const [searchUsers, setSearchUsers] = useState<User[]>([]);
   const [edittingContentInfo, setEdittingContentInfo] =
-    useState<CrtExhibitPhotoType>({
+    useState<CreateExhibitPhotoRequest>({
       title: exhibitPhotoInfo.title,
       text: exhibitPhotoInfo.text,
       order: exhibitPhotoInfo.exhibitPhoto.order,

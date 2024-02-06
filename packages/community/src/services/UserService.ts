@@ -1,15 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AaaService } from './index';
-import UserType from '../types/UserType';
+
 import { AxiosPromise } from 'axios';
 import { UsersSearchType } from '../types/SearchTypes';
-import ContentType from '../types/ContentType';
-import CommentType from '../types/CommentType';
-import PhotoType from '../types/PhotoType';
+
+import { Comment, Content, Photo, User } from 'types';
 
 const UserService = {
   retrieveUserInfo: function (user_uuid?: string): AxiosPromise<{
-    userInfo: UserType;
+    userInfo: User;
   }> {
     if (user_uuid) {
       return AaaService.get(`userinfo/${user_uuid}`);
@@ -27,7 +26,7 @@ const UserService = {
   },
 
   retrieveUsers: function (sortOption?: UsersSearchType): AxiosPromise<{
-    userInfo: UserType[];
+    userInfo: User[];
     count: number;
   }> {
     let query = '';
@@ -45,7 +44,7 @@ const UserService = {
   },
 
   retrieveUserPosts: function (user_uuid?: string): AxiosPromise<{
-    postList: ContentType[];
+    postList: Content[];
   }> {
     if (user_uuid) {
       return AaaService.get(`userinfo/${user_uuid}/posts`);
@@ -55,7 +54,7 @@ const UserService = {
   },
 
   retrieveUserPhotos: function (user_uuid?: string): AxiosPromise<{
-    photoList: PhotoType[];
+    photoList: Photo[];
   }> {
     if (user_uuid) {
       return AaaService.get(`userinfo/${user_uuid}/photos`);
@@ -65,7 +64,7 @@ const UserService = {
   },
 
   retrieveUserComments: function (user_uuid?: string): AxiosPromise<{
-    commentList: CommentType[];
+    commentList: Comment[];
   }> {
     if (user_uuid) {
       return AaaService.get(`userinfo/${user_uuid}/comments`);

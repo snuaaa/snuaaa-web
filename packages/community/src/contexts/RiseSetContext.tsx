@@ -1,7 +1,7 @@
 import React from 'react';
-import RiseSetType from '../types/RiseSetType';
+import { RiseSet } from 'services/HomeService';
 
-const defaultRiseSet: RiseSetType = {
+const defaultRiseSet: RiseSet = {
   aste: 0,
   astm: 0,
   lunAge: 0,

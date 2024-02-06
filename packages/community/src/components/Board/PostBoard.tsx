@@ -15,10 +15,10 @@ import BoardName from '../../components/Board/BoardName';
 import SearchTypeEnum from '../../common/SearchTypeEnum';
 import BoardService from '../../services/BoardService';
 import SelectBox from '../../components/Common/SelectBox';
-import BoardType from '../../types/BoardType';
-import ContentType from '../../types/ContentType';
+
 import AuthContext from '../../contexts/AuthContext';
 import { useLocation, useHistory } from 'react-router';
+import { Board, Content } from 'types';
 
 const POSTROWNUM = 10;
 const searchOptions = [
@@ -41,7 +41,7 @@ const searchOptions = [
 ];
 
 type PostBoardProps = {
-  boardInfo: BoardType;
+  boardInfo: Board;
 };
 
 type LocationState = {
@@ -56,7 +56,7 @@ function PostBoard({ boardInfo }: PostBoardProps) {
   const location = useLocation<LocationState>();
   const history = useHistory();
   const [boardState, setBoardState] = useState<number>(BoardStateEnum.LOADING);
-  const [posts, setPosts] = useState<ContentType[]>([]);
+  const [posts, setPosts] = useState<Content[]>([]);
   const [postCount, setPostCount] = useState<number>(0);
   const [searchInfo, setSearchInfo] = useState<{
     type: string;

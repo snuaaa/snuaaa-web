@@ -3,9 +3,9 @@ import Image from './AaaImage';
 import defaultProfile from 'assets/img/common/profile.png';
 import { breakLine } from '../../utils/breakLine';
 import UserActionDrawer from './UserActionDrawer';
-import UserType from '../../types/UserType';
+import { User } from 'types';
 
-function ProfileMini({ userInfo }: { userInfo: UserType }) {
+function ProfileMini({ userInfo }: { userInfo: User }) {
   const [isExpand, setIsExpand] = useState(false);
 
   const descClass = isExpand ? 'userdesc expanded' : 'userdesc';

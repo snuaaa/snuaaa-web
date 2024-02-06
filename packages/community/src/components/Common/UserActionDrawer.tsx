@@ -1,13 +1,13 @@
-import React, { useState, ReactChild, MouseEvent } from 'react';
+import React, { useState, MouseEvent, PropsWithChildren } from 'react';
 import { Link } from 'react-router-dom';
-import UserType from '../../types/UserType';
+
 import AaaImage from './AaaImage';
 import defaultProfile from 'assets/img/common/profile.png';
 import { gradeAssigner } from '../../utils/gradeAssigner';
+import { User } from 'types';
 
 type UserActionDrawerProps = {
-  children: ReactChild;
-  userInfo: UserType;
+  userInfo: User;
   className?: string;
 };
 
@@ -15,7 +15,7 @@ function UserActionDrawer({
   children,
   userInfo,
   className,
-}: UserActionDrawerProps) {
+}: PropsWithChildren<UserActionDrawerProps>) {
   const [isOpened, setIsOpened] = useState(false);
 
   // useEffect(() => {

@@ -1,19 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { Content, File } from 'types';
 import { AaaService } from './index';
 import { AxiosPromise } from 'axios';
-import ContentType from '../types/ContentType';
-import FileType from '../types/FileType';
+
+export interface CreatePostRequest {
+  title: string;
+  text: string;
+}
 
 const PostService = {
   retrievePost: function (post_id: number): AxiosPromise<{
-    postInfo: ContentType;
+    postInfo: Content;
     likeInfo: boolean;
-    fileInfo: FileType[];
+    fileInfo: File[];
   }> {
     return AaaService.get(`post/${post_id}`);
   },
 
-  updatePost: function (post_id: number, data: any) {
+  updatePost: function (post_id: number, data: CreatePostRequest) {
     return AaaService.patch(`post/${post_id}`, data);
   },
 
@@ -21,7 +25,7 @@ const PostService = {
     return AaaService.delete(`post/${post_id}`);
   },
 
-  createPost: function (board_id: string, data: any) {
+  createPost: function (board_id: string, data: CreatePostRequest) {
     return AaaService.post(`board/${board_id}/post`, data);
   },
 };

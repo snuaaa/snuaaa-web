@@ -5,10 +5,10 @@ import defaultProfile from 'assets/img/common/profile.png';
 import ActionDrawer from '../Common/ActionDrawer';
 import Image from '../Common/AaaImage';
 import 'react-datepicker/dist/react-datepicker.css';
-import ExhibitPhotoType from '../../types/ExhibitPhotoType';
+import { ExhibitPhoto } from 'types';
 
 type ExhibitPhotoInfoProps = {
-  photoInfo: ExhibitPhotoType;
+  photoInfo: ExhibitPhoto;
   my_id: number;
   setEditState: () => void;
   deletePhoto: () => void;

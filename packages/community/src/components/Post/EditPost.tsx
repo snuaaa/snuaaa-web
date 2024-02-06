@@ -1,12 +1,13 @@
 import React, { ChangeEvent } from 'react';
 import Editor from '../Common/Editor';
-import ContentType from '../../types/ContentType';
+
 import AttachFile from './AttachFile';
-import FileType from '../../types/FileType';
+
 import FileIcon from '../Common/FileIcon';
+import { Content, File as FileType } from 'types';
 
 type EditPostProps = {
-  postInfo: ContentType;
+  postInfo: Content;
   isBtnDisabled: boolean;
   handleEditting: (e: ChangeEvent<HTMLInputElement>) => void;
   handleEdittingText: (text: string) => void;

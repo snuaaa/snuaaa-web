@@ -6,16 +6,17 @@ import Category from '../../components/Common/Category';
 import Loading from '../../components/Common/Loading';
 import Paginator from '../../components/Common/Paginator';
 import PhotoBoardService from '../../services/PhotoBoardService';
-import BoardType from '../../types/BoardType';
+
 import BoardName from '../../components/Board/BoardName';
 import AuthContext from '../../contexts/AuthContext';
-import AlbumType from '../../types/AlbumType';
+
 import { useHistory, useLocation } from 'react-router';
+import { Album, Board } from 'types';
 
 const ALBUMROWNUM = 12;
 
 type MemoryProps = {
-  boardInfo: BoardType;
+  boardInfo: Board;
 };
 
 type LocationState = {
@@ -29,7 +30,7 @@ function Memory({ boardInfo }: MemoryProps) {
 
   const [popUpState, setPopUpState] = useState<boolean>(false);
   const [isReady, setIsReady] = useState<boolean>(false);
-  const [albums, setAlbums] = useState<AlbumType[]>([]);
+  const [albums, setAlbums] = useState<Album[]>([]);
   const [albumCount, setAlbumCount] = useState<number>(0);
   const history = useHistory();
   const location = useLocation<LocationState>();

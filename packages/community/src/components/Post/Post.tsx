@@ -16,10 +16,11 @@ import history from '../../common/history';
 import BoardName from '../Board/BoardName';
 import PostService from '../../services/PostService';
 import ContentService from '../../services/ContentService';
-import ContentType from '../../types/ContentType';
+
 import AuthContext from '../../contexts/AuthContext';
 import ProgressBar from '../Common/ProgressBar';
 import FileService from '../../services/FileService';
+import { Content } from 'types';
 
 const MAX_SIZE = 20 * 1024 * 1024;
 
@@ -29,11 +30,11 @@ type PostProps = {
 
 function Post(props: PostProps) {
   const [likeInfo, setLikeInfo] = useState<boolean>(false);
-  const [postInfo, setPostInfo] = useState<ContentType>();
+  const [postInfo, setPostInfo] = useState<Content>();
   const [postState, setPostState] = useState<number>(ContentStateEnum.LOADING);
   const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
   const [progress, setProgress] = useState<number>(0);
-  const [editingPostData, setEditingPostData] = useState<ContentType>();
+  const [editingPostData, setEditingPostData] = useState<Content>();
   const [removedFiles, setRemovedFiles] = useState<number[]>([]);
   const authContext = useContext(AuthContext);
   let currentSize = 0;
@@ -72,6 +73,7 @@ function Post(props: PostProps) {
   }, [fetch]);
 
   const updatePost = async () => {
+    if (!editingPostData) return;
     const post_id = Number(props.match.params.post_id);
     setPostState(ContentStateEnum.CREATING);
     try {

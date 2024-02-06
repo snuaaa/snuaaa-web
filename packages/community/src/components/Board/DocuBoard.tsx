@@ -8,15 +8,15 @@ import CreateDocu from './CreateDocu';
 import BoardStateEnum from '../../common/BoardStateEnum';
 import BoardName from '../../components/Board/BoardName';
 import DocuService from '../../services/DocuService';
-import BoardType from '../../types/BoardType';
-import ContentType from '../../types/ContentType';
+
 import AuthContext from '../../contexts/AuthContext';
 import { useLocation, useHistory } from 'react-router';
+import { Board, Content } from 'types';
 
 const DOCROWNUM = 10;
 
 type DocuBoardProps = {
-  boardInfo: BoardType;
+  boardInfo: Board;
 };
 
 type LocationState = {
@@ -31,7 +31,7 @@ function DocuBoard({ boardInfo }: DocuBoardProps) {
   const location = useLocation<LocationState>();
 
   const [boardState, setBoardState] = useState<number>(BoardStateEnum.LOADING);
-  const [documents, setDocuments] = useState<ContentType[]>([]);
+  const [documents, setDocuments] = useState<Content[]>([]);
   const [docCount, setDocCount] = useState<number>(0);
 
   const fetch = useCallback(async () => {

@@ -7,23 +7,24 @@ import FullScreenPortal from '../../containers/FullScreenPortal';
 import ExhibitPhotoComponent from '../ExhibitBoard/ExhibitPhotoComponent';
 import { RecordOf, Record } from 'immutable';
 import AuthContext from '../../contexts/AuthContext';
-import ExhibitPhotoType from '../../types/ExhibitPhotoType';
+
 import useBlockBackgroundScroll from '../../hooks/useBlockBackgroundScroll';
+import { ExhibitPhoto } from 'types';
 
 type LocationState = {
   backgroundLocation: string;
 };
 
-function ExhibitPhoto() {
+function ExhibitPhotoPage() {
   const location = useLocation<LocationState>();
   const history = useHistory();
   const match = useRouteMatch<{ exhibitPhoto_id: string }>();
   const fullscreenRef = createRef<HTMLDivElement>();
 
-  const [exhibitPhotosInfo, setexhibitPhotosInfo] = useState<
-    ExhibitPhotoType[]
-  >([]);
-  const [contentInfo, setContentInfo] = useState<RecordOf<ExhibitPhotoType>>();
+  const [exhibitPhotosInfo, setexhibitPhotosInfo] = useState<ExhibitPhoto[]>(
+    [],
+  );
+  const [contentInfo, setContentInfo] = useState<RecordOf<ExhibitPhoto>>();
   const [photoState, setPhotoState] = useState<number>(
     ContentStateEnum.LOADING,
   );
@@ -195,4 +196,4 @@ function ExhibitPhoto() {
   );
 }
 
-export default ExhibitPhoto;
+export default ExhibitPhotoPage;

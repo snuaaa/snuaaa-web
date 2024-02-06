@@ -8,35 +8,27 @@ import NewExhibitions from './NewExhibitions';
 import RiseSetMobile from './RiseSetMobile';
 import ExtLinkMobile from './ExtLinkMobile';
 import BoardService from '../../services/BoardService';
-import HomeService from '../../services/HomeService';
-import ContentType from '../../types/ContentType';
-import CommentType from '../../types/CommentType';
+import HomeService, { SoundBoxResponse } from '../../services/HomeService';
+import { Album, Comment, Content, Exhibition, Photo } from 'types';
 import NewAlbums from './NewAlbums';
-import AlbumType from '../../types/AlbumType';
-import PhotoType from '../../types/PhotoType';
-import ExhibitionType from '../../types/ExhibitionType';
 
 type HomeInfo = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  soundBoxData?: any;
-  recentPosts?: ContentType[];
-  recentComments?: CommentType[];
-  recentMemory?: AlbumType[];
-  recentAstrophoto?: PhotoType[];
-  recentExhibitions?: ExhibitionType[];
+  soundBoxData?: SoundBoxResponse;
+  recentPosts?: Content[];
+  recentComments?: Comment[];
+  recentMemory?: Album[];
+  recentAstrophoto?: Photo[];
+  recentExhibitions?: Exhibition[];
 };
 
 function Home() {
-  const [isReady, setIsReady] = useState<boolean>(false);
-  const [homeData, setHomeData] = useState<HomeInfo>({});
+  const [homeData, setHomeData] = useState<HomeInfo>();
 
   useEffect(() => {
     fetch();
   }, []);
 
   const fetch = async () => {
-    setIsReady(false);
-
     await Promise.all([
       HomeService.retrieveSoundBox(),
       HomeService.retrieveRecentPosts(),
@@ -55,17 +47,17 @@ function Home() {
           recentAstrophoto: res[4].data,
           recentExhibitions: res[5].data,
         });
-        // this.riseSetInfo = res[6].data;
-        setIsReady(true);
       })
       .catch((err) => {
         console.error(err);
       });
   };
 
-  // console.log(isReady && soundBoxData && recentPosts && recentComments && recentAstrophoto && recentMemory && recentExhibitions)
+  if (!homeData) {
+    return <Loading />;
+  }
 
-  return isReady ? (
+  return (
     <div className="home-wrapper">
       {homeData.soundBoxData && (
         <SoundBox soundBoxInfo={homeData.soundBoxData} />
@@ -105,8 +97,6 @@ function Home() {
         )}
       </div>
     </div>
-  ) : (
-    <Loading />
   );
 }
 

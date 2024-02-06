@@ -6,8 +6,9 @@ import MyCommentList from '../MyPage/MyCommentList';
 import Paginator from '../Common/Paginator';
 import BoardName from '../Board/BoardName';
 import BoardStateEnum from '../../common/BoardStateEnum';
-import CommentType from '../../types/CommentType';
+
 import { useLocation, useHistory } from 'react-router';
+import { Comment } from 'types';
 
 const COMMENTROWNUM = 10;
 
@@ -16,7 +17,7 @@ type LocationState = {
 };
 
 function AllComments() {
-  const [comments, setComments] = useState<CommentType[]>([]);
+  const [comments, setComments] = useState<Comment[]>([]);
   const [commentCount, setCommentCount] = useState<number>(0);
   const [boardState, setBoardState] = useState<number>(BoardStateEnum.LOADING);
   const history = useHistory();

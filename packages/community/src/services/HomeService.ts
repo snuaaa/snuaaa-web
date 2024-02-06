@@ -1,11 +1,22 @@
 import { AaaService } from './index';
 import { AxiosPromise } from 'axios';
-import CommentType from '../types/CommentType';
-import ContentType from '../types/ContentType';
-import RiseSetType from '../types/RiseSetType';
+
+import { Content, Comment } from 'types';
+
+export interface RiseSet {
+  lunAge: number;
+  sunrise: number;
+  sunset: number;
+  moonrise: number;
+  moonset: number;
+  astm: number;
+  aste: number;
+}
+
+export type SoundBoxResponse = Pick<Content, 'content_id' | 'title' | 'text'>;
 
 const HomeService = {
-  retrieveSoundBox: function () {
+  retrieveSoundBox: function (): AxiosPromise<SoundBoxResponse> {
     return AaaService.get('home/soundbox');
   },
 
@@ -14,7 +25,7 @@ const HomeService = {
   },
 
   retrieveAllPosts: function (pageIdx: number): AxiosPromise<{
-    postInfo: ContentType[];
+    postInfo: Content[];
     postCount: number;
   }> {
     return AaaService.get(`home/posts/all?page=${pageIdx}`);
@@ -25,7 +36,7 @@ const HomeService = {
   },
 
   retrieveAllComments: function (pageIdx: number): AxiosPromise<{
-    commentInfo: CommentType[];
+    commentInfo: Comment[];
     commentCount: number;
   }> {
     return AaaService.get(`home/comments/all?page=${pageIdx}`);
@@ -39,7 +50,7 @@ const HomeService = {
     return AaaService.get('home/astrophoto');
   },
 
-  retrieveRiseSet: function (): AxiosPromise<RiseSetType> {
+  retrieveRiseSet: function (): AxiosPromise<RiseSet> {
     return AaaService.get('home/riseset');
   },
 };

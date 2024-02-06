@@ -9,7 +9,7 @@ import { getToken, setToken, removeToken } from './utils/tokenManager';
 import AuthService from './services/AuthService';
 import AuthContext from './contexts/AuthContext';
 import AuthType from './types/AuthType';
-import UserType from './types/UserType';
+import { User } from 'types';
 
 const initialAuth: AuthType = {
   isLoggedIn: false,
@@ -78,7 +78,7 @@ function App() {
     checkToken();
   }, [checkToken]);
 
-  const authLogin = (token: string, autoLogin: boolean, userInfo: UserType) => {
+  const authLogin = (token: string, autoLogin: boolean, userInfo: User) => {
     setToken(token, autoLogin);
     setAuthinfo({
       isLoggedIn: true,

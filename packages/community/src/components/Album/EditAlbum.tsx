@@ -4,18 +4,18 @@ import EditAlbumComponent from '../../components/Album/EditAlbumComponent';
 import ContentStateEnum from '../../common/ContentStateEnum';
 import AlbumService from '../../services/AlbumService';
 import { RecordOf, Record } from 'immutable';
-import CategoryType from '../../types/CategoryType';
-import AlbumType from '../../types/AlbumType';
+
+import { Album, Category } from 'types';
 
 type EditAlbumProps = {
-  albumInfo: AlbumType;
-  categoryInfo?: CategoryType[];
+  albumInfo: Album;
+  categoryInfo?: Category[];
   setAlbumState: (state: number) => void;
   fetch: () => void;
 };
 
 type EditAlbumState = {
-  albumInfo: RecordOf<AlbumType>;
+  albumInfo: RecordOf<Album>;
 };
 
 class EditAlbum extends React.Component<EditAlbumProps, EditAlbumState> {

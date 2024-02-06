@@ -1,11 +1,27 @@
+import { ExhibitPhoto, User } from 'types';
 import { AaaService } from './index';
 import { AxiosPromise } from 'axios';
-import ExhibitPhotoType from '../types/ExhibitPhotoType';
+
+export interface CreateExhibitPhotoRequest {
+  title: string;
+  text: string;
+  order: number;
+  photographer: User;
+  photographer_alt: string;
+  date?: Date;
+  location?: string;
+  camera?: string;
+  lens?: string;
+  focal_length?: string;
+  f_stop?: string;
+  exposure_time?: string;
+  iso?: string;
+}
 
 const ExhibitPhotoService = {
   retrieveExhibitPhoto: function (exhibitPhoto_id: number): AxiosPromise<{
-    exhibitPhotoInfo: ExhibitPhotoType;
-    exhibitPhotosInfo: ExhibitPhotoType[];
+    exhibitPhotoInfo: ExhibitPhoto;
+    exhibitPhotosInfo: ExhibitPhoto[];
     likeInfo: boolean;
   }> {
     return AaaService.get(`exhibitPhoto/${exhibitPhoto_id}`);

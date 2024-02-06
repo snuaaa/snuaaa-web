@@ -2,8 +2,9 @@ import React, { ChangeEvent } from 'react';
 import CreatePhotoInfo from '../../components/Photo/CreatePhotoInfo';
 import ThumbnailList from '../../components/Album/ThumbnailList';
 import PreviewImage from '../../components/Album/PreviewImage';
-import TagType from '../../types/TagType';
-import CrtPhotoType from '../../types/CrtPhotoType';
+
+import { Tag } from 'types';
+import { CreatePhotoRequest } from 'services/PhotoService';
 
 type CreatePhotoComponentProps = {
   handleChange: (
@@ -11,7 +12,7 @@ type CreatePhotoComponentProps = {
   ) => void;
   handleDate: (date: Date) => void;
   uploadFile: (e: ChangeEvent<HTMLInputElement>) => void;
-  tags?: TagType[];
+  tags?: Tag[];
   clickTag: (e: ChangeEvent<HTMLInputElement>) => void;
   imgUrls: string[];
   setImgIdx: (index: number) => void;
@@ -19,7 +20,7 @@ type CreatePhotoComponentProps = {
   checkForm: () => void;
   togglePopUp: () => void;
   imgIdx: number;
-  photoInfo?: CrtPhotoType;
+  photoInfo?: CreatePhotoRequest;
   // btnDisabled: boolean;
   isUploading: boolean;
 };
@@ -41,7 +42,7 @@ function CreatePhotoComponent({
 }: CreatePhotoComponentProps) {
   const makeTagList = () => {
     if (photoInfo && tags) {
-      return tags.map((tag: TagType) => {
+      return tags.map((tag: Tag) => {
         const labelClassName =
           tag.tag_type === 'M' ? 'tag-label-1' : 'tag-label-2';
         return (

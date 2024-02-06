@@ -3,12 +3,13 @@ import { Link } from 'react-router-dom';
 import AaaImage from '../Common/AaaImage';
 import imgDefaultProfile from 'assets/img/common/profile.png';
 import { breakLine } from '../../utils/breakLine';
-import UserType from '../../types/UserType';
+
 import { gradeAssigner } from '../../utils/gradeAssigner';
 import defaultProfile from 'assets/img/common/profile.png';
+import { User } from 'types';
 
 type MyProfileProps = {
-  userInfo: UserType;
+  userInfo: User;
   isCanEdit: boolean;
 };
 

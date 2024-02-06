@@ -1,15 +1,15 @@
 import React, { useEffect, useState, MouseEvent, useCallback } from 'react';
 import UserService from '../../services/UserService';
-import UserType from '../../types/UserType';
 import { convertFullDate, convertDateWithDay } from '../../utils/convertDate';
 import { UsersSearchType } from '../../types/SearchTypes';
 import Paginator from '../Common/Paginator';
 import { useHistory } from 'react-router';
+import { User } from 'types';
 
 const USER_ROW_NUM = 20;
 
 function MgtUser() {
-  const [userInfo, setUserInfo] = useState<UserType[]>([]);
+  const [userInfo, setUserInfo] = useState<User[]>([]);
   const [userCount, setUserCount] = useState<number>(0);
   const [pageIdx, setPageIdx] = useState<number>(1);
   const [searchOption, setSearchOption] = useState<UsersSearchType>({

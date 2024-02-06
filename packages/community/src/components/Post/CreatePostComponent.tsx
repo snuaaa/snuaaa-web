@@ -2,11 +2,11 @@ import React, { ChangeEvent } from 'react';
 import { Prompt } from 'react-router';
 import AttachFile from './AttachFile';
 import Editor from '../Common/Editor';
-import CrtPostType from '../../types/CrtPostType';
 import ProgressBar from '../Common/ProgressBar';
+import { CreatePostRequest } from 'services/PostService';
 
 type CreatePostComponentProps = {
-  postInfo: CrtPostType;
+  postInfo: CreatePostRequest;
   attachedFiles: File[];
   isUploading: boolean;
   progress: number;

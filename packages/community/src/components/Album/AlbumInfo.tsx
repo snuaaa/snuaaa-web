@@ -4,10 +4,10 @@ import ContentStateEnum from '../../common/ContentStateEnum';
 import { breakLine } from '../../utils/breakLine';
 import ActionDrawer from '../Common/ActionDrawer';
 import history from '../../common/history';
-import AlbumType from '../../types/AlbumType';
+import { Album } from 'types';
 
 type AlbumInfoProps = {
-  albumInfo: AlbumType;
+  albumInfo: Album;
   my_id: number;
   setAlbumState: (state: number) => void;
   deleteAlbum: () => void;

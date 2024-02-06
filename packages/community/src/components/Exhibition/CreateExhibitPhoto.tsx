@@ -3,13 +3,13 @@ import ExhibitionService from '../../services/ExhibitionService';
 import UserService from '../../services/UserService';
 import CreateExhibitPhotoComponent from '../ExhibitBoard/CreateExhibitPhotoComponent';
 import useBlockBackgroundScroll from '../../hooks/useBlockBackgroundScroll';
-import CrtExhibitPhotoType from '../../types/CrtExhibitPhotoType';
 import { List } from 'immutable';
-import UserType from '../../types/UserType';
+import { User } from 'types';
+import { CreateExhibitPhotoRequest } from 'services/ExhibitPhotoService';
 
 const MAX_SIZE = 100 * 1024 * 1024;
 
-const defaultPhotoInfo: CrtExhibitPhotoType = {
+const defaultPhotoInfo: CreateExhibitPhotoRequest = {
   title: '',
   text: '',
   order: 0,
@@ -50,10 +50,12 @@ function CreateExhibitPhoto({
   const [currentSize, setCurrentSize] = useState<number>(0);
   const [imgUrls, setImgUrls] = useState<string[]>([]);
   const [photoInfos, setPhotoInfos] =
-    useState<List<CrtExhibitPhotoType>>(List<CrtExhibitPhotoType>());
+    useState<List<CreateExhibitPhotoRequest>>(
+      List<CreateExhibitPhotoRequest>(),
+    );
   const [uploadPhotos, setUploadPhotos] = useState<File[]>([]);
   const [imgIdx, setImgIdx] = useState<number>(-1);
-  const [searchUsers, setSearchUsers] = useState<UserType[]>([]);
+  const [searchUsers, setSearchUsers] = useState<User[]>([]);
   const [btnDisabled, setBtnDisabled] = useState<boolean>(false);
 
   const handleChange = (
@@ -247,7 +249,7 @@ function CreateExhibitPhoto({
       checkForm={submit}
       togglePopUp={togglePopUp}
       imgIdx={imgIdx}
-      photoInfos={photoInfos.toJS() as CrtExhibitPhotoType[]}
+      photoInfos={photoInfos.toJS() as CreateExhibitPhotoRequest[]}
       searchUsers={searchUsers}
       btnDisabled={btnDisabled}
     />

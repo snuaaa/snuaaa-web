@@ -15,13 +15,12 @@ import PhotoInfo from '../../components/Photo/PhotoInfo';
 import Image from '../../components/Common/AaaImage';
 import EditPhotoInfo from '../../components/Photo/EditPhotoInfo';
 
-import TagType from '../../types/TagType';
-
 import ContentService from '../../services/ContentService';
 import AlbumService from '../../services/AlbumService';
 import PhotoService from '../../services/PhotoService';
 import AuthContext from '../../contexts/AuthContext';
-import PhotoType from '../../types/PhotoType';
+
+import { Photo, Tag } from 'types';
 
 const VISIBLE_TIME = 3;
 
@@ -35,17 +34,17 @@ type PhotoState = {
   likeInfo: boolean;
   photoState: number;
   isFullscreen: boolean;
-  contentInfo?: RecordOf<PhotoType>;
-  editContentInfo?: RecordOf<PhotoType>;
-  prevPhoto?: PhotoType;
-  nextPhoto?: PhotoType;
-  prevAlbumPhoto?: PhotoType;
-  nextAlbumPhoto?: PhotoType;
+  contentInfo?: RecordOf<Photo>;
+  editContentInfo?: RecordOf<Photo>;
+  prevPhoto?: Photo;
+  nextPhoto?: Photo;
+  prevAlbumPhoto?: Photo;
+  nextAlbumPhoto?: Photo;
   remainedTime: number;
 };
 
-class Photo extends React.Component<PhotoProps, PhotoState> {
-  boardTagInfo: TagType[];
+class PhotoPage extends React.Component<PhotoProps, PhotoState> {
+  boardTagInfo: Tag[];
   fullscreenRef: RefObject<HTMLDivElement>;
   timer: NodeJS.Timer | undefined;
 
@@ -525,4 +524,4 @@ class Photo extends React.Component<PhotoProps, PhotoState> {
   }
 }
 
-export default Photo;
+export default PhotoPage;
