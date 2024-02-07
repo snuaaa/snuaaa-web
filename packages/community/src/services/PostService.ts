@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Content, File } from 'types';
-import { AaaService } from './index';
+import { API } from './index';
 import { AxiosPromise } from 'axios';
 
 export interface CreatePostRequest {
@@ -9,24 +8,39 @@ export interface CreatePostRequest {
 }
 
 const PostService = {
+  retrievePostsInBoard: function (board_id: string, pageIdx: number) {
+    return API.get(`board/${board_id}/posts?page=${pageIdx}`);
+  },
+
+  searchPostsInBoard: function (
+    board_id: string,
+    searchType: string,
+    keyword: string,
+    pageIdx: number,
+  ) {
+    return API.get(
+      `board/${board_id}/posts/search?type=${searchType}&keyword=${keyword}&page=${pageIdx}`,
+    );
+  },
+
   retrievePost: function (post_id: number): AxiosPromise<{
     postInfo: Content;
     likeInfo: boolean;
     fileInfo: File[];
   }> {
-    return AaaService.get(`post/${post_id}`);
+    return API.get(`post/${post_id}`);
   },
 
   updatePost: function (post_id: number, data: CreatePostRequest) {
-    return AaaService.patch(`post/${post_id}`, data);
+    return API.patch(`post/${post_id}`, data);
   },
 
   deletePost: function (post_id: number) {
-    return AaaService.delete(`post/${post_id}`);
+    return API.delete(`post/${post_id}`);
   },
 
   createPost: function (board_id: string, data: CreatePostRequest) {
-    return AaaService.post(`board/${board_id}/post`, data);
+    return API.post(`board/${board_id}/post`, data);
   },
 };
 

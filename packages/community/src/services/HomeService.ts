@@ -1,4 +1,4 @@
-import { AaaService } from './index';
+import { API } from './index';
 import { AxiosPromise } from 'axios';
 
 import { Content, Comment } from 'types';
@@ -17,41 +17,41 @@ export type SoundBoxResponse = Pick<Content, 'content_id' | 'title' | 'text'>;
 
 const HomeService = {
   retrieveSoundBox: function (): AxiosPromise<SoundBoxResponse> {
-    return AaaService.get('home/soundbox');
+    return API.get('home/soundbox');
   },
 
   retrieveRecentPosts: function () {
-    return AaaService.get('home/posts');
+    return API.get('home/posts');
   },
 
   retrieveAllPosts: function (pageIdx: number): AxiosPromise<{
     postInfo: Content[];
     postCount: number;
   }> {
-    return AaaService.get(`home/posts/all?page=${pageIdx}`);
+    return API.get(`home/posts/all?page=${pageIdx}`);
   },
 
   retrieveRecentComments: function () {
-    return AaaService.get('home/comments');
+    return API.get('home/comments');
   },
 
   retrieveAllComments: function (pageIdx: number): AxiosPromise<{
     commentInfo: Comment[];
     commentCount: number;
   }> {
-    return AaaService.get(`home/comments/all?page=${pageIdx}`);
+    return API.get(`home/comments/all?page=${pageIdx}`);
   },
 
   retrieveRecentMemory: function () {
-    return AaaService.get('home/memory');
+    return API.get('home/memory');
   },
 
   retrieveRecentAstroPhoto: function () {
-    return AaaService.get('home/astrophoto');
+    return API.get('home/astrophoto');
   },
 
   retrieveRiseSet: function (): AxiosPromise<RiseSet> {
-    return AaaService.get('home/riseset');
+    return API.get('home/riseset');
   },
 };
 

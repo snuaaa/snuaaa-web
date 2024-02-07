@@ -5,7 +5,7 @@ import { Prompt } from 'react-router';
 import CreateExhibitPhotoInfo from './CreateExhibitPhotoInfo';
 import UserService from '../../services/UserService';
 import ExhibitPhotoService, {
-  CreateExhibitPhotoRequest,
+  ExhibitPhotoInfo,
 } from '../../services/ExhibitPhotoService';
 import { ExhibitPhoto, User } from 'types';
 
@@ -22,7 +22,7 @@ function EditExhibitPhotoInfo({
 }: EditExhibitPhotoInfoProps) {
   const [searchUsers, setSearchUsers] = useState<User[]>([]);
   const [edittingContentInfo, setEdittingContentInfo] =
-    useState<CreateExhibitPhotoRequest>({
+    useState<ExhibitPhotoInfo>({
       title: exhibitPhotoInfo.title,
       text: exhibitPhotoInfo.text,
       order: exhibitPhotoInfo.exhibitPhoto.order,

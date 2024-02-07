@@ -1,6 +1,10 @@
-import { Album, Category, Content, Tag } from 'types';
-import { AaaService } from './index';
+import { Album, Category, Content, Photo, Tag } from 'types';
+import { API } from './index';
 import { AxiosPromise } from 'axios';
+
+export interface UpdateAlbumThumbnailRequest {
+  tn_photo_id: Photo['content_id'];
+}
 
 const AlbumService = {
   createPhotosInAlbum: function (
@@ -8,7 +12,7 @@ const AlbumService = {
     data: FormData,
     cb: (pg: ProgressEvent) => void,
   ): AxiosPromise<void> {
-    return AaaService.postWithProgress(`album/${album_id}/photos`, data, cb);
+    return API.postWithProgress(`album/${album_id}/photos`, data, cb);
   },
 
   retrieveAlbum: function (album_id: number): AxiosPromise<{
@@ -16,24 +20,26 @@ const AlbumService = {
     categoryInfo: Category[];
     tagInfo: Tag[];
   }> {
-    return AaaService.get(`album/${album_id}`);
+    return API.get(`album/${album_id}`);
   },
 
   updateAlbum: function (album_id: number, data: Content) {
-    return AaaService.patch(`album/${album_id}`, data);
+    return API.patch(`album/${album_id}`, data);
   },
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  updateAlbumThumbnail: function (album_id: number, data: any) {
-    return AaaService.patch(`album/${album_id}/thumbnail`, data);
+  updateAlbumThumbnail: function (
+    album_id: number,
+    data: UpdateAlbumThumbnailRequest,
+  ) {
+    return API.patch(`album/${album_id}/thumbnail`, data);
   },
 
   deleteAlbum: function (album_id: number) {
-    return AaaService.delete(`album/${album_id}`);
+    return API.delete(`album/${album_id}`);
   },
 
   retrievePhotosInAlbum: function (album_id: number) {
-    return AaaService.get(`album/${album_id}/photos`);
+    return API.get(`album/${album_id}/photos`);
   },
 };
 

@@ -1,15 +1,16 @@
 import React, { useState, ChangeEvent } from 'react';
-import ExhibitionService from '../../services/ExhibitionService';
 import UserService from '../../services/UserService';
 import CreateExhibitPhotoComponent from '../ExhibitBoard/CreateExhibitPhotoComponent';
 import useBlockBackgroundScroll from '../../hooks/useBlockBackgroundScroll';
 import { List } from 'immutable';
 import { User } from 'types';
-import { CreateExhibitPhotoRequest } from 'services/ExhibitPhotoService';
+import ExhibitPhotoService, {
+  ExhibitPhotoInfo,
+} from 'services/ExhibitPhotoService';
 
 const MAX_SIZE = 100 * 1024 * 1024;
 
-const defaultPhotoInfo: CreateExhibitPhotoRequest = {
+const defaultPhotoInfo: ExhibitPhotoInfo = {
   title: '',
   text: '',
   order: 0,
@@ -50,9 +51,7 @@ function CreateExhibitPhoto({
   const [currentSize, setCurrentSize] = useState<number>(0);
   const [imgUrls, setImgUrls] = useState<string[]>([]);
   const [photoInfos, setPhotoInfos] =
-    useState<List<CreateExhibitPhotoRequest>>(
-      List<CreateExhibitPhotoRequest>(),
-    );
+    useState<List<ExhibitPhotoInfo>>(List<ExhibitPhotoInfo>());
   const [uploadPhotos, setUploadPhotos] = useState<File[]>([]);
   const [imgIdx, setImgIdx] = useState<number>(-1);
   const [searchUsers, setSearchUsers] = useState<User[]>([]);
@@ -217,10 +216,15 @@ function CreateExhibitPhoto({
           photosForm.append('exhibitPhoto', uploadPhotos[i]);
 
           try {
-            await ExhibitionService.createExhibitPhoto(
-              exhibition_id,
-              photosForm,
-            );
+            const photoInfo = photoInfos.get(i);
+            if (photoInfo) {
+              await ExhibitPhotoService.createExhibitPhoto(exhibition_id, {
+                board_id,
+                photoInfo,
+                exhibition_no: exhibition_no,
+                exhibitPhoto: uploadPhotos[i],
+              });
+            }
           } catch (err) {
             console.error(err);
             throw err;
@@ -249,7 +253,7 @@ function CreateExhibitPhoto({
       checkForm={submit}
       togglePopUp={togglePopUp}
       imgIdx={imgIdx}
-      photoInfos={photoInfos.toJS() as CreateExhibitPhotoRequest[]}
+      photoInfos={photoInfos.toJS() as ExhibitPhotoInfo[]}
       searchUsers={searchUsers}
       btnDisabled={btnDisabled}
     />

@@ -1,4 +1,4 @@
-import { AaaService } from './index';
+import { API } from './index';
 import { AxiosPromise } from 'axios';
 
 const ContentService = {
@@ -7,20 +7,11 @@ const ContentService = {
     data: FormData,
     cb: (pg: ProgressEvent) => void,
   ): AxiosPromise<void> {
-    return AaaService.postWithProgress(`content/${content_id}/file`, data, cb);
+    return API.postWithProgress(`content/${content_id}/file`, data, cb);
   },
 
   likeContent: function (content_id: number) {
-    return AaaService.post(`content/${content_id}/like`, {});
-  },
-
-  retrieveComments: function (parent_id: number) {
-    return AaaService.get(`content/${parent_id}/comments`);
-  },
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  createComment: function (parent_id: number, data: any) {
-    return AaaService.post(`content/${parent_id}/comment`, data);
+    return API.post(`content/${content_id}/like`, {});
   },
 };
 

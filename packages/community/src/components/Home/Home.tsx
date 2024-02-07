@@ -7,10 +7,10 @@ import NewPhotos from './NewPhotos';
 import NewExhibitions from './NewExhibitions';
 import RiseSetMobile from './RiseSetMobile';
 import ExtLinkMobile from './ExtLinkMobile';
-import BoardService from '../../services/BoardService';
 import HomeService, { SoundBoxResponse } from '../../services/HomeService';
 import { Album, Comment, Content, Exhibition, Photo } from 'types';
 import NewAlbums from './NewAlbums';
+import ExhibitionService from 'services/ExhibitionService';
 
 type HomeInfo = {
   soundBoxData?: SoundBoxResponse;
@@ -35,7 +35,7 @@ function Home() {
       HomeService.retrieveRecentComments(),
       HomeService.retrieveRecentMemory(),
       HomeService.retrieveRecentAstroPhoto(),
-      BoardService.retrieveExhibitionsInBoard('brd'),
+      ExhibitionService.retrieveExhibitionsInBoard('brd'),
       // HomeService.retrieveRiseSet()
     ])
       .then((res) => {

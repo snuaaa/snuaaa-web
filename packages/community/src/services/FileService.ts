@@ -1,8 +1,8 @@
-import { AaaService } from './index';
+import { API } from './index';
 
 const FileService = {
   deleteFile: function (file_id: number) {
-    return AaaService.delete(`file/${file_id}`);
+    return API.delete(`file/${file_id}`);
   },
 };
 

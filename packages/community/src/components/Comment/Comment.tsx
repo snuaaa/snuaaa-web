@@ -49,7 +49,7 @@ function CommentSection({ parent_id }: CommentProps) {
       alert('내용을 입력하세요.');
     } else {
       const commentInfo = {
-        parent_comment_id: parentCommentId ? parentCommentId : null,
+        parent_comment_id: parentCommentId,
         text: text,
       };
       await CommentService.createComment(parent_id, commentInfo)

@@ -118,7 +118,7 @@ function FindIdPw({ cancel }: FindIdPwProps) {
         email: pwEmail,
       };
       try {
-        await UserService.findPw(data);
+        await UserService.findPassword(data);
         setFindState(FindStateEnum.PWFOUND);
       } catch (err) {
         console.error(err);

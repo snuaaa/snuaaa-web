@@ -90,14 +90,13 @@ class AlbumPage extends React.Component<AlbumProps, AlbumState> {
       '정말로 삭제하시겠습니까? 삭제한 게시글은 다시 복원할 수 없습니다.',
     );
     if (goDrop) {
-      await AlbumService.deleteAlbum(album_id)
-        .then(() => {
-          this.setAlbumState(ContentStateEnum.DELETED);
-        })
-        .catch((err: Error) => {
-          console.error(err);
-          alert('삭제 실패');
-        });
+      try {
+        await AlbumService.deleteAlbum(album_id);
+        this.setAlbumState(ContentStateEnum.DELETED);
+      } catch (err) {
+        console.error(err);
+        alert('삭제 실패');
+      }
     }
   };
 
