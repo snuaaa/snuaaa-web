@@ -101,8 +101,8 @@ function EditProfile() {
       .then((res) => {
         const resUserInfo = res.data.userInfo;
 
-        setUserInfo(
-          userInfo.map((info) => {
+        setUserInfo((_userInfo) =>
+          _userInfo.map((info) => {
             // let label = info.label
             // if(label === 'id' && resUserInfo[label]) {
             //     info.value = resUserInfo[label]
@@ -144,7 +144,7 @@ function EditProfile() {
       .catch((err) => {
         console.error(err);
       });
-  }, [userInfo]);
+  }, []);
 
   useEffect(() => {
     fetch();
