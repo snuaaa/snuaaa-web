@@ -4,9 +4,9 @@ import { breakLine } from '../../utils/breakLine';
 import { convertDynamicTime } from '../../utils/convertDate';
 import defaultProfile from 'assets/img/common/profile.png';
 import UserActionDrawer from '../../components/Common/UserActionDrawer';
-import { Comment } from 'types';
+import { Comment } from 'services/types';
 import AuthContext from '../../contexts/AuthContext';
-import { User } from 'types';
+import { User } from 'services/types';
 
 type CommentListProps = {
   my_id: number;

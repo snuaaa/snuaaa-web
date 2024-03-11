@@ -1,6 +1,6 @@
 import { AxiosPromise } from 'axios';
 import { API } from './index';
-import { Exhibition } from 'types';
+import { Exhibition } from './types';
 
 export interface CreateExhibitionRequest {
   poster: File;

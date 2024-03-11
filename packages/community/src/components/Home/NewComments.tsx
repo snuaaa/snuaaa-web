@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { convertDate } from '../../utils/convertDate';
 
-import { Comment } from 'types';
+import { Comment } from 'services/types';
 import { LocationDescriptorObject } from 'history';
 import ContentTypeEnum from '../../common/ContentTypeEnum';
 

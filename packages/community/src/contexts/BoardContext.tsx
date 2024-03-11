@@ -1,5 +1,5 @@
 import React from 'react';
-import { Board } from 'types';
+import { Board } from 'services/types';
 
 const defaultBoards: {
   boardsInfo: Board[];

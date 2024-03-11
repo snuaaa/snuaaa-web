@@ -7,7 +7,7 @@ import UserService from '../../services/UserService';
 import ExhibitPhotoService, {
   ExhibitPhotoInfo,
 } from '../../services/ExhibitPhotoService';
-import { ExhibitPhoto, User } from 'types';
+import { ExhibitPhoto, User } from 'services/types';
 
 type EditExhibitPhotoInfoProps = {
   exhibitPhotoInfo: ExhibitPhoto;

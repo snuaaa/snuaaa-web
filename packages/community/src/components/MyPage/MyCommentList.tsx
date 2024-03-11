@@ -4,7 +4,7 @@ import { convertDate } from '../../utils/convertDate';
 
 import { LocationDescriptorObject } from 'history';
 import ContentTypeEnum from '../../common/ContentTypeEnum';
-import { Comment } from 'types';
+import { Comment } from 'services/types';
 
 type MyCommentListProps = {
   comments: Comment[];

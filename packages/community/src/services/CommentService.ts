@@ -1,6 +1,6 @@
 import { API } from './index';
 import { AxiosPromise } from 'axios';
-import { Comment } from 'types';
+import { Comment } from './types';
 
 export interface CreateCommentRequest {
   parent_comment_id?: number;

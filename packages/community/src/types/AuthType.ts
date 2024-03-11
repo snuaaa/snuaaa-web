@@ -1,4 +1,4 @@
-import { User } from 'types';
+import { User } from 'services/types';
 
 interface AuthType {
   isLoggedIn: boolean;

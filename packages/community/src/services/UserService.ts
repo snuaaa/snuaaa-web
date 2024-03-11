@@ -3,7 +3,7 @@ import { API } from './index';
 import { AxiosPromise } from 'axios';
 import { UsersSearchType } from '../types/SearchTypes';
 
-import { Comment, Content, Photo, User } from 'types';
+import { Comment, Content, Photo, User } from './types';
 
 export interface UpdateUserInfoRequest {
   username: string;

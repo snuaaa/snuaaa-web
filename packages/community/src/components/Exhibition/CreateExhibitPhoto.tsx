@@ -3,7 +3,7 @@ import UserService from '../../services/UserService';
 import CreateExhibitPhotoComponent from '../ExhibitBoard/CreateExhibitPhotoComponent';
 import useBlockBackgroundScroll from '../../hooks/useBlockBackgroundScroll';
 import { List } from 'immutable';
-import { User } from 'types';
+import { User } from 'services/types';
 import ExhibitPhotoService, {
   ExhibitPhotoInfo,
 } from 'services/ExhibitPhotoService';

@@ -20,7 +20,7 @@ import ContentService from '../../services/ContentService';
 import AuthContext from '../../contexts/AuthContext';
 import ProgressBar from '../Common/ProgressBar';
 import FileService from '../../services/FileService';
-import { Content } from 'types';
+import { Content } from 'services/types';
 
 const MAX_SIZE = 20 * 1024 * 1024;
 

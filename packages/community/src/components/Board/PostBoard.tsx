@@ -17,7 +17,7 @@ import SelectBox from '../../components/Common/SelectBox';
 
 import AuthContext from '../../contexts/AuthContext';
 import { useLocation, useHistory } from 'react-router';
-import { Board, Content } from 'types';
+import { Board, Content } from 'services/types';
 import PostService from 'services/PostService';
 
 const POSTROWNUM = 10;

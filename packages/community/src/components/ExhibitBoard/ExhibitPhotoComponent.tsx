@@ -4,7 +4,7 @@ import Image from '../Common/AaaImage';
 
 import ExhibitPhotoInfo from '../ExhibitPhoto/ExhibitPhotoInfo';
 import EditExhibitPhotoInfo from './EditExhibitPhotoInfo';
-import { ExhibitPhoto } from 'types';
+import { ExhibitPhoto } from 'services/types';
 
 type ExhibitPhotoComponentProps = {
   contentInfo: ExhibitPhoto;

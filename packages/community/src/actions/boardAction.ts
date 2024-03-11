@@ -1,4 +1,4 @@
-import { Board } from 'types';
+import { Board } from 'services/types';
 
 export const boardActionType = {
   SET_BOARD_INFO: 1,

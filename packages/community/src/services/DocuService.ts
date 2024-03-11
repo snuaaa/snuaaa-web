@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Content } from 'types';
+import { Content } from './types';
 import { API } from './index';
 import { AxiosPromise } from 'axios';
 

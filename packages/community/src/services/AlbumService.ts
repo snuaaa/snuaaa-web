@@ -1,4 +1,4 @@
-import { Album, Category, Content, Photo, Tag } from 'types';
+import { Album, Category, Content, Photo, Tag } from './types';
 import { API } from './index';
 import { AxiosPromise } from 'axios';
 

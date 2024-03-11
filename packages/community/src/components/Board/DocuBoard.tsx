@@ -11,7 +11,7 @@ import DocuService from '../../services/DocuService';
 
 import AuthContext from '../../contexts/AuthContext';
 import { useLocation, useHistory } from 'react-router';
-import { Board, Content } from 'types';
+import { Board, Content } from 'services/types';
 
 const DOCROWNUM = 10;
 

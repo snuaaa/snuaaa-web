@@ -8,7 +8,7 @@ import BoardName from '../Board/BoardName';
 import BoardStateEnum from '../../common/BoardStateEnum';
 
 import { useHistory, useLocation } from 'react-router';
-import { Content } from 'types';
+import { Content } from 'services/types';
 
 const POSTROWNUM = 10;
 

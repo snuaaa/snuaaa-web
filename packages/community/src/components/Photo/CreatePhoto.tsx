@@ -4,7 +4,7 @@ import PhotoBoardService from '../../services/PhotoBoardService';
 import AlbumService from '../../services/AlbumService';
 import { List } from 'immutable';
 import ProgressBar from '../../components/Common/ProgressBar';
-import { Tag } from 'types';
+import { Tag } from 'services/types';
 import { CreatePhotoRequest } from 'services/PhotoService';
 
 const MAX_SIZE = 100 * 1024 * 1024;

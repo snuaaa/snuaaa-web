@@ -9,7 +9,7 @@ import { getToken, setToken, removeToken } from './utils/tokenManager';
 import AuthService from './services/AuthService';
 import AuthContext from './contexts/AuthContext';
 import AuthType from './types/AuthType';
-import { User } from 'types';
+import { User } from 'services/types';
 
 const initialAuth: AuthType = {
   isLoggedIn: false,

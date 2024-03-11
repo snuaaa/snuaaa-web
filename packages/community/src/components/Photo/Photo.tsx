@@ -20,7 +20,7 @@ import AlbumService from '../../services/AlbumService';
 import PhotoService from '../../services/PhotoService';
 import AuthContext from '../../contexts/AuthContext';
 
-import { Photo, Tag } from 'types';
+import { Photo, Tag } from 'services/types';
 
 const VISIBLE_TIME = 3;
 

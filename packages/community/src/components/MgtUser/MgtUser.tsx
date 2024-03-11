@@ -4,7 +4,7 @@ import { convertFullDate, convertDateWithDay } from '../../utils/convertDate';
 import { UsersSearchType } from '../../types/SearchTypes';
 import Paginator from '../Common/Paginator';
 import { useHistory } from 'react-router';
-import { User } from 'types';
+import { User } from 'services/types';
 
 const USER_ROW_NUM = 20;
 

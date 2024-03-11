@@ -3,7 +3,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Image from '../Common/AaaImage';
 import imgDefaultProfile from 'assets/img/common/profile.png';
-import { User } from 'types';
+import { User } from 'services/types';
 import { ExhibitPhotoInfo } from 'services/ExhibitPhotoService';
 
 type CreateExhibitPhotoInfoProps = {

@@ -6,7 +6,7 @@ import { breakLine } from '../../utils/breakLine';
 
 import { gradeAssigner } from '../../utils/gradeAssigner';
 import defaultProfile from 'assets/img/common/profile.png';
-import { User } from 'types';
+import { User } from 'services/types';
 
 type MyProfileProps = {
   userInfo: User;

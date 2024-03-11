@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import Image from '../../components/Common/AaaImage';
-import { ExhibitPhoto } from 'types';
+import { ExhibitPhoto } from 'services/types';
 
 function ExhibitPhotoList({
   exhibitPhotos,

@@ -8,7 +8,7 @@ import history from '../../common/history';
 import FileIcon from '../../components/Common/FileIcon';
 
 import Editor from '../Common/Editor';
-import { Content, File } from 'types';
+import { Content, File } from 'services/types';
 
 type PostComponentProps = {
   content: Content;

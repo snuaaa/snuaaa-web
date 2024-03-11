@@ -8,7 +8,7 @@ import NewExhibitions from './NewExhibitions';
 import RiseSetMobile from './RiseSetMobile';
 import ExtLinkMobile from './ExtLinkMobile';
 import HomeService, { SoundBoxResponse } from '../../services/HomeService';
-import { Album, Comment, Content, Exhibition, Photo } from 'types';
+import { Album, Comment, Content, Exhibition, Photo } from 'services/types';
 import NewAlbums from './NewAlbums';
 import ExhibitionService from 'services/ExhibitionService';
 

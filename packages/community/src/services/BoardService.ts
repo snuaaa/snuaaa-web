@@ -1,4 +1,4 @@
-import { Board } from 'types';
+import { Board } from './types';
 import { API } from './index';
 import { AxiosPromise } from 'axios';
 

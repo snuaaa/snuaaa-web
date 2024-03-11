@@ -1,7 +1,7 @@
 import React, { ChangeEvent } from 'react';
 import FileIcon from '../Common/FileIcon';
 import AttachFile from '../Post/AttachFile';
-import { Content, File as FileContent } from 'types';
+import { Content, File as FileContent } from 'services/types';
 
 type EditDocuProps = {
   editingDocData: Content;

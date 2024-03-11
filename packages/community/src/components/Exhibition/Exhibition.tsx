@@ -7,7 +7,7 @@ import CreateExhibitPhoto from './CreateExhibitPhoto';
 import ExhibitionInfo from '../ExhibitBoard/ExhibitionInfo';
 import ExhibitPhotoList from '../ExhibitBoard/ExhibitPhotoList';
 import AuthContext from '../../contexts/AuthContext';
-import { ExhibitPhoto, Exhibition } from 'types';
+import { ExhibitPhoto, Exhibition } from 'services/types';
 import ExhibitPhotoService from 'services/ExhibitPhotoService';
 
 type ExhibitionProps = {

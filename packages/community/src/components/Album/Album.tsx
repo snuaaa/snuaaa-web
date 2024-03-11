@@ -11,7 +11,7 @@ import AlbumService from '../../services/AlbumService';
 import history from '../../common/history';
 
 import AuthContext from '../../contexts/AuthContext';
-import { Album, Category, Photo, Tag } from 'types';
+import { Album, Category, Photo, Tag } from 'services/types';
 
 type AlbumProps = {
   match: match<{ album_id: string }>;

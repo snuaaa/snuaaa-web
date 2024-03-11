@@ -9,7 +9,7 @@ import ActionDrawer from '../Common/ActionDrawer';
 import FileIcon from '../../components/Common/FileIcon';
 
 import { useHistory } from 'react-router';
-import { Content } from 'types';
+import { Content } from 'services/types';
 
 type DocuComponentProps = {
   docData: Content;

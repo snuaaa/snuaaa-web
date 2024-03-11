@@ -1,6 +1,6 @@
 import React, { ChangeEvent } from 'react';
 
-import { Category } from 'types';
+import { Category } from 'services/types';
 
 type EditAlbumComponentProps = {
   caption: string;

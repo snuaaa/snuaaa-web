@@ -1,7 +1,7 @@
 import { API } from './index';
 import { AxiosPromise } from 'axios';
 
-import { Photo, Tag } from 'types';
+import { Photo, Tag } from './types';
 
 export interface CreatePhotoRequest {
   board_id?: string;

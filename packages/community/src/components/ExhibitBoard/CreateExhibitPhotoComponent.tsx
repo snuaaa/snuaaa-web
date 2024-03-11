@@ -2,7 +2,7 @@ import React, { ChangeEvent } from 'react';
 import CreateExhibitPhotoInfo from '../../components/ExhibitBoard/CreateExhibitPhotoInfo';
 import ThumbnailList from '../../components/Album/ThumbnailList';
 import PreviewImage from '../../components/Album/PreviewImage';
-import { User } from 'types';
+import { User } from 'services/types';
 import { ExhibitPhotoInfo } from 'services/ExhibitPhotoService';
 
 type CreateExhibitPhotoComponentProps = {

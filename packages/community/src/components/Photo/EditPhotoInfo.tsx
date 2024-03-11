@@ -4,7 +4,7 @@ import ContentStateEnum from '../../common/ContentStateEnum';
 import ReactDatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Prompt } from 'react-router';
-import { Photo, Tag } from 'types';
+import { Photo, Tag } from 'services/types';
 
 type PhotoInfoProps = {
   photoInfo: Photo;

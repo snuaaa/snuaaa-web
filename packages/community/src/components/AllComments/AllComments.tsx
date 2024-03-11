@@ -8,7 +8,7 @@ import BoardName from '../Board/BoardName';
 import BoardStateEnum from '../../common/BoardStateEnum';
 
 import { useLocation, useHistory } from 'react-router';
-import { Comment } from 'types';
+import { Comment } from 'services/types';
 
 const COMMENTROWNUM = 10;
 

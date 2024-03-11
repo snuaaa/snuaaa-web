@@ -9,7 +9,7 @@ import Image from '../../components/Common/AaaImage';
 import AuthContext from '../../contexts/AuthContext';
 
 import CreateExhibition from '../ExhibitBoard/CreateExhibition';
-import { Board, Exhibition } from 'types';
+import { Board, Exhibition } from 'services/types';
 import ExhibitionService from 'services/ExhibitionService';
 
 type ExhibitBoardProps = {

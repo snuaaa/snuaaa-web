@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import Image from '../Common/AaaImage';
-import { Photo } from 'types';
+import { Photo } from 'services/types';
 
 type NewPhotosProps = {
   title: string;

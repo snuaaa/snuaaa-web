@@ -10,7 +10,7 @@ import React, {
 import CommentList from './CommentList';
 import CommentService from '../../services/CommentService';
 import AuthContext from '../../contexts/AuthContext';
-import { Comment } from 'types';
+import { Comment } from 'services/types';
 
 type CommentProps = {
   parent_id: number;

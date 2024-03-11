@@ -4,7 +4,7 @@ import CreateDocuComponent from '../../components/Document/CreateDocuComponent';
 
 import ContentService from '../../services/ContentService';
 import useBlockBackgroundScroll from '../../hooks/useBlockBackgroundScroll';
-import { Board } from 'types';
+import { Board } from 'services/types';
 
 const MAX_SIZE = 20 * 1024 * 1024;
 

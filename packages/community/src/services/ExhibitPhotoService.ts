@@ -1,4 +1,4 @@
-import { Board, ExhibitPhoto, User } from 'types';
+import { Board, ExhibitPhoto, User } from './types';
 import { API } from './index';
 import { AxiosPromise } from 'axios';
 

@@ -1,7 +1,7 @@
 import { API } from './index';
 import { AxiosPromise } from 'axios';
 
-import { Content, Comment } from 'types';
+import { Content, Comment } from './types';
 
 export interface RiseSet {
   lunAge: number;

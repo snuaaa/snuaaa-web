@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Image from './AaaImage';
 import defaultProfile from 'assets/img/common/profile.png';
-import { User } from 'types';
+import { User } from 'services/types';
 
 type ProfilePopUpProps = {
   userInfo: User;

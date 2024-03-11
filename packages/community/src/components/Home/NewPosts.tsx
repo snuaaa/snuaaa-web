@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { convertDate } from '../../utils/convertDate';
 import ContentTypeEnum from '../../common/ContentTypeEnum';
-import { Content } from 'types';
+import { Content } from 'services/types';
 
 const NewPosts = ({ posts }: { posts: Content[] }) => {
   const makePostList = () => {

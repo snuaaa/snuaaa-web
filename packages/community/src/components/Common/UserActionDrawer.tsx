@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import AaaImage from './AaaImage';
 import defaultProfile from 'assets/img/common/profile.png';
 import { gradeAssigner } from '../../utils/gradeAssigner';
-import { User } from 'types';
+import { User } from 'services/types';
 
 type UserActionDrawerProps = {
   userInfo: User;

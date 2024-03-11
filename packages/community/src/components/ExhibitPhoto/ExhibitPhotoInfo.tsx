@@ -5,7 +5,7 @@ import defaultProfile from 'assets/img/common/profile.png';
 import ActionDrawer from '../Common/ActionDrawer';
 import Image from '../Common/AaaImage';
 import 'react-datepicker/dist/react-datepicker.css';
-import { ExhibitPhoto } from 'types';
+import { ExhibitPhoto } from 'services/types';
 
 type ExhibitPhotoInfoProps = {
   photoInfo: ExhibitPhoto;

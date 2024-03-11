@@ -4,7 +4,7 @@ import Editor from '../Common/Editor';
 import AttachFile from './AttachFile';
 
 import FileIcon from '../Common/FileIcon';
-import { Content, File as FileType } from 'types';
+import { Content, File as FileType } from 'services/types';
 
 type EditPostProps = {
   postInfo: Content;
