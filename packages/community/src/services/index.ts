@@ -1,5 +1,5 @@
 import axios, { AxiosPromise } from 'axios';
-import { getToken } from '../utils/tokenManager';
+import { getToken } from '../utils/token';
 
 const SERVER_URL = process.env.REACT_APP_SERVER_URL;
 
@@ -8,6 +8,10 @@ const axiosInstance = axios.create({
     Authorization: `Bearer ${getToken()}`,
   },
 });
+
+export const setApiAuth = (token: string) => {
+  axiosInstance.defaults.headers.common['Authorization'] = 'Bearer ' + token;
+};
 
 export const API = {
   get: function (url: string) {

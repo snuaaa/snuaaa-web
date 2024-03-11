@@ -9,9 +9,9 @@ const gradeEnum = {
   9: '명왕성',
 };
 
-export function gradeAssigner(grade) {
+export function gradeAssigner(grade: number) {
   if (grade in gradeEnum) {
-    return gradeEnum[grade];
+    return gradeEnum[grade as keyof typeof gradeEnum];
   } else {
     return;
   }

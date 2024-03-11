@@ -5,7 +5,7 @@ import './App.scss';
 
 import Section from './containers/Section';
 import Loading from './components/Common/Loading';
-import { getToken, setToken, removeToken } from './utils/tokenManager';
+import { getToken, setToken, removeToken } from './utils/token';
 import AuthService from './services/AuthService';
 import AuthContext from './contexts/AuthContext';
 import AuthType from './types/AuthType';
