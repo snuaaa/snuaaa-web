@@ -1,6 +1,5 @@
 import { Board, ExhibitPhoto, User } from './types';
 import { API } from './index';
-import { AxiosPromise } from 'axios';
 
 export interface ExhibitPhotoInfo {
   title: string;
@@ -42,15 +41,17 @@ const ExhibitPhotoService = {
   },
 
   retrieveExhibitPhotosinExhibition: function (exhibition_id: number) {
-    return API.get(`exhibition/${exhibition_id}/exhibitPhotos`);
+    return API.get<{ exhibitPhotosInfo: ExhibitPhoto[] }>(
+      `exhibition/${exhibition_id}/exhibitPhotos`,
+    );
   },
 
-  retrieveExhibitPhoto: function (exhibitPhoto_id: number): AxiosPromise<{
-    exhibitPhotoInfo: ExhibitPhoto;
-    exhibitPhotosInfo: ExhibitPhoto[];
-    likeInfo: boolean;
-  }> {
-    return API.get(`exhibitPhoto/${exhibitPhoto_id}`);
+  retrieveExhibitPhoto: function (exhibitPhoto_id: number) {
+    return API.get<{
+      exhibitPhotoInfo: ExhibitPhoto;
+      exhibitPhotosInfo: ExhibitPhoto[];
+      likeInfo: boolean;
+    }>(`exhibitPhoto/${exhibitPhoto_id}`);
   },
 
   updateExhibitPhoto: function (

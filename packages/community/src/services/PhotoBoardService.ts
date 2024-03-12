@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Album, Photo } from './types';
 import { API } from './index';
 import { AxiosPromise } from 'axios';
@@ -57,7 +56,8 @@ const PhotoBoardService = {
     }
   },
 
-  createPhotosInPhotoBoard: function (board_id: string, data: any) {
+  // TODO: fix data type
+  createPhotosInPhotoBoard: function (board_id: string, data: FormData) {
     return API.post(`photoboard/${board_id}/photos`, data);
   },
 };

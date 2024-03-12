@@ -6,6 +6,12 @@ export interface UpdateAlbumThumbnailRequest {
   tn_photo_id: Photo['content_id'];
 }
 
+type RetrieveAlbumResponse = {
+  albumInfo: Album;
+  categoryInfo: Category[];
+  tagInfo: Tag[];
+};
+
 const AlbumService = {
   createPhotosInAlbum: function (
     album_id: number,
@@ -15,12 +21,8 @@ const AlbumService = {
     return API.postWithProgress(`album/${album_id}/photos`, data, cb);
   },
 
-  retrieveAlbum: function (album_id: number): AxiosPromise<{
-    albumInfo: Album;
-    categoryInfo: Category[];
-    tagInfo: Tag[];
-  }> {
-    return API.get(`album/${album_id}`);
+  retrieveAlbum: function (album_id: number) {
+    return API.get<RetrieveAlbumResponse>(`album/${album_id}`);
   },
 
   updateAlbum: function (album_id: number, data: Content) {
@@ -39,7 +41,7 @@ const AlbumService = {
   },
 
   retrievePhotosInAlbum: function (album_id: number) {
-    return API.get(`album/${album_id}/photos`);
+    return API.get<Photo[]>(`album/${album_id}/photos`);
   },
 };
 

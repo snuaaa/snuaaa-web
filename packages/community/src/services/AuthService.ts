@@ -1,4 +1,5 @@
 import { API } from './index';
+import { User } from './types';
 
 export interface SingUpRequest {
   id: string;
@@ -23,9 +24,30 @@ export interface LogInRequest {
   password: string;
 }
 
+export interface Auth {
+  userInfo: User;
+  autoLogin: boolean;
+  token: string;
+}
+
+type GuestUser = Pick<
+  User,
+  'user_id' | 'grade' | 'level' | 'profile_path' | 'nickname'
+>;
+
+type CheckTokenResponse = Auth;
+
+type LogInResponse = Auth;
+
+type GuestLogInResponse = {
+  userInfo: GuestUser;
+  autoLogin: false;
+  token: string;
+};
+
 const AuthService = {
   checkToken: function () {
-    return API.get('auth/check');
+    return API.get<CheckTokenResponse>('auth/check');
   },
 
   signUp: function (data: SingUpRequest) {
@@ -42,11 +64,11 @@ const AuthService = {
   },
 
   logIn: function (data: LogInRequest) {
-    return API.post('auth/login/', data);
+    return API.post<LogInResponse>('auth/login/', data);
   },
 
   guestLogIn: function () {
-    return API.get('auth/login/guest');
+    return API.get<GuestLogInResponse>('auth/login/guest');
   },
 };
 

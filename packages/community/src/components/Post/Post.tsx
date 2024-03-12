@@ -21,6 +21,7 @@ import AuthContext from '../../contexts/AuthContext';
 import ProgressBar from '../Common/ProgressBar';
 import FileService from '../../services/FileService';
 import { Content } from 'services/types';
+import axios from 'axios';
 
 const MAX_SIZE = 20 * 1024 * 1024;
 
@@ -50,10 +51,9 @@ function Post(props: PostProps) {
         setLikeInfo(res.data.likeInfo);
         setPostState(ContentStateEnum.READY);
       })
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .catch((err: any) => {
-        console.error(err);
+      .catch((err: unknown) => {
         if (
+          axios.isAxiosError(err) &&
           err.response &&
           err.response.data &&
           err.response.data.code === 4001

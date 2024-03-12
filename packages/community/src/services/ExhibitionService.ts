@@ -1,6 +1,5 @@
-import { AxiosPromise } from 'axios';
 import { API } from './index';
-import { Exhibition } from './types';
+import { Board, Exhibition, User } from './types';
 
 export interface CreateExhibitionRequest {
   poster: File;
@@ -11,9 +10,21 @@ export interface CreateExhibitionRequest {
   place: string;
 }
 
+type ExhibitionInfo = Exhibition & {
+  user: Pick<
+    User,
+    'user_id' | 'nickname' | 'introduction' | 'profile_path' | 'deleted_at'
+  >;
+  board: Pick<Board, 'board_id' | 'board_name' | 'lv_read'>;
+};
+
+type RetrieveExhibitionListResponse = ExhibitionInfo[];
+
 const ExhibitionService = {
   retrieveExhibition: function (exhibition_id: number) {
-    return API.get(`exhibition/${exhibition_id}`);
+    return API.get<{ exhibitionInfo: ExhibitionInfo }>(
+      `exhibition/${exhibition_id}`,
+    );
   },
 
   createExhibition: function (board_id: string, data: CreateExhibitionRequest) {
@@ -21,10 +32,10 @@ const ExhibitionService = {
     return API.post(`board/${board_id}/exhibition`, data);
   },
 
-  retrieveExhibitionsInBoard: function (
-    board_id: string,
-  ): AxiosPromise<Exhibition[]> {
-    return API.get(`board/${board_id}/exhibitions`);
+  retrieveExhibitionsInBoard: function (board_id: string) {
+    return API.get<RetrieveExhibitionListResponse>(
+      `board/${board_id}/exhibitions`,
+    );
   },
 
   // TODO: server 구현

@@ -69,7 +69,9 @@ function Docu() {
     const doc_id = Number(match.params.doc_id);
 
     try {
-      await DocuService.updateDocument(doc_id, editingDocData);
+      if (editingDocData) {
+        await DocuService.updateDocument(doc_id, editingDocData);
+      }
       if (attachedFiles.length > 0) {
         for (let i = 0; i < attachedFiles.length; i++) {
           const formData = new FormData();

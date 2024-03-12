@@ -83,8 +83,7 @@ function EditExhibitPhotoInfo({
 
   const fetchUsers = async (name: string) => {
     UserService.searchMini(name)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .then((res: any) => {
+      .then((res) => {
         setSearchUsers(res.data.userList);
       })
       .catch((err: Error) => {

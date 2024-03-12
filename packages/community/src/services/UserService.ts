@@ -110,7 +110,7 @@ const UserService = {
   },
 
   searchMini: function (name: string) {
-    return API.get(`userinfo/search/mini?name=${name}`);
+    return API.get<{ userList: User[] }>(`userinfo/search/mini?name=${name}`);
   },
 };
 

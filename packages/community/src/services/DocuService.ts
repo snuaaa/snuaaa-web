@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Content } from './types';
 import { API } from './index';
 import { AxiosPromise } from 'axios';
@@ -9,6 +8,12 @@ export interface CreateDocuRequest {
   generation: number;
   category_id: string;
 }
+
+type UpdateDocuRequest = {
+  title: string;
+  text: string;
+  category_id?: string;
+};
 
 const DocuService = {
   retrieveDocument: function (doc_id: number): AxiosPromise<{
@@ -37,7 +42,7 @@ const DocuService = {
     return API.get(`document/generation/${generation}`);
   },
 
-  updateDocument: function (doc_id: number, data: any) {
+  updateDocument: function (doc_id: number, data: UpdateDocuRequest) {
     return API.patch(`document/${doc_id}`, data);
   },
 
@@ -46,7 +51,7 @@ const DocuService = {
   },
 
   createDocument: function (board_id: string, data: CreateDocuRequest) {
-    return API.post(`board/${board_id}/document`, data);
+    return API.post<{ content_id: number }>(`board/${board_id}/document`, data);
   },
 };
 

@@ -14,12 +14,13 @@ export const setApiAuth = (token: string) => {
 };
 
 export const API = {
-  get: function (url: string) {
-    return axiosInstance.get(`${SERVER_URL}api/${url}`);
+  get: function <Response>(url: string) {
+    return axiosInstance.get<Response>(`${SERVER_URL}api/${url}`);
   },
 
-  post: function (url: string, data: unknown): AxiosPromise {
-    return axiosInstance.post(`${SERVER_URL}api/${url}`, data);
+  // TODO: fix
+  post: function <T>(url: string, data: unknown) {
+    return axiosInstance.post<T>(`${SERVER_URL}api/${url}`, data);
   },
 
   postWithProgress: function (
@@ -41,7 +42,7 @@ export const API = {
   },
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function createAttachedImage(data: any) {
+// TODO: fix data type
+export function createAttachedImage(data: FormData) {
   return axiosInstance.post(SERVER_URL + 'api/image', data);
 }
