@@ -5,11 +5,11 @@ import './App.scss';
 
 import Section from './containers/Section';
 import Loading from './components/Common/Loading';
-import { getToken, setToken, removeToken } from './utils/tokenManager';
+import { getToken, setToken, removeToken } from './utils/token';
 import AuthService from './services/AuthService';
 import AuthContext from './contexts/AuthContext';
 import AuthType from './types/AuthType';
-import { User } from 'types';
+import { User } from 'services/types';
 
 const initialAuth: AuthType = {
   isLoggedIn: false,
@@ -43,14 +43,12 @@ function App() {
     } else {
       // 서버에 토큰 확인 , invalid => logout, valid => 로그인 유지(연장)
       await AuthService.checkToken()
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .then((res: any) => {
+        .then((res) => {
           const { token, userInfo, autoLogin } = res.data;
           authLogin(token, autoLogin, userInfo);
         })
         .catch((err: Error) => {
           console.error(err);
-          console.log('expired token');
           history.replace({
             pathname: '/auth/login',
             state: {
@@ -78,14 +76,17 @@ function App() {
     checkToken();
   }, [checkToken]);
 
-  const authLogin = (token: string, autoLogin: boolean, userInfo: User) => {
-    setToken(token, autoLogin);
-    setAuthinfo({
-      isLoggedIn: true,
-      user: userInfo,
-    });
-    setIsReady(true);
-  };
+  const authLogin = useCallback(
+    (token: string, autoLogin: boolean, userInfo: User) => {
+      setToken(token, autoLogin);
+      setAuthinfo({
+        isLoggedIn: true,
+        user: userInfo,
+      });
+      setIsReady(true);
+    },
+    [],
+  );
 
   const authLogout = () => {
     removeToken();

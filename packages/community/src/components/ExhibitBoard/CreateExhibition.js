@@ -1,5 +1,5 @@
 import React from 'react';
-import BoardService from 'services/BoardService.ts';
+import ExhibitionService from 'services/ExhibitionService.ts';
 import DatePicker from 'react-datepicker';
 
 class CreateExhibition extends React.Component {
@@ -65,7 +65,7 @@ class CreateExhibition extends React.Component {
       data.append('place', place);
       data.append('poster', poster);
 
-      await BoardService.createExhibition(board_id, data)
+      await ExhibitionService.createExhibition(board_id, data)
         .then(() => {
           close();
           fetch();

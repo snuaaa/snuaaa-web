@@ -13,12 +13,12 @@ import CreatePost from './CreatePost';
 import BoardStateEnum from '../../common/BoardStateEnum';
 import BoardName from '../../components/Board/BoardName';
 import SearchTypeEnum from '../../common/SearchTypeEnum';
-import BoardService from '../../services/BoardService';
 import SelectBox from '../../components/Common/SelectBox';
 
 import AuthContext from '../../contexts/AuthContext';
 import { useLocation, useHistory } from 'react-router';
-import { Board, Content } from 'types';
+import { Board, Content } from 'services/types';
+import PostService from 'services/PostService';
 
 const POSTROWNUM = 10;
 const searchOptions = [
@@ -77,14 +77,14 @@ function PostBoard({ boardInfo }: PostBoardProps) {
       setBoardState(BoardStateEnum.LOADING);
       let res;
       if (searchInfo && searchInfo.keyword) {
-        res = await BoardService.searchPostsInBoard(
+        res = await PostService.searchPostsInBoard(
           boardInfo.board_id,
           searchInfo.type,
           searchInfo.keyword,
           pageIdx,
         );
       } else {
-        res = await BoardService.retrievePostsInBoard(
+        res = await PostService.retrievePostsInBoard(
           boardInfo.board_id,
           pageIdx,
         );

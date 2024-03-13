@@ -6,7 +6,7 @@ import BoardContext from '../contexts/BoardContext';
 import RiseSetContext from '../contexts/RiseSetContext';
 import AuthContext from '../contexts/AuthContext';
 import HomeService, { RiseSet } from '../services/HomeService';
-import { Board } from 'types';
+import { Board } from 'services/types';
 
 const AuthRoutes = lazy(() => import('./AuthRoutes'));
 const PageRoutes = lazy(() => import('./PageRoutes'));

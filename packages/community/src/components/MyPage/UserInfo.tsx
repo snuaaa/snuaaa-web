@@ -7,7 +7,7 @@ import MyCommentList from './MyCommentList';
 import MyPageSelector from './MyPageSelector';
 import MyPageViewEnum from '../../common/MyPageViewEnum';
 import UserService from '../../services/UserService';
-import { Content, Comment, Photo, User } from 'types';
+import { Content, Comment, Photo, User } from 'services/types';
 
 type UserInfoProps = {
   user_uuid?: string;

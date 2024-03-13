@@ -4,7 +4,8 @@ import { convertFullDate, convertDateWithDay } from '../../utils/convertDate';
 import { UsersSearchType } from '../../types/SearchTypes';
 import Paginator from '../Common/Paginator';
 import { useHistory } from 'react-router';
-import { User } from 'types';
+import { User } from 'services/types';
+import axios from 'axios';
 
 const USER_ROW_NUM = 20;
 
@@ -25,9 +26,7 @@ function MgtUser() {
       setUserInfo(res.data.userInfo);
       setUserCount(res.data.count);
     } catch (err) {
-      console.error(err);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      if ((err as any).response && (err as any).response.status === 403) {
+      if (axios.isAxiosError(err) && err.response?.status === 403) {
         alert('권한이 없습니다.');
         history.goBack();
       }

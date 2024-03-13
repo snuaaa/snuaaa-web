@@ -3,7 +3,7 @@ import Image from './AaaImage';
 import defaultProfile from 'assets/img/common/profile.png';
 import { breakLine } from '../../utils/breakLine';
 import UserActionDrawer from './UserActionDrawer';
-import { User } from 'types';
+import { User } from 'services/types';
 
 function ProfileMini({ userInfo }: { userInfo: User }) {
   const [isExpand, setIsExpand] = useState(false);

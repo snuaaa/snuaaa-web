@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import defaultAlbumCover from 'assets/img/default_photo_img.png';
 import Image from '../Common/AaaImage';
-import { Album } from 'types';
+import { Album } from 'services/types';
 
 type NewAlbumsProps = {
   title: string;

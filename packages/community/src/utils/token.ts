@@ -1,5 +1,5 @@
 import Cookies from 'universal-cookie';
-import axios from 'axios';
+import { setApiAuth } from 'services';
 
 const cookies = new Cookies();
 
@@ -7,7 +7,7 @@ export function getToken() {
   return cookies.get('token');
 }
 
-export function setToken(token, isAutoLogin) {
+export function setToken(token: string, isAutoLogin: boolean) {
   let cookieOption;
   if (isAutoLogin) {
     cookieOption = {
@@ -20,7 +20,7 @@ export function setToken(token, isAutoLogin) {
     };
   }
   cookies.set('token', token, cookieOption);
-  axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
+  setApiAuth(token);
 }
 
 export function removeToken() {

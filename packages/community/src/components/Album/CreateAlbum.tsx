@@ -5,7 +5,7 @@ import PhotoBoardService, {
 } from '../../services/PhotoBoardService';
 
 import useBlockBackgroundScroll from '../../hooks/useBlockBackgroundScroll';
-import { Category } from 'types';
+import { Category } from 'services/types';
 
 type CreateAlbumProps = {
   board_id: string;

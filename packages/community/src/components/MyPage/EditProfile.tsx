@@ -6,7 +6,7 @@ import React, {
   useCallback,
 } from 'react';
 
-import UserService from '../../services/UserService';
+import UserService, { UpdateUserInfoRequest } from '../../services/UserService';
 import Loading from '../Common/Loading';
 import ProfileComponent from './ProfileComponent';
 import AuthContext from '../../contexts/AuthContext';
@@ -180,13 +180,14 @@ function EditProfile() {
 
   const updateInfo = async () => {
     setIsShow(false);
-    const data = new FormData();
+    const data = {} as UpdateUserInfoRequest;
     userInfo.forEach((info) => {
-      data.append(info.label, info.value);
+      data[info.label as keyof Omit<UpdateUserInfoRequest, 'profileImg'>] =
+        info.value;
     });
 
     if (profileImg) {
-      data.append('profileImg', profileImg);
+      data.profileImg = profileImg;
     }
 
     await UserService.updateUserInfo(data)

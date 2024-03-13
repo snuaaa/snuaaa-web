@@ -1,17 +1,26 @@
 import axios, { AxiosPromise } from 'axios';
-import { getToken } from '../utils/tokenManager';
+import { getToken } from '../utils/token';
 
 const SERVER_URL = process.env.REACT_APP_SERVER_URL;
 
-axios.defaults.headers.common['Authorization'] = 'Bearer ' + getToken();
+const axiosInstance = axios.create({
+  headers: {
+    Authorization: `Bearer ${getToken()}`,
+  },
+});
 
-export const AaaService = {
-  get: function (url: string) {
-    return axios.get(`${SERVER_URL}api/${url}`);
+export const setApiAuth = (token: string) => {
+  axiosInstance.defaults.headers.Authorization = 'Bearer ' + token;
+};
+
+export const API = {
+  get: function <Response>(url: string) {
+    return axiosInstance.get<Response>(`${SERVER_URL}api/${url}`);
   },
 
-  post: function (url: string, data: unknown): AxiosPromise {
-    return axios.post(`${SERVER_URL}api/${url}`, data);
+  // TODO: fix
+  post: function <T>(url: string, data: unknown) {
+    return axiosInstance.post<T>(`${SERVER_URL}api/${url}`, data);
   },
 
   postWithProgress: function (
@@ -19,40 +28,21 @@ export const AaaService = {
     data: unknown,
     cb: (pg: ProgressEvent) => void,
   ) {
-    return axios.post(`${SERVER_URL}api/${url}`, data, {
+    return axiosInstance.post(`${SERVER_URL}api/${url}`, data, {
       onUploadProgress: cb,
     });
   },
 
   patch: function (url: string, data: unknown): AxiosPromise {
-    return axios.patch(`${SERVER_URL}api/${url}`, data);
+    return axiosInstance.patch(`${SERVER_URL}api/${url}`, data);
   },
 
   delete: function (url: string): AxiosPromise {
-    return axios.delete(`${SERVER_URL}api/${url}`);
+    return axiosInstance.delete(`${SERVER_URL}api/${url}`);
   },
 };
 
-// export class AaaService<T> {
-
-//     get = function(url: string): AxiosPromise<T> {
-//         return axios.get(`${SERVER_URL}api/${url}`)
-//     }
-
-//     post = function(url: string, data: object): AxiosPromise<T> {
-//         return axios.post(`${SERVER_URL}api/${url}`, data)
-//     }
-
-//     patch = function(url: string, data: object): AxiosPromise<T> {
-//         return axios.patch(`${SERVER_URL}api/${url}`, data)
-//     }
-
-//     delete = function(url: string): AxiosPromise<T> {
-//         return axios.delete(`${SERVER_URL}api/${url}`)
-//     }
-// }
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function createAttachedImage(data: any) {
-  return axios.post(SERVER_URL + 'api/image', data);
+// TODO: fix data type
+export function createAttachedImage(data: FormData) {
+  return axiosInstance.post(SERVER_URL + 'api/image', data);
 }

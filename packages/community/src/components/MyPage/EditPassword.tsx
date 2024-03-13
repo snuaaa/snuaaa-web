@@ -1,6 +1,7 @@
 import React, { useState, ChangeEvent } from 'react';
 import UserService from '../../services/UserService';
 import InputField from '../Common/InputField';
+import axios from 'axios';
 
 type InputFormat = {
   value: string;
@@ -88,9 +89,8 @@ function EditPassword() {
         alert('비밀번호가 변경되었습니다.');
         window.location.reload();
       })
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .catch((err: any) => {
-        if (err.response && err.response.data) {
+      .catch((err) => {
+        if (axios.isAxiosError(err) && err.response && err.response.data) {
           if (err.response.data.code === 1011) {
             alert('현재 비밀번호가 일치하지 않습니다.');
           } else if (err.response.data.code === 1012) {

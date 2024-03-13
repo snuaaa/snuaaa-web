@@ -3,14 +3,14 @@ import { Link } from 'react-router-dom';
 import Loading from '../../components/Common/Loading';
 import BoardStateEnum from '../../common/BoardStateEnum';
 import { convertDateWithDay } from '../../utils/convertDate';
-import BoardService from '../../services/BoardService';
 import BoardName from '../../components/Board/BoardName';
 import Image from '../../components/Common/AaaImage';
 
 import AuthContext from '../../contexts/AuthContext';
 
 import CreateExhibition from '../ExhibitBoard/CreateExhibition';
-import { Board, Exhibition } from 'types';
+import { Board, Exhibition } from 'services/types';
+import ExhibitionService from 'services/ExhibitionService';
 
 type ExhibitBoardProps = {
   boardInfo: Board;
@@ -48,7 +48,7 @@ class ExhibitBoard extends React.Component<
     const { boardInfo } = this.props;
 
     this.setBoardState(BoardStateEnum.LOADING);
-    await BoardService.retrieveExhibitionsInBoard(boardInfo.board_id)
+    await ExhibitionService.retrieveExhibitionsInBoard(boardInfo.board_id)
       .then((res) => {
         this.exhibitions = res.data;
         this.setBoardState(BoardStateEnum.READY);

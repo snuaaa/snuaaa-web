@@ -16,7 +16,7 @@ import DocuService from '../../services/DocuService';
 
 import AuthContext from '../../contexts/AuthContext';
 import FileService from '../../services/FileService';
-import { Content } from 'types';
+import { Content } from 'services/types';
 
 const MAX_SIZE = 20 * 1024 * 1024;
 
@@ -69,7 +69,9 @@ function Docu() {
     const doc_id = Number(match.params.doc_id);
 
     try {
-      await DocuService.updateDocument(doc_id, editingDocData);
+      if (editingDocData) {
+        await DocuService.updateDocument(doc_id, editingDocData);
+      }
       if (attachedFiles.length > 0) {
         for (let i = 0; i < attachedFiles.length; i++) {
           const formData = new FormData();

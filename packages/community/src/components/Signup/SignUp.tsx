@@ -4,7 +4,7 @@ import SignUpComponent from './SignUpComponent';
 import SignUpSuccess from './SignUpSuccess';
 import SignUpFailure from './SignUpFailure';
 import Loading from '../Common/Loading';
-import AuthService from '../../services/AuthService';
+import AuthService, { SingUpRequest } from '../../services/AuthService';
 import SignUpInputType from '../../types/SignUpInputType';
 
 const defaultFormat: SignUpInputType = {
@@ -175,47 +175,43 @@ function SignUp() {
     }
   };
 
-  const checkDupId = () => {
-    AuthService.duplicateCheck({ check_id: userInfo.id.value })
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .then((res: any) => {
-        // Available ID
-        setDupId(false);
-      })
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .catch((res: any) => {
-        // Existing ID
-        setUserInfo({
-          ...userInfo,
-          id: {
-            ...userInfo.id,
-            valid: false,
-          },
-        });
-        setDupId(true);
+  const checkDupId = async () => {
+    try {
+      await AuthService.duplicateCheck({ check_id: userInfo.id.value });
+      // Available ID
+      setDupId(false);
+    } catch (err) {
+      // Existing ID
+      setUserInfo({
+        ...userInfo,
+        id: {
+          ...userInfo.id,
+          valid: false,
+        },
       });
+      setDupId(true);
+    }
   };
 
   const submit = async () => {
     setSignUpState('LOADING');
 
-    const data = new FormData();
+    const data = {} as SingUpRequest;
     for (const [key, value] of Object.entries(userInfo)) {
-      data.append(key, value.value);
+      data[key as keyof SingUpRequest] = value.value;
     }
 
     if (profile) {
-      data.append('profile', profile);
+      data.profile = profile;
     }
 
-    await AuthService.signUp(data)
-      .then(() => {
-        setSignUpState('SUCCESS');
-      })
-      .catch((err: Error) => {
-        console.error(err);
-        setSignUpState('FAILURE');
-      });
+    try {
+      await AuthService.signUp(data);
+      setSignUpState('SUCCESS');
+    } catch (err) {
+      console.error(err);
+      setSignUpState('FAILURE');
+    }
   };
 
   const checkValid = () => {

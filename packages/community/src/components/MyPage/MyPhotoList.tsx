@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import Image from '../Common/AaaImage';
 import history from '../../common/history';
 import defaultPhotoCover from 'assets/img/default_photo_img.png';
-import { Photo } from 'types';
+import { Photo } from 'services/types';
 
 const MyPhotoList = ({ photos }: { photos: Photo[] }) => {
   const makePhotoList = () => {

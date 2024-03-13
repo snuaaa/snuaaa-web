@@ -1,13 +1,12 @@
-import { ExhibitPhoto, User } from 'types';
-import { AaaService } from './index';
-import { AxiosPromise } from 'axios';
+import { Board, ExhibitPhoto, User } from './types';
+import { API } from './index';
 
-export interface CreateExhibitPhotoRequest {
+export interface ExhibitPhotoInfo {
   title: string;
   text: string;
   order: number;
-  photographer: User;
-  photographer_alt: string;
+  photographer?: User;
+  photographer_alt?: string;
   date?: Date;
   location?: string;
   camera?: string;
@@ -18,22 +17,52 @@ export interface CreateExhibitPhotoRequest {
   iso?: string;
 }
 
+export interface CreateExhibitPhotoRequest {
+  board_id: Board['board_id'];
+  photoInfo: ExhibitPhotoInfo;
+  exhibition_no: number;
+  exhibitPhoto: File;
+}
+
+export type UpdateExhibitPhotoRequest = ExhibitPhotoInfo;
+
 const ExhibitPhotoService = {
-  retrieveExhibitPhoto: function (exhibitPhoto_id: number): AxiosPromise<{
-    exhibitPhotoInfo: ExhibitPhoto;
-    exhibitPhotosInfo: ExhibitPhoto[];
-    likeInfo: boolean;
-  }> {
-    return AaaService.get(`exhibitPhoto/${exhibitPhoto_id}`);
+  createExhibitPhoto: function (
+    exhibition_id: number,
+    data: CreateExhibitPhotoRequest,
+  ) {
+    const photosForm = new FormData();
+    photosForm.append('board_id', data.board_id);
+    photosForm.append('photoInfo', JSON.stringify(data.photoInfo));
+    photosForm.append('exhibition_no', data.exhibition_no.toString());
+    photosForm.append('exhibitPhoto', data.exhibitPhoto);
+
+    return API.post(`exhibition/${exhibition_id}/exhibitPhoto`, data);
   },
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  updateExhibitPhoto: function (exhibitPhoto_id: number, data: any) {
-    return AaaService.patch(`exhibitPhoto/${exhibitPhoto_id}`, data);
+  retrieveExhibitPhotosinExhibition: function (exhibition_id: number) {
+    return API.get<{ exhibitPhotosInfo: ExhibitPhoto[] }>(
+      `exhibition/${exhibition_id}/exhibitPhotos`,
+    );
+  },
+
+  retrieveExhibitPhoto: function (exhibitPhoto_id: number) {
+    return API.get<{
+      exhibitPhotoInfo: ExhibitPhoto;
+      exhibitPhotosInfo: ExhibitPhoto[];
+      likeInfo: boolean;
+    }>(`exhibitPhoto/${exhibitPhoto_id}`);
+  },
+
+  updateExhibitPhoto: function (
+    exhibitPhoto_id: number,
+    data: UpdateExhibitPhotoRequest,
+  ) {
+    return API.patch(`exhibitPhoto/${exhibitPhoto_id}`, data);
   },
 
   deleteExhibitPhoto: function (exhibitPhoto_id: number) {
-    return AaaService.delete(`exhibitPhoto/${exhibitPhoto_id}`);
+    return API.delete(`exhibitPhoto/${exhibitPhoto_id}`);
   },
 };
 

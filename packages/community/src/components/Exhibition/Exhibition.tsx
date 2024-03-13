@@ -7,7 +7,8 @@ import CreateExhibitPhoto from './CreateExhibitPhoto';
 import ExhibitionInfo from '../ExhibitBoard/ExhibitionInfo';
 import ExhibitPhotoList from '../ExhibitBoard/ExhibitPhotoList';
 import AuthContext from '../../contexts/AuthContext';
-import { ExhibitPhoto, Exhibition } from 'types';
+import { ExhibitPhoto, Exhibition } from 'services/types';
+import ExhibitPhotoService from 'services/ExhibitPhotoService';
 
 type ExhibitionProps = {
   match: match<{ exhibition_id: string }>;
@@ -42,7 +43,7 @@ class ExhibitionPage extends React.Component<ExhibitionProps, ExhibitionState> {
     const exhibition_id = Number(this.props.match.params.exhibition_id);
     await Promise.all([
       ExhibitionService.retrieveExhibition(exhibition_id),
-      ExhibitionService.retrieveExhibitPhotosinExhibition(exhibition_id),
+      ExhibitPhotoService.retrieveExhibitPhotosinExhibition(exhibition_id),
     ])
       .then((infos) => {
         this.exhibitionInfo = infos[0].data.exhibitionInfo;
@@ -54,24 +55,6 @@ class ExhibitionPage extends React.Component<ExhibitionProps, ExhibitionState> {
       .catch((err) => {
         console.error(err);
       });
-  };
-
-  deleteAlbum = async () => {
-    const exhibition_id = Number(this.props.match.params.exhibition_id);
-
-    const goDrop = window.confirm(
-      '정말로 삭제하시겠습니까? 삭제한 게시글은 다시 복원할 수 없습니다.',
-    );
-    if (goDrop) {
-      await ExhibitionService.deleteExhibition(exhibition_id)
-        .then(() => {
-          this.setAlbumState(ContentStateEnum.DELETED);
-        })
-        .catch((err: Error) => {
-          console.error(err);
-          alert('삭제 실패');
-        });
-    }
   };
 
   setAlbumState = (state: number) => {

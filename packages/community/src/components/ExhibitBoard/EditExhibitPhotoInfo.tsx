@@ -5,9 +5,9 @@ import { Prompt } from 'react-router';
 import CreateExhibitPhotoInfo from './CreateExhibitPhotoInfo';
 import UserService from '../../services/UserService';
 import ExhibitPhotoService, {
-  CreateExhibitPhotoRequest,
+  ExhibitPhotoInfo,
 } from '../../services/ExhibitPhotoService';
-import { ExhibitPhoto, User } from 'types';
+import { ExhibitPhoto, User } from 'services/types';
 
 type EditExhibitPhotoInfoProps = {
   exhibitPhotoInfo: ExhibitPhoto;
@@ -22,7 +22,7 @@ function EditExhibitPhotoInfo({
 }: EditExhibitPhotoInfoProps) {
   const [searchUsers, setSearchUsers] = useState<User[]>([]);
   const [edittingContentInfo, setEdittingContentInfo] =
-    useState<CreateExhibitPhotoRequest>({
+    useState<ExhibitPhotoInfo>({
       title: exhibitPhotoInfo.title,
       text: exhibitPhotoInfo.text,
       order: exhibitPhotoInfo.exhibitPhoto.order,
@@ -83,8 +83,7 @@ function EditExhibitPhotoInfo({
 
   const fetchUsers = async (name: string) => {
     UserService.searchMini(name)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .then((res: any) => {
+      .then((res) => {
         setSearchUsers(res.data.userList);
       })
       .catch((err: Error) => {

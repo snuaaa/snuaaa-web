@@ -1,7 +1,6 @@
-import { AaaService } from './index';
-import { AxiosPromise } from 'axios';
+import { API } from './index';
 
-import { Content, Comment } from 'types';
+import { Content, Comment, Album, Photo } from './types';
 
 export interface RiseSet {
   lunAge: number;
@@ -15,43 +14,55 @@ export interface RiseSet {
 
 export type SoundBoxResponse = Pick<Content, 'content_id' | 'title' | 'text'>;
 
+type RecentPostResponse = Content[];
+
+type AllPostsResponse = {
+  postInfo: Content[];
+  postCount: number;
+};
+
+type RecentCommentsResponse = Comment[];
+
+type AllCommentsResponse = {
+  commentInfo: Comment[];
+  commentCount: number;
+};
+
+type RecentMemoryResponse = Album[];
+
+type RecentAstroPhotoResponse = Photo[];
+
 const HomeService = {
-  retrieveSoundBox: function (): AxiosPromise<SoundBoxResponse> {
-    return AaaService.get('home/soundbox');
+  retrieveSoundBox: function () {
+    return API.get<SoundBoxResponse>('home/soundbox');
   },
 
   retrieveRecentPosts: function () {
-    return AaaService.get('home/posts');
+    return API.get<RecentPostResponse>('home/posts');
   },
 
-  retrieveAllPosts: function (pageIdx: number): AxiosPromise<{
-    postInfo: Content[];
-    postCount: number;
-  }> {
-    return AaaService.get(`home/posts/all?page=${pageIdx}`);
+  retrieveAllPosts: function (pageIdx: number) {
+    return API.get<AllPostsResponse>(`home/posts/all?page=${pageIdx}`);
   },
 
   retrieveRecentComments: function () {
-    return AaaService.get('home/comments');
+    return API.get<RecentCommentsResponse>('home/comments');
   },
 
-  retrieveAllComments: function (pageIdx: number): AxiosPromise<{
-    commentInfo: Comment[];
-    commentCount: number;
-  }> {
-    return AaaService.get(`home/comments/all?page=${pageIdx}`);
+  retrieveAllComments: function (pageIdx: number) {
+    return API.get<AllCommentsResponse>(`home/comments/all?page=${pageIdx}`);
   },
 
   retrieveRecentMemory: function () {
-    return AaaService.get('home/memory');
+    return API.get<RecentMemoryResponse>('home/memory');
   },
 
   retrieveRecentAstroPhoto: function () {
-    return AaaService.get('home/astrophoto');
+    return API.get<RecentAstroPhotoResponse>('home/astrophoto');
   },
 
-  retrieveRiseSet: function (): AxiosPromise<RiseSet> {
-    return AaaService.get('home/riseset');
+  retrieveRiseSet: function () {
+    return API.get<RiseSet>('home/riseset');
   },
 };
 

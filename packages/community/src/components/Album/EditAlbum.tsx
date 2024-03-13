@@ -5,7 +5,7 @@ import ContentStateEnum from '../../common/ContentStateEnum';
 import AlbumService from '../../services/AlbumService';
 import { RecordOf, Record } from 'immutable';
 
-import { Album, Category } from 'types';
+import { Album, Category } from 'services/types';
 
 type EditAlbumProps = {
   albumInfo: Album;

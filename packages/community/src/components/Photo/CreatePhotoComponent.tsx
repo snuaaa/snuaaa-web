@@ -3,7 +3,7 @@ import CreatePhotoInfo from '../../components/Photo/CreatePhotoInfo';
 import ThumbnailList from '../../components/Album/ThumbnailList';
 import PreviewImage from '../../components/Album/PreviewImage';
 
-import { Tag } from 'types';
+import { Tag } from 'services/types';
 import { CreatePhotoRequest } from 'services/PhotoService';
 
 type CreatePhotoComponentProps = {

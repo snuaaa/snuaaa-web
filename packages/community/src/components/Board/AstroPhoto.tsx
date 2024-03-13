@@ -13,7 +13,7 @@ import BoardName from '../../components/Board/BoardName';
 import AuthContext from '../../contexts/AuthContext';
 
 import { useLocation, useHistory } from 'react-router';
-import { Album, Board, Photo } from 'types';
+import { Album, Board, Photo } from 'services/types';
 
 const ALBUMROWNUM = 12;
 

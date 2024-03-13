@@ -1,7 +1,7 @@
-import { AaaService } from './index';
+import { API } from './index';
 import { AxiosPromise } from 'axios';
 
-import { Photo, Tag } from 'types';
+import { Photo, Tag } from './types';
 
 export interface CreatePhotoRequest {
   board_id?: string;
@@ -31,15 +31,15 @@ const PhotoService = {
     prevAlbumPhoto: Photo;
     nextAlbumPhoto: Photo;
   }> {
-    return AaaService.get(`photo/${photo_id}`);
+    return API.get(`photo/${photo_id}`);
   },
 
   updatePhoto: function (photo_id: number, data: Photo) {
-    return AaaService.patch(`photo/${photo_id}`, data);
+    return API.patch(`photo/${photo_id}`, data);
   },
 
   deletePhoto: function (photo_id: number) {
-    return AaaService.delete(`photo/${photo_id}`);
+    return API.delete(`photo/${photo_id}`);
   },
 };
 

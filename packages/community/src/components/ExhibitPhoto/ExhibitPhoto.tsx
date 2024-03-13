@@ -9,7 +9,7 @@ import { RecordOf, Record } from 'immutable';
 import AuthContext from '../../contexts/AuthContext';
 
 import useBlockBackgroundScroll from '../../hooks/useBlockBackgroundScroll';
-import { ExhibitPhoto } from 'types';
+import { ExhibitPhoto } from 'services/types';
 
 type LocationState = {
   backgroundLocation: string;

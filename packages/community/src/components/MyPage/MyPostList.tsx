@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { convertDate } from '../../utils/convertDate';
-import { Content } from 'types';
+import { Content } from 'services/types';
 
 const MyPostList = ({ posts }: { posts: Content[] }) => {
   const makePostList = () => {
