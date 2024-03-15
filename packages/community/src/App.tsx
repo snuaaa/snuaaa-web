@@ -28,6 +28,18 @@ function App() {
   const history = useHistory();
   const location = useLocation();
 
+  const authLogin = useCallback(
+    (token: string, autoLogin: boolean, userInfo: User) => {
+      setToken(token, autoLogin);
+      setAuthinfo({
+        isLoggedIn: true,
+        user: userInfo,
+      });
+      setIsReady(true);
+    },
+    [],
+  );
+
   const checkToken = useCallback(async () => {
     const accessToken = getToken();
     if (!accessToken) {
@@ -58,7 +70,7 @@ function App() {
           authLogout();
         });
     }
-  }, [history]);
+  }, [authLogin, history]);
 
   useEffect(() => {
     if (navigator.userAgent.toLowerCase().indexOf('msie') !== -1) {
@@ -75,18 +87,6 @@ function App() {
     }
     checkToken();
   }, [checkToken]);
-
-  const authLogin = useCallback(
-    (token: string, autoLogin: boolean, userInfo: User) => {
-      setToken(token, autoLogin);
-      setAuthinfo({
-        isLoggedIn: true,
-        user: userInfo,
-      });
-      setIsReady(true);
-    },
-    [],
-  );
 
   const authLogout = () => {
     removeToken();
