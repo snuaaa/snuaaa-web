@@ -13,7 +13,12 @@ type CreateAlbumProps = {
   togglePopUp: () => void;
   fetch: () => void;
 };
-function CreateAlbum(props: CreateAlbumProps) {
+function CreateAlbum({
+  board_id,
+  categories,
+  togglePopUp,
+  fetch,
+}: CreateAlbumProps) {
   useBlockBackgroundScroll();
   const [albumInfo, setAlbumInfo] = useState<CreateAlbumRequest>({
     title: '',
@@ -47,18 +52,17 @@ function CreateAlbum(props: CreateAlbumProps) {
   const createAlbum = async () => {
     if (!albumInfo.title) {
       alert('제목을 입력해 주세요');
-    } else if (props.categories && !albumInfo.category_id) {
+    } else if (categories && !albumInfo.category_id) {
       alert('카테고리를 선택해 주세요');
     } else {
-      await PhotoBoardService.createAlbum(props.board_id, albumInfo)
-        .then(() => {
-          props.togglePopUp();
-          props.fetch();
-        })
-        .catch((err: Error) => {
-          console.error(err);
-          alert('앨범 생성 실패');
-        });
+      try {
+        await PhotoBoardService.createAlbum(board_id, albumInfo);
+        togglePopUp();
+        fetch();
+      } catch (err) {
+        console.error(err);
+        alert('앨범 생성 실패');
+      }
     }
   };
 
@@ -70,11 +74,11 @@ function CreateAlbum(props: CreateAlbumProps) {
       isPrivate={albumInfo.is_private}
       setIsPrivate={setIsPrivate}
       checkedCategory={albumInfo.category_id}
-      categories={props.categories}
+      categories={categories}
       handleCategory={handleCategoryChange}
       handleChange={handleChange}
       confirmAlbum={createAlbum}
-      cancelAlbum={props.togglePopUp}
+      cancelAlbum={togglePopUp}
     />
   );
 }

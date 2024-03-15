@@ -1,62 +1,52 @@
-import React, { ChangeEvent } from 'react';
+import { ChangeEvent, FC, useCallback, useState } from 'react';
 
 import EditAlbumComponent from '../../components/Album/EditAlbumComponent';
-import ContentStateEnum from '../../common/ContentStateEnum';
 import AlbumService from '../../services/AlbumService';
-import { RecordOf, Record } from 'immutable';
+import { Record } from 'immutable';
 
 import { Album, Category } from 'services/types';
 
 type EditAlbumProps = {
   albumInfo: Album;
   categoryInfo?: Category[];
-  setAlbumState: (state: number) => void;
-  fetch: () => void;
+  onUpdateAlbum: () => void;
+  onCancel: () => void;
 };
 
-type EditAlbumState = {
-  albumInfo: RecordOf<Album>;
-};
+export const EditAlbum: FC<EditAlbumProps> = ({
+  albumInfo: albumInfoProps,
+  categoryInfo,
+  onUpdateAlbum,
+  onCancel,
+}) => {
+  const [albumInfo, setAlbumInfo] = useState(Record(albumInfoProps)());
 
-class EditAlbum extends React.Component<EditAlbumProps, EditAlbumState> {
-  constructor(props: EditAlbumProps) {
-    super(props);
+  const handleChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const name: string = e.target.name;
 
-    this.state = {
-      albumInfo: Record(props.albumInfo)(),
-    };
-  }
+      if (name === 'title' || name === 'text') {
+        setAlbumInfo(albumInfo.set(name, e.target.value));
+      }
+    },
+    [albumInfo],
+  );
 
-  handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { albumInfo } = this.state;
-    const name: string = e.target.name;
+  const setIsPrivate = useCallback(
+    (isPrivate: boolean) => {
+      setAlbumInfo(albumInfo.setIn(['album', 'is_private'], isPrivate));
+    },
+    [albumInfo],
+  );
 
-    if (name === 'title' || name === 'text') {
-      this.setState({
-        albumInfo: albumInfo.set(name, e.target.value),
-      });
-    }
-  };
+  const handleCategoryChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setAlbumInfo(albumInfo.set('category_id', e.target.value));
+    },
+    [albumInfo],
+  );
 
-  setIsPrivate = (isPrivate: boolean) => {
-    const { albumInfo } = this.state;
-    this.setState({
-      albumInfo: albumInfo.setIn(['album', 'is_private'], isPrivate),
-    });
-  };
-
-  handleCategoryChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { albumInfo } = this.state;
-
-    this.setState({
-      albumInfo: albumInfo.set('category_id', e.target.value),
-    });
-  };
-
-  updateAlbum = async () => {
-    const { categoryInfo } = this.props;
-    const { albumInfo } = this.state;
-
+  const updateAlbum = useCallback(async () => {
     if (!albumInfo.album) {
       alert('앨범 정보 오류');
     } else if (!albumInfo.title) {
@@ -68,39 +58,33 @@ class EditAlbum extends React.Component<EditAlbumProps, EditAlbumState> {
     ) {
       alert('카테고리를 선택해 주세요');
     } else {
-      await AlbumService.updateAlbum(albumInfo.content_id, albumInfo.toJSON())
-        .then(() => {
-          this.props.setAlbumState(ContentStateEnum.READY);
-          this.props.fetch();
-        })
-        .catch((err: Error) => {
-          console.error(err);
-          alert('업데이트 실패');
-        });
+      try {
+        await AlbumService.updateAlbum(
+          albumInfo.content_id,
+          albumInfo.toJSON(),
+        );
+        onUpdateAlbum();
+      } catch (err) {
+        console.error(err);
+        alert('업데이트 실패');
+      }
     }
-  };
+  }, [albumInfo, categoryInfo, onUpdateAlbum]);
 
-  render() {
-    const { categoryInfo } = this.props;
-    const { albumInfo } = this.state;
-
-    return (
-      <EditAlbumComponent
-        caption="앨범 수정"
-        // albumInfo={albumInfo}
-        title={albumInfo.title}
-        text={albumInfo.text}
-        isPrivate={albumInfo.album ? albumInfo.album.is_private : false}
-        checkedCategory={albumInfo.category_id}
-        setIsPrivate={this.setIsPrivate}
-        categories={categoryInfo}
-        handleCategory={this.handleCategoryChange}
-        handleChange={this.handleChange}
-        confirmAlbum={() => this.updateAlbum()}
-        cancelAlbum={() => this.props.setAlbumState(ContentStateEnum.READY)}
-      />
-    );
-  }
-}
-
-export default EditAlbum;
+  return (
+    <EditAlbumComponent
+      caption="앨범 수정"
+      // albumInfo={albumInfo}
+      title={albumInfo.title}
+      text={albumInfo.text}
+      isPrivate={albumInfo.album ? albumInfo.album.is_private : false}
+      checkedCategory={albumInfo.category_id}
+      setIsPrivate={setIsPrivate}
+      categories={categoryInfo}
+      handleCategory={handleCategoryChange}
+      handleChange={handleChange}
+      confirmAlbum={() => updateAlbum()}
+      cancelAlbum={onCancel}
+    />
+  );
+};

@@ -1,14 +1,13 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useCallback } from 'react';
 
 import HomeService from '../../services/HomeService';
 import Loading from '../Common/Loading';
 import AllPostList from '../Post/AllPostList';
 import Paginator from '../Common/Paginator';
 import BoardName from '../Board/BoardName';
-import BoardStateEnum from '../../common/BoardStateEnum';
 
 import { useHistory, useLocation } from 'react-router';
-import { Content } from 'services/types';
+import { useFetch } from 'hooks/useFetch';
 
 const POSTROWNUM = 10;
 
@@ -17,9 +16,6 @@ type LocationState = {
 };
 
 function AllPosts() {
-  const [posts, setPosts] = useState<Content[]>([]);
-  const [postCount, setPostCount] = useState<number>(0);
-  const [boardState, setBoardState] = useState<number>(BoardStateEnum.LOADING);
   const history = useHistory();
   const location = useLocation<LocationState>();
   const pageIdx =
@@ -33,52 +29,31 @@ function AllPosts() {
     });
   };
 
-  const fetch = useCallback(async () => {
-    setBoardState(BoardStateEnum.LOADING);
-    await HomeService.retrieveAllPosts(pageIdx)
-      .then((res) => {
-        setPosts(res.data.postInfo);
-        setPostCount(res.data.postCount);
-        setBoardState(BoardStateEnum.READY);
-      })
-      .catch((err: Error) => {
-        console.error(err);
-      });
+  const fetchFunction = useCallback(() => {
+    return HomeService.retrieveAllPosts(pageIdx);
   }, [pageIdx]);
 
-  useEffect(() => {
-    fetch();
-  }, [fetch, location]);
+  const { data } = useFetch({ fetch: fetchFunction });
+
+  if (!data) {
+    return <Loading />;
+  }
+
+  const posts = data.data.postInfo;
+  const postCount = data.data.postCount;
 
   return (
-    <>
-      {(() => {
-        if (boardState === BoardStateEnum.LOADING) {
-          return <Loading />;
-        } else if (
-          boardState === BoardStateEnum.READY ||
-          boardState === BoardStateEnum.WRITING
-        ) {
-          return (
-            <div className="board-wrapper postboard-wrapper">
-              <BoardName board_name="전체 게시글" />
-              {boardState === BoardStateEnum.READY && (
-                <>
-                  <AllPostList posts={posts} />
-                  {postCount > 0 && (
-                    <Paginator
-                      pageIdx={pageIdx}
-                      pageNum={Math.ceil(postCount / POSTROWNUM)}
-                      clickPage={clickPage}
-                    />
-                  )}
-                </>
-              )}
-            </div>
-          );
-        } else return <div>ERROR PAGE</div>;
-      })()}
-    </>
+    <div className="board-wrapper postboard-wrapper">
+      <BoardName board_name="전체 게시글" />
+      <AllPostList posts={posts} />
+      {postCount > 0 && (
+        <Paginator
+          pageIdx={pageIdx}
+          pageNum={Math.ceil(postCount / POSTROWNUM)}
+          clickPage={clickPage}
+        />
+      )}
+    </div>
   );
 }
 

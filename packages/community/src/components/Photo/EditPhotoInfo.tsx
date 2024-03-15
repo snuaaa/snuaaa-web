@@ -1,5 +1,5 @@
-import React, { ChangeEvent } from 'react';
-import ContentStateEnum from '../../common/ContentStateEnum';
+import { ChangeEvent } from 'react';
+import { Record } from 'immutable';
 
 import ReactDatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -7,9 +7,9 @@ import { Prompt } from 'react-router';
 import { Photo, Tag } from 'services/types';
 
 type PhotoInfoProps = {
-  photoInfo: Photo;
+  photoInfo: Record<Photo>;
   boardTagInfo: Tag[];
-  setPhotoState: (state: number) => void;
+  onCancel: () => void;
   updatePhoto: () => void;
   handleChange: (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -21,15 +21,15 @@ type PhotoInfoProps = {
 const EditPhotoInfo = ({
   photoInfo,
   boardTagInfo,
-  setPhotoState,
+  onCancel,
   updatePhoto,
   handleChange,
   handleDate,
   handleTag,
 }: PhotoInfoProps) => {
   const content = photoInfo;
-  const photo = photoInfo && photoInfo.photo;
-  const tagInfo = photoInfo && photoInfo.tags;
+  const photo = photoInfo && photoInfo.get('photo');
+  const tagInfo = photoInfo && photoInfo.get('tags');
 
   const makeEditTagList = () => {
     if (boardTagInfo && boardTagInfo.length > 0) {
@@ -78,14 +78,14 @@ const EditPhotoInfo = ({
               name="title"
               placeholder="제목"
               onChange={handleChange}
-              value={content.title}
+              value={content.get('title')}
             />
             <textarea
               className="input-desc"
               placeholder="설명"
               name="text"
               onChange={handleChange}
-              value={content.text}
+              value={content.get('text')}
             />
 
             <div className="photo-infos">
@@ -187,10 +187,7 @@ const EditPhotoInfo = ({
             </div>
           </div>
           <div className="crt-photo-btn-wrapper">
-            <button
-              className="btn-cancel"
-              onClick={() => setPhotoState(ContentStateEnum.READY)}
-            >
+            <button className="btn-cancel" onClick={onCancel}>
               취소
             </button>
             <button className="btn-ok" onClick={updatePhoto}>

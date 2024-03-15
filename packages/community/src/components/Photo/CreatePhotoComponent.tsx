@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from 'react';
+import { ChangeEvent } from 'react';
 import CreatePhotoInfo from '../../components/Photo/CreatePhotoInfo';
 import ThumbnailList from '../../components/Album/ThumbnailList';
 import PreviewImage from '../../components/Album/PreviewImage';
@@ -18,7 +18,7 @@ type CreatePhotoComponentProps = {
   setImgIdx: (index: number) => void;
   removeImg: (index: number) => void;
   checkForm: () => void;
-  togglePopUp: () => void;
+  onCancel: () => void;
   imgIdx: number;
   photoInfo?: CreatePhotoRequest;
   // btnDisabled: boolean;
@@ -35,7 +35,7 @@ function CreatePhotoComponent({
   removeImg,
   checkForm,
   tags,
-  togglePopUp,
+  onCancel,
   imgIdx,
   photoInfo,
   isUploading,
@@ -117,7 +117,7 @@ function CreatePhotoComponent({
                 )}
               </div>
               <div className="crt-photo-btn-wrapper">
-                <button className="btn-cancel" onClick={togglePopUp}>
+                <button className="btn-cancel" onClick={onCancel}>
                   취소
                 </button>
                 <button

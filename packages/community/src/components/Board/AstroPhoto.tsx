@@ -1,6 +1,6 @@
 import React, { ChangeEvent, useState, useEffect, useCallback } from 'react';
 
-import CreatePhoto from '../Photo/CreatePhoto';
+import { CreatePhoto } from '../Photo/CreatePhoto';
 import CreateAlbum from '../Album/CreateAlbum';
 import AlbumList from '../../components/PhotoBoard/AlbumList';
 import PhotoList from '../../components/Album/PhotoList';
@@ -27,6 +27,7 @@ type LocationState = {
   tags: string[];
 };
 
+// TODO: AlbumList, PhotoList 분리
 function AstroPhoto({ boardInfo }: AstroPhotoProps) {
   // let albums: AlbumType[] = [];
   // let photos: PhotoType[] = [];
@@ -148,9 +149,9 @@ function AstroPhoto({ boardInfo }: AstroPhotoProps) {
     });
   };
 
-  const togglePopUp = () => {
-    setPopUpState(!popUpState);
-  };
+  const togglePopUp = useCallback(() => {
+    setPopUpState((prevState) => !prevState);
+  }, []);
 
   const clickPage = (idx: number) => {
     const isViewAlbums =
@@ -168,6 +169,12 @@ function AstroPhoto({ boardInfo }: AstroPhotoProps) {
       },
     });
   };
+
+  const handleCreatePhoto = useCallback(() => {
+    fetch();
+    togglePopUp();
+    // setIsModalOpen(false);
+  }, [fetch, togglePopUp]);
 
   const isViewAlbums =
     location.state && location.state.isViewAlbums ? true : false;
@@ -238,11 +245,10 @@ function AstroPhoto({ boardInfo }: AstroPhotoProps) {
                   <PhotoList photos={photos.data} />
                   {popUpState && (
                     <CreatePhoto
-                      board_id={boardInfo.board_id}
+                      boardId={boardInfo.board_id}
                       tags={boardInfo.tags}
-                      fetch={fetch}
-                      togglePopUp={togglePopUp}
-                      setReadyState={() => setIsReady(true)}
+                      onCreatePhoto={handleCreatePhoto}
+                      onCancel={() => togglePopUp()}
                     />
                   )}
                 </>
