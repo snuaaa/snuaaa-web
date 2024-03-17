@@ -11,7 +11,7 @@ const MAX_SIZE = 20 * 1024 * 1024;
 type CreateDocuProps = {
   fetch: () => void;
   boardInfo: Board;
-  close: () => void;
+  onClose: () => void;
 };
 
 function CreateDocu(props: CreateDocuProps) {
@@ -137,7 +137,7 @@ function CreateDocu(props: CreateDocuProps) {
       attachFile={attachFile}
       removeAttachedFile={removeAttachedFile}
       confirm={createDocu}
-      close={props.close}
+      close={props.onClose}
     />
   );
 }

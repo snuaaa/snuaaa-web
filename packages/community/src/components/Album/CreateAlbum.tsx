@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent } from 'react';
+import { useState, ChangeEvent } from 'react';
 import EditAlbumComponent from '../../components/Album/EditAlbumComponent';
 import PhotoBoardService, {
   CreateAlbumRequest,
@@ -10,14 +10,14 @@ import { Category } from 'services/types';
 type CreateAlbumProps = {
   board_id: string;
   categories?: Category[];
-  togglePopUp: () => void;
-  fetch: () => void;
+  onCreate: () => void;
+  onCancel: () => void;
 };
 function CreateAlbum({
   board_id,
   categories,
-  togglePopUp,
-  fetch,
+  onCreate,
+  onCancel,
 }: CreateAlbumProps) {
   useBlockBackgroundScroll();
   const [albumInfo, setAlbumInfo] = useState<CreateAlbumRequest>({
@@ -57,8 +57,7 @@ function CreateAlbum({
     } else {
       try {
         await PhotoBoardService.createAlbum(board_id, albumInfo);
-        togglePopUp();
-        fetch();
+        onCreate();
       } catch (err) {
         console.error(err);
         alert('앨범 생성 실패');
@@ -78,7 +77,7 @@ function CreateAlbum({
       handleCategory={handleCategoryChange}
       handleChange={handleChange}
       confirmAlbum={createAlbum}
-      cancelAlbum={togglePopUp}
+      cancelAlbum={onCancel}
     />
   );
 }

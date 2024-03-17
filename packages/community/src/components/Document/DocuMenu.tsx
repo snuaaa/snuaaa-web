@@ -20,7 +20,7 @@ export const DocuMenu: FC<Props> = ({ retrieveDocumentsByGeneration }) => {
       );
     }
     return genList;
-  }, []);
+  }, [retrieveDocumentsByGeneration]);
 
   const leftHandler = useCallback(() => {
     if (!generationList.current) {

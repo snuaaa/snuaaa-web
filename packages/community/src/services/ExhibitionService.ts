@@ -2,12 +2,14 @@ import { API } from './index';
 import { Board, Exhibition, User } from './types';
 
 export interface CreateExhibitionRequest {
-  poster: File;
+  title: string;
+  text: string;
   exhibition_no: string;
   slogan: string;
-  date_start: string;
-  date_end: string;
+  date_start: Date;
+  date_end: Date;
   place: string;
+  poster: File;
 }
 
 type ExhibitionInfo = Exhibition & {
@@ -28,7 +30,26 @@ const ExhibitionService = {
   },
 
   createExhibition: function (board_id: string, data: CreateExhibitionRequest) {
-    // TODO: CreateExhibition.js 수정과 함께 FormData 변환로직 추가
+    const {
+      title,
+      text,
+      exhibition_no,
+      slogan,
+      date_start,
+      date_end,
+      place,
+      poster,
+    } = data;
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('text', text);
+    formData.append('exhibition_no', exhibition_no.toString());
+    formData.append('slogan', slogan);
+    formData.append('date_start', date_start.toString());
+    formData.append('date_end', date_end.toString());
+    formData.append('place', place);
+    formData.append('poster', poster);
+
     return API.post(`board/${board_id}/exhibition`, data);
   },
 
