@@ -1,5 +1,4 @@
 import { API } from './index';
-import { AxiosPromise } from 'axios';
 
 import { Photo, Tag } from './types';
 
@@ -22,16 +21,16 @@ export interface CreatePhotoRequest {
 }
 
 const PhotoService = {
-  retrievePhoto: function (photo_id: number): AxiosPromise<{
-    photoInfo: Photo;
-    likeInfo: boolean;
-    boardTagInfo: Tag[];
-    prevPhoto: Photo;
-    nextPhoto: Photo;
-    prevAlbumPhoto: Photo;
-    nextAlbumPhoto: Photo;
-  }> {
-    return API.get(`photo/${photo_id}`);
+  retrievePhoto: function (photo_id: number) {
+    return API.get<{
+      photoInfo: Photo;
+      likeInfo: boolean;
+      boardTagInfo: Tag[];
+      prevPhoto: Photo;
+      nextPhoto: Photo;
+      prevAlbumPhoto: Photo;
+      nextAlbumPhoto: Photo;
+    }>(`photo/${photo_id}`);
   },
 
   updatePhoto: function (photo_id: number, data: Photo) {

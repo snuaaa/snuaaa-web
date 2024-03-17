@@ -99,7 +99,7 @@ function EditProfile() {
 
     await UserService.retrieveUserInfo()
       .then((res) => {
-        const resUserInfo = res.data.userInfo;
+        const resUserInfo = res.userInfo;
 
         setUserInfo((_userInfo) =>
           _userInfo.map((info) => {

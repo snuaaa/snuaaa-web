@@ -36,10 +36,10 @@ function Docu() {
     const doc_id = Number(match.params.doc_id);
     await DocuService.retrieveDocument(doc_id)
       .then((res) => {
-        setDocuInfo(res.data.docuInfo);
-        setLikeInfo(res.data.likeInfo);
+        setDocuInfo(res.docuInfo);
+        setLikeInfo(res.likeInfo);
         setDocState(ContentStateEnum.READY);
-        setEditingDocData(res.data.docuInfo);
+        setEditingDocData(res.docuInfo);
       })
       .catch((err) => {
         console.error(err);

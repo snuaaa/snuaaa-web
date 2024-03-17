@@ -40,8 +40,8 @@ function AllComments() {
   }
 
   // TODO: data 구조 변경
-  const comments = data.data.commentInfo;
-  const commentCount = data.data.commentCount;
+  const comments = data.commentInfo;
+  const commentCount = data.commentCount;
 
   return (
     <div className="board-wrapper postboard-wrapper">

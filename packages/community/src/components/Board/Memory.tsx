@@ -110,10 +110,7 @@ function Memory({ boardInfo }: MemoryProps) {
       ) : (
         <>
           <div className="enif-divider"></div>
-          <AlbumList
-            board_id={boardInfo.board_id}
-            albums={data.data.albumInfo}
-          />
+          <AlbumList board_id={boardInfo.board_id} albums={data.albumInfo} />
           {isCreating && (
             <CreateAlbum
               board_id={boardInfo.board_id}
@@ -127,10 +124,10 @@ function Memory({ boardInfo }: MemoryProps) {
               }}
             />
           )}
-          {data.data.albumCount > 0 && (
+          {data.albumCount > 0 && (
             <Paginator
               pageIdx={pageIdx}
-              pageNum={Math.ceil(data.data.albumCount / ALBUMROWNUM)}
+              pageNum={Math.ceil(data.albumCount / ALBUMROWNUM)}
               clickPage={clickPage}
             />
           )}

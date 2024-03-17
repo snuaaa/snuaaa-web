@@ -1,4 +1,4 @@
-import { FC, useCallback, useContext, useMemo, useState } from 'react';
+import { FC, useCallback, useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Loading from '../../components/Common/Loading';
 import { convertDateWithDay } from '../../utils/convertDate';
@@ -23,9 +23,9 @@ const ExhibitBoard: FC<ExhibitBoardProps> = ({ boardInfo }) => {
     return ExhibitionService.retrieveExhibitionsInBoard(boardInfo.board_id);
   }, [boardInfo.board_id]);
 
-  const { data, refresh } = useFetch({ fetch: fetchFunction });
-
-  const exhibitions = useMemo(() => data?.data ?? [], [data?.data]);
+  const { data: exhibitions = [], refresh } = useFetch({
+    fetch: fetchFunction,
+  });
 
   const authContext = useContext(AuthContext);
 
@@ -60,7 +60,7 @@ const ExhibitBoard: FC<ExhibitBoardProps> = ({ boardInfo }) => {
     });
   }, [exhibitions]);
 
-  if (!data) {
+  if (!exhibitions) {
     return <Loading />;
   }
 

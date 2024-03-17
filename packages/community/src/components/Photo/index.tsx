@@ -82,9 +82,9 @@ const PhotoPage: FC = () => {
 
   useEffect(() => {
     if (data) {
-      setContentInfo(Record(data.data.photoInfo));
-      setEditContentInfo(Record(data.data.photoInfo));
-      setIsLiked(data.data.likeInfo);
+      setContentInfo(Record(data.photoInfo));
+      setEditContentInfo(Record(data.photoInfo));
+      setIsLiked(data.likeInfo);
     }
   }, [data]);
 
@@ -109,8 +109,8 @@ const PhotoPage: FC = () => {
 
   const moveToAlbum = useCallback(
     (direction: 1 | -1) => {
-      const prevAlbumPhoto = data?.data.prevAlbumPhoto;
-      const nextAlbumPhoto = data?.data.nextAlbumPhoto;
+      const prevAlbumPhoto = data?.prevAlbumPhoto;
+      const nextAlbumPhoto = data?.nextAlbumPhoto;
       if (direction === 1 && prevAlbumPhoto) {
         history.replace({
           pathname: `/photo/${prevAlbumPhoto.content_id}`,
@@ -131,13 +131,13 @@ const PhotoPage: FC = () => {
         console.error('Cannot Move');
       }
     },
-    [data?.data.nextAlbumPhoto, data?.data.prevAlbumPhoto, history],
+    [data?.nextAlbumPhoto, data?.prevAlbumPhoto, history],
   );
 
   const moveToPhoto = useCallback(
     (direction: number) => {
-      const prevPhoto = data?.data.prevPhoto;
-      const nextPhoto = data?.data.nextPhoto;
+      const prevPhoto = data?.prevPhoto;
+      const nextPhoto = data?.nextPhoto;
 
       if (direction === 1 && prevPhoto) {
         history.replace({
@@ -153,7 +153,7 @@ const PhotoPage: FC = () => {
         console.error('Cannot Move');
       }
     },
-    [data?.data.nextPhoto, data?.data.prevPhoto, history],
+    [data?.nextPhoto, data?.prevPhoto, history],
   );
 
   const closePhoto = useCallback(() => {
@@ -230,7 +230,7 @@ const PhotoPage: FC = () => {
             editContentInfo.set(
               'tags',
               tags.concat(
-                data.data.boardTagInfo.filter((tag) => tagId === tag.tag_id),
+                data.boardTagInfo.filter((tag) => tagId === tag.tag_id),
               ),
             ),
           );
@@ -383,7 +383,7 @@ const PhotoPage: FC = () => {
                   {isEditing ? (
                     <EditPhotoInfo
                       photoInfo={editContentInfo}
-                      boardTagInfo={data?.data.boardTagInfo ?? []}
+                      boardTagInfo={data?.boardTagInfo ?? []}
                       onCancel={() => setIsEditing(false)}
                       updatePhoto={updatePhoto}
                       handleChange={handleChange}

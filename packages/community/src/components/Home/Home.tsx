@@ -40,12 +40,12 @@ function Home() {
     ])
       .then((res) => {
         setHomeData({
-          soundBoxData: res[0].data,
-          recentPosts: res[1].data,
-          recentComments: res[2].data,
-          recentMemory: res[3].data,
-          recentAstrophoto: res[4].data,
-          recentExhibitions: res[5].data,
+          soundBoxData: res[0],
+          recentPosts: res[1],
+          recentComments: res[2],
+          recentMemory: res[3],
+          recentAstrophoto: res[4],
+          recentExhibitions: res[5],
         });
       })
       .catch((err) => {

@@ -39,8 +39,8 @@ function AllPosts() {
     return <Loading />;
   }
 
-  const posts = data.data.postInfo;
-  const postCount = data.data.postCount;
+  const posts = data.postInfo;
+  const postCount = data.postCount;
 
   return (
     <div className="board-wrapper postboard-wrapper">

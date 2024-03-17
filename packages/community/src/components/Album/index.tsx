@@ -29,25 +29,16 @@ const AlbumPage: FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
-  // TODO: Refactor response
-  const [albumData, photoData] = data ?? [];
+  const [albumData, photos] = data ?? [];
 
-  const albumInfo = useMemo(
-    () => albumData?.data.albumInfo,
-    [albumData?.data.albumInfo],
-  );
+  const albumInfo = useMemo(() => albumData?.albumInfo, [albumData?.albumInfo]);
 
   const categoryInfo = useMemo(
-    () => albumData?.data.categoryInfo,
-    [albumData?.data.categoryInfo],
+    () => albumData?.categoryInfo,
+    [albumData?.categoryInfo],
   );
 
-  const tagInfo = useMemo(
-    () => albumData?.data.tagInfo,
-    [albumData?.data.tagInfo],
-  );
-
-  const photos = photoData?.data;
+  const tagInfo = useMemo(() => albumData?.tagInfo, [albumData?.tagInfo]);
 
   const deleteAlbum = useCallback(async () => {
     if (!albumInfo) {

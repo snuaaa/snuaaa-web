@@ -41,8 +41,8 @@ function DocuBoard({ boardInfo }: DocuBoardProps) {
 
   const { data, refresh } = useFetch({ fetch: fetchFunction });
 
-  const docCount = data?.data.docCount ?? 0;
-  const documents = data?.data.docInfo ?? [];
+  const docCount = data?.docCount ?? 0;
+  const documents = data?.docInfo ?? [];
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const category =

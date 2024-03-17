@@ -192,11 +192,11 @@ function PostBoard({ boardInfo }: PostBoardProps) {
             </div>
           </div>
 
-          <PostList posts={data.data.postInfo} />
-          {data.data.postCount > 0 && (
+          <PostList posts={data.postInfo} />
+          {data.postCount > 0 && (
             <Paginator
               pageIdx={pageIdx}
-              pageNum={Math.ceil(data.data.postCount / POSTROWNUM)}
+              pageNum={Math.ceil(data.postCount / POSTROWNUM)}
               clickPage={clickPage}
             />
           )}

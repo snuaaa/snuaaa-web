@@ -32,24 +32,24 @@ function UserInfo({ user_uuid, isMyinfo }: UserInfoProps) {
         UserService.retrieveUserInfo(user_uuid),
         UserService.retrieveUserPosts(user_uuid),
       ]).then((res) => {
-        setUserInfo(res[0].data.userInfo);
-        setPostList(res[1].data.postList);
+        setUserInfo(res[0].userInfo);
+        setPostList(res[1].postList);
         setIsShow(true);
       });
     } else {
       if (userContentView === MyPageViewEnum.POST) {
         await UserService.retrieveUserPosts(user_uuid).then((res) => {
-          setPostList(res.data.postList);
+          setPostList(res.postList);
           setIsShow(true);
         });
       } else if (userContentView === MyPageViewEnum.PHOTO) {
         await UserService.retrieveUserPhotos(user_uuid).then((res) => {
-          setPhotoList(res.data.photoList);
+          setPhotoList(res.photoList);
           setIsShow(true);
         });
       } else if (userContentView === MyPageViewEnum.COMMENT) {
         await UserService.retrieveUserComments(user_uuid).then((res) => {
-          setCommentList(res.data.commentList);
+          setCommentList(res.commentList);
           setIsShow(true);
         });
       } else {

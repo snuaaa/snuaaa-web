@@ -135,7 +135,7 @@ export const PhotoSection: FC<Props> = ({ boardInfo }) => {
             clickTag={clickTag}
           />
           <div className="enif-divider"></div>
-          <PhotoList photos={data?.data.photoInfo ?? []} />
+          <PhotoList photos={data.photoInfo ?? []} />
           {isCreating && (
             <CreatePhoto
               boardId={boardInfo.board_id}
@@ -146,10 +146,10 @@ export const PhotoSection: FC<Props> = ({ boardInfo }) => {
           )}
         </>
       )}
-      {data.data.photoCount > 0 && (
+      {data.photoCount > 0 && (
         <Paginator
           pageIdx={pageIdx}
-          pageNum={Math.ceil(data.data.photoCount / PHOTO_ROW_NUM)}
+          pageNum={Math.ceil(data.photoCount / PHOTO_ROW_NUM)}
           clickPage={clickPage}
         />
       )}

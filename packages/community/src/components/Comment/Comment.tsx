@@ -28,7 +28,7 @@ function CommentSection({ parent_id }: CommentProps) {
   const fetch = useCallback(async () => {
     await CommentService.retrieveComments(parent_id)
       .then((res) => {
-        setComments(res.data);
+        setComments(res);
       })
       .catch((err: Error) => {
         console.error(err);

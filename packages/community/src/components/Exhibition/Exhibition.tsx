@@ -46,8 +46,8 @@ class ExhibitionPage extends React.Component<ExhibitionProps, ExhibitionState> {
       ExhibitPhotoService.retrieveExhibitPhotosinExhibition(exhibition_id),
     ])
       .then((infos) => {
-        this.exhibitionInfo = infos[0].data.exhibitionInfo;
-        this.exhibitPhotos = infos[1].data.exhibitPhotosInfo;
+        this.exhibitionInfo = infos[0].exhibitionInfo;
+        this.exhibitPhotos = infos[1].exhibitPhotosInfo;
         this.setState({
           exhibitionState: ContentStateEnum.READY,
         });

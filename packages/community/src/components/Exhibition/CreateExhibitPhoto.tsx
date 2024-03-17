@@ -103,7 +103,7 @@ function CreateExhibitPhoto({
   const fetchUsers = async (name: string) => {
     UserService.searchMini(name)
       .then((res) => {
-        setSearchUsers(res.data.userList);
+        setSearchUsers(res.userList);
       })
       .catch((err: Error) => {
         console.error(err);

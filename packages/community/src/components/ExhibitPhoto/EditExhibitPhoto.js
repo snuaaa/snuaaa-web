@@ -63,7 +63,7 @@ class EditExhibitPhoto extends React.Component {
     UserService.searchMini(name)
       .then((res) => {
         this.setState({
-          searchUsers: res.data.userList,
+          searchUsers: res.userList,
         });
       })
       .catch((err) => {

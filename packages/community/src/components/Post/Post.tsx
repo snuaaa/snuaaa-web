@@ -46,9 +46,9 @@ function Post(props: PostProps) {
     setPostState(ContentStateEnum.LOADING);
     await PostService.retrievePost(post_id)
       .then((res) => {
-        setPostInfo(res.data.postInfo);
-        setEditingPostData(res.data.postInfo);
-        setLikeInfo(res.data.likeInfo);
+        setPostInfo(res.postInfo);
+        setEditingPostData(res.postInfo);
+        setLikeInfo(res.likeInfo);
         setPostState(ContentStateEnum.READY);
       })
       .catch((err: unknown) => {

@@ -96,7 +96,7 @@ function LogIn() {
     await AuthService.guestLogIn()
       .then((res) => {
         setIsLoading(false);
-        const { token, userInfo, autoLogin } = res.data;
+        const { token, userInfo, autoLogin } = res;
         authContext.authLogin(token, autoLogin, userInfo);
       })
       .catch((err: ErrorEvent) => {

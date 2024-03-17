@@ -56,7 +56,7 @@ function App() {
       // 서버에 토큰 확인 , invalid => logout, valid => 로그인 유지(연장)
       await AuthService.checkToken()
         .then((res) => {
-          const { token, userInfo, autoLogin } = res.data;
+          const { token, userInfo, autoLogin } = res;
           authLogin(token, autoLogin, userInfo);
         })
         .catch((err: Error) => {

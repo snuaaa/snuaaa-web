@@ -71,10 +71,7 @@ export const AlbumSection: FC<Props> = ({ boardInfo }) => {
         </div>
       </div>
       <div className="enif-divider"></div>
-      <AlbumList
-        board_id={boardInfo.board_id}
-        albums={data?.data.albumInfo ?? []}
-      />
+      <AlbumList board_id={boardInfo.board_id} albums={data.albumInfo ?? []} />
       {isCreating && (
         <CreateAlbum
           board_id={boardInfo.board_id}
@@ -85,10 +82,10 @@ export const AlbumSection: FC<Props> = ({ boardInfo }) => {
           onCancel={() => setIsCreating(false)}
         />
       )}
-      {data.data.albumCount > 0 && (
+      {data.albumCount > 0 && (
         <Paginator
           pageIdx={pageIdx}
-          pageNum={Math.ceil(data.data.albumCount / ALBUM_ROW_NUM)}
+          pageNum={Math.ceil(data.albumCount / ALBUM_ROW_NUM)}
           clickPage={clickPage}
         />
       )}
