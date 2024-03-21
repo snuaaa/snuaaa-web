@@ -8,7 +8,7 @@ import React, {
 import { Redirect, match } from 'react-router';
 
 import ContentStateEnum from '../../common/ContentStateEnum';
-import Comment from '../Comment/Comment';
+import Comment from '../Comment';
 import Loading from '../Common/Loading';
 import PostComponent from './PostComponent';
 import EditPost from './EditPost';

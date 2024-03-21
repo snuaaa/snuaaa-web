@@ -12,7 +12,7 @@ import { useHistory, useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import { Record } from 'immutable';
 
-import Comment from '../Comment/Comment';
+import Comment from '../Comment';
 import FullScreenPortal from '../../containers/FullScreenPortal';
 
 import Loading from '../../components/Common/Loading';

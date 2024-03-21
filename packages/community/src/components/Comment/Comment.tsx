@@ -1,43 +1,63 @@
-import React, {
+import {
   ChangeEvent,
-  useState,
-  useEffect,
   useContext,
+  FC,
+  useState,
   useRef,
-  useCallback,
+  useEffect,
 } from 'react';
-
-import CommentList from './CommentList';
-import CommentService from '../../services/CommentService';
+import Image from '../Common/AaaImage';
+import { breakLine } from '../../utils/breakLine';
+import { convertDynamicTime } from '../../utils/convertDate';
+import defaultProfile from 'assets/img/common/profile.png';
+import UserActionDrawer from '../../components/Common/UserActionDrawer';
+import { Comment as CommentType } from 'services/types';
 import AuthContext from '../../contexts/AuthContext';
-import { Comment } from 'services/types';
+import { User } from 'services/types';
+import CommentService from 'services/CommentService';
 
-type CommentProps = {
+type Props = {
+  comment: CommentType;
   parent_id: number;
+  onUpdate: () => void;
 };
 
-function CommentSection({ parent_id }: CommentProps) {
-  const [comments, setComments] = useState<Comment[]>([]);
+export const Comment: FC<Props> = ({ comment, parent_id, onUpdate }) => {
+  const authContext = useContext(AuthContext);
+
+  const myId = authContext.authInfo.user.user_id;
+
   const [text, setText] = useState<string>('');
   const [editingCommentId, setEditingCommentId] = useState<number>(0);
   const [editingCommentText, setEditingCommentText] = useState<string>('');
   const [parentCommentId, setParentCommentId] = useState<number>(0);
-  const authContext = useContext(AuthContext);
   const textareaTarget = useRef<HTMLTextAreaElement>(null);
 
-  const fetch = useCallback(async () => {
-    await CommentService.retrieveComments(parent_id)
-      .then((res) => {
-        setComments(res);
-      })
-      .catch((err: Error) => {
-        console.error(err);
-      });
-  }, [parent_id]);
+  const checkLike = (users: User[]) => {
+    return users
+      .map((user) => user.user_id)
+      .includes(authContext.authInfo.user.user_id);
+  };
 
-  useEffect(() => {
-    fetch();
-  }, [fetch, parent_id]);
+  const deleteComment = async (comment_id: number) => {
+    const goDrop = window.confirm('정말로 삭제하시겠습니까?');
+    if (goDrop) {
+      try {
+        await CommentService.deleteComment(comment_id);
+        onUpdate();
+      } catch (err) {
+        console.error(err);
+        alert('댓글 삭제 실패');
+      }
+    }
+  };
+
+  const likeComment = async (comment_id: number) => {
+    await CommentService.likeComment(comment_id);
+    onUpdate();
+  };
+
+  const user = comment.user;
 
   const setEditingComment = (comment_id: number, text: string) => {
     setEditingCommentId(comment_id);
@@ -52,50 +72,35 @@ function CommentSection({ parent_id }: CommentProps) {
         parent_comment_id: parentCommentId,
         text: text,
       };
-      await CommentService.createComment(parent_id, commentInfo)
-        .then(() => {
-          setText('');
-          fetch();
-        })
-        .catch((err: Error) => {
-          console.error(err);
-          alert('댓글 작성 실패');
-        });
+      try {
+        await CommentService.createComment(parent_id, commentInfo);
+        setText('');
+        onUpdate();
+      } catch (err) {
+        console.error(err);
+        alert('댓글 작성 실패');
+      }
     }
   };
 
   const updateComment = async (comment_id: number) => {
     if (!editingCommentText) {
       alert('내용을 입력하세요.');
-    } else {
-      const commentInfo = {
-        text: editingCommentText,
-      };
-
-      await CommentService.updateComment(comment_id, commentInfo)
-        .then(() => {
-          setEditingCommentId(0);
-          setEditingCommentText('');
-          fetch();
-        })
-        .catch((err: Error) => {
-          console.error(err);
-          alert('댓글 업데이트 실패');
-        });
+      return;
     }
-  };
 
-  const deleteComment = async (comment_id: number) => {
-    const goDrop = window.confirm('정말로 삭제하시겠습니까?');
-    if (goDrop) {
-      await CommentService.deleteComment(comment_id)
-        .then(() => {
-          fetch();
-        })
-        .catch((err: Error) => {
-          console.error(err);
-          alert('댓글 삭제 실패');
-        });
+    const commentInfo = {
+      text: editingCommentText,
+    };
+
+    try {
+      await CommentService.updateComment(comment_id, commentInfo);
+      setEditingCommentId(0);
+      setEditingCommentText('');
+      onUpdate();
+    } catch (err) {
+      console.error(err);
+      alert('댓글 업데이트 실패');
     }
   };
 
@@ -112,55 +117,181 @@ function CommentSection({ parent_id }: CommentProps) {
     setParentCommentId(parent_comment_id);
   };
 
-  const likeComment = async (comment_id: number) => {
-    await CommentService.likeComment(comment_id)
-      .then(() => {
-        fetch();
-      })
-      .catch((err: Error) => {
-        console.error(err);
-      });
-  };
-
   useEffect(() => {
     if (textareaTarget.current) {
       textareaTarget.current.focus();
     }
   }, [parentCommentId]);
 
+  const makeSubCommentList = (comments: CommentType[]) => {
+    return comments.map((comment) => {
+      return (
+        <div key={comment.comment_id} className="comment-wrapper sub">
+          <UserActionDrawer userInfo={comment.user} className="profile">
+            <Image
+              className="comment-profile-img"
+              imgSrc={comment.user.profile_path}
+              defaultImgSrc={defaultProfile}
+            />
+          </UserActionDrawer>
+          <div className="com-cont-wrp">
+            <div className="com-cont-top">
+              <h5>{comment.user.nickname}</h5>
+              {myId === comment.author_id && (
+                <div className="actions-wrapper">
+                  <div className="edit-wrapper">
+                    <i
+                      className="ri-edit-2-line enif-pointer action-icons"
+                      onClick={() =>
+                        setEditingComment(comment.comment_id, comment.text)
+                      }
+                    ></i>
+                  </div>
+                  <div className="delete-wrapper">
+                    <i
+                      className="ri-delete-bin-line enif-pointer action-icons"
+                      onClick={() => deleteComment(comment.comment_id)}
+                    ></i>
+                  </div>
+                </div>
+              )}
+              <p className="com-date">
+                {convertDynamicTime(comment.createdAt)}
+              </p>
+            </div>
+            <div className="com-cont-mid">
+              {comment.comment_id === editingCommentId ? (
+                <>
+                  <textarea
+                    value={editingCommentText}
+                    onChange={handleEditingCommentChange}
+                  ></textarea>
+                  <button onClick={() => updateComment(comment.comment_id)}>
+                    ENTER
+                  </button>
+                </>
+              ) : (
+                <p>{breakLine(comment.text)}</p>
+              )}
+            </div>
+            <div className="com-cont-bot">
+              <div
+                className={`cmt-like-wrp ${checkLike(comment.likeUsers) ? 'color-pink' : 'color-gray1'} `}
+              >
+                <i
+                  className={`ri-heart-${checkLike(comment.likeUsers) ? 'fill' : 'line'}`}
+                  onClick={() => likeComment(comment.comment_id)}
+                ></i>
+                <p>{comment.likeUsers.length}</p>
+              </div>
+              {parentCommentId === comment.parent_comment_id ? (
+                <p
+                  className="enif-pointer"
+                  onClick={() => onClickSubComment(0)}
+                >
+                  답글 달기 취소
+                </p>
+              ) : (
+                <p
+                  className="enif-pointer"
+                  onClick={() => onClickSubComment(comment.parent_comment_id)}
+                >
+                  답글 달기
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    });
+  };
+
   return (
-    <div className="comment-area-wrapper">
-      <CommentList
-        my_id={authContext.authInfo.user.user_id}
-        comments={comments}
-        text={text}
-        deleteComment={deleteComment}
-        updateComment={updateComment}
-        commentInEdit={editingCommentId}
-        setCommentInEdit={setEditingComment}
-        editingContents={editingCommentText}
-        parentCommentId={parentCommentId}
-        createComment={createComment}
-        likeComment={likeComment}
-        // setParentCommentId={setParentCommentId}
-        textareaTarget={textareaTarget}
-        handleChange={handleChange}
-        onClickSubComment={onClickSubComment}
-        editingContentsChange={handleEditingCommentChange}
-      />
-      {parentCommentId <= 0 && (
-        <div className="comment-write">
+    <>
+      <div className="comment-wrapper">
+        <UserActionDrawer userInfo={user} className="profile">
+          <Image
+            className="comment-profile-img"
+            imgSrc={user.profile_path}
+            defaultImgSrc={defaultProfile}
+          />
+        </UserActionDrawer>
+        <div className="com-cont-wrp">
+          <div className="com-cont-top">
+            <h5>{user.nickname}</h5>
+            {myId === comment.author_id && (
+              <div className="actions-wrapper">
+                <div className="edit-wrapper">
+                  <i
+                    className="ri-edit-2-line enif-pointer action-icons"
+                    onClick={() =>
+                      setEditingComment(comment.comment_id, comment.text)
+                    }
+                  ></i>
+                </div>
+                <div className="delete-wrapper">
+                  <i
+                    className="ri-delete-bin-line enif-pointer action-icons"
+                    onClick={() => deleteComment(comment.comment_id)}
+                  ></i>
+                </div>
+              </div>
+            )}
+            <p className="com-date">{convertDynamicTime(comment.createdAt)}</p>
+          </div>
+          <div className="com-cont-mid">
+            {comment.comment_id === editingCommentId ? (
+              <>
+                <textarea
+                  value={editingCommentText}
+                  onChange={handleEditingCommentChange}
+                ></textarea>
+                <button onClick={() => updateComment(comment.comment_id)}>
+                  ENTER
+                </button>
+              </>
+            ) : (
+              <p>{breakLine(comment.text)}</p>
+            )}
+          </div>
+          <div className="com-cont-bot">
+            <div
+              className={`cmt-like-wrp ${checkLike(comment.likeUsers) ? 'color-pink' : 'color-gray1'} `}
+            >
+              <i
+                className={`ri-heart-${checkLike(comment.likeUsers) ? 'fill' : 'line'}`}
+                onClick={() => likeComment(comment.comment_id)}
+              ></i>
+              <p>{comment.likeUsers.length}</p>
+            </div>
+            {parentCommentId === comment.comment_id ? (
+              <p className="enif-pointer" onClick={() => onClickSubComment(0)}>
+                답글 달기 취소
+              </p>
+            ) : (
+              <p
+                className="enif-pointer"
+                onClick={() => onClickSubComment(comment.comment_id)}
+              >
+                답글 달기
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+      {makeSubCommentList(comment.children)}
+      {parentCommentId === comment.comment_id && (
+        <div className="comment-write sub">
           <textarea
+            ref={textareaTarget}
             placeholder="댓글을 입력하세요"
             name="text"
-            onChange={handleChange}
             value={text}
+            onChange={handleChange}
           ></textarea>
           <button onClick={createComment}>ENTER</button>
         </div>
       )}
-    </div>
+    </>
   );
-}
-
-export default CommentSection;
+};
