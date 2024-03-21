@@ -47,7 +47,9 @@ const PhotoPage: FC = () => {
 
   const [isFullScreen, setIsFullScreen] = useState(false);
 
-  const [remainedTime, setRemainedTime] = useState(VISIBLE_TIME);
+  const [isArrowVisible, setIsArrowVisible] = useState(false);
+
+  const remainedTime = useRef(VISIBLE_TIME);
 
   const fullscreenRef = useRef<HTMLDivElement>(null);
 
@@ -64,32 +66,32 @@ const PhotoPage: FC = () => {
 
   useEffect(() => {
     timer.current = window.setInterval(() => {
-      setRemainedTime((prevRemainedTime) => {
-        if (prevRemainedTime > 0) {
-          return prevRemainedTime - 1;
-        }
-        return prevRemainedTime;
-      });
+      if (remainedTime.current > 0) {
+        remainedTime.current = -1;
+      } else {
+        setIsArrowVisible(false);
+      }
     }, 1000);
 
     return () => window.clearInterval(timer.current);
   });
 
-  const [contentInfo, setContentInfo] = useState<Record<Photo>>();
+  const [contentInfo, setContentInfo] = useState<Photo>();
   const [editContentInfo, setEditContentInfo] = useState<Record<Photo>>();
   const [isLiked, setIsLiked] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
+    console.log('useEffecttttt');
     if (data) {
-      setContentInfo(Record(data.photoInfo));
+      setContentInfo(data.photoInfo);
       setEditContentInfo(Record(data.photoInfo));
       setIsLiked(data.likeInfo);
     }
   }, [data]);
 
   const setAlbumThumbnail = useCallback(async () => {
-    const albumInfo = contentInfo && contentInfo.get('parent');
+    const albumInfo = contentInfo?.parent;
 
     const data = {
       tn_photo_id: Number(photoId),
@@ -241,20 +243,23 @@ const PhotoPage: FC = () => {
   );
 
   const likePhoto = useCallback(async () => {
+    if (!contentInfo) {
+      return;
+    }
     try {
       await ContentService.likeContent(Number(photoId));
-      if (contentInfo) {
-        if (isLiked) {
-          setContentInfo(
-            contentInfo.set('like_num', contentInfo.get('like_num') - 1),
-          );
-          setIsLiked(false);
-        } else {
-          setContentInfo(
-            contentInfo.set('like_num', contentInfo.get('like_num') + 1),
-          );
-          setIsLiked(true);
-        }
+      if (isLiked) {
+        setContentInfo({
+          ...contentInfo,
+          like_num: contentInfo.like_num - 1,
+        });
+        setIsLiked(false);
+      } else {
+        setContentInfo({
+          ...contentInfo,
+          like_num: contentInfo.like_num + 1,
+        });
+        setIsLiked(true);
       }
     } catch (err) {
       console.error(err);
@@ -276,13 +281,13 @@ const PhotoPage: FC = () => {
     }
   }, [editContentInfo, photoId, refresh]);
 
-  const parentAlbum = contentInfo?.get('parent');
+  const parentAlbum = contentInfo?.parent;
 
   const backLink = useMemo(
     () =>
       parentAlbum
         ? `/album/${parentAlbum.content_id}`
-        : `/board/${contentInfo?.get('board_id')}`,
+        : `/board/${contentInfo?.board_id}`,
     [contentInfo, parentAlbum],
   );
 
@@ -307,13 +312,16 @@ const PhotoPage: FC = () => {
   }, [backLink, contentInfo, history, photoId]);
 
   const mouseOver = useCallback(() => {
-    setRemainedTime(VISIBLE_TIME);
+    remainedTime.current = VISIBLE_TIME;
+    setIsArrowVisible(true);
   }, []);
 
   const fullscreenClass = isFullScreen
     ? 'ri-fullscreen-exit-fill'
     : 'ri-fullscreen-fill';
-  const photoInfo = contentInfo && contentInfo.get('photo');
+  const photoInfo = contentInfo && contentInfo.photo;
+
+  console.log(photoInfo);
 
   return (
     <FullScreenPortal>
@@ -350,7 +358,7 @@ const PhotoPage: FC = () => {
                     ref={fullscreenRef}
                     onMouseMove={mouseOver}
                   >
-                    {remainedTime > 0 && (
+                    {isArrowVisible && (
                       <div className="photo-move-action prev">
                         <button
                           className="photo-move-btn"
@@ -361,7 +369,7 @@ const PhotoPage: FC = () => {
                       </div>
                     )}
                     <Image imgSrc={photoInfo.file_path} />
-                    {remainedTime > 0 && (
+                    {isArrowVisible && (
                       <div className="photo-move-action next">
                         <button
                           className="photo-move-btn enif-flex-center"
@@ -393,7 +401,7 @@ const PhotoPage: FC = () => {
                   ) : (
                     <>
                       <PhotoInfo
-                        photoInfo={contentInfo.toJSON()}
+                        photoInfo={contentInfo}
                         likeInfo={isLiked}
                         my_id={authContext.authInfo.user.user_id}
                         onClickEdit={() => setIsEditing(true)}
