@@ -8,13 +8,12 @@ export const useFetch = <T,>({ fetch }: Props<T>) => {
   const [data, setData] = useState<T>();
   const isUnmounted = useRef(false);
 
-  useEffect(
-    () => () => {
-      console.log('unmount');
+  useEffect(() => {
+    isUnmounted.current = false;
+    return () => {
       isUnmounted.current = true;
-    },
-    [],
-  );
+    };
+  }, []);
 
   useEffect(() => {
     let ignore = false;
@@ -29,6 +28,7 @@ export const useFetch = <T,>({ fetch }: Props<T>) => {
   }, [fetch]);
 
   const refresh = useCallback(async () => {
+    // console.log('refresh');
     const refreshedData = await fetch();
     // NOTE: fetch 중 component가 unmount된 경우에는 무시
     if (isUnmounted.current) {
