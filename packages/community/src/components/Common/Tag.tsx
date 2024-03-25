@@ -1,6 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, ChangeEvent, FC } from 'react';
+import { type Tag as TagType } from 'services/types';
 
-function Tag({ clickAll, clickTag, tags, selectedTags }) {
+type Props = {
+  clickAll: () => void;
+  clickTag: (event: ChangeEvent<HTMLInputElement>) => void;
+  tags: TagType[];
+  selectedTags: TagType['tag_id'][];
+};
+
+const Tag: FC<Props> = ({ clickAll, clickTag, tags, selectedTags }) => {
   const [selectedAll, setSelectedAll] = useState(false);
 
   useEffect(() => {
@@ -11,11 +19,11 @@ function Tag({ clickAll, clickTag, tags, selectedTags }) {
     }
   }, [selectedTags.length]);
 
-  const makeTagList = (tags, type) => {
+  const makeTagList = (tags: TagType[], type: string) => {
     const tagList = tags
       .filter((tag) => tag.tag_type === type)
       .map((tag) => {
-        let labelClassName =
+        const labelClassName =
           tag.tag_type === 'M' ? 'tag-label-1' : 'tag-label-2';
 
         return (
@@ -59,6 +67,6 @@ function Tag({ clickAll, clickTag, tags, selectedTags }) {
       </div>
     </div>
   );
-}
+};
 
 export default Tag;
