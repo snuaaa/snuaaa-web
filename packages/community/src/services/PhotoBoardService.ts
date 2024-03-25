@@ -1,6 +1,5 @@
 import { Album, Photo } from './types';
 import { API } from './index';
-import { AxiosPromise } from 'axios';
 
 export interface CreateAlbumRequest {
   title: string;
@@ -14,16 +13,17 @@ const PhotoBoardService = {
     board_id: string,
     pageIdx: number,
     ctg_id?: string,
-  ): AxiosPromise<{
-    albumInfo: Album[];
-    albumCount: number;
-  }> {
+  ) {
     if (!ctg_id) {
-      return API.get(
-        `photoboard/${board_id}/albums?page=${pageIdx ? pageIdx : 1}`,
-      );
+      return API.get<{
+        albumInfo: Album[];
+        albumCount: number;
+      }>(`photoboard/${board_id}/albums?page=${pageIdx ? pageIdx : 1}`);
     } else {
-      return API.get(
+      return API.get<{
+        albumInfo: Album[];
+        albumCount: number;
+      }>(
         `photoboard/${board_id}/albums?category=${ctg_id}&page=${pageIdx ? pageIdx : 1}`,
       );
     }
@@ -37,10 +37,7 @@ const PhotoBoardService = {
     board_id: string,
     pageIdx: number,
     tags?: string[],
-  ): AxiosPromise<{
-    photoInfo: Photo[];
-    photoCount: number;
-  }> {
+  ) {
     if (tags && tags.length > 0) {
       let tagUrl = '';
       tags.forEach((tag: string) => {
@@ -50,9 +47,15 @@ const PhotoBoardService = {
           tagUrl += `&tags[]=${tag}`;
         }
       });
-      return API.get(`photoboard/${board_id}/photos?${tagUrl}&page=${pageIdx}`);
+      return API.get<{
+        photoInfo: Photo[];
+        photoCount: number;
+      }>(`photoboard/${board_id}/photos?${tagUrl}&page=${pageIdx}`);
     } else {
-      return API.get(`photoboard/${board_id}/photos?page=${pageIdx}`);
+      return API.get<{
+        photoInfo: Photo[];
+        photoCount: number;
+      }>(`photoboard/${board_id}/photos?page=${pageIdx}`);
     }
   },
 

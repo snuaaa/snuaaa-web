@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback, useContext } from 'react';
 
 import CreateAlbum from '../Album/CreateAlbum';
 import AlbumList from '../../components/PhotoBoard/AlbumList';
@@ -11,7 +11,8 @@ import BoardName from '../../components/Board/BoardName';
 import AuthContext from '../../contexts/AuthContext';
 
 import { useHistory, useLocation } from 'react-router';
-import { Album, Board } from 'services/types';
+import { Board } from 'services/types';
+import { useFetch } from 'hooks/useFetch';
 
 const ALBUMROWNUM = 12;
 
@@ -25,43 +26,22 @@ type LocationState = {
 };
 
 function Memory({ boardInfo }: MemoryProps) {
-  // let albums: AlbumType[] = [];
-  // let albumCount: number = 0;
-
-  const [popUpState, setPopUpState] = useState<boolean>(false);
-  const [isReady, setIsReady] = useState<boolean>(false);
-  const [albums, setAlbums] = useState<Album[]>([]);
-  const [albumCount, setAlbumCount] = useState<number>(0);
+  const [isCreating, setIsCreating] = useState<boolean>(false);
   const history = useHistory();
   const location = useLocation<LocationState>();
 
-  const fetch = useCallback(async () => {
-    const pageIdx =
-      location.state && location.state.page ? location.state.page : 1;
-    const category =
-      location.state && location.state.category
-        ? location.state.category
-        : undefined;
+  const pageIdx = location.state?.page ?? 1;
+  const category = location.state?.category;
 
-    setIsReady(false);
-    await PhotoBoardService.retrieveAlbumsInPhotoBoard(
+  const fetchFunction = useCallback(() => {
+    return PhotoBoardService.retrieveAlbumsInPhotoBoard(
       boardInfo.board_id,
       pageIdx,
       category,
-    )
-      .then((res) => {
-        setAlbums(res.data.albumInfo);
-        setAlbumCount(res.data.albumCount);
-        setIsReady(true);
-      })
-      .catch((err: Error) => {
-        console.error(err);
-      });
-  }, [boardInfo.board_id, location.state]);
+    );
+  }, [boardInfo.board_id, category, pageIdx]);
 
-  useEffect(() => {
-    fetch();
-  }, [fetch, location]);
+  const { data, refresh } = useFetch({ fetch: fetchFunction });
 
   const clickCategory = (ctg_id: string) => {
     history.push({
@@ -81,10 +61,6 @@ function Memory({ boardInfo }: MemoryProps) {
     });
   };
 
-  const togglePopUp = () => {
-    setPopUpState(!popUpState);
-  };
-
   const clickPage = (idx: number) => {
     const category =
       location.state && location.state.category
@@ -98,75 +74,66 @@ function Memory({ boardInfo }: MemoryProps) {
     });
   };
 
-  const pageIdx =
-    location.state && location.state.page ? location.state.page : 1;
-  const category =
-    location.state && location.state.category
-      ? location.state.category
-      : undefined;
+  const authContext = useContext(AuthContext);
 
   return (
-    <AuthContext.Consumer>
-      {(authContext) => (
-        <div className="board-wrapper photoboard-wrapper">
-          <BoardName
-            board_id={boardInfo.board_id}
-            board_name={boardInfo.board_name}
-          />
-          <div className="board-desc">{boardInfo.board_desc}</div>
-          <Category
-            categories={boardInfo.categories}
-            selected={category}
-            clickAll={clickAll}
-            clickCategory={clickCategory}
-          />
-          <div className="board-search-wrapper">
-            <div className="board-search-input">
-              <i className="ri-search-line enif-f-1x"></i>
-              <input type="text" />
-            </div>
-            <div>
-              {authContext.authInfo.user.grade <= boardInfo.lv_write && (
-                <button
-                  className="board-btn-write"
-                  onClick={() => togglePopUp()}
-                >
-                  <i className="ri-gallery-line enif-f-1p2x"></i>앨범 생성
-                </button>
-              )}
-            </div>
-          </div>
-
-          {(() => {
-            if (isReady) {
-              return (
-                <>
-                  <div className="enif-divider"></div>
-                  <AlbumList board_id={boardInfo.board_id} albums={albums} />
-                  {popUpState && (
-                    <CreateAlbum
-                      board_id={boardInfo.board_id}
-                      categories={boardInfo.categories}
-                      fetch={fetch}
-                      togglePopUp={togglePopUp}
-                    />
-                  )}
-                  {albumCount > 0 && (
-                    <Paginator
-                      pageIdx={pageIdx}
-                      pageNum={Math.ceil(albumCount / ALBUMROWNUM)}
-                      clickPage={clickPage}
-                    />
-                  )}
-                </>
-              );
-            } else {
-              return <Loading />;
-            }
-          })()}
+    <div className="board-wrapper photoboard-wrapper">
+      <BoardName
+        board_id={boardInfo.board_id}
+        board_name={boardInfo.board_name}
+      />
+      <div className="board-desc">{boardInfo.board_desc}</div>
+      <Category
+        categories={boardInfo.categories}
+        selected={category}
+        clickAll={clickAll}
+        clickCategory={clickCategory}
+      />
+      <div className="board-search-wrapper">
+        <div className="board-search-input">
+          <i className="ri-search-line enif-f-1x"></i>
+          <input type="text" />
         </div>
+        <div>
+          {authContext.authInfo.user.grade <= boardInfo.lv_write && (
+            <button
+              className="board-btn-write"
+              onClick={() => setIsCreating(true)}
+            >
+              <i className="ri-gallery-line enif-f-1p2x"></i>앨범 생성
+            </button>
+          )}
+        </div>
+      </div>
+      {!data ? (
+        <Loading />
+      ) : (
+        <>
+          <div className="enif-divider"></div>
+          <AlbumList board_id={boardInfo.board_id} albums={data.albumInfo} />
+          {isCreating && (
+            <CreateAlbum
+              board_id={boardInfo.board_id}
+              categories={boardInfo.categories}
+              onCreate={() => {
+                setIsCreating(false);
+                refresh();
+              }}
+              onCancel={() => {
+                setIsCreating(false);
+              }}
+            />
+          )}
+          {data.albumCount > 0 && (
+            <Paginator
+              pageIdx={pageIdx}
+              pageNum={Math.ceil(data.albumCount / ALBUMROWNUM)}
+              clickPage={clickPage}
+            />
+          )}
+        </>
       )}
-    </AuthContext.Consumer>
+    </div>
   );
 }
 

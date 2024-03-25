@@ -35,9 +35,9 @@ function Section() {
   const fetch = async () => {
     try {
       const boardRes = await BoardService.retrieveBoards();
-      setBoardsInfo(boardRes.data);
+      setBoardsInfo(boardRes);
       const riseSetRes = await HomeService.retrieveRiseSet();
-      setRiseSetInfo(riseSetRes.data);
+      setRiseSetInfo(riseSetRes);
     } catch (err) {
       console.error(err);
     }

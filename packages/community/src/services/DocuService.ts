@@ -1,6 +1,5 @@
 import { Content } from './types';
 import { API } from './index';
-import { AxiosPromise } from 'axios';
 
 export interface CreateDocuRequest {
   title: string;
@@ -16,26 +15,26 @@ type UpdateDocuRequest = {
 };
 
 const DocuService = {
-  retrieveDocument: function (doc_id: number): AxiosPromise<{
-    docuInfo: Content;
-    likeInfo: boolean;
-  }> {
-    return API.get(`document/${doc_id}`);
+  retrieveDocument: function (doc_id: number) {
+    return API.get<{
+      docuInfo: Content;
+      likeInfo: boolean;
+    }>(`document/${doc_id}`);
   },
 
   retrieveDocuments: function (
     pageIdx: number,
     ctg_id: string,
     generation: number,
-  ): AxiosPromise<{
-    docInfo: Content[];
-    docCount: number;
-  }> {
+  ) {
     let categoryUrl = '';
     let genUrl = '';
     ctg_id && (categoryUrl = `&category=${ctg_id}`);
     generation && (genUrl = `&generation=${generation}`);
-    return API.get(`document?page=${pageIdx}${categoryUrl}${genUrl}`);
+    return API.get<{
+      docInfo: Content[];
+      docCount: number;
+    }>(`document?page=${pageIdx}${categoryUrl}${genUrl}`);
   },
 
   retrieveDocumentsByGeneration: function (generation: number) {

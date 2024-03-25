@@ -1,27 +1,13 @@
-import React, { useState, useEffect } from 'react';
-
-type AaaHistoryType = {
-  year: number;
-  occasion: {
-    date: string;
-    desc: string;
-  }[];
-}[];
+import { useFetch } from 'hooks/useFetch';
+import { useCallback } from 'react';
 
 function AaaHistory() {
   //TODO : User who is admin can be edit data.
   //TODO : convert to database from json
 
-  const [aaaHistory, setAaaHistory] = useState<AaaHistoryType>([]);
-  useEffect(() => {
-    import('./history_tmp.json')
-      .then((history) => {
-        setAaaHistory(history.default);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  }, []);
+  const fetchFunction = useCallback(() => import('./history_tmp.json'), []);
+
+  const { data: aaaHistory } = useFetch({ fetch: fetchFunction });
 
   function makeHistoryList() {
     if (aaaHistory && aaaHistory.length > 0) {

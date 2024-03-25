@@ -23,8 +23,8 @@ function MgtUser() {
   const fetch = useCallback(async () => {
     try {
       const res = await UserService.retrieveUsers(searchOption);
-      setUserInfo(res.data.userInfo);
-      setUserCount(res.data.count);
+      setUserInfo(res.userInfo);
+      setUserCount(res.count);
     } catch (err) {
       if (axios.isAxiosError(err) && err.response?.status === 403) {
         alert('권한이 없습니다.');

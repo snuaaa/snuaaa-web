@@ -7,15 +7,15 @@ import RiseSet from '../components/Home/RiseSet';
 import TopUpButton from '../components/Common/TopUpButton';
 
 // Don't load lazy. scroll is reset when initial loading.
-import Photo from '../components/Photo/Photo';
+import PhotoPage from '../components/Photo';
 import ExhibitPhoto from '../components/ExhibitPhoto/ExhibitPhoto';
 import { Location } from 'history';
 
 const Home = lazy(() => import('../components/Home/Home'));
-const About = lazy(() => import('../components/About/About'));
+const About = lazy(() => import('../components/About'));
 const Board = lazy(() => import('../components/Board/Board'));
 const Post = lazy(() => import('../components/Post/Post'));
-const Album = lazy(() => import('../components/Album/Album'));
+const Album = lazy(() => import('../components/Album'));
 const Docu = lazy(() => import('../components/Document/Document'));
 const Exhibition = lazy(() => import('../components/Exhibition/Exhibition'));
 
@@ -83,7 +83,7 @@ function PageRoutes() {
           </Switch>
           {isModal && (
             <Switch>
-              <Route path="/photo/:photo_id" component={Photo} />
+              <Route path="/photo/:photo_id" component={PhotoPage} />
               <Route
                 path="/exhibitPhoto/:exhibitPhoto_id"
                 component={ExhibitPhoto}

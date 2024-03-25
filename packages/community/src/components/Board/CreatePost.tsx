@@ -7,8 +7,8 @@ const MAX_SIZE = 20 * 1024 * 1024;
 
 type CreatePostProps = {
   board_id: string;
-  fetch: () => void;
-  close: () => void;
+  onCreate: () => void;
+  onClose: () => void;
 };
 
 function CreatePost(props: CreatePostProps) {
@@ -79,7 +79,7 @@ function CreatePost(props: CreatePostProps) {
   };
 
   const createPost = async () => {
-    const { board_id, fetch, close } = props;
+    const { board_id, onCreate } = props;
 
     if (!postInfo.title) {
       alert('제목을 입력해 주세요.');
@@ -103,8 +103,7 @@ function CreatePost(props: CreatePostProps) {
           }
         }
         setIsUploading(false);
-        fetch();
-        close();
+        onCreate();
       } catch (err) {
         console.error(err);
         setIsUploading(false);
@@ -122,7 +121,7 @@ function CreatePost(props: CreatePostProps) {
       uploadIdx={uploadIdx}
       handleChange={handleChange}
       handleEditor={handleEditor}
-      close={props.close}
+      close={props.onClose}
       confirm={createPost}
       attachFile={attachFile}
       removeAttachedFile={removeAttachedFile}

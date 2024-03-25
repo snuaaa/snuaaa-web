@@ -38,8 +38,8 @@ function ExhibitPhotoPage() {
     setPhotoState(ContentStateEnum.LOADING);
     await ExhibitPhotoService.retrieveExhibitPhoto(exhibitPhoto_id)
       .then((res) => {
-        const exhibitPhotoInfo = res.data.exhibitPhotoInfo;
-        setexhibitPhotosInfo(res.data.exhibitPhotosInfo);
+        const exhibitPhotoInfo = res.exhibitPhotoInfo;
+        setexhibitPhotosInfo(res.exhibitPhotosInfo);
         setContentInfo(Record(exhibitPhotoInfo)());
         setPhotoState(ContentStateEnum.READY);
         // likeInfo: res.data.likeInfo,

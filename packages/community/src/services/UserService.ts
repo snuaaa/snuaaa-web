@@ -1,6 +1,5 @@
 import { API } from './index';
 
-import { AxiosPromise } from 'axios';
 import { UsersSearchType } from '../types/SearchTypes';
 
 import { Comment, Content, Photo, User } from './types';
@@ -27,14 +26,11 @@ export interface FindPasswordRequest {
 }
 
 const UserService = {
-  retrieveUserInfo: function (user_uuid?: string): AxiosPromise<{
-    userInfo: User;
-  }> {
-    if (user_uuid) {
-      return API.get(`userinfo/${user_uuid}`);
-    } else {
-      return API.get('userinfo');
-    }
+  retrieveUserInfo: function (user_uuid?: string) {
+    const url = user_uuid ? `userinfo/${user_uuid}` : 'userinfo';
+    return API.get<{
+      userInfo: User;
+    }>(url);
   },
 
   updateUserInfo: function (data: UpdateUserInfoRequest) {
@@ -49,10 +45,7 @@ const UserService = {
     return API.delete('userinfo');
   },
 
-  retrieveUsers: function (sortOption?: UsersSearchType): AxiosPromise<{
-    userInfo: User[];
-    count: number;
-  }> {
+  retrieveUsers: function (sortOption?: UsersSearchType) {
     let query = '';
     if (sortOption) {
       // query += '/sort?'
@@ -64,36 +57,45 @@ const UserService = {
       query.substring(query.length - 1);
     }
 
-    return API.get(`userinfo/all${query}`);
+    return API.get<{
+      userInfo: User[];
+      count: number;
+    }>(`userinfo/all${query}`);
   },
 
-  retrieveUserPosts: function (user_uuid?: string): AxiosPromise<{
-    postList: Content[];
-  }> {
+  retrieveUserPosts: function (user_uuid?: string) {
     if (user_uuid) {
-      return API.get(`userinfo/${user_uuid}/posts`);
+      return API.get<{
+        postList: Content[];
+      }>(`userinfo/${user_uuid}/posts`);
     } else {
-      return API.get('userinfo/posts');
+      return API.get<{
+        postList: Content[];
+      }>('userinfo/posts');
     }
   },
 
-  retrieveUserPhotos: function (user_uuid?: string): AxiosPromise<{
-    photoList: Photo[];
-  }> {
+  retrieveUserPhotos: function (user_uuid?: string) {
     if (user_uuid) {
-      return API.get(`userinfo/${user_uuid}/photos`);
+      return API.get<{
+        photoList: Photo[];
+      }>(`userinfo/${user_uuid}/photos`);
     } else {
-      return API.get('userinfo/photos');
+      return API.get<{
+        photoList: Photo[];
+      }>('userinfo/photos');
     }
   },
 
-  retrieveUserComments: function (user_uuid?: string): AxiosPromise<{
-    commentList: Comment[];
-  }> {
+  retrieveUserComments: function (user_uuid?: string) {
     if (user_uuid) {
-      return API.get(`userinfo/${user_uuid}/comments`);
+      return API.get<{
+        commentList: Comment[];
+      }>(`userinfo/${user_uuid}/comments`);
     } else {
-      return API.get('userinfo/comments');
+      return API.get<{
+        commentList: Comment[];
+      }>('userinfo/comments');
     }
   },
 

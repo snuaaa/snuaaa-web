@@ -1,6 +1,4 @@
-import React from 'react';
 import ProfileMini from '../Common/ProfileMini';
-import ContentStateEnum from '../../common/ContentStateEnum';
 
 import { breakLine } from '../../utils/breakLine';
 import { convertDate, convertFullDate } from '../../utils/convertDate';
@@ -13,7 +11,7 @@ type PhotoInfoProps = {
   photoInfo: Photo | ExhibitPhoto;
   likeInfo: boolean;
   my_id: number;
-  setPhotoState: (state: number) => void;
+  onClickEdit: () => void;
   deletePhoto: () => void;
   likePhoto: () => void;
   setAlbumThumbnail: () => void;
@@ -23,18 +21,13 @@ const PhotoInfo = ({
   photoInfo,
   likeInfo,
   my_id,
-  setPhotoState,
+  onClickEdit,
   deletePhoto,
   likePhoto,
   setAlbumThumbnail,
 }: PhotoInfoProps) => {
   const content = photoInfo;
-  let photo;
-  if ((photoInfo as Photo).photo) {
-    photo = (photoInfo as Photo).photo;
-  } else if ((photoInfo as ExhibitPhoto).exhibitPhoto) {
-    photo = (photoInfo as ExhibitPhoto).exhibitPhoto;
-  }
+  const photo = 'photo' in photoInfo ? photoInfo.photo : photoInfo.exhibitPhoto;
   const userInfo = photoInfo && photoInfo.user;
   const tagInfo = photoInfo && photoInfo.tags;
 
@@ -58,7 +51,7 @@ const PhotoInfo = ({
           <div className="photo-contents-wrapper">
             {userInfo && my_id === userInfo.user_id && (
               <ActionDrawer
-                clickEdit={() => setPhotoState(ContentStateEnum.EDITTING)}
+                clickEdit={onClickEdit}
                 clickDelete={deletePhoto}
                 isPhoto={true}
                 clickSetThumbnail={setAlbumThumbnail}

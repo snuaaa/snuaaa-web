@@ -28,6 +28,18 @@ function App() {
   const history = useHistory();
   const location = useLocation();
 
+  const authLogin = useCallback(
+    (token: string, autoLogin: boolean, userInfo: User) => {
+      setToken(token, autoLogin);
+      setAuthinfo({
+        isLoggedIn: true,
+        user: userInfo,
+      });
+      setIsReady(true);
+    },
+    [],
+  );
+
   const checkToken = useCallback(async () => {
     const accessToken = getToken();
     if (!accessToken) {
@@ -44,7 +56,7 @@ function App() {
       // 서버에 토큰 확인 , invalid => logout, valid => 로그인 유지(연장)
       await AuthService.checkToken()
         .then((res) => {
-          const { token, userInfo, autoLogin } = res.data;
+          const { token, userInfo, autoLogin } = res;
           authLogin(token, autoLogin, userInfo);
         })
         .catch((err: Error) => {
@@ -58,7 +70,7 @@ function App() {
           authLogout();
         });
     }
-  }, [history]);
+  }, [authLogin, history]);
 
   useEffect(() => {
     if (navigator.userAgent.toLowerCase().indexOf('msie') !== -1) {
@@ -75,18 +87,6 @@ function App() {
     }
     checkToken();
   }, [checkToken]);
-
-  const authLogin = useCallback(
-    (token: string, autoLogin: boolean, userInfo: User) => {
-      setToken(token, autoLogin);
-      setAuthinfo({
-        isLoggedIn: true,
-        user: userInfo,
-      });
-      setIsReady(true);
-    },
-    [],
-  );
 
   const authLogout = () => {
     removeToken();

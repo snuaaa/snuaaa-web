@@ -1,5 +1,4 @@
 import { API } from './index';
-import { AxiosPromise } from 'axios';
 import { Comment } from './types';
 
 export interface CreateCommentRequest {
@@ -10,8 +9,8 @@ export interface CreateCommentRequest {
 export type UpdateCommentRequest = Pick<CreateCommentRequest, 'text'>;
 
 const CommentService = {
-  retrieveComments: function (parent_id: number): AxiosPromise<Comment[]> {
-    return API.get(`content/${parent_id}/comments`);
+  retrieveComments: function (parent_id: number) {
+    return API.get<Comment[]>(`content/${parent_id}/comments`);
   },
 
   createComment: function (parent_id: number, data: CreateCommentRequest) {

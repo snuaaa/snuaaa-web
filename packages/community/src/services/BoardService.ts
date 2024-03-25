@@ -1,16 +1,15 @@
 import { Board } from './types';
 import { API } from './index';
-import { AxiosPromise } from 'axios';
 
 const BoardService = {
-  retrieveBoards: function (): AxiosPromise<Board[]> {
-    return API.get('board');
+  retrieveBoards: function () {
+    return API.get<Board[]>('board');
   },
 
-  retrieveBoardInfo: function (board_id: string): AxiosPromise<{
-    boardInfo: Board;
-  }> {
-    return API.get(`board/${board_id}`);
+  retrieveBoardInfo: function (board_id: string) {
+    return API.get<{
+      boardInfo: Board;
+    }>(`board/${board_id}`);
   },
 };
 

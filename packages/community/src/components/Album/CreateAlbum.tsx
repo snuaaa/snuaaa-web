@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent } from 'react';
+import { useState, ChangeEvent } from 'react';
 import EditAlbumComponent from '../../components/Album/EditAlbumComponent';
 import PhotoBoardService, {
   CreateAlbumRequest,
@@ -10,10 +10,15 @@ import { Category } from 'services/types';
 type CreateAlbumProps = {
   board_id: string;
   categories?: Category[];
-  togglePopUp: () => void;
-  fetch: () => void;
+  onCreate: () => void;
+  onCancel: () => void;
 };
-function CreateAlbum(props: CreateAlbumProps) {
+function CreateAlbum({
+  board_id,
+  categories,
+  onCreate,
+  onCancel,
+}: CreateAlbumProps) {
   useBlockBackgroundScroll();
   const [albumInfo, setAlbumInfo] = useState<CreateAlbumRequest>({
     title: '',
@@ -47,18 +52,16 @@ function CreateAlbum(props: CreateAlbumProps) {
   const createAlbum = async () => {
     if (!albumInfo.title) {
       alert('제목을 입력해 주세요');
-    } else if (props.categories && !albumInfo.category_id) {
+    } else if (categories && !albumInfo.category_id) {
       alert('카테고리를 선택해 주세요');
     } else {
-      await PhotoBoardService.createAlbum(props.board_id, albumInfo)
-        .then(() => {
-          props.togglePopUp();
-          props.fetch();
-        })
-        .catch((err: Error) => {
-          console.error(err);
-          alert('앨범 생성 실패');
-        });
+      try {
+        await PhotoBoardService.createAlbum(board_id, albumInfo);
+        onCreate();
+      } catch (err) {
+        console.error(err);
+        alert('앨범 생성 실패');
+      }
     }
   };
 
@@ -70,11 +73,11 @@ function CreateAlbum(props: CreateAlbumProps) {
       isPrivate={albumInfo.is_private}
       setIsPrivate={setIsPrivate}
       checkedCategory={albumInfo.category_id}
-      categories={props.categories}
+      categories={categories}
       handleCategory={handleCategoryChange}
       handleChange={handleChange}
       confirmAlbum={createAlbum}
-      cancelAlbum={props.togglePopUp}
+      cancelAlbum={onCancel}
     />
   );
 }

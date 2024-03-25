@@ -8,7 +8,7 @@ import React, {
 import { Redirect, match } from 'react-router';
 
 import ContentStateEnum from '../../common/ContentStateEnum';
-import Comment from '../Comment/Comment';
+import Comment from '../Comment';
 import Loading from '../Common/Loading';
 import PostComponent from './PostComponent';
 import EditPost from './EditPost';
@@ -46,9 +46,9 @@ function Post(props: PostProps) {
     setPostState(ContentStateEnum.LOADING);
     await PostService.retrievePost(post_id)
       .then((res) => {
-        setPostInfo(res.data.postInfo);
-        setEditingPostData(res.data.postInfo);
-        setLikeInfo(res.data.likeInfo);
+        setPostInfo(res.postInfo);
+        setEditingPostData(res.postInfo);
+        setLikeInfo(res.likeInfo);
         setPostState(ContentStateEnum.READY);
       })
       .catch((err: unknown) => {

@@ -1,5 +1,5 @@
 import React from 'react';
-import Comment from '../Comment/Comment';
+import Comment from '../Comment';
 import ProfileMini from '../Common/ProfileMini';
 import DownloadFile from '../Post/DownloadFile';
 import { convertFullDate } from '../../utils/convertDate';

@@ -14,8 +14,11 @@ export const setApiAuth = (token: string) => {
 };
 
 export const API = {
-  get: function <Response>(url: string) {
-    return axiosInstance.get<Response>(`${SERVER_URL}api/${url}`);
+  get: async function <Response>(url: string) {
+    const response = await axiosInstance.get<Response>(
+      `${SERVER_URL}api/${url}`,
+    );
+    return response.data;
   },
 
   // TODO: fix
