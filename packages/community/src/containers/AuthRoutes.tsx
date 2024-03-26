@@ -1,8 +1,8 @@
-import React, { lazy } from 'react';
+import { lazy } from 'react';
 import { Route, Switch } from 'react-router-dom';
 
-const SignUp = lazy(() => import('../components/Signup/SignUp'));
-const LogIn = lazy(() => import('../components/Login/LogIn'));
+const SignUp = lazy(() => import('pages/SignUp'));
+const LogIn = lazy(() => import('pages/LogIn'));
 
 function AuthRoutes() {
   return (

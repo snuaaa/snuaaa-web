@@ -1,4 +1,4 @@
-import React, {
+import {
   useState,
   useEffect,
   ChangeEvent,
@@ -7,20 +7,20 @@ import React, {
 } from 'react';
 import { Redirect, useRouteMatch } from 'react-router';
 
-import ContentStateEnum from '../../common/ContentStateEnum';
-import Loading from '../Common/Loading';
-import DocuComponent from './DocuComponent';
-import EditDocu from './EditDocu';
-import ContentService from '../../services/ContentService';
-import DocuService from '../../services/DocuService';
+import ContentStateEnum from 'common/ContentStateEnum';
+import Loading from 'components/Common/Loading';
+import DocuComponent from 'components/Document/DocuComponent';
+import EditDocu from 'components/Document/EditDocu';
+import ContentService from 'services/ContentService';
+import DocuService from 'services/DocuService';
 
-import AuthContext from '../../contexts/AuthContext';
-import FileService from '../../services/FileService';
+import AuthContext from 'contexts/AuthContext';
+import FileService from 'services/FileService';
 import { Content } from 'services/types';
 
 const MAX_SIZE = 20 * 1024 * 1024;
 
-function Docu() {
+function DocumentPage() {
   const match = useRouteMatch<{ doc_id: string }>();
   const [docuInfo, setDocuInfo] = useState<Content>();
   const [likeInfo, setLikeInfo] = useState<boolean>(false);
@@ -229,4 +229,4 @@ function Docu() {
   );
 }
 
-export default Docu;
+export default DocumentPage;

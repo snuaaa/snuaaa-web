@@ -1,15 +1,15 @@
-import React, { useEffect, useState, MouseEvent, useCallback } from 'react';
-import UserService from '../../services/UserService';
-import { convertFullDate, convertDateWithDay } from '../../utils/convertDate';
-import { UsersSearchType } from '../../types/SearchTypes';
-import Paginator from '../Common/Paginator';
+import { useEffect, useState, MouseEvent, useCallback } from 'react';
+import UserService from 'services/UserService';
+import { convertFullDate, convertDateWithDay } from 'utils/convertDate';
+import { UsersSearchType } from 'types/SearchTypes';
+import Paginator from 'components/Common/Paginator';
 import { useHistory } from 'react-router';
 import { User } from 'services/types';
 import axios from 'axios';
 
 const USER_ROW_NUM = 20;
 
-function MgtUser() {
+function UserManagement() {
   const [userInfo, setUserInfo] = useState<User[]>([]);
   const [userCount, setUserCount] = useState<number>(0);
   const [pageIdx, setPageIdx] = useState<number>(1);
@@ -153,4 +153,4 @@ function MgtUser() {
   );
 }
 
-export default MgtUser;
+export default UserManagement;

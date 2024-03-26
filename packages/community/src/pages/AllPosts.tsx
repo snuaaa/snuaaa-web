@@ -1,10 +1,10 @@
 import { useCallback } from 'react';
 
-import HomeService from '../../services/HomeService';
-import Loading from '../Common/Loading';
-import AllPostList from '../Post/AllPostList';
-import Paginator from '../Common/Paginator';
-import BoardName from '../Board/BoardName';
+import HomeService from 'services/HomeService';
+import Loading from 'components/Common/Loading';
+import AllPostList from 'components/Post/AllPostList';
+import Paginator from 'components/Common/Paginator';
+import BoardName from 'components/Board/BoardName';
 
 import { useHistory, useLocation } from 'react-router';
 import { useFetch } from 'hooks/useFetch';

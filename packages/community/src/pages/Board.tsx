@@ -1,13 +1,13 @@
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { useRouteMatch } from 'react-router';
 
-import PostBoard from '../Board/PostBoard';
-import DocuBoard from '../Board/DocuBoard';
-import ExhibitBoard from '../Board/ExhibitBoard';
-import Loading from '../../components/Common/Loading';
-import Memory from '../Board/Memory';
-import AstroPhoto from '../Board/AstroPhoto';
-import BoardContext from '../../contexts/BoardContext';
+import PostBoard from 'components/Board/PostBoard';
+import DocuBoard from 'components/Board/DocuBoard';
+import ExhibitBoard from 'components/Board/ExhibitBoard';
+import Loading from 'components/Common/Loading';
+import Memory from 'components/Board/Memory';
+import AstroPhoto from 'components/Board/AstroPhoto';
+import BoardContext from 'contexts/BoardContext';
 
 function Board() {
   const boardContext = useContext(BoardContext);

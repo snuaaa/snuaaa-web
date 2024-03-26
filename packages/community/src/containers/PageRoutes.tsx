@@ -1,4 +1,4 @@
-import React, { lazy } from 'react';
+import { lazy } from 'react';
 import { Route, Switch, useLocation } from 'react-router-dom';
 import Header from '../containers/Header';
 import Footer from '../components/Footer';
@@ -7,26 +7,24 @@ import RiseSet from '../components/Home/RiseSet';
 import TopUpButton from '../components/Common/TopUpButton';
 
 // Don't load lazy. scroll is reset when initial loading.
-import PhotoPage from '../components/Photo';
-import ExhibitPhoto from '../components/ExhibitPhoto/ExhibitPhoto';
+import PhotoPage from 'pages/Photo';
+import ExhibitPhoto from 'pages/ExhibitPhoto';
 import { Location } from 'history';
 
-const Home = lazy(() => import('../components/Home/Home'));
-const About = lazy(() => import('../components/About'));
-const Board = lazy(() => import('../components/Board/Board'));
-const Post = lazy(() => import('../components/Post/Post'));
-const Album = lazy(() => import('../components/Album'));
-const Docu = lazy(() => import('../components/Document/Document'));
-const Exhibition = lazy(() => import('../components/Exhibition/Exhibition'));
+const Home = lazy(() => import('pages/Home'));
+const About = lazy(() => import('pages/About'));
+const Board = lazy(() => import('pages/Board'));
+const Post = lazy(() => import('pages/Post'));
+const Album = lazy(() => import('pages/Album'));
+const Docu = lazy(() => import('pages/Document'));
+const Exhibition = lazy(() => import('pages/Exhibition'));
 
-const MyPage = lazy(() => import('../components/MyPage/MyPage'));
-const UserPage = lazy(() => import('../components/UserPage/UserPage'));
-const AllPosts = lazy(() => import('../components/AllPosts/AllPosts'));
-const AllComments = lazy(() => import('../components/AllComments/AllComments'));
-const MightyCalculator = lazy(
-  () => import('../components/MightyCalculator/MightyCalculator'),
-);
-const MgtUser = lazy(() => import('../components/MgtUser/MgtUser'));
+const MyPage = lazy(() => import('pages/MyPage'));
+const UserPage = lazy(() => import('pages/UserPage'));
+const AllPosts = lazy(() => import('pages/AllPosts'));
+const AllComments = lazy(() => import('pages/AllComments'));
+const MightyCalculator = lazy(() => import('pages/MightyCalculator'));
+const UserManagement = lazy(() => import('pages/UserManagement'));
 
 type LocationState = {
   background: Location;
@@ -78,7 +76,7 @@ function PageRoutes() {
             <Route path="/posts/all" component={AllPosts} />
             <Route path="/comments/all" component={AllComments} />
             <Route path="/mightyCalculator" component={MightyCalculator} />
-            <Route path="/mgt/user" component={MgtUser} />
+            <Route path="/mgt/user" component={UserManagement} />
             <Route component={Home} />
           </Switch>
           {isModal && (

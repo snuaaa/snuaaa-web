@@ -1,14 +1,14 @@
 import React, { useState, useEffect, createRef, useCallback } from 'react';
 import { Redirect, useLocation, useRouteMatch, useHistory } from 'react-router';
-import ExhibitPhotoService from '../../services/ExhibitPhotoService';
-import ContentStateEnum from '../../common/ContentStateEnum';
+import ExhibitPhotoService from 'services/ExhibitPhotoService';
+import ContentStateEnum from 'common/ContentStateEnum';
 // import history from '../../common/history';
-import FullScreenPortal from '../../containers/FullScreenPortal';
-import ExhibitPhotoComponent from '../ExhibitBoard/ExhibitPhotoComponent';
+import FullScreenPortal from 'containers/FullScreenPortal';
+import ExhibitPhotoComponent from 'components/ExhibitBoard/ExhibitPhotoComponent';
 import { RecordOf, Record } from 'immutable';
-import AuthContext from '../../contexts/AuthContext';
+import AuthContext from 'contexts/AuthContext';
 
-import useBlockBackgroundScroll from '../../hooks/useBlockBackgroundScroll';
+import useBlockBackgroundScroll from 'hooks/useBlockBackgroundScroll';
 import { ExhibitPhoto } from 'services/types';
 
 type LocationState = {

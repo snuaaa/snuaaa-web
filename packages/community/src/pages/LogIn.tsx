@@ -1,13 +1,13 @@
-import React, { ChangeEvent, useState, useContext, useEffect } from 'react';
+import { ChangeEvent, useState, useContext, useEffect } from 'react';
 
-import LogInComponent from './LogInComponent';
-import Loading from '../Common/Loading';
-import PopUp from '../Common/PopUp';
-import FullScreenPortal from '../../containers/FullScreenPortal';
-import FindIdPw from './FindIdPw';
-import AuthService from '../../services/AuthService';
-import AuthContext from '../../contexts/AuthContext';
 import { useHistory, Redirect, useLocation } from 'react-router';
+import LogInComponent from 'components/Login/LogInComponent';
+import Loading from 'components/Common/Loading';
+import PopUp from 'components/Common/PopUp';
+import FullScreenPortal from 'containers/FullScreenPortal';
+import FindIdPw from 'components/Login/FindIdPw';
+import AuthService from 'services/AuthService';
+import AuthContext from 'contexts/AuthContext';
 
 type LocationState = {
   accessLocation: string;
@@ -71,40 +71,38 @@ function LogIn() {
   const userLogIn = async () => {
     setIsLoading(true);
 
-    await AuthService.logIn(loginInfo)
-      .then((res) => {
-        const { token, userInfo, autoLogin } = res.data;
-        setIsLoading(false);
-        authContext.authLogin(token, autoLogin, userInfo);
-        if (location.state && location.state.accessLocation) {
-          history.push(location.state.accessLocation);
-        } else {
-          history.push('/');
-        }
-      })
-      .catch((err: ErrorEvent) => {
-        console.error(err);
-        setIsLoading(false);
-        setErrPopUp(true);
-        // makeErrPopUp()
-      });
+    try {
+      const res = await AuthService.logIn(loginInfo);
+      const { token, userInfo, autoLogin } = res.data;
+      setIsLoading(false);
+      authContext.authLogin(token, autoLogin, userInfo);
+      if (location.state && location.state.accessLocation) {
+        history.push(location.state.accessLocation);
+      } else {
+        history.push('/');
+      }
+    } catch (err) {
+      console.error(err);
+      setIsLoading(false);
+      setErrPopUp(true);
+      // makeErrPopUp()
+    }
   };
 
   const guestLogIn = async () => {
     setIsLoading(true);
 
-    await AuthService.guestLogIn()
-      .then((res) => {
-        setIsLoading(false);
-        const { token, userInfo, autoLogin } = res;
-        authContext.authLogin(token, autoLogin, userInfo);
-      })
-      .catch((err: ErrorEvent) => {
-        console.error(err);
-        setIsLoading(false);
-        setErrPopUp(true);
-        // makeErrPopUp()
-      });
+    try {
+      const res = await AuthService.guestLogIn();
+      setIsLoading(false);
+      const { token, userInfo, autoLogin } = res;
+      authContext.authLogin(token, autoLogin, userInfo);
+    } catch (err) {
+      console.error(err);
+      setIsLoading(false);
+      setErrPopUp(true);
+      // makeErrPopUp()
+    }
   };
 
   return (

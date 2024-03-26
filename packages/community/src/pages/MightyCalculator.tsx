@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, KeyboardEvent, useEffect } from 'react';
+import { useState, ChangeEvent, KeyboardEvent, useEffect } from 'react';
 import { Prompt } from 'react-router';
 
 const CalculatorStateEnum = {

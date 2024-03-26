@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import SoundBox from './SoundBox';
-import Loading from '../Common/Loading';
-import NewPosts from './NewPosts';
-import NewComments from './NewComments';
-import NewPhotos from './NewPhotos';
-import NewExhibitions from './NewExhibitions';
-import RiseSetMobile from './RiseSetMobile';
-import ExtLinkMobile from './ExtLinkMobile';
-import HomeService, { SoundBoxResponse } from '../../services/HomeService';
+import { useState, useEffect } from 'react';
+import SoundBox from 'components/Home/SoundBox';
+import Loading from 'components/Common/Loading';
+import NewPosts from 'components/Home/NewPosts';
+import NewComments from 'components/Home/NewComments';
+import NewPhotos from 'components/Home/NewPhotos';
+import NewExhibitions from 'components/Home/NewExhibitions';
+import RiseSetMobile from 'components/Home/RiseSetMobile';
+import ExtLinkMobile from 'components/Home/ExtLinkMobile';
+import HomeService, { SoundBoxResponse } from 'services/HomeService';
 import { Album, Comment, Content, Exhibition, Photo } from 'services/types';
-import NewAlbums from './NewAlbums';
+import NewAlbums from 'components/Home/NewAlbums';
 import ExhibitionService from 'services/ExhibitionService';
 
 type HomeInfo = {

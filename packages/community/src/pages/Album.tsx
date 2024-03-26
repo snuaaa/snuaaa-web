@@ -1,14 +1,14 @@
 import { FC, useCallback, useContext, useMemo, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
-import Loading from '../../components/Common/Loading';
-import PhotoList from '../../components/Album/PhotoList';
-import AlbumInfo from '../../components/Album/AlbumInfo';
-import { EditAlbum } from '../../components/Album/EditAlbum';
-import { CreatePhoto } from '../../components/Photo/CreatePhoto';
-import BoardName from '../../components/Board/BoardName';
-import AlbumService from '../../services/AlbumService';
+import Loading from 'components/Common/Loading';
+import PhotoList from 'components/Album/PhotoList';
+import AlbumInfo from 'components/Album/AlbumInfo';
+import { EditAlbum } from 'components/Album/EditAlbum';
+import { CreatePhoto } from 'components/Photo/CreatePhoto';
+import BoardName from 'components/Board/BoardName';
+import AlbumService from 'services/AlbumService';
 
-import AuthContext from '../../contexts/AuthContext';
+import AuthContext from 'contexts/AuthContext';
 import { useFetch } from 'hooks/useFetch';
 
 const AlbumPage: FC = () => {

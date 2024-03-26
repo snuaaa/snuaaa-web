@@ -1,12 +1,12 @@
 import React from 'react';
 import { Redirect, match } from 'react-router';
-import ExhibitionService from '../../services/ExhibitionService';
-import ContentStateEnum from '../../common/ContentStateEnum';
-import Loading from '../Common/Loading';
-import CreateExhibitPhoto from './CreateExhibitPhoto';
-import ExhibitionInfo from '../ExhibitBoard/ExhibitionInfo';
-import ExhibitPhotoList from '../ExhibitBoard/ExhibitPhotoList';
-import AuthContext from '../../contexts/AuthContext';
+import ExhibitionService from 'services/ExhibitionService';
+import ContentStateEnum from 'common/ContentStateEnum';
+import Loading from 'components/Common/Loading';
+import CreateExhibitPhoto from 'components/Exhibition/CreateExhibitPhoto';
+import ExhibitionInfo from 'components/ExhibitBoard/ExhibitionInfo';
+import ExhibitPhotoList from 'components/ExhibitBoard/ExhibitPhotoList';
+import AuthContext from 'contexts/AuthContext';
 import { ExhibitPhoto, Exhibition } from 'services/types';
 import ExhibitPhotoService from 'services/ExhibitPhotoService';
 

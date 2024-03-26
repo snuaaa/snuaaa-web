@@ -1,6 +1,5 @@
-import React from 'react';
 import { useParams } from 'react-router';
-import UserInfo from '../MyPage/UserInfo';
+import UserInfo from 'components/MyPage/UserInfo';
 
 function UserPage() {
   const params = useParams<{ uuid: string }>();

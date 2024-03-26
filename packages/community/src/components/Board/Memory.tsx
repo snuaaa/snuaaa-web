@@ -1,7 +1,7 @@
 import { useState, useCallback, useContext } from 'react';
 
 import CreateAlbum from '../Album/CreateAlbum';
-import AlbumList from '../../components/PhotoBoard/AlbumList';
+import AlbumList from '../../components/Album/AlbumList';
 import Category from '../../components/Common/Category';
 import Loading from '../../components/Common/Loading';
 import Paginator from '../../components/Common/Paginator';
