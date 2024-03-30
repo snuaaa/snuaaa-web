@@ -1,7 +1,7 @@
-import React, { useState, ChangeEvent } from 'react';
-import UserService from '../../services/UserService';
-import CreateExhibitPhotoComponent from '../ExhibitBoard/CreateExhibitPhotoComponent';
-import useBlockBackgroundScroll from '../../hooks/useBlockBackgroundScroll';
+import { useState, ChangeEvent } from 'react';
+import UserService from 'services/UserService';
+import CreateExhibitPhotoComponent from './ExhibitPhoto/CreateExhibitPhotoComponent';
+import useBlockBackgroundScroll from 'hooks/useBlockBackgroundScroll';
 import { List } from 'immutable';
 import { User } from 'services/types';
 import ExhibitPhotoService, {
@@ -18,8 +18,6 @@ const defaultPhotoInfo: ExhibitPhotoInfo = {
     user_id: -1,
     nickname: '',
     profile_path: '',
-    level: 0,
-    grade: 10,
   },
   photographer_alt: '',
   date: undefined,
@@ -36,16 +34,16 @@ type CreateExhibitPhotoProps = {
   board_id: string;
   exhibition_id: number;
   exhibition_no: number;
-  togglePopUp: () => void;
-  fetch: () => void;
+  onCreate: () => void;
+  onCancel: () => void;
 };
 
 function CreateExhibitPhoto({
   board_id,
   exhibition_id,
   exhibition_no,
-  togglePopUp,
-  fetch,
+  onCreate,
+  onCancel,
 }: CreateExhibitPhotoProps) {
   useBlockBackgroundScroll();
   const [currentSize, setCurrentSize] = useState<number>(0);
@@ -130,13 +128,7 @@ function CreateExhibitPhoto({
       setPhotoInfos(
         photoInfos.set(imgIdx, {
           ...photoInfo,
-          photographer: {
-            user_id: -1,
-            nickname: '',
-            profile_path: '',
-            level: 0,
-            grade: 10,
-          },
+          photographer: undefined,
         }),
       );
     }
@@ -229,8 +221,7 @@ function CreateExhibitPhoto({
             throw err;
           }
         }
-        togglePopUp();
-        fetch();
+        onCreate();
       } catch (err) {
         alert('사진 생성 실패');
         setBtnDisabled(false);
@@ -250,7 +241,7 @@ function CreateExhibitPhoto({
       setImgIdx={setImgIdx}
       removeImg={removeImg}
       checkForm={submit}
-      togglePopUp={togglePopUp}
+      onCancel={onCancel}
       imgIdx={imgIdx}
       photoInfos={photoInfos.toJS() as ExhibitPhotoInfo[]}
       searchUsers={searchUsers}

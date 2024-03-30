@@ -1,7 +1,7 @@
-import React, { ChangeEvent } from 'react';
+import { ChangeEvent } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import Image from '../Common/AaaImage';
+import Image from 'components/Common/AaaImage';
 import imgDefaultProfile from 'assets/img/common/profile.png';
 import { User } from 'services/types';
 import { ExhibitPhotoInfo } from 'services/ExhibitPhotoService';
@@ -81,7 +81,7 @@ function CreateExhibitPhotoInfo({
           <div className="label-wrapper">
             <label>Photographer</label>
           </div>
-          {photoInfo.photographer && photoInfo.photographer.user_uuid ? (
+          {photoInfo.photographer && photoInfo.photographer.user_id ? (
             <div className="mini-user-selected enif-f-1x">
               <div>{photoInfo.photographer.nickname}</div>
               <i

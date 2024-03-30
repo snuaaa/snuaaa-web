@@ -1,27 +1,27 @@
-import React, { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 
 import 'react-datepicker/dist/react-datepicker.css';
 import { Prompt } from 'react-router';
-import CreateExhibitPhotoInfo from './CreateExhibitPhotoInfo';
-import UserService from '../../services/UserService';
+import UserService from 'services/UserService';
 import ExhibitPhotoService, {
   ExhibitPhotoInfo,
-} from '../../services/ExhibitPhotoService';
+} from 'services/ExhibitPhotoService';
 import { ExhibitPhoto, User } from 'services/types';
+import CreateExhibitPhotoInfo from './CreateExhibitPhotoInfo';
 
 type EditExhibitPhotoInfoProps = {
   exhibitPhotoInfo: ExhibitPhoto;
-  fetch: () => void;
-  cancel: () => void;
+  onUpdate: () => void;
+  onCancel: () => void;
 };
 
 function EditExhibitPhotoInfo({
   exhibitPhotoInfo,
-  fetch,
-  cancel,
+  onUpdate,
+  onCancel,
 }: EditExhibitPhotoInfoProps) {
   const [searchUsers, setSearchUsers] = useState<User[]>([]);
-  const [edittingContentInfo, setEdittingContentInfo] =
+  const [editingContentInfo, setEditingContentInfo] =
     useState<ExhibitPhotoInfo>({
       title: exhibitPhotoInfo.title,
       text: exhibitPhotoInfo.text,
@@ -41,39 +41,38 @@ function EditExhibitPhotoInfo({
     });
 
   const submit = async () => {
-    await ExhibitPhotoService.updateExhibitPhoto(
-      exhibitPhotoInfo.content_id,
-      edittingContentInfo,
-    )
-      .then(() => {
-        fetch();
-      })
-      .catch((err: Error) => {
-        console.error(err);
-        alert('업데이트 실패');
-      });
+    try {
+      await ExhibitPhotoService.updateExhibitPhoto(
+        exhibitPhotoInfo.content_id,
+        editingContentInfo,
+      );
+      onUpdate();
+    } catch (err) {
+      console.error(err);
+      alert('업데이트 실패');
+    }
   };
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const name: string = e.target.name;
-    setEdittingContentInfo({
-      ...edittingContentInfo,
+    setEditingContentInfo({
+      ...editingContentInfo,
       [name]: e.target.value,
     });
   };
 
   const handleDate = (date: Date) => {
-    setEdittingContentInfo({
-      ...edittingContentInfo,
+    setEditingContentInfo({
+      ...editingContentInfo,
       date: date,
     });
   };
 
   const handlePhotographer = (e: ChangeEvent<HTMLInputElement>) => {
-    setEdittingContentInfo({
-      ...edittingContentInfo,
+    setEditingContentInfo({
+      ...editingContentInfo,
       photographer_alt: e.target.value,
     });
     if (e.target.value) {
@@ -82,18 +81,17 @@ function EditExhibitPhotoInfo({
   };
 
   const fetchUsers = async (name: string) => {
-    UserService.searchMini(name)
-      .then((res) => {
-        setSearchUsers(res.userList);
-      })
-      .catch((err: Error) => {
-        console.error(err);
-      });
+    try {
+      const { userList } = await UserService.searchMini(name);
+      setSearchUsers(userList);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const selectPhotographer = (index: number) => {
-    setEdittingContentInfo({
-      ...edittingContentInfo,
+    setEditingContentInfo({
+      ...editingContentInfo,
       photographer_alt: '',
       photographer: searchUsers[index],
     });
@@ -101,15 +99,9 @@ function EditExhibitPhotoInfo({
   };
 
   const removePhotographer = () => {
-    setEdittingContentInfo({
-      ...edittingContentInfo,
-      photographer: {
-        user_id: -1,
-        nickname: '',
-        profile_path: '',
-        grade: 10,
-        level: 0,
-      },
+    setEditingContentInfo({
+      ...editingContentInfo,
+      photographer: undefined,
     });
   };
 
@@ -123,7 +115,7 @@ function EditExhibitPhotoInfo({
           ></Prompt>
           <div className="crt-photo-right-top">
             <CreateExhibitPhotoInfo
-              photoInfo={edittingContentInfo}
+              photoInfo={editingContentInfo}
               searchUsers={searchUsers}
               handleChange={handleChange}
               handleDate={handleDate}
@@ -133,7 +125,7 @@ function EditExhibitPhotoInfo({
             />
           </div>
           <div className="crt-photo-btn-wrapper">
-            <button className="btn-cancel" onClick={cancel}>
+            <button className="btn-cancel" onClick={onCancel}>
               취소
             </button>
             <button className="btn-ok" disabled={false} onClick={submit}>

@@ -7,10 +7,10 @@ import Image from '../../components/Common/AaaImage';
 
 import AuthContext from '../../contexts/AuthContext';
 
-import CreateExhibition from '../ExhibitBoard/CreateExhibition';
 import { Board } from 'services/types';
 import ExhibitionService from 'services/ExhibitionService';
 import { useFetch } from 'hooks/useFetch';
+import CreateExhibition from 'components/Exhibition/CreateExhibition';
 
 type ExhibitBoardProps = {
   boardInfo: Board;

@@ -1,7 +1,7 @@
-import React, { ChangeEvent } from 'react';
-import CreateExhibitPhotoInfo from '../../components/ExhibitBoard/CreateExhibitPhotoInfo';
-import ThumbnailList from '../../components/Album/ThumbnailList';
-import PreviewImage from '../../components/Album/PreviewImage';
+import { ChangeEvent } from 'react';
+import CreateExhibitPhotoInfo from './CreateExhibitPhotoInfo';
+import ThumbnailList from 'components/Album/ThumbnailList';
+import PreviewImage from 'components/Album/PreviewImage';
 import { User } from 'services/types';
 import { ExhibitPhotoInfo } from 'services/ExhibitPhotoService';
 
@@ -18,7 +18,7 @@ type CreateExhibitPhotoComponentProps = {
   setImgIdx: (index: number) => void;
   removeImg: (index: number) => void;
   checkForm: () => void;
-  togglePopUp: () => void;
+  onCancel: () => void;
   imgIdx: number;
   photoInfos: ExhibitPhotoInfo[];
   searchUsers: User[];
@@ -36,7 +36,7 @@ function CreateExhibitPhotoComponent({
   setImgIdx,
   removeImg,
   checkForm,
-  togglePopUp,
+  onCancel,
   imgIdx,
   photoInfos,
   searchUsers,
@@ -100,7 +100,7 @@ function CreateExhibitPhotoComponent({
               })()}
             </div>
             <div className="crt-photo-btn-wrapper">
-              <button className="btn-cancel" onClick={togglePopUp}>
+              <button className="btn-cancel" onClick={onCancel}>
                 취소
               </button>
               <button

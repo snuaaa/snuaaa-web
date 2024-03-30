@@ -1,5 +1,3 @@
-import React from 'react';
-
 type ExhibitionInfoProps = {
   exhibition_no: number;
   slogan: string;

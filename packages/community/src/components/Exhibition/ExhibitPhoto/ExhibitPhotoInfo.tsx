@@ -1,23 +1,22 @@
-import React from 'react';
-import { breakLine } from '../../utils/breakLine';
-import { convertDate, convertFullDate } from '../../utils/convertDate';
+import { breakLine } from 'utils/breakLine';
+import { convertDate, convertFullDate } from 'utils/convertDate';
 import defaultProfile from 'assets/img/common/profile.png';
-import ActionDrawer from '../Common/ActionDrawer';
-import Image from '../Common/AaaImage';
+import ActionDrawer from 'components/Common/ActionDrawer';
+import Image from 'components/Common/AaaImage';
 import 'react-datepicker/dist/react-datepicker.css';
 import { ExhibitPhoto } from 'services/types';
+import { useContext } from 'react';
+import AuthContext from 'contexts/AuthContext';
 
 type ExhibitPhotoInfoProps = {
   photoInfo: ExhibitPhoto;
-  my_id: number;
-  setEditState: () => void;
+  onClickEdit: () => void;
   deletePhoto: () => void;
 };
 
 function ExhibitPhotoInfo({
   photoInfo,
-  my_id,
-  setEditState,
+  onClickEdit,
   deletePhoto,
 }: ExhibitPhotoInfoProps) {
   const content = photoInfo;
@@ -25,16 +24,16 @@ function ExhibitPhotoInfo({
   const userInfo = photoInfo && photoInfo.user;
   const photographerInfo = photoInfo && photoInfo.exhibitPhoto.photographer;
 
+  const authContext = useContext(AuthContext);
+  const myId = authContext.authInfo.user.user_id;
+
   return (
     <>
       {photoInfo && photo && (
         <>
           <div className="photo-contents-wrapper">
-            {userInfo && my_id === userInfo.user_id && (
-              <ActionDrawer
-                clickEdit={setEditState}
-                clickDelete={deletePhoto}
-              />
+            {userInfo && myId === userInfo.user_id && (
+              <ActionDrawer clickEdit={onClickEdit} clickDelete={deletePhoto} />
             )}
             <div className="info-wrapper">
               <div className="info-title-date">

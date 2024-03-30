@@ -1,15 +1,14 @@
-import React, { useState, useEffect, createRef, useCallback } from 'react';
-import { Redirect, useLocation, useRouteMatch, useHistory } from 'react-router';
+import { useState, useEffect, createRef, useCallback } from 'react';
+import { useLocation, useHistory, useParams } from 'react-router';
 import ExhibitPhotoService from 'services/ExhibitPhotoService';
-import ContentStateEnum from 'common/ContentStateEnum';
-// import history from '../../common/history';
 import FullScreenPortal from 'containers/FullScreenPortal';
-import ExhibitPhotoComponent from 'components/ExhibitBoard/ExhibitPhotoComponent';
 import { RecordOf, Record } from 'immutable';
-import AuthContext from 'contexts/AuthContext';
 
 import useBlockBackgroundScroll from 'hooks/useBlockBackgroundScroll';
 import { ExhibitPhoto } from 'services/types';
+import ExhibitPhotoComponent from 'components/Exhibition/ExhibitPhoto/ExhibitPhotoComponent';
+import { useFetch } from 'hooks/useFetch';
+import Loading from 'components/Common/Loading';
 
 type LocationState = {
   backgroundLocation: string;
@@ -18,57 +17,44 @@ type LocationState = {
 function ExhibitPhotoPage() {
   const location = useLocation<LocationState>();
   const history = useHistory();
-  const match = useRouteMatch<{ exhibitPhoto_id: string }>();
+  const { exhibitPhoto_id } = useParams<{ exhibitPhoto_id: string }>();
   const fullscreenRef = createRef<HTMLDivElement>();
 
-  const [exhibitPhotosInfo, setexhibitPhotosInfo] = useState<ExhibitPhoto[]>(
+  const [exhibitPhotosInfo, setExhibitPhotosInfo] = useState<ExhibitPhoto[]>(
     [],
   );
   const [contentInfo, setContentInfo] = useState<RecordOf<ExhibitPhoto>>();
-  const [photoState, setPhotoState] = useState<number>(
-    ContentStateEnum.LOADING,
-  );
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
   useBlockBackgroundScroll();
 
-  const fetch = useCallback(async () => {
-    const exhibitPhoto_id = Number(match.params.exhibitPhoto_id);
+  const fetchFunction = useCallback(() => {
+    const exhibitPhotoId = Number(exhibitPhoto_id);
 
-    setPhotoState(ContentStateEnum.LOADING);
-    await ExhibitPhotoService.retrieveExhibitPhoto(exhibitPhoto_id)
-      .then((res) => {
-        const exhibitPhotoInfo = res.exhibitPhotoInfo;
-        setexhibitPhotosInfo(res.exhibitPhotosInfo);
-        setContentInfo(Record(exhibitPhotoInfo)());
-        setPhotoState(ContentStateEnum.READY);
-        // likeInfo: res.data.likeInfo,
-      })
-      .catch((err) => {
-        console.error(err);
-        if (
-          err.response &&
-          err.response.data &&
-          err.response.data.code === 4001
-        ) {
-          alert('권한이 없습니다.');
-          history.goBack();
-        } else {
-          setPhotoState(ContentStateEnum.ERROR);
-        }
-      });
-  }, [history, match.params.exhibitPhoto_id]);
+    return ExhibitPhotoService.retrieveExhibitPhoto(exhibitPhotoId);
+  }, [exhibitPhoto_id]);
+
+  const { data, refresh } = useFetch({
+    fetch: fetchFunction,
+  });
+
+  useEffect(() => {
+    if (data) {
+      const exhibitPhotoInfo = data.exhibitPhotoInfo;
+      setExhibitPhotosInfo(data.exhibitPhotosInfo);
+      setContentInfo(Record(exhibitPhotoInfo)());
+    }
+  }, [data]);
 
   const toggleFullScreen = useCallback(() => {
     setIsFullscreen(!isFullscreen);
   }, [isFullscreen]);
 
   useEffect(() => {
-    fetch();
     document.onfullscreenchange = function (e) {
       toggleFullScreen();
     };
-  }, [fetch, location, toggleFullScreen]);
+  }, [toggleFullScreen]);
 
   const moveToPhoto = (direction: number) => {
     if (contentInfo && exhibitPhotosInfo && exhibitPhotosInfo.length > 0) {
@@ -129,70 +115,44 @@ function ExhibitPhotoPage() {
   };
 
   const deletePhoto = async () => {
-    const exhibitPhoto_id = Number(match.params.exhibitPhoto_id);
-
     const goDrop = window.confirm(
       '정말로 삭제하시겠습니까? 삭제한 게시글은 다시 복원할 수 없습니다.',
     );
     if (goDrop) {
-      await ExhibitPhotoService.deleteExhibitPhoto(exhibitPhoto_id)
-        .then(() => {
-          setPhotoState(ContentStateEnum.DELETED);
-        })
-        .catch((err: Error) => {
-          console.error(err);
-          alert('삭제 실패');
-        });
+      try {
+        await ExhibitPhotoService.deleteExhibitPhoto(Number(exhibitPhoto_id));
+
+        const backLink = contentInfo?.parent
+          ? `/exhibition/${contentInfo.parent.content_id}`
+          : '/board/brd41';
+        history.replace(backLink);
+      } catch (err) {
+        console.error(err);
+        alert('삭제 실패');
+      }
     }
   };
 
+  if (!contentInfo) {
+    return <Loading />;
+  }
+
   return (
-    <AuthContext.Consumer>
-      {(authContext) => (
-        <FullScreenPortal>
-          <>
-            {/* {
-                            photoState === ContentStateEnum.LOADING && 
-                            <Loading />
-                        } */}
-            {(() => {
-              // if (photoState === ContentStateEnum.LOADING) {
-              //     return <Loading />
-              // }
-              if (photoState === ContentStateEnum.DELETED && contentInfo) {
-                let backLink;
-                if (!contentInfo.parent) {
-                  backLink = '/board/brd41';
-                } else {
-                  backLink = `/exhibition/${contentInfo.parent.content_id}`;
-                }
-                return <Redirect to={backLink} />;
-              } else if (contentInfo) {
-                return (
-                  <>
-                    <ExhibitPhotoComponent
-                      contentInfo={contentInfo}
-                      my_id={authContext.authInfo.user.user_id}
-                      fullscreenRef={fullscreenRef}
-                      clickFullscreen={clickFullscreen}
-                      moveToPrev={() => moveToPhoto(-1)}
-                      moveToNext={() => moveToPhoto(1)}
-                      isFullscreen={isFullscreen}
-                      isEditting={photoState === ContentStateEnum.EDITTING}
-                      editPhoto={() => setPhotoState(ContentStateEnum.EDITTING)}
-                      cancelEdit={() => setPhotoState(ContentStateEnum.READY)}
-                      deletePhoto={deletePhoto}
-                      fetch={fetch}
-                      close={closePhoto}
-                    />
-                  </>
-                );
-              } else return <div></div>;
-            })()}
-          </>
-        </FullScreenPortal>
-      )}
-    </AuthContext.Consumer>
+    <FullScreenPortal>
+      <>
+        <ExhibitPhotoComponent
+          contentInfo={contentInfo}
+          fullscreenRef={fullscreenRef}
+          clickFullscreen={clickFullscreen}
+          moveToPrev={() => moveToPhoto(-1)}
+          moveToNext={() => moveToPhoto(1)}
+          isFullscreen={isFullscreen}
+          deletePhoto={deletePhoto}
+          onUpdate={refresh}
+          close={closePhoto}
+        />
+      </>
+    </FullScreenPortal>
   );
 }
 

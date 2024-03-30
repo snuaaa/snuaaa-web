@@ -5,7 +5,7 @@ export interface ExhibitPhotoInfo {
   title: string;
   text: string;
   order: number;
-  photographer?: User;
+  photographer?: Pick<User, 'user_id' | 'nickname' | 'profile_path'>;
   photographer_alt?: string;
   date?: Date;
   location?: string;
@@ -24,7 +24,7 @@ export interface CreateExhibitPhotoRequest {
   exhibitPhoto: File;
 }
 
-export type UpdateExhibitPhotoRequest = ExhibitPhotoInfo;
+export type UpdateExhibitPhotoRequest = CreateExhibitPhotoRequest['photoInfo'];
 
 const ExhibitPhotoService = {
   createExhibitPhoto: function (
