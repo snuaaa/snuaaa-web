@@ -1,8 +1,8 @@
-import React, { ChangeEvent } from 'react';
+import { ChangeEvent, FC } from 'react';
 
 import { Category } from 'services/types';
 
-type EditAlbumComponentProps = {
+type Props = {
   caption: string;
   // albumInfo: RecordOf<ContentType>
   title: string;
@@ -19,7 +19,7 @@ type EditAlbumComponentProps = {
   cancelAlbum: () => void;
 };
 
-function EditAlbumComponent(props: EditAlbumComponentProps) {
+const AlbumForm: FC<Props> = (props) => {
   const makeIsPrivate = () => {
     return (
       <div className="select-private-wrapper">
@@ -131,6 +131,6 @@ function EditAlbumComponent(props: EditAlbumComponentProps) {
       </div>
     </div>
   );
-}
+};
 
-export default EditAlbumComponent;
+export default AlbumForm;

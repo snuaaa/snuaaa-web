@@ -1,11 +1,11 @@
 import { useState, ChangeEvent } from 'react';
-import EditAlbumComponent from '../../components/Album/EditAlbumComponent';
 import PhotoBoardService, {
   CreateAlbumRequest,
-} from '../../services/PhotoBoardService';
+} from 'services/PhotoBoardService';
 
-import useBlockBackgroundScroll from '../../hooks/useBlockBackgroundScroll';
+import useBlockBackgroundScroll from 'hooks/useBlockBackgroundScroll';
 import { Category } from 'services/types';
+import AlbumForm from './AlbumForm';
 
 type CreateAlbumProps = {
   board_id: string;
@@ -66,7 +66,7 @@ function CreateAlbum({
   };
 
   return (
-    <EditAlbumComponent
+    <AlbumForm
       caption="앨범 생성"
       title={albumInfo.title}
       text={albumInfo.text}

@@ -1,10 +1,10 @@
 import { ChangeEvent, FC, useCallback, useState } from 'react';
 
-import EditAlbumComponent from '../../components/Album/EditAlbumComponent';
-import AlbumService from '../../services/AlbumService';
+import AlbumService from 'services/AlbumService';
 import { Record } from 'immutable';
 
 import { Album, Category } from 'services/types';
+import AlbumForm from './AlbumForm';
 
 type EditAlbumProps = {
   albumInfo: Album;
@@ -72,7 +72,7 @@ export const EditAlbum: FC<EditAlbumProps> = ({
   }, [albumInfo, categoryInfo, onUpdateAlbum]);
 
   return (
-    <EditAlbumComponent
+    <AlbumForm
       caption="앨범 수정"
       // albumInfo={albumInfo}
       title={albumInfo.title}

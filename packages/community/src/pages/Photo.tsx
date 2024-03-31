@@ -82,7 +82,6 @@ const PhotoPage: FC = () => {
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
-    console.log('useEffecttttt');
     if (data) {
       setContentInfo(data.photoInfo);
       setEditContentInfo(Record(data.photoInfo));
@@ -320,8 +319,6 @@ const PhotoPage: FC = () => {
     ? 'ri-fullscreen-exit-fill'
     : 'ri-fullscreen-fill';
   const photoInfo = contentInfo && contentInfo.photo;
-
-  console.log(photoInfo);
 
   return (
     <FullScreenPortal>

@@ -1,6 +1,6 @@
 import { useState, useCallback, useContext } from 'react';
 
-import CreateAlbum from '../Album/CreateAlbum';
+import CreateAlbum from '../Album/modals/CreateAlbum';
 import AlbumList from '../../components/Album/AlbumList';
 import Category from '../../components/Common/Category';
 import Loading from '../../components/Common/Loading';

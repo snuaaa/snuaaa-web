@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import ProfileMini from '../Common/ProfileMini';
 import { convertFullDate } from '../../utils/convertDate';
@@ -9,31 +9,65 @@ import FileIcon from '../../components/Common/FileIcon';
 
 import Editor from '../Common/Editor';
 import { Content, File } from 'services/types';
+import PostService from 'services/PostService';
+import ContentService from 'services/ContentService';
 
 type PostComponentProps = {
-  content: Content;
+  postInfo: Content;
   my_id: number;
   isLiked: boolean;
-  likePost: () => void;
-  editPost: () => void;
-  deletePost: () => void;
+  onClickEdit: () => void;
 };
 
-const PostComponent: React.FC<PostComponentProps> = ({
-  content,
+const PostView: React.FC<PostComponentProps> = ({
+  postInfo,
   my_id,
-  isLiked,
-  likePost,
-  editPost,
-  deletePost,
+  isLiked: isLikedProp,
+  onClickEdit,
 }) => {
-  const user = content.user;
+  const user = postInfo.user;
+
+  const [likeNum, setLikeNum] = useState(postInfo.like_num);
+  const [isLiked, setIsLiked] = useState(isLikedProp);
+
+  const deletePost = async () => {
+    if (!postInfo) {
+      return;
+    }
+    const goDrop = window.confirm(
+      '정말로 삭제하시겠습니까? 삭제한 게시글은 다시 복원할 수 없습니다.',
+    );
+    if (goDrop) {
+      try {
+        await PostService.deletePost(postInfo.content_id);
+        history.replace(`/board/${postInfo.board_id}`);
+      } catch (err) {
+        console.error(err);
+        alert('삭제 실패');
+      }
+    }
+  };
+
+  const likePost = async () => {
+    if (!postInfo) {
+      return;
+    }
+    try {
+      await ContentService.likeContent(postInfo.content_id);
+      setLikeNum((prevLikeNum) =>
+        isLiked ? prevLikeNum - 1 : prevLikeNum + 1,
+      );
+      setIsLiked((prevIsLiked) => !prevIsLiked);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const makeFileList = () => {
-    if (content.attachedFiles && content.attachedFiles.length > 0) {
+    if (postInfo.attachedFiles && postInfo.attachedFiles.length > 0) {
       return (
         <div className="file-download-wrapper">
-          {content.attachedFiles.map((file: File) => {
+          {postInfo.attachedFiles.map((file: File) => {
             return (
               <div className="file-download-list" key={file.file_id}>
                 <DownloadFile
@@ -57,9 +91,9 @@ const PostComponent: React.FC<PostComponentProps> = ({
         <div className="post-title-back" onClick={() => history.goBack()}>
           <i className="ri-arrow-left-line enif-pointer"> </i>
         </div>
-        <h5> {content.title} </h5>
-        {my_id === content.author_id && (
-          <ActionDrawer clickEdit={editPost} clickDelete={deletePost} />
+        <h5> {postInfo.title} </h5>
+        {my_id === postInfo.author_id && (
+          <ActionDrawer clickEdit={onClickEdit} clickDelete={deletePost} />
         )}
       </div>
       <div className="post-info-other">
@@ -69,17 +103,17 @@ const PostComponent: React.FC<PostComponentProps> = ({
         </div>
         <div className="post-date-created enif-flex-center">
           <i className="ri-time-line"> </i>
-          {convertFullDate(content.createdAt)}
-          {content.createdAt !== content.updatedAt && (
+          {convertFullDate(postInfo.createdAt)}
+          {postInfo.createdAt !== postInfo.updatedAt && (
             <div className="post-date-updated">
-              {convertFullDate(content.updatedAt)} Updated
+              {convertFullDate(postInfo.updatedAt)} Updated
             </div>
           )}
         </div>
       </div>
       <div className="post-content">
         <Editor
-          text={content.text}
+          text={postInfo.text}
           setText={() => {
             return;
           }}
@@ -93,18 +127,18 @@ const PostComponent: React.FC<PostComponentProps> = ({
         <div className="nums-wrapper">
           <div className="view-num-wrapper">
             <i className="ri-eye-fill"> </i>
-            {content.view_num}
+            {postInfo.view_num}
           </div>
           <div className="like-num-wrapper">
             <i
               className={`${isLiked ? 'ri-heart-fill' : 'ri-heart-line'} enif-f-1p5x enif-pointer`}
               onClick={() => likePost()}
             ></i>
-            {content.like_num}
+            {likeNum}
           </div>
           <div className="comment-num-wrapper">
             <i className="ri-message-2-fill enif-f-1p5x"> </i>
-            {content.comment_num}
+            {postInfo.comment_num}
           </div>
         </div>
       </div>
@@ -112,4 +146,4 @@ const PostComponent: React.FC<PostComponentProps> = ({
   );
 };
 
-export default PostComponent;
+export default PostView;

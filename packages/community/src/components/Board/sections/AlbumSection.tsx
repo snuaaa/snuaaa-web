@@ -1,4 +1,4 @@
-import CreateAlbum from 'components/Album/CreateAlbum';
+import CreateAlbum from 'components/Album/modals/CreateAlbum';
 import Loading from 'components/Common/Loading';
 import Paginator from 'components/Common/Paginator';
 import AlbumList from 'components/Album/AlbumList';

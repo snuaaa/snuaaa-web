@@ -1,17 +1,20 @@
-import React, { useState, ChangeEvent } from 'react';
-import CreatePostComponent from '../../components/Post/CreatePostComponent';
+import { useState, ChangeEvent, FC } from 'react';
 import PostService, { CreatePostRequest } from '../../services/PostService';
 import ContentService from '../../services/ContentService';
+import { Prompt } from 'react-router-dom';
+import Editor from 'components/Common/Editor';
+import AttachFile from './AttachFile';
+import ProgressBar from 'components/Common/ProgressBar';
 
 const MAX_SIZE = 20 * 1024 * 1024;
 
-type CreatePostProps = {
+type Props = {
   board_id: string;
   onCreate: () => void;
   onClose: () => void;
 };
 
-function CreatePost(props: CreatePostProps) {
+const CreatePost: FC<Props> = (props) => {
   let currentSize = 0;
   const [postInfo, setPostInfo] = useState<CreatePostRequest>({
     title: '',
@@ -113,20 +116,67 @@ function CreatePost(props: CreatePostProps) {
   };
 
   return (
-    <CreatePostComponent
-      postInfo={postInfo}
-      attachedFiles={attachedFiles}
-      isUploading={isUploading}
-      progress={progress}
-      uploadIdx={uploadIdx}
-      handleChange={handleChange}
-      handleEditor={handleEditor}
-      close={props.onClose}
-      confirm={createPost}
-      attachFile={attachFile}
-      removeAttachedFile={removeAttachedFile}
-    />
+    <>
+      <Prompt
+        when={true}
+        message="작성 중인 내용은 저장되지 않습니다. 작성을 취소하시겠습니까? 작성을 취소하시겠습니까?"
+      ></Prompt>
+      <div className="writepost-wrapper">
+        <div className="writepost-header">
+          <i
+            className="ri-arrow-left-line enif-pointer"
+            onClick={props.onClose}
+          ></i>
+          <h5>글쓰기</h5>
+        </div>
+        <div className="writepost-title">
+          <input
+            name="title"
+            value={postInfo.title}
+            maxLength={50}
+            onChange={handleChange}
+            placeholder="제목을 입력하세요."
+          />
+        </div>
+        <div className="writepost-content">
+          <Editor
+            text={postInfo.text}
+            setText={handleEditor}
+            readOnly={false}
+          />
+        </div>
+        <div className="writepost-file">
+          <AttachFile
+            files={attachedFiles}
+            attachFile={attachFile}
+            removeFile={removeAttachedFile}
+          />
+        </div>
+        <div className="btn-wrapper">
+          <button
+            className="enif-btn-common enif-btn-cancel"
+            onClick={props.onClose}
+          >
+            취소
+          </button>
+          <button
+            className="enif-btn-common enif-btn-ok"
+            disabled={isUploading}
+            onClick={createPost}
+          >
+            확인
+          </button>
+        </div>
+      </div>
+      {isUploading && attachedFiles.length > 0 && (
+        <ProgressBar
+          currentIdx={uploadIdx}
+          loadedPercentage={progress}
+          totalIdx={attachedFiles.length}
+        />
+      )}
+    </>
   );
-}
+};
 
 export default CreatePost;
