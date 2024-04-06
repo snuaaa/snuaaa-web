@@ -7,6 +7,7 @@ import RiseSetContext from '../contexts/RiseSetContext';
 import AuthContext from '../contexts/AuthContext';
 import HomeService, { RiseSet } from '../services/HomeService';
 import { Board } from 'services/types';
+import Loading from 'components/Common/Loading';
 
 const AuthRoutes = lazy(() => import('./AuthRoutes'));
 const PageRoutes = lazy(() => import('./PageRoutes'));
@@ -44,11 +45,9 @@ function Section() {
   };
   return (
     <>
-      <BoardContext.Provider
-        value={{ boardsInfo: boardsInfo, setBoardsInfo: setBoardsInfo }}
-      >
+      <BoardContext.Provider value={{ boardsInfo: boardsInfo }}>
         <RiseSetContext.Provider value={riseSetInfo}>
-          <Suspense fallback={<div>Loading pages...</div>}>
+          <Suspense fallback={<Loading />}>
             <Switch>
               <Route path="/auth/" component={AuthRoutes} />
               <Route path="/" component={PageRoutes} />

@@ -13,6 +13,11 @@ type LocationState = {
   accessLocation: string;
 };
 
+const popUpTitle = '자동 로그인 기능을 사용하시겠습니까?';
+const popUpText = `자동 로그인 사용시 다음 접속부터는 로그인을 하실 필요가 없습니다.\n
+          단, 게임방, 학교 등 공공장소에서 이용 시 개인정보가 유출될 수 있으니 주의해주세요.`;
+const errText = '로그인에 실패하였습니다.\n아이디나 비밀번호를 확인해주세요.';
+
 function LogIn() {
   const [loginInfo, setLoginInfo] = useState({
     id: '',
@@ -26,10 +31,6 @@ function LogIn() {
   const history = useHistory();
   const location = useLocation<LocationState>();
   const authContext = useContext(AuthContext);
-  const popUpTitle = '자동 로그인 기능을 사용하시겠습니까?';
-  const popUpText = `자동 로그인 사용시 다음 접속부터는 로그인을 하실 필요가 없습니다.\n
-            단, 게임방, 학교 등 공공장소에서 이용 시 개인정보가 유출될 수 있으니 주의해주세요.`;
-  const errText = '로그인에 실패하였습니다.\n아이디나 비밀번호를 확인해주세요.';
 
   useEffect(() => {
     if (!errPopUp) return;
@@ -105,10 +106,13 @@ function LogIn() {
     }
   };
 
+  if (authContext.authInfo.isLoggedIn) {
+    return <Redirect to="/" />;
+  }
+
   return (
     <>
       {isLoading && <Loading />}
-      {authContext.authInfo.isLoggedIn && <Redirect to="/" />}
       {findPopUp && <FindIdPw cancel={() => setFindPopUp(false)} />}
       {errPopUp && <PopUp title={''} contents={errText} isAction={false} />}
       {popUp && (

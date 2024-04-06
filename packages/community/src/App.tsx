@@ -3,7 +3,7 @@ import { Redirect, useHistory, useLocation } from 'react-router';
 
 import './App.scss';
 
-import Section from './containers/Section';
+import Router from './containers/Router';
 import Loading from './components/Common/Loading';
 import { getToken, setToken, removeToken } from './utils/token';
 import AuthService from './services/AuthService';
@@ -115,7 +115,7 @@ function App() {
           ) {
             return <Redirect to="/auth/login" />;
           } else {
-            return <Section />;
+            return <Router />;
           }
         })()}
       </AuthContext.Provider>
