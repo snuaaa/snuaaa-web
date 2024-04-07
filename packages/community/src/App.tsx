@@ -3,7 +3,7 @@ import { Redirect, useHistory, useLocation } from 'react-router';
 
 import './App.scss';
 
-import Router from './containers/Router';
+import Router from './router';
 import Loading from './components/Common/Loading';
 import { getToken, setToken, removeToken } from './utils/token';
 import AuthService from './services/AuthService';
@@ -54,21 +54,20 @@ function App() {
       setIsReady(true);
     } else {
       // 서버에 토큰 확인 , invalid => logout, valid => 로그인 유지(연장)
-      await AuthService.checkToken()
-        .then((res) => {
-          const { token, userInfo, autoLogin } = res;
-          authLogin(token, autoLogin, userInfo);
-        })
-        .catch((err: Error) => {
-          console.error(err);
-          history.replace({
-            pathname: '/auth/login',
-            state: {
-              accessLocation: history.location,
-            },
-          });
-          authLogout();
+      try {
+        const { token, userInfo, autoLogin } = await AuthService.checkToken();
+        authLogin(token, autoLogin, userInfo);
+      } catch (err) {
+        // TODO: 401의 경우에만 로그아웃
+        console.error(err);
+        history.replace({
+          pathname: '/auth/login',
+          state: {
+            accessLocation: history.location,
+          },
         });
+        authLogout();
+      }
     }
   }, [authLogin, history]);
 

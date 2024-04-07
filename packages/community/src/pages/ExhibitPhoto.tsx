@@ -1,7 +1,7 @@
 import { useState, useEffect, createRef, useCallback } from 'react';
 import { useLocation, useHistory, useParams } from 'react-router';
 import ExhibitPhotoService from 'services/ExhibitPhotoService';
-import FullScreenPortal from 'containers/FullScreenPortal';
+import FullScreenPortal from 'router/FullScreenPortal';
 import { RecordOf, Record } from 'immutable';
 
 import useBlockBackgroundScroll from 'hooks/useBlockBackgroundScroll';

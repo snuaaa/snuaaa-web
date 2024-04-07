@@ -1,6 +1,7 @@
 import { lazy } from 'react';
 import { Route, Switch, useLocation } from 'react-router-dom';
-import Header from '../containers/Header';
+
+import Header from 'components/Header';
 import Footer from '../components/Footer';
 import SideBar from '../components/Home/SideBar';
 import RiseSet from '../components/Home/RiseSet';

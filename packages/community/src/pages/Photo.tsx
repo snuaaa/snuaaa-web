@@ -13,7 +13,7 @@ import { Link } from 'react-router-dom';
 import { Record } from 'immutable';
 
 import Comment from 'components/Comment';
-import FullScreenPortal from 'containers/FullScreenPortal';
+import FullScreenPortal from 'router/FullScreenPortal';
 
 import Loading from 'components/Common/Loading';
 import PhotoInfo from 'components/Photo/PhotoInfo';

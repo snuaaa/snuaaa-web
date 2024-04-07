@@ -4,7 +4,7 @@ import { useHistory, Redirect, useLocation } from 'react-router';
 import LogInComponent from 'components/Login/LogInComponent';
 import Loading from 'components/Common/Loading';
 import PopUp from 'components/Common/PopUp';
-import FullScreenPortal from 'containers/FullScreenPortal';
+import FullScreenPortal from 'router/FullScreenPortal';
 import FindIdPw from 'components/Login/FindIdPw';
 import AuthService from 'services/AuthService';
 import AuthContext from 'contexts/AuthContext';

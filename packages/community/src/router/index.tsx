@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useState, useEffect, useContext } from 'react';
+import { lazy, Suspense, useState, useEffect, useContext } from 'react';
 import { Route, Switch } from 'react-router-dom';
 
 import BoardService from '../services/BoardService';
@@ -22,7 +22,7 @@ const defaultRiseSet: RiseSet = {
   sunset: 0,
 };
 
-function Section() {
+function Router() {
   const [boardsInfo, setBoardsInfo] = useState<Board[]>([]);
   const [riseSetInfo, setRiseSetInfo] = useState<RiseSet>(defaultRiseSet);
   const authContext = useContext(AuthContext);
@@ -50,7 +50,9 @@ function Section() {
           <Suspense fallback={<Loading />}>
             <Switch>
               <Route path="/auth/" component={AuthRoutes} />
-              <Route path="/" component={PageRoutes} />
+              {authContext.authInfo.isLoggedIn && (
+                <Route path="/" component={PageRoutes} />
+              )}
             </Switch>
           </Suspense>
         </RiseSetContext.Provider>
@@ -59,4 +61,4 @@ function Section() {
   );
 }
 
-export default Section;
+export default Router;
