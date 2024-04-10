@@ -1,4 +1,4 @@
-import { ChangeEvent, useState, useCallback, useContext } from 'react';
+import { ChangeEvent, useState, useCallback } from 'react';
 
 import Loading from '../../components/Common/Loading';
 import SelectBox from '../../components/Common/SelectBox';
@@ -8,10 +8,10 @@ import CreateDocu from './CreateDocu';
 import BoardName from '../../components/Board/BoardName';
 import DocuService from '../../services/DocuService';
 
-import AuthContext from '../../contexts/AuthContext';
-import { useLocation, useHistory } from 'react-router';
+import { useLocation, useHistory } from 'react-router-dom'; // Fix import path
 import { Board } from 'services/types';
 import { useFetch } from 'hooks/useFetch';
+import { useAuth } from 'contexts/auth';
 
 const DOCROWNUM = 10;
 
@@ -28,6 +28,7 @@ type LocationState = {
 function DocuBoard({ boardInfo }: DocuBoardProps) {
   const history = useHistory();
   const location = useLocation<LocationState>();
+  const authContext = useAuth();
 
   const [isCreating, setIsCreating] = useState(false);
 
@@ -107,8 +108,6 @@ function DocuBoard({ boardInfo }: DocuBoardProps) {
       name: i + '대',
     });
   }
-
-  const authContext = useContext(AuthContext);
 
   if (!data) {
     return <Loading />;

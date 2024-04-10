@@ -1,16 +1,15 @@
-import { FC, useCallback, useContext, useState } from 'react';
+import { FC, useCallback, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Loading from '../../components/Common/Loading';
 import { convertDateWithDay } from '../../utils/convertDate';
 import BoardName from '../../components/Board/BoardName';
 import Image from '../../components/Common/AaaImage';
 
-import AuthContext from '../../contexts/AuthContext';
-
-import CreateExhibition from '../ExhibitBoard/CreateExhibition';
 import { Board } from 'services/types';
 import ExhibitionService from 'services/ExhibitionService';
 import { useFetch } from 'hooks/useFetch';
+import CreateExhibition from 'components/Exhibition/CreateExhibition';
+import { useAuth } from 'contexts/auth';
 
 type ExhibitBoardProps = {
   boardInfo: Board;
@@ -27,7 +26,7 @@ const ExhibitBoard: FC<ExhibitBoardProps> = ({ boardInfo }) => {
     fetch: fetchFunction,
   });
 
-  const authContext = useContext(AuthContext);
+  const authContext = useAuth();
 
   const makeExhibitionList = useCallback(() => {
     return exhibitions.map((content) => {

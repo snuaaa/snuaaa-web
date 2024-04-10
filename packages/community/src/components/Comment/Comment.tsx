@@ -1,20 +1,13 @@
-import {
-  ChangeEvent,
-  useContext,
-  FC,
-  useState,
-  useRef,
-  useEffect,
-} from 'react';
+import { ChangeEvent, FC, useState, useRef, useEffect } from 'react';
 import Image from '../Common/AaaImage';
 import { breakLine } from '../../utils/breakLine';
 import { convertDynamicTime } from '../../utils/convertDate';
 import defaultProfile from 'assets/img/common/profile.png';
 import UserActionDrawer from '../../components/Common/UserActionDrawer';
 import { Comment as CommentType } from 'services/types';
-import AuthContext from '../../contexts/AuthContext';
 import { User } from 'services/types';
 import CommentService from 'services/CommentService';
+import { useAuth } from 'contexts/auth';
 
 type Props = {
   comment: CommentType;
@@ -23,7 +16,7 @@ type Props = {
 };
 
 export const Comment: FC<Props> = ({ comment, parent_id, onUpdate }) => {
-  const authContext = useContext(AuthContext);
+  const authContext = useAuth();
 
   const myId = authContext.authInfo.user.user_id;
 

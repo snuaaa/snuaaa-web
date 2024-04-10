@@ -1,36 +1,143 @@
-import React, { ChangeEvent } from 'react';
+import React, { ChangeEvent, FC, useRef, useState } from 'react';
 import Editor from '../Common/Editor';
 
 import AttachFile from './AttachFile';
 
 import FileIcon from '../Common/FileIcon';
 import { Content, File as FileType } from 'services/types';
+import PostService from 'services/PostService';
+import ContentService from 'services/ContentService';
+import FileService from 'services/FileService';
+import ProgressBar from 'components/Common/ProgressBar';
 
-type EditPostProps = {
+type Props = {
   postInfo: Content;
-  isBtnDisabled: boolean;
-  handleEditting: (e: ChangeEvent<HTMLInputElement>) => void;
-  handleEdittingText: (text: string) => void;
-  attachedFiles: File[];
-  attachFile: (e: ChangeEvent<HTMLInputElement>) => void;
-  removeAttachedFile: (index: number) => void;
-  removedFiles: number[];
-  removeFile: (file_id: number) => void;
-  cancelRemoveFile: (file_id: number) => void;
-  cancel: () => void;
-  confirm: () => void;
+  onCancel: () => void;
+  onUpdate: () => void;
 };
 
-function EditPost(props: EditPostProps) {
+const MAX_SIZE = 20 * 1024 * 1024;
+
+const EditPost: FC<Props> = ({ postInfo, onCancel, onUpdate }) => {
+  console.log('editpost');
+  const [removedFiles, setRemovedFiles] = useState<number[]>([]);
+  const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
+  const [progress, setProgress] = useState<number>(0);
+
+  const [editingPostData, setEditingPostData] = useState<Content>(postInfo);
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  const currentSize = useRef(0);
+
+  const handleEditing = (e: ChangeEvent<HTMLInputElement>) => {
+    if (editingPostData) {
+      setEditingPostData({
+        ...editingPostData,
+        [e.target.name]: e.target.value,
+      });
+    }
+  };
+
+  const handleEditingText = (value: string) => {
+    if (editingPostData) {
+      setEditingPostData({
+        ...editingPostData,
+        text: value,
+      });
+    }
+  };
+
+  const removeFile = (file_id: number) => {
+    setRemovedFiles(removedFiles.concat(file_id));
+  };
+
+  const uploadProgress = (e: ProgressEvent) => {
+    const totalLength = e.lengthComputable && e.total;
+    if (totalLength) {
+      setProgress(Math.round((e.loaded / totalLength) * 100));
+    }
+  };
+
+  const updatePost = async () => {
+    if (!editingPostData) return;
+    const post_id = Number(postInfo.content_id);
+    setIsUpdating(true);
+    try {
+      await PostService.updatePost(post_id, editingPostData);
+      if (attachedFiles.length > 0) {
+        for (let i = 0; i < attachedFiles.length; i++) {
+          const formData = new FormData();
+          formData.append('attachedFile', attachedFiles[i]);
+          await ContentService.createFile(post_id, formData, uploadProgress);
+        }
+      }
+      if (removedFiles.length > 0) {
+        for (let i = 0; i < removedFiles.length; i++) {
+          await FileService.deleteFile(removedFiles[i]);
+        }
+      }
+      onUpdate();
+    } catch (err) {
+      console.error(err);
+      setIsUpdating(false);
+      alert('업데이트 오류');
+    }
+  };
+
+  const attachFile = (e: ChangeEvent<HTMLInputElement>) => {
+    // const { attachedFiles } = this.state;
+    if (e.target.files && postInfo) {
+      if (
+        e.target.files.length +
+          attachFile.length +
+          (postInfo.attachedFiles ? postInfo.attachedFiles.length : 0) >
+        5
+      ) {
+        alert('파일은 최대 5개까지만 첨부해주세요.');
+        e.target.value = '';
+      } else if (e.target.files) {
+        let tmpSize = currentSize.current;
+        for (let i = 0; i < e.target.files.length; i++) {
+          tmpSize += e.target.files[i].size;
+        }
+        if (tmpSize > MAX_SIZE) {
+          alert('한 번에 20MB 이상의 파일은 업로드 할 수 없습니다.');
+        } else {
+          currentSize.current += tmpSize;
+          const newFiles: File[] = [];
+          for (let i = 0; i < e.target.files.length; i++) {
+            const tmpFile = e.target.files.item(i);
+            tmpFile && newFiles.push(tmpFile);
+          }
+          if (newFiles && newFiles.length > 0) {
+            setAttachedFiles(attachedFiles.concat(...newFiles));
+          }
+        }
+      }
+    }
+  };
+
+  const removeAttachedFile = (index: number) => {
+    setAttachedFiles(
+      attachedFiles.filter((file, i) => {
+        return index !== i;
+      }),
+    );
+  };
+
+  const cancelRemoveFile = (file_id: number) => {
+    setRemovedFiles(removedFiles.filter((file) => file !== file_id));
+  };
+
   const makeFileList = () => {
     if (
-      props.postInfo.attachedFiles &&
-      props.postInfo.attachedFiles.length > 0
+      editingPostData.attachedFiles &&
+      editingPostData.attachedFiles.length > 0
     ) {
       return (
         <div className="file-download-wrapper">
-          {props.postInfo.attachedFiles.map((file: FileType) => {
-            const isDeleted = props.removedFiles.includes(file.file_id);
+          {editingPostData.attachedFiles.map((file: FileType) => {
+            const isDeleted = removedFiles.includes(file.file_id);
 
             return (
               <div key={file.file_id}>
@@ -39,17 +146,17 @@ function EditPost(props: EditPostProps) {
                 >
                   <FileIcon fileInfo={file} isFull={true} isDownload={false} />
                 </div>
-                {props.removedFiles.includes(file.file_id) ? (
+                {removedFiles.includes(file.file_id) ? (
                   <i
                     className="ri-delete-bin-2-line"
-                    onClick={() => props.cancelRemoveFile(file.file_id)}
+                    onClick={() => cancelRemoveFile(file.file_id)}
                   >
                     취소
                   </i>
                 ) : (
                   <i
                     className="ri-delete-bin-line"
-                    onClick={() => props.removeFile(file.file_id)}
+                    onClick={() => removeFile(file.file_id)}
                   ></i>
                 )}
               </div>
@@ -61,57 +168,60 @@ function EditPost(props: EditPostProps) {
   };
 
   return (
-    <div className="writepost-wrapper">
-      <div className="writepost-header">
-        <i
-          className="ri-arrow-left-line enif-pointer"
-          onClick={props.cancel}
-        ></i>
-        <h5>글수정</h5>
+    <>
+      <div className="writepost-wrapper">
+        <div className="writepost-header">
+          <i className="ri-arrow-left-line enif-pointer" onClick={onCancel}></i>
+          <h5>글수정</h5>
+        </div>
+        <div className="writepost-title">
+          <input
+            name="title"
+            value={editingPostData.title}
+            onChange={handleEditing}
+            placeholder="제목"
+          />
+        </div>
+        <div className="writepost-content">
+          <Editor
+            text={editingPostData.text}
+            setText={handleEditingText}
+            readOnly={false}
+          />
+        </div>
+        {editingPostData.attachedFiles && makeFileList()}
+        <div className="writepost-file">
+          <AttachFile
+            files={attachedFiles}
+            attachFile={attachFile}
+            removeFile={removeAttachedFile}
+          />
+        </div>
+        <div className="btn-wrapper">
+          <button
+            className="enif-btn-common enif-btn-cancel"
+            onClick={onCancel}
+          >
+            취소
+          </button>
+          <button
+            className="enif-btn-common enif-btn-ok"
+            disabled={isUpdating}
+            onClick={updatePost}
+          >
+            확인
+          </button>
+        </div>
       </div>
-      <div className="writepost-title">
-        <input
-          name="title"
-          value={props.postInfo.title}
-          onChange={props.handleEditting}
-          placeholder="제목"
+      {isUpdating && (
+        <ProgressBar
+          loadedPercentage={progress}
+          currentIdx={0}
+          totalIdx={attachedFiles.length}
         />
-      </div>
-      <div className="writepost-content">
-        {/* <Editor text={props.postInfo.text} editText={props.handleEdittingText} /> */}
-        <Editor
-          text={props.postInfo.text}
-          setText={props.handleEdittingText}
-          readOnly={false}
-        />
-      </div>
-      {props.postInfo.attachedFiles && makeFileList()}
-      <div className="writepost-file">
-        <AttachFile
-          files={props.attachedFiles}
-          attachFile={props.attachFile}
-          removeFile={props.removeAttachedFile}
-        />
-      </div>
-      <div className="btn-wrapper">
-        <button
-          className="enif-btn-common enif-btn-cancel"
-          onClick={props.cancel}
-        >
-          {' '}
-          취소{' '}
-        </button>
-        <button
-          className="enif-btn-common enif-btn-ok"
-          disabled={props.isBtnDisabled}
-          onClick={props.confirm}
-        >
-          {' '}
-          확인{' '}
-        </button>
-      </div>
-    </div>
+      )}
+    </>
   );
-}
+};
 
 export default EditPost;

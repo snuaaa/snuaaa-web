@@ -3,16 +3,9 @@ import Loading from 'components/Common/Loading';
 import Paginator from 'components/Common/Paginator';
 import Tag from 'components/Common/Tag';
 import { CreatePhoto } from 'components/Photo/CreatePhoto';
-import AuthContext from 'contexts/AuthContext';
+import { useAuth } from 'contexts/auth';
 import { useFetch } from 'hooks/useFetch';
-import {
-  ChangeEvent,
-  FC,
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-} from 'react';
+import { ChangeEvent, FC, useCallback, useMemo, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import PhotoBoardService from 'services/PhotoBoardService';
 import { Board } from 'services/types';
@@ -29,7 +22,7 @@ type LocationState = {
 };
 
 export const PhotoSection: FC<Props> = ({ boardInfo }) => {
-  const authContext = useContext(AuthContext);
+  const authContext = useAuth();
 
   const [isCreating, setIsCreating] = useState(false);
 
