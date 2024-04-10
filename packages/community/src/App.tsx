@@ -4,6 +4,7 @@ import './App.scss';
 
 import Router from './router';
 import { AuthProvider } from './contexts/auth';
+import { BoardProvider } from 'contexts/board';
 
 function App() {
   useEffect(() => {
@@ -24,7 +25,9 @@ function App() {
   return (
     <div className="snuaaa-wrapper">
       <AuthProvider>
-        <Router />;
+        <BoardProvider>
+          <Router />;
+        </BoardProvider>
       </AuthProvider>
     </div>
   );

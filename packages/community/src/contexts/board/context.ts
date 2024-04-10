@@ -1,12 +1,10 @@
 import React from 'react';
 import { Board } from 'services/types';
 
-const defaultBoards: {
+type BoardContextType = {
   boardsInfo: Board[];
-} = {
-  boardsInfo: [],
 };
 
-const BoardContext = React.createContext(defaultBoards);
+const BoardContext = React.createContext<BoardContextType | null>(null);
 
 export default BoardContext;

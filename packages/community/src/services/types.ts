@@ -35,7 +35,7 @@ export interface Tag {
 export interface Board {
   board_id: string;
   board_name: string;
-  board_type: string;
+  board_type: 'N' | 'M' | 'A' | 'D' | 'E'; // TODO: fix magic characters
   board_desc: string;
   menu: number;
   order: number;
