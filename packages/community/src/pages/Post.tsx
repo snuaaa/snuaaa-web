@@ -1,4 +1,4 @@
-import { useState, useContext, useCallback, FC } from 'react';
+import { useState, useCallback, FC } from 'react';
 import { useParams } from 'react-router';
 
 import Comment from 'components/Comment';
@@ -9,13 +9,13 @@ import history from 'common/history';
 import BoardName from 'components/Board/BoardName';
 import PostService from 'services/PostService';
 
-import AuthContext from 'contexts/AuthContext';
 import axios from 'axios';
 import { useFetch } from 'hooks/useFetch';
+import { useAuth } from 'contexts/auth';
 
 const Post: FC = () => {
   const [isEditing, setIsEditing] = useState(false);
-  const authContext = useContext(AuthContext);
+  const authContext = useAuth();
   const { post_id: postId } = useParams<{ post_id: string }>();
 
   const fetchFunction = useCallback(async () => {

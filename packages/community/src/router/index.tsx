@@ -1,13 +1,13 @@
-import { lazy, Suspense, useState, useEffect, useContext } from 'react';
+import { lazy, Suspense, useState, useEffect } from 'react';
 import { Route, Switch } from 'react-router-dom';
 
 import BoardService from '../services/BoardService';
 import BoardContext from '../contexts/BoardContext';
 import RiseSetContext from '../contexts/RiseSetContext';
-import AuthContext from '../contexts/AuthContext';
 import HomeService, { RiseSet } from '../services/HomeService';
 import { Board } from 'services/types';
 import Loading from 'components/Common/Loading';
+import { useAuth } from 'contexts/auth';
 
 const AuthRoutes = lazy(() => import('./AuthRoutes'));
 const PageRoutes = lazy(() => import('./PageRoutes'));
@@ -25,7 +25,7 @@ const defaultRiseSet: RiseSet = {
 function Router() {
   const [boardsInfo, setBoardsInfo] = useState<Board[]>([]);
   const [riseSetInfo, setRiseSetInfo] = useState<RiseSet>(defaultRiseSet);
-  const authContext = useContext(AuthContext);
+  const authContext = useAuth();
 
   useEffect(() => {
     if (authContext.authInfo.isLoggedIn) {

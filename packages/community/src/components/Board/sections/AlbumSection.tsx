@@ -2,12 +2,12 @@ import CreateAlbum from 'components/Album/modals/CreateAlbum';
 import Loading from 'components/Common/Loading';
 import Paginator from 'components/Common/Paginator';
 import AlbumList from 'components/Album/AlbumList';
-import AuthContext from 'contexts/AuthContext';
 import { useFetch } from 'hooks/useFetch';
-import { FC, useCallback, useContext, useState } from 'react';
+import { FC, useCallback, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import PhotoBoardService from 'services/PhotoBoardService';
 import { Board } from 'services/types';
+import { useAuth } from 'contexts/auth';
 
 const ALBUM_ROW_NUM = 12;
 
@@ -20,7 +20,7 @@ type LocationState = {
 };
 
 export const AlbumSection: FC<Props> = ({ boardInfo }) => {
-  const authContext = useContext(AuthContext);
+  const authContext = useAuth();
 
   const [isCreating, setIsCreating] = useState(false);
 

@@ -5,8 +5,7 @@ import ActionDrawer from 'components/Common/ActionDrawer';
 import Image from 'components/Common/AaaImage';
 import 'react-datepicker/dist/react-datepicker.css';
 import { ExhibitPhoto } from 'services/types';
-import { useContext } from 'react';
-import AuthContext from 'contexts/AuthContext';
+import { useAuth } from 'contexts/auth';
 
 type ExhibitPhotoInfoProps = {
   photoInfo: ExhibitPhoto;
@@ -24,7 +23,7 @@ function ExhibitPhotoInfo({
   const userInfo = photoInfo && photoInfo.user;
   const photographerInfo = photoInfo && photoInfo.exhibitPhoto.photographer;
 
-  const authContext = useContext(AuthContext);
+  const authContext = useAuth();
   const myId = authContext.authInfo.user.user_id;
 
   return (

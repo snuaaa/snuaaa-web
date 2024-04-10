@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import { useState, useContext } from 'react';
 import logo from '../assets/img/logo_white.png';
 import imgProfile from '../assets/img/common/profile.png';
 import Navigation from '../components/Header/Navigation';
@@ -6,13 +6,13 @@ import PopupUser from '../components/Header/PopupUser';
 import Image from '../components/Common/AaaImage';
 import BoardContext from '../contexts/BoardContext';
 import { useHistory } from 'react-router';
-import AuthContext from '../contexts/AuthContext';
+import { useAuth } from 'contexts/auth';
 
 function Header() {
   const [isShowPopupUser, setIsShowPopupUser] = useState(false);
   const history = useHistory();
   const boardContext = useContext(BoardContext);
-  const authContext = useContext(AuthContext);
+  const authContext = useAuth();
 
   const togglePopup = () => {
     setIsShowPopupUser(!isShowPopupUser);

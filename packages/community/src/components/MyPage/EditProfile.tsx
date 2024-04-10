@@ -1,15 +1,9 @@
-import React, {
-  useContext,
-  useState,
-  useEffect,
-  ChangeEvent,
-  useCallback,
-} from 'react';
+import { useState, useEffect, ChangeEvent, useCallback } from 'react';
 
 import UserService, { UpdateUserInfoRequest } from '../../services/UserService';
 import Loading from '../Common/Loading';
 import ProfileComponent from './ProfileComponent';
-import AuthContext from '../../contexts/AuthContext';
+import { useAuth } from 'contexts/auth';
 
 type InputFormat = {
   label: string;
@@ -85,7 +79,7 @@ const defaultUserFormat: InputFormat[] = [
 ];
 
 function EditProfile() {
-  const authContext = useContext(AuthContext);
+  const authContext = useAuth();
 
   const [userInfo, setUserInfo] = useState(defaultUserFormat);
   const [profileImg, setProfileImg] = useState<File>();

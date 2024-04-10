@@ -1,13 +1,13 @@
-import { FC, useCallback, useContext, useState } from 'react';
+import { FC, useCallback, useState } from 'react';
 import { useParams } from 'react-router';
 import ExhibitionService from 'services/ExhibitionService';
 import Loading from 'components/Common/Loading';
 import CreateExhibitPhoto from 'components/Exhibition/CreateExhibitPhoto';
-import AuthContext from 'contexts/AuthContext';
 import ExhibitPhotoService from 'services/ExhibitPhotoService';
 import ExhibitionInfo from 'components/Exhibition/ExhibitionInfo';
 import ExhibitPhotoList from 'components/Exhibition/ExhibitPhotoList';
 import { useFetch } from 'hooks/useFetch';
+import { useAuth } from 'contexts/auth';
 
 const ExhibitionPage: FC = () => {
   const { exhibition_id } = useParams<{ exhibition_id: string }>();
@@ -22,7 +22,7 @@ const ExhibitionPage: FC = () => {
 
   const { data, refresh } = useFetch({ fetch: fetchFunction });
 
-  const authContext = useContext(AuthContext);
+  const authContext = useAuth();
 
   const [isCreating, setIsCreating] = useState(false);
 

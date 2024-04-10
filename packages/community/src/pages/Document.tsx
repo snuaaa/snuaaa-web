@@ -1,10 +1,4 @@
-import {
-  useState,
-  useEffect,
-  ChangeEvent,
-  useContext,
-  useCallback,
-} from 'react';
+import { useState, useEffect, ChangeEvent, useCallback } from 'react';
 import { Redirect, useRouteMatch } from 'react-router';
 
 import ContentStateEnum from 'common/ContentStateEnum';
@@ -14,9 +8,9 @@ import EditDocu from 'components/Document/EditDocu';
 import ContentService from 'services/ContentService';
 import DocuService from 'services/DocuService';
 
-import AuthContext from 'contexts/AuthContext';
 import FileService from 'services/FileService';
 import { Content } from 'services/types';
+import { useAuth } from 'contexts/auth';
 
 const MAX_SIZE = 20 * 1024 * 1024;
 
@@ -29,7 +23,7 @@ function DocumentPage() {
   const [, setProgress] = useState<number>(0);
   const [removedFiles, setRemovedFiles] = useState<number[]>([]);
   const [editingDocData, setEditingDocData] = useState<Content>();
-  const authContext = useContext(AuthContext);
+  const authContext = useAuth();
   let currentSize = 0;
 
   const fetch = useCallback(async () => {

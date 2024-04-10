@@ -1,4 +1,4 @@
-import { FC, useCallback, useContext, useMemo, useState } from 'react';
+import { FC, useCallback, useMemo, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
 import Loading from 'components/Common/Loading';
 import PhotoList from 'components/Album/PhotoList';
@@ -8,14 +8,14 @@ import { CreatePhoto } from 'components/Photo/CreatePhoto';
 import BoardName from 'components/Board/BoardName';
 import AlbumService from 'services/AlbumService';
 
-import AuthContext from 'contexts/AuthContext';
 import { useFetch } from 'hooks/useFetch';
+import { useAuth } from 'contexts/auth';
 
 const AlbumPage: FC = () => {
   const { album_id: albumId } = useParams<{ album_id: string }>();
   const history = useHistory();
 
-  const authContext = useContext(AuthContext);
+  const authContext = useAuth();
 
   const fetchFunction = useCallback(async () => {
     return await Promise.all([

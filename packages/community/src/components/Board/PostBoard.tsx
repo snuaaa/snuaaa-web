@@ -4,7 +4,6 @@ import {
   useState,
   useEffect,
   useCallback,
-  useContext,
 } from 'react';
 
 import Loading from '../../components/Common/Loading';
@@ -14,12 +13,12 @@ import BoardName from '../../components/Board/BoardName';
 import SearchTypeEnum from '../../common/SearchTypeEnum';
 import SelectBox from '../../components/Common/SelectBox';
 
-import AuthContext from '../../contexts/AuthContext';
 import { useLocation, useHistory } from 'react-router';
 import { Board } from 'services/types';
 import PostService from 'services/PostService';
 import { useFetch } from 'hooks/useFetch';
 import CreatePost from 'components/Post/CreatePost';
+import { useAuth } from 'contexts/auth';
 
 const POSTROWNUM = 10;
 const searchOptions = [
@@ -68,7 +67,7 @@ function PostBoard({ boardInfo }: PostBoardProps) {
 
   const pageIdx = location.state?.page ?? 1;
 
-  const authContext = useContext(AuthContext);
+  const authContext = useAuth();
 
   const fetchFunction = useCallback(async () => {
     const searchInfo = location.state && location.state.searchInfo;

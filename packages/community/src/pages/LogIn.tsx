@@ -1,4 +1,4 @@
-import { ChangeEvent, useState, useContext, useEffect } from 'react';
+import { ChangeEvent, useState, useEffect } from 'react';
 
 import { useHistory, Redirect, useLocation } from 'react-router';
 import LogInComponent from 'components/Login/LogInComponent';
@@ -7,7 +7,7 @@ import PopUp from 'components/Common/PopUp';
 import FullScreenPortal from 'router/FullScreenPortal';
 import FindIdPw from 'components/Login/FindIdPw';
 import AuthService from 'services/AuthService';
-import AuthContext from 'contexts/AuthContext';
+import { useAuth } from 'contexts/auth';
 
 type LocationState = {
   accessLocation: string;
@@ -30,7 +30,7 @@ function LogIn() {
   const [findPopUp, setFindPopUp] = useState(false);
   const history = useHistory();
   const location = useLocation<LocationState>();
-  const authContext = useContext(AuthContext);
+  const authContext = useAuth();
 
   useEffect(() => {
     if (!errPopUp) return;

@@ -1,7 +1,6 @@
 import {
   ChangeEvent,
   FC,
-  useContext,
   useCallback,
   useState,
   useEffect,
@@ -23,11 +22,11 @@ import EditPhotoInfo from 'components/Photo/EditPhotoInfo';
 import ContentService from 'services/ContentService';
 import AlbumService from 'services/AlbumService';
 import PhotoService from 'services/PhotoService';
-import AuthContext from 'contexts/AuthContext';
 
 import { Photo } from 'services/types';
 import { useFetch } from 'hooks/useFetch';
 import useBlockBackgroundScroll from 'hooks/useBlockBackgroundScroll';
+import { useAuth } from 'contexts/auth';
 
 const VISIBLE_TIME = 3;
 
@@ -36,7 +35,7 @@ const PhotoPage: FC = () => {
 
   const history = useHistory();
 
-  const authContext = useContext(AuthContext);
+  const authContext = useAuth();
 
   const fetchFunction = useCallback(
     () => PhotoService.retrievePhoto(Number(photoId)),

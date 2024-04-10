@@ -1,4 +1,4 @@
-import { useState, useCallback, useContext } from 'react';
+import { useState, useCallback } from 'react';
 
 import CreateAlbum from '../Album/modals/CreateAlbum';
 import AlbumList from '../../components/Album/AlbumList';
@@ -8,11 +8,11 @@ import Paginator from '../../components/Common/Paginator';
 import PhotoBoardService from '../../services/PhotoBoardService';
 
 import BoardName from '../../components/Board/BoardName';
-import AuthContext from '../../contexts/AuthContext';
 
 import { useHistory, useLocation } from 'react-router';
 import { Board } from 'services/types';
 import { useFetch } from 'hooks/useFetch';
+import { useAuth } from 'contexts/auth';
 
 const ALBUMROWNUM = 12;
 
@@ -74,7 +74,7 @@ function Memory({ boardInfo }: MemoryProps) {
     });
   };
 
-  const authContext = useContext(AuthContext);
+  const authContext = useAuth();
 
   return (
     <div className="board-wrapper photoboard-wrapper">
