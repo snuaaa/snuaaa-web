@@ -37,15 +37,15 @@ function TopUpButton() {
     };
   }, [handleScroll, timer]);
 
-  const btnClass = isVisible ? 'enif-visible' : 'enif-unvisible';
+  const btnClass = isVisible ? 'opacity-100' : 'opacity-0';
   const iconClass = isTop ? 'ri-arrow-up-s-line' : 'ri-arrow-down-s-line';
   return (
     <a
       href={isTop ? '#aaa-top' : '#aaa-bottom'}
-      className={`btn-top-up-link btn-top-up-mobile enif-hide-desktop ${btnClass}`}
+      className={`btn-top-up-link btn-top-up-mobile hidden ${btnClass}`}
     >
       <div className="btn-top-up">
-        <i className={`${iconClass} enif-pointer enif-f-1p2x`}></i>
+        <i className={`${iconClass} cursor-pointer enif-f-1p2x`}></i>
       </div>
     </a>
   );

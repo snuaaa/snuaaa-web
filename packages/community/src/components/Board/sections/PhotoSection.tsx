@@ -9,6 +9,7 @@ import { ChangeEvent, FC, useCallback, useMemo, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import PhotoBoardService from 'services/PhotoBoardService';
 import { Board } from 'services/types';
+import { Divider } from 'ui';
 
 const PHOTO_ROW_NUM = 12;
 
@@ -105,7 +106,7 @@ export const PhotoSection: FC<Props> = ({ boardInfo }) => {
     <>
       <div className="board-search-wrapper">
         <div className="board-search-input">
-          <i className="ri-search-line enif-f-1x"></i>
+          <i className="ri-search-line text-base"></i>
           <input type="text" />
         </div>
         <div>
@@ -127,7 +128,7 @@ export const PhotoSection: FC<Props> = ({ boardInfo }) => {
             selectedTags={selectedTags}
             clickTag={clickTag}
           />
-          <div className="enif-divider"></div>
+          <Divider />
           <PhotoList photos={data.photoInfo ?? []} />
           {isCreating && (
             <CreatePhoto

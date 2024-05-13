@@ -176,7 +176,7 @@ function PostBoard({ boardInfo }: PostBoardProps) {
                 onKeyDown={handleSearchKeyDown}
               />
               <button className="board-search-btn" onClick={search}>
-                <i className="ri-search-line enif-f-1x"></i>
+                <i className="ri-search-line text-base"></i>
               </button>
             </div>
             <div className="board-btn-write-wrapper">

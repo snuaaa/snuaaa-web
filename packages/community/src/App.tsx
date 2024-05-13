@@ -23,7 +23,7 @@ function App() {
   }, []);
 
   return (
-    <div className="snuaaa-wrapper">
+    <div className="min-h-full flex flex-col">
       <AuthProvider>
         <BoardProvider>
           <Router />;

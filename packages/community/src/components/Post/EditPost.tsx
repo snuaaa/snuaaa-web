@@ -171,7 +171,10 @@ const EditPost: FC<Props> = ({ postInfo, onCancel, onUpdate }) => {
     <>
       <div className="writepost-wrapper">
         <div className="writepost-header">
-          <i className="ri-arrow-left-line enif-pointer" onClick={onCancel}></i>
+          <i
+            className="ri-arrow-left-line cursor-pointer"
+            onClick={onCancel}
+          ></i>
           <h5>글수정</h5>
         </div>
         <div className="writepost-title">

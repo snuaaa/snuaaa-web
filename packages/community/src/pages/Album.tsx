@@ -10,6 +10,7 @@ import AlbumService from 'services/AlbumService';
 
 import { useFetch } from 'hooks/useFetch';
 import { useAuth } from 'contexts/auth';
+import { Divider } from 'ui';
 
 const AlbumPage: FC = () => {
   const { album_id: albumId } = useParams<{ album_id: string }>();
@@ -94,7 +95,7 @@ const AlbumPage: FC = () => {
             <i className="ri-image-line enif-f-1p2x"></i>사진 업로드
           </button>
         )}
-        <div className="enif-divider"></div>
+        <Divider />
         <PhotoList photos={photos} />
         {isModalOpen && (
           <CreatePhoto

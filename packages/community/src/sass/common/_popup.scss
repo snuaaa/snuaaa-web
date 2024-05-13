@@ -14,7 +14,7 @@
         position: relative;
         top: 30%;
         width: 400px;
-        background-color: #fff;
+        background-color: $color-white;
         margin: 0 auto;
         text-align: center;
 
@@ -71,8 +71,7 @@
                 width: 100px;
                 padding: 10px;
                 font-size: 17px;
-                font-family: NIXGONB-Vb;
-                background-color: #ffffff;
+                background-color: $color-white;
                 cursor: pointer;
                 color: #b4b4b4;
                 border: none;
@@ -93,10 +92,9 @@
                 width: 100%;
                 padding: 10px;
                 font-size: 17px;
-                font-family: NIXGONB-Vb;
                 background-color: $color-aqua;
                 cursor: pointer;
-                color: #FFFFFF;
+                color: $color-white;
                 border: none;
             }
         }

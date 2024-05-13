@@ -18,7 +18,7 @@ function ActionDrawer({
   return (
     <div className="actions-drawer">
       <i
-        className="ri-more-2-fill enif-pointer"
+        className="ri-more-2-fill cursor-pointer"
         onClick={() => setIsOpened(!isOpened)}
       ></i>
       {

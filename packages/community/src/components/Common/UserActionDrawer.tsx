@@ -41,7 +41,7 @@ function UserActionDrawer({
   return (
     <>
       <span
-        className={`enif-pointer actions-drawer-target ${wrapperClass}`}
+        className={`cursor-pointer actions-drawer-target ${wrapperClass}`}
         onClick={clickChildren}
       >
         {children}

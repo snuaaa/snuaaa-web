@@ -158,7 +158,7 @@ function MightyCalculator() {
 
   const makeTable = () => {
     return (
-      <div className="enif-flex-center mighty-table-wrp">
+      <div className="flex items-center center mighty-table-wrp">
         <table className="mighty-score-table mighty-table">
           <thead></thead>
           <tbody>
@@ -220,7 +220,7 @@ function MightyCalculator() {
                 <th>{setInfo.fulfillment}</th>
                 <th>{setInfo.noKiruda ? 'O' : 'X'}</th>
                 <i
-                  className="ri-edit-fill enif-pointer action-icons"
+                  className="ri-edit-fill cursor-pointer action-icons"
                   onClick={() => {
                     setCalState(CalculatorStateEnum.EDIT_SET);
                     setInputState(InputStateEnum.SELECT_DECLARER);
@@ -377,7 +377,7 @@ function MightyCalculator() {
           <div className="mighty-header-wrp">
             <h5>참여하는 사람의 이름을 입력해 주세요.</h5>
           </div>
-          <div className="enif-flex-center">
+          <div className="flex items-center center">
             <input
               type="text"
               className="mighty-input"
@@ -425,7 +425,7 @@ function MightyCalculator() {
                       : ''}
             </h5>
           </div>
-          <div className="enif-flex-center">
+          <div className="flex items-center center">
             {inputState === InputStateEnum.SELECT_DECLARER ? (
               <>{makeSelectUserList('declarer')}</>
             ) : inputState === InputStateEnum.INPUT_PLEGE ? (
@@ -490,7 +490,7 @@ function MightyCalculator() {
                         : ''}
               </h5>
             </div>
-            <div className="enif-flex-center">
+            <div className="flex items-center center">
               {inputState === InputStateEnum.SELECT_DECLARER ? (
                 <>{makeSelectUserList('declarer')}</>
               ) : inputState === InputStateEnum.INPUT_PLEGE ? (

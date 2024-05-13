@@ -61,10 +61,10 @@ function NewExhibitions({ board_id, exhibitions }: NewExhibitionsProps) {
           className="new-exhibitions-arrow left enif-hide-mobile"
           onClick={() => clickPrev(true)}
         >
-          <i className="ri-arrow-left-s-line enif-f-1p2x enif-pointer"></i>
+          <i className="ri-arrow-left-s-line enif-f-1p2x cursor-pointer"></i>
         </div>
-        {/* <div className="new-exhibitions-arrow left enif-hide-desktop" onClick={() => clickPrev(false)}>
-                    <i className="ri-arrow-left-s-line enif-f-1p2x enif-pointer"></i>
+        {/* <div className="new-exhibitions-arrow left hidden" onClick={() => clickPrev(false)}>
+                    <i className="ri-arrow-left-s-line enif-f-1p2x cursor-pointer"></i>
                 </div> */}
         <div className="new-exhibition-list-wrapper">
           {makeExhibitionList(true)}
@@ -73,10 +73,10 @@ function NewExhibitions({ board_id, exhibitions }: NewExhibitionsProps) {
           className="new-exhibitions-arrow right enif-hide-mobile"
           onClick={() => clickNext(true)}
         >
-          <i className="ri-arrow-right-s-line enif-f-1p2x enif-pointer"></i>
+          <i className="ri-arrow-right-s-line enif-f-1p2x cursor-pointer"></i>
         </div>
-        {/* <div className="new-exhibitions-arrow right enif-hide-desktop" onClick={() => clickNext(false)}>
-                    <i className="ri-arrow-right-s-line enif-f-1p2x enif-pointer"></i>
+        {/* <div className="new-exhibitions-arrow right hidden" onClick={() => clickNext(false)}>
+                    <i className="ri-arrow-right-s-line enif-f-1p2x cursor-pointer"></i>
                 </div> */}
       </div>
     </div>

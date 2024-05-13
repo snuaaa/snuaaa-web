@@ -6,6 +6,7 @@ import ActionDrawer from '../Common/ActionDrawer';
 import 'react-datepicker/dist/react-datepicker.css';
 
 import { ExhibitPhoto, Photo } from 'services/types';
+import { Divider } from 'ui';
 
 type PhotoInfoProps = {
   photoInfo: Photo | ExhibitPhoto;
@@ -69,7 +70,7 @@ const PhotoInfo = ({
               <div className="info-text-infos-wrapper">
                 {content.text && (
                   <>
-                    <div className="enif-divider"></div>
+                    <Divider />
                     <div className="info-text-wrapper">
                       <p>{breakLine(content.text)}</p>
                     </div>
@@ -86,7 +87,7 @@ const PhotoInfo = ({
                     photo.exposure_time ||
                     photo.iso) && (
                     <>
-                      <div className="enif-divider"></div>
+                      <Divider />
                       <div className="info-infos-wrapper">
                         {photo.date && (
                           <div className="photo-info-unit">
@@ -139,9 +140,9 @@ const PhotoInfo = ({
                   )}
               </div>
             </div>
-            <div className="enif-divider"></div>
+            <Divider />
             <ProfileMini userInfo={userInfo} />
-            <div className="enif-divider"></div>
+            <Divider />
           </div>
           <div className="actions-wrapper">
             <div className="nums-wrapper">
@@ -151,13 +152,13 @@ const PhotoInfo = ({
               </div>
               <div className="like-num-wrapper">
                 <i
-                  className={`${likeInfo ? 'ri-heart-fill' : 'ri-heart-line'} enif-f-1p5x enif-pointer`}
+                  className={`${likeInfo ? 'ri-heart-fill' : 'ri-heart-line'} text-2xl cursor-pointer`}
                   onClick={() => likePhoto()}
                 ></i>
                 {content.like_num}
               </div>
               <div className="comment-num-wrapper">
-                <i className="ri-message-2-fill enif-f-1p5x"></i>
+                <i className="ri-message-2-fill text-2xl"></i>
                 {content.comment_num}
               </div>
             </div>

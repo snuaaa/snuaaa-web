@@ -44,7 +44,7 @@
                 cursor: pointer;
                 border-radius: 50%;
                 object-fit: cover;
-                // background-color: #FFFFFF;
+                // background-color: $color-white;
             }
         }
         .guest-logout-wrapper {
@@ -76,7 +76,7 @@
     nav {
         color: aliceblue;
         height: 42px;
-        background-color: #000E2C;
+        background-color: $color-blue1;
         .nav-items {
             height: 100%;
         }
@@ -86,7 +86,7 @@
         height: inherit;
         display: inline-block;        
         color: $color-white;
-        background-color: #000E2C;
+        background-color: $color-blue1;
         &:hover {
             .menu-item-1 {
                 // border-bottom: 3px solid #fad55f;
@@ -263,7 +263,7 @@
         display: none;
     }
     p {
-        color: #FFFFFF;
+        color: $color-white;
         line-height: 40px;
         cursor: pointer;
     }
@@ -400,7 +400,7 @@
     .nav-toggle:checked ~ .nav-items {
         // display: block;
         width: 100%;
-        background-color: #fff;
+        background-color: $color-white;
         box-shadow: 0 2px 2px rgba(0, 0, 0, 0.05), 0 1px 0 rgba(0, 0, 0, 0.05);
     }
     

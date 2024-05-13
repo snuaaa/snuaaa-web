@@ -57,7 +57,7 @@ const DocuComponent = ({
     <div className="post-wrapper">
       <div className="post-title">
         <div className="post-title-back" onClick={() => history.goBack()}>
-          <i className="ri-arrow-left-line enif-pointer"></i>
+          <i className="ri-arrow-left-line cursor-pointer"></i>
         </div>
         <h5>{contentInfo.title}</h5>
         {my_id === userInfo.user_id && (
@@ -84,13 +84,13 @@ const DocuComponent = ({
           </div>
           <div className="like-num-wrapper">
             <i
-              className={`${isLiked ? 'ri-heart-fill' : 'ri-heart-line'} enif-f-1p5x enif-pointer`}
+              className={`${isLiked ? 'ri-heart-fill' : 'ri-heart-line'} text-2xl cursor-pointer`}
               onClick={() => likeDoc()}
             ></i>
             {contentInfo.like_num}
           </div>
           <div className="comment-num-wrapper">
-            <i className="ri-message-2-fill enif-f-1p5x"> </i>
+            <i className="ri-message-2-fill text-2xl"> </i>
             {contentInfo.comment_num}
           </div>
         </div>

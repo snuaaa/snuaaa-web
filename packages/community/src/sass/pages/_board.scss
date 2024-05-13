@@ -26,7 +26,7 @@
       margin: 0rem 0.5rem;
       select {
         padding: 5px;
-        background-color: #ffffff;
+        background-color: $color-white;
       }
     }
   }
@@ -61,7 +61,6 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  font-family: "NIXGONM-Vb";
   font-size: 1rem;
   padding: 0.3rem 0.5rem;
   color: $color-white;
@@ -98,7 +97,7 @@
 
 .post-list-header {
   display: flex;
-  background-color: #a3a3a3;
+  background-color: $color-gray2;
   color: $color-white;
   font-size: 15px;
   .post-list-header-unit {
@@ -210,7 +209,7 @@
   .post-author {
     display: inline-block;
     cursor: pointer;
-    color: #a3a3a3;
+    color: $color-gray2;
   }
 
   .post-created {
@@ -300,7 +299,6 @@
 }
 
 .sa-ck {
-  font-family: "Minguk-Regular";
   font-size: 0.9rem;
 
   .ck.ck-voice-label {

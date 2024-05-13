@@ -30,7 +30,7 @@ function SideBar() {
         </a>
         <a href="#aaa-top" className="btn-top-up-link">
           <div className="btn-top-up">
-            <i className="ri-arrow-up-s-line enif-pointer"></i>
+            <i className="ri-arrow-up-s-line cursor-pointer"></i>
             TOP
           </div>
         </a>

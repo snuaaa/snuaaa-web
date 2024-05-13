@@ -104,7 +104,7 @@ const EditPhotoInfo = ({
                   <label>Location</label>
                 </div>
                 <input
-                  className="enif-wid-half"
+                  className="w-1/2"
                   type="text"
                   name="location"
                   onChange={(e) => handleChange(e)}
@@ -116,7 +116,7 @@ const EditPhotoInfo = ({
                   <label>Camera</label>
                 </div>
                 <input
-                  className="enif-wid-half"
+                  className="w-1/2"
                   type="text"
                   name="camera"
                   onChange={(e) => handleChange(e)}
@@ -134,12 +134,12 @@ const EditPhotoInfo = ({
                     onChange={(e) => handleChange(e)}
                     value={photo.lens}
                   ></input>
-                  <div className="enif-flex-horizontal">
+                  <div className="flex flex-row items-center">
                     <div>
                       <label>@</label>
                     </div>
                     <input
-                      className="enif-wid-half"
+                      className="w-1/2"
                       type="text"
                       name="focal_length"
                       onChange={(e) => handleChange(e)}
@@ -155,7 +155,7 @@ const EditPhotoInfo = ({
                   <div>
                     <label>F/</label>
                     <input
-                      className="enif-wid-quater"
+                      className="w-1/4"
                       type="text"
                       name="f_stop"
                       onChange={(e) => handleChange(e)}
@@ -165,7 +165,7 @@ const EditPhotoInfo = ({
                   <div>
                     <label>time</label>
                     <input
-                      className="enif-wid-quater"
+                      className="w-1/4"
                       type="text"
                       name="exposure_time"
                       onChange={(e) => handleChange(e)}
@@ -175,7 +175,7 @@ const EditPhotoInfo = ({
                   <div>
                     <label>ISO</label>
                     <input
-                      className="enif-wid-quater"
+                      className="w-1/4"
                       type="text"
                       name="iso"
                       onChange={(e) => handleChange(e)}

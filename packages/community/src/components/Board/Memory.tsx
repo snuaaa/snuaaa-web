@@ -13,6 +13,7 @@ import { useHistory, useLocation } from 'react-router';
 import { Board } from 'services/types';
 import { useFetch } from 'hooks/useFetch';
 import { useAuth } from 'contexts/auth';
+import { Divider } from 'ui';
 
 const ALBUMROWNUM = 12;
 
@@ -91,7 +92,7 @@ function Memory({ boardInfo }: MemoryProps) {
       />
       <div className="board-search-wrapper">
         <div className="board-search-input">
-          <i className="ri-search-line enif-f-1x"></i>
+          <i className="ri-search-line text-base"></i>
           <input type="text" />
         </div>
         <div>
@@ -109,7 +110,7 @@ function Memory({ boardInfo }: MemoryProps) {
         <Loading />
       ) : (
         <>
-          <div className="enif-divider"></div>
+          <Divider />
           <AlbumList board_id={boardInfo.board_id} albums={data.albumInfo} />
           {isCreating && (
             <CreateAlbum

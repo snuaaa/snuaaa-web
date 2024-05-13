@@ -9,9 +9,9 @@ function RiseSetMobile() {
 
   useEffect(() => {
     if (isExpanded) {
-      document.body.classList.add('enif-overflow-hidden');
+      document.body.classList.add('overflow-hidden');
     } else {
-      document.body.classList.remove('enif-overflow-hidden');
+      document.body.classList.remove('overflow-hidden');
     }
   }, [isExpanded]);
 

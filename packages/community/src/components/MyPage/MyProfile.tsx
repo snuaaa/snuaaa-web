@@ -141,7 +141,7 @@ function MyProfile({ userInfo, isCanEdit }: MyProfileProps) {
               </div>
               <div className="icon-expand">
                 <i
-                  className={`${iconClass} enif-pointer`}
+                  className={`${iconClass} cursor-pointer`}
                   onClick={() => setIsExpand(!isExpand)}
                 ></i>
               </div>
@@ -150,7 +150,7 @@ function MyProfile({ userInfo, isCanEdit }: MyProfileProps) {
         </div>
         {/* <div className={descClass}>{breakLine(userInfo.introduction)}</div>
                 <div className="icon-expand">
-                    <i className={`${iconClass} enif-pointer`} onClick={() => setIsExpand(!isExpand)}></i>
+                    <i className={`${iconClass} cursor-pointer`} onClick={() => setIsExpand(!isExpand)}></i>
                 </div> */}
       </div>
     </div>

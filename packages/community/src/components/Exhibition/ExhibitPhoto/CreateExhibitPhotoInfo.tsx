@@ -82,10 +82,10 @@ function CreateExhibitPhotoInfo({
             <label>Photographer</label>
           </div>
           {photoInfo.photographer && photoInfo.photographer.user_id ? (
-            <div className="mini-user-selected enif-f-1x">
+            <div className="mini-user-selected text-base">
               <div>{photoInfo.photographer.nickname}</div>
               <i
-                className="ri-close-circle-line enif-pointer"
+                className="ri-close-circle-line cursor-pointer"
                 onClick={removePhotographer}
               ></i>
             </div>
@@ -145,10 +145,10 @@ function CreateExhibitPhotoInfo({
               onChange={(e) => handleChange(e)}
               value={photoInfo.lens}
             />
-            <div className="enif-flex-horizontal">
+            <div className="flex flex-row items-center">
               <label>@</label>
               <input
-                className="enif-wid-half"
+                className="w-1/2"
                 type="number"
                 name="focal_length"
                 onChange={(e) => handleChange(e)}
@@ -164,7 +164,7 @@ function CreateExhibitPhotoInfo({
             <div>
               <label>F/</label>
               <input
-                className="enif-wid-quater"
+                className="w-1/4"
                 type="text"
                 name="f_stop"
                 onChange={(e) => handleChange(e)}
@@ -174,7 +174,7 @@ function CreateExhibitPhotoInfo({
             <div>
               <label>time</label>
               <input
-                className="enif-wid-quater"
+                className="w-1/4"
                 type="text"
                 name="exposure_time"
                 onChange={(e) => handleChange(e)}
@@ -184,7 +184,7 @@ function CreateExhibitPhotoInfo({
             <div>
               <label>ISO</label>
               <input
-                className="enif-wid-quater"
+                className="w-1/4"
                 type="text"
                 name="iso"
                 onChange={(e) => handleChange(e)}

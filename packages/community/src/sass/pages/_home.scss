@@ -36,7 +36,7 @@
 .rise-set-wrapper {
   position: sticky;
   top: 70px;
-  background: #7193c4;
+  background: $color_blue3;
   width: 170px;
   padding: 30px 0px 25px 0px;
   border-radius: 20px;
@@ -176,10 +176,6 @@
       padding: 20px 30px;
       color: #08253e;
       font-weight: 60;
-      // .ql-container {
-      //   font-family: "NIXGONM-Vb";
-      //   font-size: 14px;
-      // }
       .ck-content {
         background-color: $color-gray5;
       }
@@ -204,7 +200,7 @@
   h4 {
     font-size: 20px;
     font-weight: bold;
-    color: #7193c4;
+    color: $color_blue3;
     padding: 10px 5px;
   }
   .new-post-list {
@@ -220,7 +216,7 @@
       width: 25%;
       flex-shrink: 0;
       a {
-        color: #a3a3a3;
+        color: $color-gray2;
       }
     }
     .new-post-title {
@@ -242,7 +238,7 @@
       // display: inline-block;
       // width: 20%;
       margin-left: auto;
-      color: #a3a3a3;
+      color: $color-gray2;
     }
   }
 }
@@ -253,7 +249,7 @@
   h4 {
     font-size: 20px;
     font-weight: bold;
-    color: #7193c4;
+    color: $color_blue3;
     padding: 10px 5px;
   }
   .new-comment-list {
@@ -271,7 +267,7 @@
       width: 25%;
       flex-shrink: 0;
       a {
-        color: #a3a3a3;
+        color: $color-gray2;
       }
     }
     .new-comment-contents {
@@ -285,7 +281,7 @@
         text-overflow: ellipsis;
         overflow: hidden;
         white-space: nowrap;
-        color: #a3a3a3;
+        color: $color-gray2;
       }
     }
     .new-comment-contents-bot {
@@ -307,7 +303,7 @@
     .new-comment-date {
       flex-shrink: 0;
       // width: 20%;
-      color: #a3a3a3;
+      color: $color-gray2;
     }
   }
 }
@@ -318,7 +314,7 @@
   h4 {
     font-size: 20px;
     font-weight: bold;
-    color: #7193c4;
+    color: $color_blue3;
     padding: 10px 5px;
   }
   .new-photo-list-wrapper {
@@ -358,7 +354,7 @@
   h4 {
     font-size: 20px;
     font-weight: bold;
-    color: #7193c4;
+    color: $color_blue3;
     padding: 10px 5px;
   }
   .new-album-list-wrapper {
@@ -398,7 +394,7 @@
   h4 {
     font-size: 20px;
     font-weight: bold;
-    color: #7193c4;
+    color: $color_blue3;
     padding: 10px 5px;
   }
   .new-exhibition-flex {
@@ -466,7 +462,7 @@
   }
 
   .rise-set-mobile-wrapper {
-    background: #7193c4;
+    background: $color_blue3;
     // width: 50%;
     flex-basis: 50%;
     flex-grow: 1;

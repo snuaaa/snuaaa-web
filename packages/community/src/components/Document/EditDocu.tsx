@@ -71,7 +71,7 @@ function EditDocu({
   return (
     <div className="writepost-wrapper">
       <div className="writepost-header">
-        <i className="ri-arrow-left-line enif-pointer" onClick={cancel}></i>
+        <i className="ri-arrow-left-line cursor-pointer" onClick={cancel}></i>
         <h5>글수정</h5>
       </div>
       <div className="writepost-title">

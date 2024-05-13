@@ -55,22 +55,22 @@ function ExhibitPhotoComponent({
               {exhibitPhotoInfo.exhibitPhoto.order}
             </div>
             <div className="enif-modal-close" onClick={close}>
-              <i className="ri-close-fill enif-f-1p5x enif-pointer"></i>
+              <i className="ri-close-fill text-2xl cursor-pointer"></i>
             </div>
           </div>
           <div className="photo-section-bottom">
             <div className="photo-section-left">
               <div className="photo-img-wrapper" ref={fullscreenRef}>
                 <div className="photo-move-action prev" onClick={moveToPrev}>
-                  <i className="ri-arrow-left-s-line ri-icons enif-pointer"></i>
+                  <i className="ri-arrow-left-s-line ri-icons cursor-pointer"></i>
                 </div>
                 <Image imgSrc={contentInfo.exhibitPhoto.file_path} />
                 <div className="photo-move-action next" onClick={moveToNext}>
-                  <i className="ri-arrow-right-s-line ri-icons enif-pointer"></i>
+                  <i className="ri-arrow-right-s-line ri-icons cursor-pointer"></i>
                 </div>
                 <div className="photo-action-fullscreen-wrapper">
                   <i
-                    className={`${fullscreenClass} enif-pointer enif-f-1p2x`}
+                    className={`${fullscreenClass} cursor-pointer enif-f-1p2x`}
                     onClick={clickFullscreen}
                   ></i>
                 </div>

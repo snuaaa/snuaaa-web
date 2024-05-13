@@ -89,7 +89,7 @@ const PostView: React.FC<PostComponentProps> = ({
     <div className="post-wrapper">
       <div className="post-title">
         <div className="post-title-back" onClick={() => history.goBack()}>
-          <i className="ri-arrow-left-line enif-pointer"> </i>
+          <i className="ri-arrow-left-line cursor-pointer"> </i>
         </div>
         <h5> {postInfo.title} </h5>
         {my_id === postInfo.author_id && (
@@ -101,7 +101,7 @@ const PostView: React.FC<PostComponentProps> = ({
           <i className="ri-icons ri-pencil-fill"></i>
           {user && user.nickname}
         </div>
-        <div className="post-date-created enif-flex-center">
+        <div className="post-date-created flex items-center center">
           <i className="ri-time-line"> </i>
           {convertFullDate(postInfo.createdAt)}
           {postInfo.createdAt !== postInfo.updatedAt && (
@@ -131,13 +131,13 @@ const PostView: React.FC<PostComponentProps> = ({
           </div>
           <div className="like-num-wrapper">
             <i
-              className={`${isLiked ? 'ri-heart-fill' : 'ri-heart-line'} enif-f-1p5x enif-pointer`}
+              className={`${isLiked ? 'ri-heart-fill' : 'ri-heart-line'} text-2xl cursor-pointer`}
               onClick={() => likePost()}
             ></i>
             {likeNum}
           </div>
           <div className="comment-num-wrapper">
-            <i className="ri-message-2-fill enif-f-1p5x"> </i>
+            <i className="ri-message-2-fill text-2xl"> </i>
             {postInfo.comment_num}
           </div>
         </div>

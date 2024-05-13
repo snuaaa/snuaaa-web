@@ -27,7 +27,7 @@ function CreateDocuComponent(props: CreateDocuComponentProps) {
   //         return (
   //             <div className="file-list" key={index}>
   //                 <p>{file.name}</p>
-  //                 <i className="ri-close-circle-line ri-icons enif-pointer" onClick={() => props.removeAttachedFile(index)}></i>
+  //                 <i className="ri-close-circle-line ri-icons cursor-pointer" onClick={() => props.removeAttachedFile(index)}></i>
   //             </div>
   //         )
   //     });

@@ -127,7 +127,7 @@
         display: flex;
         justify-content: space-around;
         flex-wrap: nowrap;
-        color: #ffffff;
+        color: $color-white;
         background-color: #bcbdbc;
         padding: 15px 15px;
     }
@@ -179,7 +179,7 @@
         width: 100%;
     }
     thead {
-        color: #ffffff;
+        color: $color-white;
         background-color: #bcbdbc;
     }
     th {
@@ -197,12 +197,12 @@
         padding-top: 10px;
         padding-bottom: 4px;
         background-color: #008f94;
-        color: #FFFFFF;
+        color: $color-white;
         display: flex;
         a {
             float: left;
             margin-left: 5px;
-            color: #FFFFFF;
+            color: $color-white;
         }
         h5 {
             flex-grow: 1;
