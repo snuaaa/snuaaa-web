@@ -1,6 +1,5 @@
+import regulation from './data/regulation_tmp';
 import { breakLine } from '../../utils/breakLine';
-import { useCallback } from 'react';
-import { useFetch } from 'hooks/useFetch';
 
 type clause = {
   clause_no: number;
@@ -71,10 +70,6 @@ function makeArticleList(articles: article[]) {
 function Regulation() {
   //TODO : User who is admin can be edit data.
   //TODO : convert to database from json
-
-  const fetchFunction = useCallback(() => import('./regulation_tmp.json'), []);
-
-  const { data: regulation } = useFetch({ fetch: fetchFunction });
 
   function makeRegulationList() {
     return regulation?.map((chapter) => {
