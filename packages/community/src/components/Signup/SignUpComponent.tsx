@@ -43,8 +43,7 @@ const SignUpComponent = ({
 }: SignUpComponentProps) => {
   return (
     <div className="sign-up-wrapper">
-      <h2>JOIN</h2>
-
+      <h2 className="font-bold">JOIN</h2>
       {!isTermAgree ? (
         <>
           <div className="div-agreement">

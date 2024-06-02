@@ -206,18 +206,11 @@
     display: block;
 }
 
-.enif-input-invalid {
-    border: 2px solid #cd5c5c;
-}
-
-.enif-input-valid {
-    border: 2px solid #1761ff;
-}
-
 .enif-input-field {
     margin: 0 auto;
     margin-top: 15px;
     width: 300px;
+    font-size: 0.875rem;
     label {
         font-size: 0.9rem;
         font-weight: bold;

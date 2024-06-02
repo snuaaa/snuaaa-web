@@ -2,7 +2,7 @@ import React, { ChangeEvent } from 'react';
 
 type Props = {
   name: string;
-  className: string;
+  className?: string;
   handleChange: (e: ChangeEvent<HTMLInputElement>) => void;
   placeholder: string;
   pattern?: string;
