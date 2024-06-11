@@ -62,9 +62,11 @@ function NewComments({ comments }: NewCommentsProps) {
   };
 
   return (
-    <div className="new-comments-wrapper">
+    <div className="w-full md:w-1/2 p-2 md:p-[5px]">
       <Link to={'/comments/all'}>
-        <h4>New Comments</h4>
+        <h4 className="text-xl font-bold text-[#7193C4] py-2 px-1">
+          New Comments
+        </h4>
       </Link>
       {makeCommentList()}
     </div>

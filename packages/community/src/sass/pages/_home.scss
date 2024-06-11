@@ -194,199 +194,62 @@
   }
 }
 
-.new-posts-wrapper {
-  width: 50%;
-  padding: 5px;
-  h4 {
-    font-size: 20px;
-    font-weight: bold;
-    color: $color_blue3;
-    padding: 10px 5px;
+.new-comment-list {
+  padding: 11px 12px;
+  border-top: 1px solid #e8e8e8;
+  display: flex;
+  position: relative;
+  &:last-child {
+    border-bottom: 1px solid #e8e8e8;
   }
-  .new-post-list {
-    padding: 12.5px 12px;
-    border-top: 1px solid #e8e8e8;
-    display: flex;
-    max-width: 100%;
-    &:last-child {
-      border-bottom: 1px solid #e8e8e8;
-    }
-    .new-post-boardname {
-      // display: inline-block;
-      width: 25%;
-      flex-shrink: 0;
-      a {
-        color: $color-gray2;
-      }
-    }
-    .new-post-title {
-      // display: inline-block;
-      max-width: 45%;
-      // flex-basis: 25%;
-      flex-grow: 0;
-      a {
-        color: #000000;
-      }
-      h5 {
-        width: 100%;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-      }
-    }
-    .new-post-date {
-      // display: inline-block;
-      // width: 20%;
-      margin-left: auto;
+  a {
+    color: #000000;
+  }
+  .new-comment-boardname {
+    width: 25%;
+    flex-shrink: 0;
+    a {
       color: $color-gray2;
     }
   }
-}
-
-.new-comments-wrapper {
-  width: 50%;
-  padding: 5px;
-  h4 {
-    font-size: 20px;
-    font-weight: bold;
-    color: $color_blue3;
-    padding: 10px 5px;
+  .new-comment-contents {
+    flex-grow: 1;
+    width: 55%;
   }
-  .new-comment-list {
-    padding: 11px 12px;
-    border-top: 1px solid #e8e8e8;
-    display: flex;
-    position: relative;
-    &:last-child {
-      border-bottom: 1px solid #e8e8e8;
-    }
-    a {
-      color: #000000;
-    }
-    .new-comment-boardname {
-      width: 25%;
-      flex-shrink: 0;
-      a {
-        color: $color-gray2;
-      }
-    }
-    .new-comment-contents {
-      flex-grow: 1;
-      width: 55%;
-    }
-    .new-comment-contents-top {
-      // flex-grow: 1;
-      .new-comment-contents-title {
-        width: 100%;
-        text-overflow: ellipsis;
-        overflow: hidden;
-        white-space: nowrap;
-        color: $color-gray2;
-      }
-    }
-    .new-comment-contents-bot {
-      display: flex;
+  .new-comment-contents-top {
+    // flex-grow: 1;
+    .new-comment-contents-title {
       width: 100%;
-      // height: 15px;
-      margin-top: 5px;
-      line-height: 14px;
-      overflow: hidden;
-    }
-    .new-comment-comment {
-      flex-grow: 1;
-      width: 80%;
       text-overflow: ellipsis;
       overflow: hidden;
       white-space: nowrap;
-      color: #000000;
-    }
-    .new-comment-date {
-      flex-shrink: 0;
-      // width: 20%;
       color: $color-gray2;
     }
   }
-}
-
-.new-photos-wrapper {
-  width: 50%;
-  padding: 5px;
-  h4 {
-    font-size: 20px;
-    font-weight: bold;
-    color: $color_blue3;
-    padding: 10px 5px;
-  }
-  .new-photo-list-wrapper {
+  .new-comment-contents-bot {
     display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-content: flex-start;
-    flex-wrap: wrap;
+    width: 100%;
+    // height: 15px;
+    margin-top: 5px;
+    line-height: 14px;
+    overflow: hidden;
   }
-  .new-photo-list {
-    width: calc(33% - 1px);
-    position: relative;
-    margin: 0.5px;
-
-    &::before {
-      content: "";
-      padding-top: 100%;
-      float: left;
-    }
-    &::after {
-      content: "";
-      display: block;
-      clear: both;
-    }
-    img {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+  .new-comment-comment {
+    flex-grow: 1;
+    width: 80%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    color: #000000;
+  }
+  .new-comment-date {
+    flex-shrink: 0;
+    // width: 20%;
+    color: $color-gray2;
   }
 }
 
-.new-albums-wrapper {
-  width: 50%;
-  padding: 5px;
-  h4 {
-    font-size: 20px;
-    font-weight: bold;
-    color: $color_blue3;
-    padding: 10px 5px;
-  }
-  .new-album-list-wrapper {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-content: flex-start;
-    flex-wrap: wrap;
-  }
-  .new-album-list {
-    width: calc(50% - 2px);
-    position: relative;
-    margin: 1px;
 
-    &::before {
-      content: "";
-      padding-top: 100%;
-      float: left;
-    }
-    &::after {
-      content: "";
-      display: block;
-      clear: both;
-    }
-    img {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-  }
-}
 
 .new-exhibitions-wrapper {
   width: 100%;
@@ -551,29 +414,7 @@
     }
   }
 
-  .new-posts-wrapper {
-    width: 100%;
-    padding: 0rem 0.5rem;
-    margin-top: 0.7rem;
-  }
 
-  .new-albums-wrapper {
-    width: 100%;
-    padding: 0rem 0.5rem;
-    margin-top: 0.7rem;
-  }
-
-  .new-comments-wrapper {
-    width: 100%;
-    padding: 0rem 0.5rem;
-    margin-top: 0.7rem;
-  }
-
-  .new-photos-wrapper {
-    width: 100%;
-    padding: 0rem 0.5rem;
-    margin-top: 0.7rem;
-  }
 
   .new-exhibitions-wrapper {
     // overflow: auto;
