@@ -22,13 +22,6 @@
   .board-select-wrapper {
     display: flex;
     padding: 0px 10px;
-    .select-wrapper {
-      margin: 0rem 0.5rem;
-      select {
-        padding: 5px;
-        background-color: $color-white;
-      }
-    }
   }
   .board-search-input {
     // border: 1px solid $color-gray4;

@@ -92,8 +92,8 @@ function Memory({ boardInfo }: MemoryProps) {
       />
       <div className="board-search-wrapper">
         <div className="board-search-input">
-          <i className="ri-search-line text-base"></i>
-          <input type="text" />
+          {/* <i className="ri-search-line text-base"></i>
+          <input type="text" /> */}
         </div>
         <div>
           {authContext.authInfo.user.grade <= boardInfo.lv_write && (
