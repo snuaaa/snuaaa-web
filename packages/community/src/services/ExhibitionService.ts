@@ -50,7 +50,7 @@ const ExhibitionService = {
     formData.append('place', place);
     formData.append('poster', poster);
 
-    return API.post(`board/${board_id}/exhibition`, data);
+    return API.post(`board/${board_id}/exhibition`, formData);
   },
 
   retrieveExhibitionsInBoard: function (board_id: string) {

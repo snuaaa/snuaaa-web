@@ -27,19 +27,10 @@ export const CreateExhibition: FC<Props> = ({ boardId, onClose, onCreate }) => {
   );
 
   const submit = useCallback(async () => {
-    const {
-      title,
-      text,
-      exhibition_no,
-      slogan,
-      date_start,
-      date_end,
-      place,
-      poster,
-    } = data;
+    const { text, exhibition_no, slogan, date_start, date_end, place, poster } =
+      data;
 
     if (
-      !title ||
       !text ||
       !exhibition_no ||
       !slogan ||
@@ -52,7 +43,7 @@ export const CreateExhibition: FC<Props> = ({ boardId, onClose, onCreate }) => {
     } else {
       try {
         await ExhibitionService.createExhibition(boardId, {
-          title,
+          title: '',
           text,
           exhibition_no,
           slogan,
@@ -79,7 +70,7 @@ export const CreateExhibition: FC<Props> = ({ boardId, onClose, onCreate }) => {
   const handleDateEnd = (date: Date) => {
     setData({
       ...data,
-      date_start: date,
+      date_end: date,
     });
   };
 

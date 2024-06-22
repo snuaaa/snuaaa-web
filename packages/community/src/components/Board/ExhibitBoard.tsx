@@ -86,7 +86,10 @@ const ExhibitBoard: FC<ExhibitBoardProps> = ({ boardInfo }) => {
         <CreateExhibition
           boardId={boardInfo.board_id}
           onClose={() => setIsCreating(false)}
-          onCreate={refresh}
+          onCreate={() => {
+            setIsCreating(false);
+            refresh();
+          }}
         />
       )}
     </div>
