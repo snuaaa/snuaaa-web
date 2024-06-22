@@ -31,12 +31,13 @@
             flex-shrink: 0;
         }
         input {
-            height: 1.5rem;
-            // flex-shrink: 1;
             width: 50%;
+            height: 1.3rem;
+            border: 1px solid #C9C9C9;
         }
         textarea {
             resize: none;
+            border: 1px solid #C9C9C9;
         }
     }
 }
