@@ -94,11 +94,6 @@ function CreateDocu(props: CreateDocuProps) {
     } else if (attachedFiles.length === 0) {
       alert('파일을 첨부해주세요');
     } else {
-      // const formData = new FormData();
-      // formData.append('generation', docuInfo.generation.toString());
-      // formData.append('category_id', docuInfo.category_id);
-      // formData.append('title', docuInfo.title);
-      // formData.append('text', docuInfo.title);
       setIsUploading(true);
       try {
         const res = await DocuService.createDocument(
@@ -119,6 +114,7 @@ function CreateDocu(props: CreateDocuProps) {
         }
         setIsUploading(false);
         fetch();
+        props.onClose();
       } catch (err) {
         console.error(err);
       }
