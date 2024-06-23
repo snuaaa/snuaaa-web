@@ -74,7 +74,7 @@ const EditExhibitPhoto: FC<Props> = ({ contentInfo, onCancel, onUpdate }) => {
       ...photoInfo,
       photographer_alt: '',
       photographer: {
-        user_id: searchUsers[index].user_id,
+        user_uuid: searchUsers[index].user_uuid,
         nickname: searchUsers[index].nickname,
         profile_path: searchUsers[index].profile_path,
       },

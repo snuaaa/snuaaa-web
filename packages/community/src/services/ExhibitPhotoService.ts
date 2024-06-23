@@ -5,7 +5,7 @@ export interface ExhibitPhotoInfo {
   title: string;
   text: string;
   order: number;
-  photographer?: Pick<User, 'user_id' | 'nickname' | 'profile_path'>;
+  photographer?: Pick<User, 'nickname' | 'profile_path' | 'user_uuid'>;
   photographer_alt?: string;
   date?: Date;
   location?: string;
@@ -31,13 +31,13 @@ const ExhibitPhotoService = {
     exhibition_id: number,
     data: CreateExhibitPhotoRequest,
   ) {
-    const photosForm = new FormData();
-    photosForm.append('board_id', data.board_id);
-    photosForm.append('photoInfo', JSON.stringify(data.photoInfo));
-    photosForm.append('exhibition_no', data.exhibition_no.toString());
-    photosForm.append('exhibitPhoto', data.exhibitPhoto);
+    const formData = new FormData();
+    formData.append('board_id', data.board_id);
+    formData.append('photoInfo', JSON.stringify(data.photoInfo));
+    formData.append('exhibition_no', data.exhibition_no.toString());
+    formData.append('exhibitPhoto', data.exhibitPhoto);
 
-    return API.post(`exhibition/${exhibition_id}/exhibitPhoto`, data);
+    return API.post(`exhibition/${exhibition_id}/exhibitPhoto`, formData);
   },
 
   retrieveExhibitPhotosinExhibition: function (exhibition_id: number) {

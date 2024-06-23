@@ -14,11 +14,6 @@ const defaultPhotoInfo: ExhibitPhotoInfo = {
   title: '',
   text: '',
   order: 0,
-  photographer: {
-    user_id: -1,
-    nickname: '',
-    profile_path: '',
-  },
   photographer_alt: '',
   date: undefined,
   location: '',
@@ -200,12 +195,6 @@ function CreateExhibitPhoto({
 
       try {
         for (let i = 0; i < uploadPhotos.length; i++) {
-          const photosForm = new FormData();
-          photosForm.append('board_id', board_id);
-          photosForm.append('photoInfo', JSON.stringify(photoInfos.get(i)));
-          photosForm.append('exhibition_no', exhibition_no.toString());
-          photosForm.append('exhibitPhoto', uploadPhotos[i]);
-
           try {
             const photoInfo = photoInfos.get(i);
             if (photoInfo) {

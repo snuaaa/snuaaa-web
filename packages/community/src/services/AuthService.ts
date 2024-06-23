@@ -56,7 +56,7 @@ const AuthService = {
       formData.append(key, value);
     }
 
-    return API.post('auth/signup/', data);
+    return API.post('auth/signup/', formData);
   },
 
   duplicateCheck: function (data: DuplicateCheckRequest) {

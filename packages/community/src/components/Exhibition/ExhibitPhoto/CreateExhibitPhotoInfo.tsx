@@ -81,7 +81,7 @@ function CreateExhibitPhotoInfo({
           <div className="label-wrapper">
             <label>Photographer</label>
           </div>
-          {photoInfo.photographer && photoInfo.photographer.user_id ? (
+          {photoInfo.photographer ? (
             <div className="mini-user-selected text-base">
               <div>{photoInfo.photographer.nickname}</div>
               <i
