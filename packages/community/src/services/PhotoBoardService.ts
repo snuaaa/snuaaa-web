@@ -1,41 +1,43 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { AaaService } from './index';
-import { AxiosPromise } from 'axios';
-import AlbumType from '../types/AlbumType';
-import PhotoType from '../types/PhotoType';
+import { Album, Photo } from './types';
+import { API } from './index';
+
+export interface CreateAlbumRequest {
+  title: string;
+  text: string;
+  category_id?: string;
+  is_private: boolean;
+}
 
 const PhotoBoardService = {
   retrieveAlbumsInPhotoBoard: function (
     board_id: string,
     pageIdx: number,
     ctg_id?: string,
-  ): AxiosPromise<{
-    albumInfo: AlbumType[];
-    albumCount: number;
-  }> {
+  ) {
     if (!ctg_id) {
-      return AaaService.get(
-        `photoboard/${board_id}/albums?page=${pageIdx ? pageIdx : 1}`,
-      );
+      return API.get<{
+        albumInfo: Album[];
+        albumCount: number;
+      }>(`photoboard/${board_id}/albums?page=${pageIdx ? pageIdx : 1}`);
     } else {
-      return AaaService.get(
+      return API.get<{
+        albumInfo: Album[];
+        albumCount: number;
+      }>(
         `photoboard/${board_id}/albums?category=${ctg_id}&page=${pageIdx ? pageIdx : 1}`,
       );
     }
   },
 
-  createAlbum: function (board_id: string, data: any) {
-    return AaaService.post(`photoboard/${board_id}/album`, data);
+  createAlbum: function (board_id: string, data: CreateAlbumRequest) {
+    return API.post(`photoboard/${board_id}/album`, data);
   },
 
   retrievePhotosInPhotoBoard: function (
     board_id: string,
     pageIdx: number,
     tags?: string[],
-  ): AxiosPromise<{
-    photoInfo: PhotoType[];
-    photoCount: number;
-  }> {
+  ) {
     if (tags && tags.length > 0) {
       let tagUrl = '';
       tags.forEach((tag: string) => {
@@ -45,16 +47,21 @@ const PhotoBoardService = {
           tagUrl += `&tags[]=${tag}`;
         }
       });
-      return AaaService.get(
-        `photoboard/${board_id}/photos?${tagUrl}&page=${pageIdx}`,
-      );
+      return API.get<{
+        photoInfo: Photo[];
+        photoCount: number;
+      }>(`photoboard/${board_id}/photos?${tagUrl}&page=${pageIdx}`);
     } else {
-      return AaaService.get(`photoboard/${board_id}/photos?page=${pageIdx}`);
+      return API.get<{
+        photoInfo: Photo[];
+        photoCount: number;
+      }>(`photoboard/${board_id}/photos?page=${pageIdx}`);
     }
   },
 
-  createPhotosInPhotoBoard: function (board_id: string, data: any) {
-    return AaaService.post(`photoboard/${board_id}/photos`, data);
+  // TODO: fix data type
+  createPhotosInPhotoBoard: function (board_id: string, data: FormData) {
+    return API.post(`photoboard/${board_id}/photos`, data);
   },
 };
 

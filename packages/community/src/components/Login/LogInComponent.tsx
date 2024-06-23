@@ -37,10 +37,10 @@ const LogInComponent: React.FC<Props> = ({
           <label htmlFor="toggle" className="toggle-switch" />
           <p className="auto-checker-text">자동 로그인</p>
         </div>
-        <div className="login-inputs-wrapper">
-          <div className="login-inputs">
+        <div className="flex mt-4 justify-between gap-6">
+          <div className="grow">
             <InputText
-              className="login-input"
+              className="text-sm h-10 block w-full mb-4 pl-1 rounded-md"
               name="id"
               handleChange={handleChange}
               placeholder=" ID"
@@ -48,17 +48,20 @@ const LogInComponent: React.FC<Props> = ({
             />
             <input
               type="password"
-              className="login-input"
+              className="text-sm h-10 block w-full mb-4 pl-1 rounded-md"
               placeholder=" PASSWORD"
               name="password"
               onChange={handleChange}
               onKeyDown={(e) => {
-                if (e.keyCode === 13) userLogIn();
+                if (e.key === 'Enter') userLogIn();
               }}
               required
             />
           </div>
-          <button className="login-btn" onClick={userLogIn}>
+          <button
+            className="w-32 mb-4 tracking-wider text-white bg-[#57adb6] border-none rounded-md text-lg transition duration-1000"
+            onClick={userLogIn}
+          >
             로그인
           </button>
         </div>

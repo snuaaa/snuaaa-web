@@ -1,12 +1,13 @@
 import React from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { convertDate } from '../../utils/convertDate';
-import CommentType from '../../types/CommentType';
+
 import { LocationDescriptorObject } from 'history';
 import ContentTypeEnum from '../../common/ContentTypeEnum';
+import { Comment } from 'services/types';
 
 type MyCommentListProps = {
-  comments: CommentType[];
+  comments: Comment[];
 };
 
 function MyCommentList({ comments }: MyCommentListProps) {

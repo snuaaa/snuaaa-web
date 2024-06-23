@@ -28,7 +28,7 @@ const Contact = () => {
       <div className="intro-contact-wrapper">
         <div ref={mapRef} className="kakao-map"></div>
         <a className="link-navi" href="https://map.kakao.com/link/to/17561274">
-          <i className="ri-guide-line enif-f-1x"></i>길 찾기
+          <i className="ri-guide-line text-base"></i>길 찾기
         </a>
         <h4>
           서울대학교 아마추어 천문회

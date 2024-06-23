@@ -1,25 +1,19 @@
-import React, { useState, ChangeEvent } from 'react';
-import ExhibitionService from '../../services/ExhibitionService';
-import UserService from '../../services/UserService';
-import CreateExhibitPhotoComponent from '../ExhibitBoard/CreateExhibitPhotoComponent';
-import useBlockBackgroundScroll from '../../hooks/useBlockBackgroundScroll';
-import CrtExhibitPhotoType from '../../types/CrtExhibitPhotoType';
+import { useState, ChangeEvent } from 'react';
+import UserService from 'services/UserService';
+import CreateExhibitPhotoComponent from './ExhibitPhoto/CreateExhibitPhotoComponent';
+import useBlockBackgroundScroll from 'hooks/useBlockBackgroundScroll';
 import { List } from 'immutable';
-import UserType from '../../types/UserType';
+import { User } from 'services/types';
+import ExhibitPhotoService, {
+  ExhibitPhotoInfo,
+} from 'services/ExhibitPhotoService';
 
 const MAX_SIZE = 100 * 1024 * 1024;
 
-const defaultPhotoInfo: CrtExhibitPhotoType = {
+const defaultPhotoInfo: ExhibitPhotoInfo = {
   title: '',
   text: '',
   order: 0,
-  photographer: {
-    user_id: -1,
-    nickname: '',
-    profile_path: '',
-    level: 0,
-    grade: 10,
-  },
   photographer_alt: '',
   date: undefined,
   location: '',
@@ -35,25 +29,25 @@ type CreateExhibitPhotoProps = {
   board_id: string;
   exhibition_id: number;
   exhibition_no: number;
-  togglePopUp: () => void;
-  fetch: () => void;
+  onCreate: () => void;
+  onCancel: () => void;
 };
 
 function CreateExhibitPhoto({
   board_id,
   exhibition_id,
   exhibition_no,
-  togglePopUp,
-  fetch,
+  onCreate,
+  onCancel,
 }: CreateExhibitPhotoProps) {
   useBlockBackgroundScroll();
   const [currentSize, setCurrentSize] = useState<number>(0);
   const [imgUrls, setImgUrls] = useState<string[]>([]);
   const [photoInfos, setPhotoInfos] =
-    useState<List<CrtExhibitPhotoType>>(List<CrtExhibitPhotoType>());
+    useState<List<ExhibitPhotoInfo>>(List<ExhibitPhotoInfo>());
   const [uploadPhotos, setUploadPhotos] = useState<File[]>([]);
   const [imgIdx, setImgIdx] = useState<number>(-1);
-  const [searchUsers, setSearchUsers] = useState<UserType[]>([]);
+  const [searchUsers, setSearchUsers] = useState<User[]>([]);
   const [btnDisabled, setBtnDisabled] = useState<boolean>(false);
 
   const handleChange = (
@@ -101,9 +95,8 @@ function CreateExhibitPhoto({
 
   const fetchUsers = async (name: string) => {
     UserService.searchMini(name)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .then((res: any) => {
-        setSearchUsers(res.data.userList);
+      .then((res) => {
+        setSearchUsers(res.userList);
       })
       .catch((err: Error) => {
         console.error(err);
@@ -130,13 +123,7 @@ function CreateExhibitPhoto({
       setPhotoInfos(
         photoInfos.set(imgIdx, {
           ...photoInfo,
-          photographer: {
-            user_id: -1,
-            nickname: '',
-            profile_path: '',
-            level: 0,
-            grade: 10,
-          },
+          photographer: undefined,
         }),
       );
     }
@@ -208,24 +195,22 @@ function CreateExhibitPhoto({
 
       try {
         for (let i = 0; i < uploadPhotos.length; i++) {
-          const photosForm = new FormData();
-          photosForm.append('board_id', board_id);
-          photosForm.append('photoInfo', JSON.stringify(photoInfos.get(i)));
-          photosForm.append('exhibition_no', exhibition_no.toString());
-          photosForm.append('exhibitPhoto', uploadPhotos[i]);
-
           try {
-            await ExhibitionService.createExhibitPhoto(
-              exhibition_id,
-              photosForm,
-            );
+            const photoInfo = photoInfos.get(i);
+            if (photoInfo) {
+              await ExhibitPhotoService.createExhibitPhoto(exhibition_id, {
+                board_id,
+                photoInfo,
+                exhibition_no: exhibition_no,
+                exhibitPhoto: uploadPhotos[i],
+              });
+            }
           } catch (err) {
             console.error(err);
             throw err;
           }
         }
-        togglePopUp();
-        fetch();
+        onCreate();
       } catch (err) {
         alert('사진 생성 실패');
         setBtnDisabled(false);
@@ -245,9 +230,9 @@ function CreateExhibitPhoto({
       setImgIdx={setImgIdx}
       removeImg={removeImg}
       checkForm={submit}
-      togglePopUp={togglePopUp}
+      onCancel={onCancel}
       imgIdx={imgIdx}
-      photoInfos={photoInfos.toJS() as CrtExhibitPhotoType[]}
+      photoInfos={photoInfos.toJS() as ExhibitPhotoInfo[]}
       searchUsers={searchUsers}
       btnDisabled={btnDisabled}
     />

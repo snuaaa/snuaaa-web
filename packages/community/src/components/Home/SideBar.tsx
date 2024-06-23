@@ -1,4 +1,3 @@
-import React from 'react';
 import icon_weather from 'assets/img/common/icon_weather.png';
 import icon_stella from 'assets/img/common/icon_stella.png';
 import icon_apod from 'assets/img/common/icon_apod.png';
@@ -6,7 +5,7 @@ import icon_apod from 'assets/img/common/icon_apod.png';
 function SideBar() {
   return (
     <div className="side-right">
-      <div className="side-bar-wrapper">
+      <div className="side-bar-wrapper flex flex-col gap-0.5">
         <a
           href="https://www.kma.go.kr"
           target="_blank"
@@ -30,7 +29,7 @@ function SideBar() {
         </a>
         <a href="#aaa-top" className="btn-top-up-link">
           <div className="btn-top-up">
-            <i className="ri-arrow-up-s-line enif-pointer"></i>
+            <i className="ri-arrow-up-s-line cursor-pointer"></i>
             TOP
           </div>
         </a>

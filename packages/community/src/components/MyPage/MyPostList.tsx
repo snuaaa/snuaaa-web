@@ -1,9 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { convertDate } from '../../utils/convertDate';
-import ContentType from '../../types/ContentType';
+import { Content } from 'services/types';
 
-const MyPostList = ({ posts }: { posts: ContentType[] }) => {
+const MyPostList = ({ posts }: { posts: Content[] }) => {
   const makePostList = () => {
     if (posts && posts.length > 0) {
       return posts.map((post) => {

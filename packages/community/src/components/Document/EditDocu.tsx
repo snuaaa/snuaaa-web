@@ -1,11 +1,10 @@
 import React, { ChangeEvent } from 'react';
-import ContentType from '../../types/ContentType';
 import FileIcon from '../Common/FileIcon';
-import FileType from '../../types/FileType';
 import AttachFile from '../Post/AttachFile';
+import { Content, File as FileContent } from 'services/types';
 
 type EditDocuProps = {
-  editingDocData: ContentType;
+  editingDocData: Content;
   // isBtnDisabled: boolean;
   handleEditting: (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -39,7 +38,7 @@ function EditDocu({
     ) {
       return (
         <div className="file-download-wrapper">
-          {editingDocData.attachedFiles.map((file: FileType) => {
+          {editingDocData.attachedFiles.map((file: FileContent) => {
             const isDeleted = removedFiles.includes(file.file_id);
             return (
               <div key={file.file_id}>
@@ -72,7 +71,7 @@ function EditDocu({
   return (
     <div className="writepost-wrapper">
       <div className="writepost-header">
-        <i className="ri-arrow-left-line enif-pointer" onClick={cancel}></i>
+        <i className="ri-arrow-left-line cursor-pointer" onClick={cancel}></i>
         <h5>글수정</h5>
       </div>
       <div className="writepost-title">

@@ -1,9 +1,10 @@
-import React, { ChangeEvent } from 'react';
+import { ChangeEvent } from 'react';
 import CreatePhotoInfo from '../../components/Photo/CreatePhotoInfo';
 import ThumbnailList from '../../components/Album/ThumbnailList';
 import PreviewImage from '../../components/Album/PreviewImage';
-import TagType from '../../types/TagType';
-import CrtPhotoType from '../../types/CrtPhotoType';
+
+import { Tag } from 'services/types';
+import { CreatePhotoRequest } from 'services/PhotoService';
 
 type CreatePhotoComponentProps = {
   handleChange: (
@@ -11,15 +12,15 @@ type CreatePhotoComponentProps = {
   ) => void;
   handleDate: (date: Date) => void;
   uploadFile: (e: ChangeEvent<HTMLInputElement>) => void;
-  tags?: TagType[];
+  tags?: Tag[];
   clickTag: (e: ChangeEvent<HTMLInputElement>) => void;
   imgUrls: string[];
   setImgIdx: (index: number) => void;
   removeImg: (index: number) => void;
   checkForm: () => void;
-  togglePopUp: () => void;
+  onCancel: () => void;
   imgIdx: number;
-  photoInfo?: CrtPhotoType;
+  photoInfo?: CreatePhotoRequest;
   // btnDisabled: boolean;
   isUploading: boolean;
 };
@@ -34,14 +35,14 @@ function CreatePhotoComponent({
   removeImg,
   checkForm,
   tags,
-  togglePopUp,
+  onCancel,
   imgIdx,
   photoInfo,
   isUploading,
 }: CreatePhotoComponentProps) {
   const makeTagList = () => {
     if (photoInfo && tags) {
-      return tags.map((tag: TagType) => {
+      return tags.map((tag: Tag) => {
         const labelClassName =
           tag.tag_type === 'M' ? 'tag-label-1' : 'tag-label-2';
         return (
@@ -116,7 +117,7 @@ function CreatePhotoComponent({
                 )}
               </div>
               <div className="crt-photo-btn-wrapper">
-                <button className="btn-cancel" onClick={togglePopUp}>
+                <button className="btn-cancel" onClick={onCancel}>
                   취소
                 </button>
                 <button

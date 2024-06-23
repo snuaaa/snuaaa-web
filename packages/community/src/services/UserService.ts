@@ -1,35 +1,51 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { AaaService } from './index';
-import UserType from '../types/UserType';
-import { AxiosPromise } from 'axios';
+import { API } from './index';
+
 import { UsersSearchType } from '../types/SearchTypes';
-import ContentType from '../types/ContentType';
-import CommentType from '../types/CommentType';
-import PhotoType from '../types/PhotoType';
+
+import { Comment, Content, Photo, User } from './types';
+
+export interface UpdateUserInfoRequest {
+  username: string;
+  aaa_no: string;
+  profileImg?: File;
+}
+export interface UpdatePasswordRequest {
+  password: string;
+  newPassword: string;
+  newPasswordCf: string;
+}
+export interface FindIdRequest {
+  name: string;
+  email: string;
+}
+
+export interface FindPasswordRequest {
+  id: string;
+  name: string;
+  email: string;
+}
 
 const UserService = {
-  retrieveUserInfo: function (user_uuid?: string): AxiosPromise<{
-    userInfo: UserType;
-  }> {
-    if (user_uuid) {
-      return AaaService.get(`userinfo/${user_uuid}`);
-    } else {
-      return AaaService.get('userinfo');
-    }
+  retrieveUserInfo: function (user_uuid?: string) {
+    const url = user_uuid ? `userinfo/${user_uuid}` : 'userinfo';
+    return API.get<{
+      userInfo: User;
+    }>(url);
   },
 
-  updateUserInfo: function (data: any) {
-    return AaaService.patch('userinfo', data);
+  updateUserInfo: function (data: UpdateUserInfoRequest) {
+    const formData = new FormData();
+    Object.entries(data).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+    return API.patch('userinfo', data);
   },
 
   deleteUserInfo: function () {
-    return AaaService.delete('userinfo');
+    return API.delete('userinfo');
   },
 
-  retrieveUsers: function (sortOption?: UsersSearchType): AxiosPromise<{
-    userInfo: UserType[];
-    count: number;
-  }> {
+  retrieveUsers: function (sortOption?: UsersSearchType) {
     let query = '';
     if (sortOption) {
       // query += '/sort?'
@@ -41,119 +57,63 @@ const UserService = {
       query.substring(query.length - 1);
     }
 
-    return AaaService.get(`userinfo/all${query}`);
+    return API.get<{
+      userInfo: User[];
+      count: number;
+    }>(`userinfo/all${query}`);
   },
 
-  retrieveUserPosts: function (user_uuid?: string): AxiosPromise<{
-    postList: ContentType[];
-  }> {
+  retrieveUserPosts: function (user_uuid?: string) {
     if (user_uuid) {
-      return AaaService.get(`userinfo/${user_uuid}/posts`);
+      return API.get<{
+        postList: Content[];
+      }>(`userinfo/${user_uuid}/posts`);
     } else {
-      return AaaService.get('userinfo/posts');
+      return API.get<{
+        postList: Content[];
+      }>('userinfo/posts');
     }
   },
 
-  retrieveUserPhotos: function (user_uuid?: string): AxiosPromise<{
-    photoList: PhotoType[];
-  }> {
+  retrieveUserPhotos: function (user_uuid?: string) {
     if (user_uuid) {
-      return AaaService.get(`userinfo/${user_uuid}/photos`);
+      return API.get<{
+        photoList: Photo[];
+      }>(`userinfo/${user_uuid}/photos`);
     } else {
-      return AaaService.get('userinfo/photos');
+      return API.get<{
+        photoList: Photo[];
+      }>('userinfo/photos');
     }
   },
 
-  retrieveUserComments: function (user_uuid?: string): AxiosPromise<{
-    commentList: CommentType[];
-  }> {
+  retrieveUserComments: function (user_uuid?: string) {
     if (user_uuid) {
-      return AaaService.get(`userinfo/${user_uuid}/comments`);
+      return API.get<{
+        commentList: Comment[];
+      }>(`userinfo/${user_uuid}/comments`);
     } else {
-      return AaaService.get('userinfo/comments');
+      return API.get<{
+        commentList: Comment[];
+      }>('userinfo/comments');
     }
   },
 
-  updatePassword: function (data: any) {
-    return AaaService.patch('userinfo/password', data);
+  updatePassword: function (data: UpdatePasswordRequest) {
+    return API.patch('userinfo/password', data);
   },
 
-  findId: function (data: any) {
-    return AaaService.post('userinfo/find/id', data);
+  findId: function (data: FindIdRequest) {
+    return API.post('userinfo/find/id', data);
   },
 
-  findPw: function (data: any) {
-    return AaaService.post('userinfo/find/pw', data);
+  findPassword: function (data: FindPasswordRequest) {
+    return API.post('userinfo/find/pw', data);
   },
 
   searchMini: function (name: string) {
-    return AaaService.get(`userinfo/search/mini?name=${name}`);
+    return API.get<{ userList: User[] }>(`userinfo/search/mini?name=${name}`);
   },
 };
-
-// class UserService extends AaaService<UserType> {
-
-//     retrieveUserInfo(user_uuid: string): AxiosPromise<UserType> {
-//         if (user_uuid) {
-//             return this.get(`userinfo/${user_uuid}`)
-//         }
-//         else {
-//             return this.get(`userinfo`);
-//         }
-//     }
-
-//     updateUserInfo(data: UserType) {
-//         return this.patch('userinfo', data);
-//     }
-
-//     deleteUserInfo() {
-//         return this.delete('userinfo');
-//     }
-
-//     retrieveUserPosts(user_uuid: string) {
-//         if (user_uuid) {
-//             return this.get(`userinfo/${user_uuid}/posts`);
-//         }
-//         else {
-//             return this.get('userinfo/posts');
-//         }
-//     }
-
-//     retrieveUserPhotos(user_uuid: string) {
-//         if (user_uuid) {
-//             return this.get(`userinfo/${user_uuid}/photos`);
-//         }
-//         else {
-//             return this.get('userinfo/photos');
-//         }
-//     }
-
-//     retrieveUserComments(user_uuid: string) {
-//         if (user_uuid) {
-//             return this.get(`userinfo/${user_uuid}/comments`);
-//         }
-//         else {
-//             return this.get(`userinfo/comments`);
-//         }
-//     }
-
-//     updatePassword(data: any) {
-//         return this.patch(`userinfo/password`, data)
-//     }
-
-//     findId(data: any) {
-//         return this.post(`userinfo/find/id`, data)
-//     }
-
-//     findPw(data: any) {
-//         return this.post(`userinfo/find/pw`, data)
-//     }
-
-//     searchMini(name: string) {
-//         if (name) {
-//             return this.get(`userinfo/search/mini?name=${name}`)
-//         }
-//     }
-// }
 
 export default UserService;

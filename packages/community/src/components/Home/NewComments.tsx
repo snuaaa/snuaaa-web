@@ -1,12 +1,13 @@
 import React from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { convertDate } from '../../utils/convertDate';
-import CommentType from '../../types/CommentType';
+
+import { Comment } from 'services/types';
 import { LocationDescriptorObject } from 'history';
 import ContentTypeEnum from '../../common/ContentTypeEnum';
 
 type NewCommentsProps = {
-  comments: CommentType[];
+  comments: Comment[];
 };
 
 function NewComments({ comments }: NewCommentsProps) {
@@ -61,9 +62,11 @@ function NewComments({ comments }: NewCommentsProps) {
   };
 
   return (
-    <div className="new-comments-wrapper">
+    <div className="w-full md:w-1/2 p-2 md:p-[5px]">
       <Link to={'/comments/all'}>
-        <h4>New Comments</h4>
+        <h4 className="text-xl font-bold text-[#7193C4] py-2 px-1">
+          New Comments
+        </h4>
       </Link>
       {makeCommentList()}
     </div>

@@ -1,8 +1,8 @@
-import React, { useEffect, useContext } from 'react';
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Image from '../../components/Common/AaaImage';
 import imgProfile from '../../assets/img/common/profile.png';
-import AuthContext from '../../contexts/AuthContext';
+import { useAuth } from 'contexts/auth';
 
 type PopupUserProps = {
   profile_path: string;
@@ -11,7 +11,7 @@ type PopupUserProps = {
 };
 
 function PopupUser({ profile_path, togglePopup, logout }: PopupUserProps) {
-  const authContext = useContext(AuthContext);
+  const authContext = useAuth();
 
   useEffect(() => {
     // window.addEventListener('click', togglePopup);

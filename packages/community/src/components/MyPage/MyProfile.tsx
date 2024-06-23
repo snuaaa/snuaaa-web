@@ -3,12 +3,13 @@ import { Link } from 'react-router-dom';
 import AaaImage from '../Common/AaaImage';
 import imgDefaultProfile from 'assets/img/common/profile.png';
 import { breakLine } from '../../utils/breakLine';
-import UserType from '../../types/UserType';
+
 import { gradeAssigner } from '../../utils/gradeAssigner';
 import defaultProfile from 'assets/img/common/profile.png';
+import { User } from 'services/types';
 
 type MyProfileProps = {
-  userInfo: UserType;
+  userInfo: User;
   isCanEdit: boolean;
 };
 
@@ -140,7 +141,7 @@ function MyProfile({ userInfo, isCanEdit }: MyProfileProps) {
               </div>
               <div className="icon-expand">
                 <i
-                  className={`${iconClass} enif-pointer`}
+                  className={`${iconClass} cursor-pointer`}
                   onClick={() => setIsExpand(!isExpand)}
                 ></i>
               </div>
@@ -149,7 +150,7 @@ function MyProfile({ userInfo, isCanEdit }: MyProfileProps) {
         </div>
         {/* <div className={descClass}>{breakLine(userInfo.introduction)}</div>
                 <div className="icon-expand">
-                    <i className={`${iconClass} enif-pointer`} onClick={() => setIsExpand(!isExpand)}></i>
+                    <i className={`${iconClass} cursor-pointer`} onClick={() => setIsExpand(!isExpand)}></i>
                 </div> */}
       </div>
     </div>

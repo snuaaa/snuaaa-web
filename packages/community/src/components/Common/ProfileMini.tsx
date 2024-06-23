@@ -3,9 +3,9 @@ import Image from './AaaImage';
 import defaultProfile from 'assets/img/common/profile.png';
 import { breakLine } from '../../utils/breakLine';
 import UserActionDrawer from './UserActionDrawer';
-import UserType from '../../types/UserType';
+import { User } from 'services/types';
 
-function ProfileMini({ userInfo }: { userInfo: UserType }) {
+function ProfileMini({ userInfo }: { userInfo: User }) {
   const [isExpand, setIsExpand] = useState(false);
 
   const descClass = isExpand ? 'userdesc expanded' : 'userdesc';
@@ -27,7 +27,7 @@ function ProfileMini({ userInfo }: { userInfo: UserType }) {
       <div className={descClass}>{breakLine(userInfo.introduction)}</div>
       <div className="icon-expand">
         <i
-          className={`${isExpand ? 'ri-arrow-up-s-line' : 'ri-arrow-down-s-line'} enif-f-1x enif-pointer`}
+          className={`${isExpand ? 'ri-arrow-up-s-line' : 'ri-arrow-down-s-line'} text-base cursor-pointer`}
           onClick={() => setIsExpand(!isExpand)}
         ></i>
       </div>

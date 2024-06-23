@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FocusEvent } from 'react';
+import { ChangeEvent, FocusEvent } from 'react';
 
 type InputFieldProps = {
   label: string;
@@ -31,24 +31,24 @@ const InputField = ({
   handleChange,
   handleBlur,
 }: InputFieldProps) => {
-  // this.inputRef = React.createRef();
-  let fieldClass;
-  if (valid === true) {
-    fieldClass = 'enif-input-field enif-input-valid';
-  } else if (valid === false) {
-    fieldClass = 'enif-input-field enif-input-invalid';
-  } else {
-    fieldClass = 'enif-input-field';
-  }
+  const fieldClass = `mx-auto mt-4 w-[400px] bg-white rounded-[20px] p-2 text-sm 
+  ${valid !== undefined ? 'border-2 border-solid' : ''}
+  ${valid === true ? 'border-blue-500' : valid === false ? 'border-red-500' : ''}`;
 
   return (
     <div className={fieldClass}>
-      <label htmlFor={name}>{label}</label>
+      <label
+        htmlFor={name}
+        className="inline-block w-2/5 text-sm font-bold m-1 text-gray-600"
+      >
+        {label}
+      </label>
       <input
         // ref={this.inputRef}
         type={type || 'text'}
         id={name}
         name={name}
+        className="h-8 inline-block w-11/20"
         onChange={(e) => {
           handleChange(e);
         }}
@@ -64,7 +64,9 @@ const InputField = ({
         maxLength={maxLength ? maxLength : 20}
         required={required}
       />
-      {valid === false && <p>{invalidMessage}</p>}
+      {valid === false && (
+        <p className="text-right text-xs text-red-500">{invalidMessage}</p>
+      )}
     </div>
   );
 };

@@ -1,12 +1,10 @@
-import React from 'react';
-import officers from './officers_tmp.json';
+import officers from './data/officers_tmp';
 
 function Officers() {
   //TODO : User who is admin can be edit data.
   //TODO : convert to database from json
-
   const generateOfficerList = () => {
-    const officerList = officers.map((gen) => {
+    const officerList = officers?.map((gen) => {
       return (
         <div className="gen-wrapper" key={gen.generation}>
           <div className="generation">{gen.generation}대</div>

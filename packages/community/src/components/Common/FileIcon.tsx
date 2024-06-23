@@ -1,8 +1,8 @@
 import React from 'react';
-import FileType from '../../types/FileType';
+import { File } from 'services/types';
 
 type FileIconProps = {
-  fileInfo: FileType;
+  fileInfo: File;
   isFull: boolean;
   isDownload: boolean;
   isDeleted?: boolean;

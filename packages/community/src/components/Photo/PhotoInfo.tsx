@@ -1,19 +1,18 @@
-import React from 'react';
 import ProfileMini from '../Common/ProfileMini';
-import ContentStateEnum from '../../common/ContentStateEnum';
 
 import { breakLine } from '../../utils/breakLine';
 import { convertDate, convertFullDate } from '../../utils/convertDate';
 import ActionDrawer from '../Common/ActionDrawer';
 import 'react-datepicker/dist/react-datepicker.css';
-import PhotoType from '../../types/PhotoType';
-import ExhibitPhotoType from '../../types/ExhibitPhotoType';
+
+import { ExhibitPhoto, Photo } from 'services/types';
+import { Divider } from 'ui';
 
 type PhotoInfoProps = {
-  photoInfo: PhotoType | ExhibitPhotoType;
+  photoInfo: Photo | ExhibitPhoto;
   likeInfo: boolean;
   my_id: number;
-  setPhotoState: (state: number) => void;
+  onClickEdit: () => void;
   deletePhoto: () => void;
   likePhoto: () => void;
   setAlbumThumbnail: () => void;
@@ -23,18 +22,13 @@ const PhotoInfo = ({
   photoInfo,
   likeInfo,
   my_id,
-  setPhotoState,
+  onClickEdit,
   deletePhoto,
   likePhoto,
   setAlbumThumbnail,
 }: PhotoInfoProps) => {
   const content = photoInfo;
-  let photo;
-  if ((photoInfo as PhotoType).photo) {
-    photo = (photoInfo as PhotoType).photo;
-  } else if ((photoInfo as ExhibitPhotoType).exhibitPhoto) {
-    photo = (photoInfo as ExhibitPhotoType).exhibitPhoto;
-  }
+  const photo = 'photo' in photoInfo ? photoInfo.photo : photoInfo.exhibitPhoto;
   const userInfo = photoInfo && photoInfo.user;
   const tagInfo = photoInfo && photoInfo.tags;
 
@@ -58,7 +52,7 @@ const PhotoInfo = ({
           <div className="photo-contents-wrapper">
             {userInfo && my_id === userInfo.user_id && (
               <ActionDrawer
-                clickEdit={() => setPhotoState(ContentStateEnum.EDITTING)}
+                clickEdit={onClickEdit}
                 clickDelete={deletePhoto}
                 isPhoto={true}
                 clickSetThumbnail={setAlbumThumbnail}
@@ -76,7 +70,7 @@ const PhotoInfo = ({
               <div className="info-text-infos-wrapper">
                 {content.text && (
                   <>
-                    <div className="enif-divider"></div>
+                    <Divider />
                     <div className="info-text-wrapper">
                       <p>{breakLine(content.text)}</p>
                     </div>
@@ -93,7 +87,7 @@ const PhotoInfo = ({
                     photo.exposure_time ||
                     photo.iso) && (
                     <>
-                      <div className="enif-divider"></div>
+                      <Divider />
                       <div className="info-infos-wrapper">
                         {photo.date && (
                           <div className="photo-info-unit">
@@ -146,9 +140,9 @@ const PhotoInfo = ({
                   )}
               </div>
             </div>
-            <div className="enif-divider"></div>
+            <Divider />
             <ProfileMini userInfo={userInfo} />
-            <div className="enif-divider"></div>
+            <Divider />
           </div>
           <div className="actions-wrapper">
             <div className="nums-wrapper">
@@ -158,13 +152,13 @@ const PhotoInfo = ({
               </div>
               <div className="like-num-wrapper">
                 <i
-                  className={`${likeInfo ? 'ri-heart-fill' : 'ri-heart-line'} enif-f-1p5x enif-pointer`}
+                  className={`${likeInfo ? 'ri-heart-fill' : 'ri-heart-line'} text-2xl cursor-pointer`}
                   onClick={() => likePhoto()}
                 ></i>
                 {content.like_num}
               </div>
               <div className="comment-num-wrapper">
-                <i className="ri-message-2-fill enif-f-1p5x"></i>
+                <i className="ri-message-2-fill text-2xl"></i>
                 {content.comment_num}
               </div>
             </div>

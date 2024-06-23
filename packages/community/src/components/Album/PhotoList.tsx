@@ -2,11 +2,12 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Image from '../../components/Common/AaaImage';
 import history from '../../common/history';
-import PhotoType from '../../types/PhotoType';
+
 import SpinningLoader from '../Common/SpinningLoader';
+import { Photo } from 'services/types';
 
 type PhotoListProps = {
-  photos: PhotoType[];
+  photos: Photo[];
 };
 
 const LIMIT_UNIT = 12;
@@ -47,7 +48,7 @@ function PhotoList({ photos }: PhotoListProps) {
     setLimit((prevLimit) => prevLimit + LIMIT_UNIT);
   };
 
-  const makePhotoList = (photos: PhotoType[]) => {
+  const makePhotoList = (photos: Photo[]) => {
     if (photos.length > 0) {
       return photos.map((content, index) => {
         const contentInfo = content;

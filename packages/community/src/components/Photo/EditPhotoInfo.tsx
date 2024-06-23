@@ -1,16 +1,15 @@
-import React, { ChangeEvent } from 'react';
-import ContentStateEnum from '../../common/ContentStateEnum';
+import { ChangeEvent } from 'react';
+import { Record } from 'immutable';
 
 import ReactDatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import TagType from '../../types/TagType';
 import { Prompt } from 'react-router';
-import PhotoType from '../../types/PhotoType';
+import { Photo, Tag } from 'services/types';
 
 type PhotoInfoProps = {
-  photoInfo: PhotoType;
-  boardTagInfo: TagType[];
-  setPhotoState: (state: number) => void;
+  photoInfo: Record<Photo>;
+  boardTagInfo: Tag[];
+  onCancel: () => void;
   updatePhoto: () => void;
   handleChange: (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -22,15 +21,15 @@ type PhotoInfoProps = {
 const EditPhotoInfo = ({
   photoInfo,
   boardTagInfo,
-  setPhotoState,
+  onCancel,
   updatePhoto,
   handleChange,
   handleDate,
   handleTag,
 }: PhotoInfoProps) => {
   const content = photoInfo;
-  const photo = photoInfo && photoInfo.photo;
-  const tagInfo = photoInfo && photoInfo.tags;
+  const photo = photoInfo && photoInfo.get('photo');
+  const tagInfo = photoInfo && photoInfo.get('tags');
 
   const makeEditTagList = () => {
     if (boardTagInfo && boardTagInfo.length > 0) {
@@ -79,14 +78,14 @@ const EditPhotoInfo = ({
               name="title"
               placeholder="제목"
               onChange={handleChange}
-              value={content.title}
+              value={content.get('title')}
             />
             <textarea
               className="input-desc"
               placeholder="설명"
               name="text"
               onChange={handleChange}
-              value={content.text}
+              value={content.get('text')}
             />
 
             <div className="photo-infos">
@@ -105,7 +104,7 @@ const EditPhotoInfo = ({
                   <label>Location</label>
                 </div>
                 <input
-                  className="enif-wid-half"
+                  className="w-1/2"
                   type="text"
                   name="location"
                   onChange={(e) => handleChange(e)}
@@ -117,7 +116,7 @@ const EditPhotoInfo = ({
                   <label>Camera</label>
                 </div>
                 <input
-                  className="enif-wid-half"
+                  className="w-1/2"
                   type="text"
                   name="camera"
                   onChange={(e) => handleChange(e)}
@@ -135,12 +134,12 @@ const EditPhotoInfo = ({
                     onChange={(e) => handleChange(e)}
                     value={photo.lens}
                   ></input>
-                  <div className="enif-flex-horizontal">
+                  <div className="flex flex-row items-center">
                     <div>
                       <label>@</label>
                     </div>
                     <input
-                      className="enif-wid-half"
+                      className="w-1/2"
                       type="text"
                       name="focal_length"
                       onChange={(e) => handleChange(e)}
@@ -156,7 +155,7 @@ const EditPhotoInfo = ({
                   <div>
                     <label>F/</label>
                     <input
-                      className="enif-wid-quater"
+                      className="w-1/4"
                       type="text"
                       name="f_stop"
                       onChange={(e) => handleChange(e)}
@@ -166,7 +165,7 @@ const EditPhotoInfo = ({
                   <div>
                     <label>time</label>
                     <input
-                      className="enif-wid-quater"
+                      className="w-1/4"
                       type="text"
                       name="exposure_time"
                       onChange={(e) => handleChange(e)}
@@ -176,7 +175,7 @@ const EditPhotoInfo = ({
                   <div>
                     <label>ISO</label>
                     <input
-                      className="enif-wid-quater"
+                      className="w-1/4"
                       type="text"
                       name="iso"
                       onChange={(e) => handleChange(e)}
@@ -188,10 +187,7 @@ const EditPhotoInfo = ({
             </div>
           </div>
           <div className="crt-photo-btn-wrapper">
-            <button
-              className="btn-cancel"
-              onClick={() => setPhotoState(ContentStateEnum.READY)}
-            >
+            <button className="btn-cancel" onClick={onCancel}>
               취소
             </button>
             <button className="btn-ok" onClick={updatePhoto}>

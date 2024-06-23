@@ -1,17 +1,17 @@
 import React, { useState, ChangeEvent } from 'react';
-import DocuService from '../../services/DocuService';
-import CrtDocuType from '../../types/CrtDocuType';
+import DocuService, { CreateDocuRequest } from '../../services/DocuService';
 import CreateDocuComponent from '../../components/Document/CreateDocuComponent';
-import BoardType from '../../types/BoardType';
+
 import ContentService from '../../services/ContentService';
 import useBlockBackgroundScroll from '../../hooks/useBlockBackgroundScroll';
+import { Board } from 'services/types';
 
 const MAX_SIZE = 20 * 1024 * 1024;
 
 type CreateDocuProps = {
   fetch: () => void;
-  boardInfo: BoardType;
-  close: () => void;
+  boardInfo: Board;
+  onClose: () => void;
 };
 
 function CreateDocu(props: CreateDocuProps) {
@@ -20,7 +20,7 @@ function CreateDocu(props: CreateDocuProps) {
   if (today.getMonth() > 5) currentGen++;
   let currentSize = 0;
 
-  const [docuInfo, setDocuInfo] = useState<CrtDocuType>({
+  const [docuInfo, setDocuInfo] = useState<CreateDocuRequest>({
     category_id: '',
     generation: currentGen,
     text: '',
@@ -94,11 +94,6 @@ function CreateDocu(props: CreateDocuProps) {
     } else if (attachedFiles.length === 0) {
       alert('파일을 첨부해주세요');
     } else {
-      // const formData = new FormData();
-      // formData.append('generation', docuInfo.generation.toString());
-      // formData.append('category_id', docuInfo.category_id);
-      // formData.append('title', docuInfo.title);
-      // formData.append('text', docuInfo.title);
       setIsUploading(true);
       try {
         const res = await DocuService.createDocument(
@@ -119,6 +114,7 @@ function CreateDocu(props: CreateDocuProps) {
         }
         setIsUploading(false);
         fetch();
+        props.onClose();
       } catch (err) {
         console.error(err);
       }
@@ -137,7 +133,7 @@ function CreateDocu(props: CreateDocuProps) {
       attachFile={attachFile}
       removeAttachedFile={removeAttachedFile}
       confirm={createDocu}
-      close={props.close}
+      close={props.onClose}
     />
   );
 }

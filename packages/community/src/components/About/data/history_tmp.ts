@@ -1,0 +1,581 @@
+const tmpHistory = [
+  {
+    year: 2021,
+    occasion: [
+      {
+        date: '12월 01일 ~ 12월 14일',
+        desc: '39회 천체 사진전 : For the STARved',
+      },
+      {
+        date: '09월 25일',
+        desc: 'Home Coming Day',
+      },
+    ],
+  },
+  {
+    year: 2020,
+    occasion: [
+      {
+        date: '11월 23일 ~ 11월 26일',
+        desc: '38회 천체 사진전 : 몸은 멀리, 별은 가까이',
+      },
+      {
+        date: '11월 21일',
+        desc: 'Home Coming Day',
+      },
+    ],
+  },
+  {
+    year: 2019,
+    occasion: [
+      {
+        date: '11월 05일 ~ 11월 09일',
+        desc: '37회 천체 사진전 : One Giant Leap For Mankind',
+      },
+      {
+        date: '09월 21일',
+        desc: 'Home Coming Day',
+      },
+      {
+        date: '08월 13일',
+        desc: '동아리 홈페이지 리뉴얼',
+      },
+    ],
+  },
+  {
+    year: 2018,
+    occasion: [
+      {
+        date: '10월 29일 ~ 11월 02일',
+        desc: '36회 천체 사진전 : Time for the moon night',
+      },
+      {
+        date: '09월 15일',
+        desc: 'Home Coming Day',
+      },
+    ],
+  },
+  {
+    year: 2017,
+    occasion: [
+      {
+        date: '10월 29일 ~ 11월 01일',
+        desc: '35회 천체 사진전 : 별은 어디에나 있다',
+      },
+      {
+        date: '09월 16일',
+        desc: 'Home Coming Day',
+      },
+    ],
+  },
+  {
+    year: 2016,
+    occasion: [
+      {
+        date: '10월 29일 ~ 11월 02일',
+        desc: '34회 천체 사진전 : 당신이 잠든 사이',
+      },
+      {
+        date: '09월 24일',
+        desc: 'Home Coming Day',
+      },
+    ],
+  },
+  {
+    year: 2015,
+    occasion: [
+      {
+        date: '11월 06일 ~ 09일',
+        desc: '33회 천체 사진전 : Instargram',
+      },
+      {
+        date: '09월 19일',
+        desc: 'Home Coming Day',
+      },
+    ],
+  },
+  {
+    year: 2014,
+    occasion: [
+      {
+        date: '10월 27일 ~ 10월 29일',
+        desc: '32회 천체 사진전 : 별 정상회담',
+      },
+      {
+        date: '09월 20일',
+        desc: 'Home Coming Day',
+      },
+    ],
+  },
+  {
+    year: 2013,
+    occasion: [
+      {
+        date: '11월 28일 ~ 11월 30일',
+        desc: '31회 천체 사진전 및 공개관측회 : 사랑은 은하수 다방에서',
+      },
+      {
+        date: '09월 14일',
+        desc: 'Home Coming Day',
+      },
+    ],
+  },
+  {
+    year: 2012,
+    occasion: [
+      {
+        date: '10월 31일 ~ 11월 02일',
+        desc: '30회 천체 사진전 및 공개관측회 : 별의 힘으로',
+      },
+      {
+        date: '09월 15일',
+        desc: 'Home Coming Day',
+      },
+    ],
+  },
+  {
+    year: 2011,
+    occasion: [
+      {
+        date: '11월 02일 ~ 05일',
+        desc: '29회 천체 사진전 및 공개관측회 : 슈퍼스타 A3',
+      },
+      {
+        date: '09월 17일',
+        desc: 'Home Coming Day',
+      },
+    ],
+  },
+  {
+    year: 2010,
+    occasion: [
+      {
+        date: '11월 03일 ~ 06일',
+        desc: '28회 천체 사진전 및 공개관측회 : 별빛속으로',
+      },
+      {
+        date: '09월 18일',
+        desc: 'Home Coming Day',
+      },
+      {
+        date: '05월 15일',
+        desc: 'AAA 30주년 기념 행사',
+      },
+      {
+        date: '02월 23일',
+        desc: '지금의 동아리방으로 이전',
+      },
+    ],
+  },
+  {
+    year: 2009,
+    occasion: [
+      {
+        date: '10월 28일 ~ 31일',
+        desc: '27회 천체 사진전 및 공개관측회 : 별무리에 빠지다',
+      },
+      {
+        date: '09월 19일',
+        desc: 'Home Coming Day',
+      },
+    ],
+  },
+  {
+    year: 2008,
+    occasion: [
+      {
+        date: '11월 03일 ~ 07일',
+        desc: '26회 천체 사진전 및 공개관측회 : 별, 아무나 본다!',
+      },
+      {
+        date: '09월 20일',
+        desc: 'Home Coming Day',
+      },
+    ],
+  },
+  {
+    year: 2007,
+    occasion: [
+      {
+        date: '11월 03일',
+        desc: 'Home Coming Day',
+      },
+      {
+        date: '10월 17일 ~ 20일',
+        desc: '25회 천체 사진전 : 스타프린스 25호점',
+      },
+    ],
+  },
+  {
+    year: 2006,
+    occasion: [
+      {
+        date: '10월 18일 ~ 21일',
+        desc: '24회 천체 사진전 : 지구로 이사온 별나라 친구들',
+      },
+      {
+        date: '09월 23일',
+        desc: 'Home Visiting Day',
+      },
+    ],
+  },
+  {
+    year: 2005,
+    occasion: [
+      {
+        date: '11월 02일 ~ 05일',
+        desc: '23회 천체 사진전 : 별난 아이들의 따스한 놀이터',
+      },
+      {
+        date: '10월 02일',
+        desc: 'Home Coming Day',
+      },
+      {
+        date: '06월 21일',
+        desc: '대학신문사 건물의 동아리방으로 이전',
+      },
+      {
+        date: '03월 21일',
+        desc: '디딤돌 8차 개정판 발간',
+      },
+      {
+        date: '02월 28일',
+        desc: '두레문화관으로 동아리방 임시 이전',
+      },
+    ],
+  },
+  {
+    year: 2004,
+    occasion: [
+      {
+        date: '10월 27일 ~ 30일',
+        desc: '22회 천체 사진전 : 네모로 들어온 22번째 천사',
+      },
+      {
+        date: '10월 03일',
+        desc: 'Home Coming Day',
+      },
+      {
+        date: '09월 18일',
+        desc: '김태영 기념 관측소 개관식',
+      },
+    ],
+  },
+  {
+    year: 2003,
+    occasion: [
+      {
+        date: '10월 29일 ~ 11월 01일',
+        desc: '21회 천체 사진전 : The Return of the Mars',
+      },
+      {
+        date: '09월 21일',
+        desc: 'Home Coming Day',
+      },
+    ],
+  },
+  {
+    year: 2002,
+    occasion: [
+      {
+        date: '10월 23일 ~ 26일',
+        desc: '20회 천체 사진전 : 스무살의 천체사진전 Through The Lens',
+      },
+      {
+        date: '09월 29일',
+        desc: 'Home Coming Day',
+      },
+      {
+        date: '03월 21일',
+        desc: '디딤돌 7차 개정판 발간',
+      },
+    ],
+  },
+  {
+    year: 2001,
+    occasion: [
+      {
+        date: '11월 07일 ~ 10일',
+        desc: '19회 천체 사진전 : 별빛으로 그린 그림',
+      },
+      {
+        date: '10월 14일',
+        desc: 'Home Coming Day',
+      },
+      {
+        date: '03월 25일',
+        desc: '디딤돌 6차 개정판 발간',
+      },
+    ],
+  },
+  {
+    year: 2000,
+    occasion: [
+      {
+        date: '11월 04일',
+        desc: 'Home Visiting Day',
+      },
+      {
+        date: '11월 01일 ~ 04일',
+        desc: '18회 천체 사진전 : 울트라사진전을 아시나요',
+      },
+      {
+        date: '09월 16일',
+        desc: '제 1 관측소 재개관식, 김태영 선배님 추도식',
+      },
+    ],
+  },
+  {
+    year: 1999,
+    occasion: [
+      {
+        date: '11월 03일 ~ 05일',
+        desc: '17회 천체 사진전',
+      },
+    ],
+  },
+  {
+    year: 1998,
+    occasion: [
+      {
+        date: '11월 05일 ~ 08일',
+        desc: '16회 천체 사진전',
+      },
+      {
+        date: '09월 21일',
+        desc: 'Home Coming Day',
+      },
+    ],
+  },
+  {
+    year: 1997,
+    occasion: [
+      {
+        date: '11월 05일 ~ 08일',
+        desc: '15회 천체 사진전',
+      },
+      {
+        date: '09월 21일',
+        desc: 'Home Coming Day',
+      },
+      {
+        date: '03월 28일',
+        desc: '디딤돌 5차 개정판 발간',
+      },
+    ],
+  },
+  {
+    year: 1996,
+    occasion: [
+      {
+        date: '11월 11일 ~ 13일',
+        desc: '14회 천체 사진전',
+      },
+      {
+        date: '04월',
+        desc: '디딤돌 4차 개정판 발간',
+      },
+    ],
+  },
+  {
+    year: 1995,
+    occasion: [
+      {
+        date: '11월 12일',
+        desc: 'Home Coming Day',
+      },
+      {
+        date: '10월 16일 ~ 18일',
+        desc: '13회 천체 사진전',
+      },
+    ],
+  },
+  {
+    year: 1994,
+    occasion: [
+      {
+        date: '12월 04일',
+        desc: 'Home Visting Day',
+      },
+      {
+        date: '11월 06일 ~ 19일',
+        desc: '12회 천체 사진전',
+      },
+      {
+        date: '04월 01일',
+        desc: '디딤돌 3차 개정판 발간',
+      },
+    ],
+  },
+  {
+    year: 1993,
+    occasion: [
+      {
+        date: '11월 28일',
+        desc: 'Home Visting Day',
+      },
+      {
+        date: '11월 03일 ~ 05일',
+        desc: '11회 천체 사진전 및 공개 관측회',
+      },
+    ],
+  },
+  {
+    year: 1992,
+    occasion: [
+      {
+        date: '11월 04일',
+        desc: '10회 천체 사진전 및 공개 관측회',
+      },
+      {
+        date: '10월 18일',
+        desc: 'Home Visting Day',
+      },
+    ],
+  },
+  {
+    year: 1991,
+    occasion: [
+      {
+        date: '10월 23일 ~ 26일',
+        desc: '9회 천체 사진전 및 공개 관측회',
+      },
+    ],
+  },
+  {
+    year: 1990,
+    occasion: [
+      {
+        date: '11월 04일',
+        desc: 'Home Visting Day',
+      },
+      {
+        date: '10월 23일 ~ 26일',
+        desc: '8회 천체 사진전',
+      },
+      {
+        date: '08월',
+        desc: '디딤돌 2차 개정판 발간 및 Messier 목록 1차 개정판 발간',
+      },
+    ],
+  },
+  {
+    year: 1989,
+    occasion: [
+      {
+        date: '10월 25일 ~ 27일',
+        desc: '7회 천체 사진전 및 공개 관측회',
+      },
+      {
+        date: '05월 21일',
+        desc: 'Home Coming Day - 공대식당',
+      },
+    ],
+  },
+  {
+    year: 1988,
+    occasion: [
+      {
+        date: '10월 26일 ~ 28일',
+        desc: '6회 천체 사진 전시회',
+      },
+    ],
+  },
+  {
+    year: 1986,
+    occasion: [
+      {
+        date: '11월 13일 ~ 15일',
+        desc: '천체 사진전 및 공개 관측회',
+      },
+      {
+        date: '09월',
+        desc: '디딤돌 1차 개정판 발간',
+      },
+    ],
+  },
+  {
+    year: 1985,
+    occasion: [
+      {
+        date: '11월 13일 ~ 15일',
+        desc: '천체 사진전 및 공개 관측회',
+      },
+      {
+        date: '04월 25일',
+        desc: "'Messier 목록' 발간",
+      },
+      {
+        date: '02월 23일',
+        desc: "'디딤돌' 발간",
+      },
+      {
+        date: '01월 03일',
+        desc: "'별따라 꼴따라' 발간",
+      },
+    ],
+  },
+  {
+    year: 1984,
+    occasion: [
+      {
+        date: '10월 31일 ~ 11월 01일',
+        desc: '천체 사진전 및 공개 관측회',
+      },
+    ],
+  },
+  {
+    year: 1983,
+    occasion: [
+      {
+        date: '11월 03일',
+        desc: '제 1 관측소 완공 및 현판식',
+      },
+      {
+        date: '08월',
+        desc: '전국 대학생 아마추어 천문회 발족',
+      },
+      {
+        date: '04월 13일',
+        desc: '구 공대식당 지하 동아리 방으로 이전',
+      },
+    ],
+  },
+  {
+    year: 1982,
+    occasion: [
+      {
+        date: '10월 26일',
+        desc: '공개 관측회',
+      },
+      {
+        date: '05월 11일 ~ 12일',
+        desc: '천체 사진 전시회',
+      },
+      {
+        date: '03월',
+        desc: '대학생 아마추어 천문연맹 결성',
+      },
+    ],
+  },
+  {
+    year: 1981,
+    occasion: [
+      {
+        date: '01월',
+        desc: 'COSMOS 제 1호 발간',
+      },
+    ],
+  },
+  {
+    year: 1980,
+    occasion: [
+      {
+        date: '03월',
+        desc: '동아리 발기 공고 및 자연대 동아리로 등록',
+      },
+    ],
+  },
+];
+
+export default tmpHistory;

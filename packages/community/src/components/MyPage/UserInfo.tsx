@@ -7,10 +7,7 @@ import MyCommentList from './MyCommentList';
 import MyPageSelector from './MyPageSelector';
 import MyPageViewEnum from '../../common/MyPageViewEnum';
 import UserService from '../../services/UserService';
-import UserType from '../../types/UserType';
-import ContentType from '../../types/ContentType';
-import PhotoType from '../../types/PhotoType';
-import CommentType from '../../types/CommentType';
+import { Content, Comment, Photo, User } from 'services/types';
 
 type UserInfoProps = {
   user_uuid?: string;
@@ -18,10 +15,10 @@ type UserInfoProps = {
 };
 
 function UserInfo({ user_uuid, isMyinfo }: UserInfoProps) {
-  const [postList, setPostList] = useState<ContentType[]>([]);
-  const [photoList, setPhotoList] = useState<PhotoType[]>([]);
-  const [commentList, setCommentList] = useState<CommentType[]>([]);
-  const [userInfo, setUserInfo] = useState<UserType>();
+  const [postList, setPostList] = useState<Content[]>([]);
+  const [photoList, setPhotoList] = useState<Photo[]>([]);
+  const [commentList, setCommentList] = useState<Comment[]>([]);
+  const [userInfo, setUserInfo] = useState<User>();
   const [isShow, setIsShow] = useState<boolean>(false);
   const [userContentView, setUserContentView] = useState<number>(
     MyPageViewEnum.POST,
@@ -35,24 +32,24 @@ function UserInfo({ user_uuid, isMyinfo }: UserInfoProps) {
         UserService.retrieveUserInfo(user_uuid),
         UserService.retrieveUserPosts(user_uuid),
       ]).then((res) => {
-        setUserInfo(res[0].data.userInfo);
-        setPostList(res[1].data.postList);
+        setUserInfo(res[0].userInfo);
+        setPostList(res[1].postList);
         setIsShow(true);
       });
     } else {
       if (userContentView === MyPageViewEnum.POST) {
         await UserService.retrieveUserPosts(user_uuid).then((res) => {
-          setPostList(res.data.postList);
+          setPostList(res.postList);
           setIsShow(true);
         });
       } else if (userContentView === MyPageViewEnum.PHOTO) {
         await UserService.retrieveUserPhotos(user_uuid).then((res) => {
-          setPhotoList(res.data.photoList);
+          setPhotoList(res.photoList);
           setIsShow(true);
         });
       } else if (userContentView === MyPageViewEnum.COMMENT) {
         await UserService.retrieveUserComments(user_uuid).then((res) => {
-          setCommentList(res.data.commentList);
+          setCommentList(res.commentList);
           setIsShow(true);
         });
       } else {

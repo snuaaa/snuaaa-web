@@ -2,9 +2,9 @@ import { useEffect } from 'react';
 
 function useBlockBackgroundScroll() {
   useEffect(() => {
-    document.body.classList.add('enif-overflow-hidden');
+    document.body.classList.add('overflow-hidden');
     return function () {
-      document.body.classList.remove('enif-overflow-hidden');
+      document.body.classList.remove('overflow-hidden');
     };
   }, []);
 }

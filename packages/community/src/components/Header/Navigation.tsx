@@ -1,9 +1,9 @@
 import React from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import BoardType from '../../types/BoardType';
+import { Board } from 'services/types';
 
 type NavigationProps = {
-  boards: BoardType[];
+  boards: Board[];
 };
 
 function Navigation({ boards }: NavigationProps) {
@@ -12,10 +12,10 @@ function Navigation({ boards }: NavigationProps) {
     color: '#fad55f',
   };
 
-  const noticeBoards: BoardType[] = [];
-  const communityBoards: BoardType[] = [];
-  const officialBoards: BoardType[] = [];
-  const photoBoards: BoardType[] = [];
+  const noticeBoards: Board[] = [];
+  const communityBoards: Board[] = [];
+  const officialBoards: Board[] = [];
+  const photoBoards: Board[] = [];
 
   if (boards && boards.length > 0) {
     boards.forEach((board) => {
@@ -31,7 +31,7 @@ function Navigation({ boards }: NavigationProps) {
     });
   }
 
-  function makeBoardList(boards: BoardType[]) {
+  function makeBoardList(boards: Board[]) {
     const boardList = boards.map((board) => {
       return (
         <Link to={`/board/${board.board_id}`} key={board.board_id}>

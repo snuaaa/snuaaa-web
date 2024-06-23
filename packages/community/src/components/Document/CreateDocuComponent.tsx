@@ -1,12 +1,13 @@
 import React, { ChangeEvent } from 'react';
-import CrtDocuType from '../../types/CrtDocuType';
 import AttachFile from '../Post/AttachFile';
-import BoardType from '../../types/BoardType';
+
 import ProgressBar from '../Common/ProgressBar';
+import { Board } from 'services/types';
+import { CreateDocuRequest } from 'services/DocuService';
 
 type CreateDocuComponentProps = {
-  docuInfo: CrtDocuType;
-  boardInfo: BoardType;
+  docuInfo: CreateDocuRequest;
+  boardInfo: Board;
   attachedFiles: File[];
   isUploading: boolean;
   progress: number;
@@ -26,7 +27,7 @@ function CreateDocuComponent(props: CreateDocuComponentProps) {
   //         return (
   //             <div className="file-list" key={index}>
   //                 <p>{file.name}</p>
-  //                 <i className="ri-close-circle-line ri-icons enif-pointer" onClick={() => props.removeAttachedFile(index)}></i>
+  //                 <i className="ri-close-circle-line ri-icons cursor-pointer" onClick={() => props.removeAttachedFile(index)}></i>
   //             </div>
   //         )
   //     });
@@ -61,6 +62,7 @@ function CreateDocuComponent(props: CreateDocuComponentProps) {
             <input
               type="number"
               name="generation"
+              className="border border-solid border-gray-300 rounded-md w-full h-10 px-3 py-2"
               onChange={props.handleChange}
               value={props.docuInfo.generation}
             />
@@ -77,7 +79,7 @@ function CreateDocuComponent(props: CreateDocuComponentProps) {
             </label>
             <input
               type="text"
-              className="docu-title"
+              className="docu-title border border-solid border-gray-300 rounded-md w-full h-10 px-3 py-2"
               id="crtDocTitle"
               name="title"
               placeholder="제목"
@@ -89,7 +91,7 @@ function CreateDocuComponent(props: CreateDocuComponentProps) {
               본문
             </label>
             <textarea
-              className="docu-desc"
+              className="docu-desc border border-solid border-gray-300 rounded-md w-full h-40 px-3 py-2"
               id="crtDocDesc"
               name="text"
               placeholder="본문"

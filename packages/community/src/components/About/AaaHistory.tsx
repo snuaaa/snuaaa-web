@@ -1,28 +1,8 @@
-import React, { useState, useEffect } from 'react';
-
-type AaaHistoryType = {
-  year: number;
-  occasion: {
-    date: string;
-    desc: string;
-  }[];
-}[];
+import aaaHistory from './data/history_tmp';
 
 function AaaHistory() {
   //TODO : User who is admin can be edit data.
   //TODO : convert to database from json
-
-  const [aaaHistory, setAaaHistory] = useState<AaaHistoryType>([]);
-  useEffect(() => {
-    import('./history_tmp.json')
-      .then((history) => {
-        setAaaHistory(history.default);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  }, []);
-
   function makeHistoryList() {
     if (aaaHistory && aaaHistory.length > 0) {
       return aaaHistory.map((his) => {

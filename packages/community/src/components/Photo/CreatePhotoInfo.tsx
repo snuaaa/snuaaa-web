@@ -1,10 +1,10 @@
 import React, { ChangeEvent } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import CrtPhotoType from '../../types/CrtPhotoType';
+import { CreatePhotoRequest } from 'services/PhotoService';
 
 type CreatePhotoInfoProps = {
-  photoInfo: CrtPhotoType;
+  photoInfo: CreatePhotoRequest;
   handleChange: (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => void;
@@ -50,7 +50,7 @@ function CreatePhotoInfo({
               <label>Location</label>
             </div>
             <input
-              className="enif-wid-half"
+              className="w-1/2"
               type="text"
               name="location"
               onChange={(e) => handleChange(e)}
@@ -62,7 +62,7 @@ function CreatePhotoInfo({
               <label>Camera</label>
             </div>
             <input
-              className="enif-wid-half"
+              className="w-1/2"
               type="text"
               name="camera"
               onChange={(e) => handleChange(e)}
@@ -80,10 +80,10 @@ function CreatePhotoInfo({
                 onChange={(e) => handleChange(e)}
                 value={photoInfo.lens}
               ></input>
-              <div className="enif-flex-horizontal">
+              <div className="flex flex-row items-center">
                 <label>@</label>
                 <input
-                  className="enif-wid-half"
+                  className="w-1/2"
                   type="text"
                   name="focal_length"
                   onChange={(e) => handleChange(e)}
@@ -99,7 +99,7 @@ function CreatePhotoInfo({
               <div>
                 <label>F/</label>
                 <input
-                  className="enif-wid-quater"
+                  className="w-1/4"
                   type="text"
                   name="f_stop"
                   onChange={(e) => handleChange(e)}
@@ -109,7 +109,7 @@ function CreatePhotoInfo({
               <div>
                 <label>time</label>
                 <input
-                  className="enif-wid-quater"
+                  className="w-1/4"
                   type="text"
                   name="exposure_time"
                   onChange={(e) => handleChange(e)}
@@ -119,7 +119,7 @@ function CreatePhotoInfo({
               <div>
                 <label>ISO</label>
                 <input
-                  className="enif-wid-quater"
+                  className="w-1/4"
                   type="text"
                   name="iso"
                   onChange={(e) => handleChange(e)}

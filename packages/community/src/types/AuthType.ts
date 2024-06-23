@@ -1,8 +1,8 @@
-import UserType from './UserType';
+import { User } from 'services/types';
 
 interface AuthType {
   isLoggedIn: boolean;
-  user: UserType;
+  user: User;
 }
 
 export default AuthType;

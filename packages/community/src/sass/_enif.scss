@@ -1,29 +1,4 @@
 /**********  ENIF  **********/
-
-.enif-text-left {
-    text-align: left;
-}
-
-.enif-text-center {
-    text-align: center;
-}
-
-.enif-text-right {
-    text-align: right;
-}
-
-.enif-wid-full {
-    width: 100%;
-}
-
-.enif-wid-half {
-    width: 50%;
-}
-
-.enif-wid-quater {
-    width: 25%;
-}
-
 .enif-modal-wrapper {
     position: fixed;
     display: flex;
@@ -41,46 +16,12 @@
     }
 }
 
-.enif-flex-vertical {
-    display: flex;
-    flex-direction: column;
-}
-
-.enif-flex-horizontal {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-}
-
-.enif-flex-center {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.enif-pointer {
-    cursor: pointer;
-}
-
-.enif-f-1x {
-    font-size: 1rem;
-}
 .enif-f-1p2x {
     font-size: 1.2rem;
 }
-.enif-f-1p5x {
-    font-size: 1.5rem;
-}
+
 .enif-f-2x {
     font-size: 2rem;
-}
-
-.enif-visible {
-    opacity: 1;
-}
-
-.enif-unvisible {
-    opacity: 0;
 }
 
 .enif-popup {
@@ -113,7 +54,7 @@
     position: relative;
     width: 500px;
     padding: 2rem 2rem;
-    background-color: #ffffff;
+    background-color: $color-white;
     z-index: 99;
     animation-name: slide-in;
     animation-duration: 0.5s;
@@ -197,7 +138,6 @@
 .enif-btn-cancel {
     color: #b4b4b4;
     font-size: 20px;
-    font-family: 'NIXGONM-Vb';
     &:hover {
         // font-weight: bold;
         color: rgb(105, 105, 105);
@@ -207,7 +147,6 @@
 .enif-btn-ok {
     color: #57adb6;
     font-size: 20px;
-    font-family: 'NIXGONM-Vb';
 }
 
 .enif-btn-circle {
@@ -221,7 +160,7 @@
     box-shadow: 1px 1px 3px 0px #949494;
     border: none;
     border-radius: 50%;
-    color: #FFFFFF;
+    color: $color-white;
     transition: all 0.3s;
     cursor: pointer;
     &:hover {
@@ -267,18 +206,11 @@
     display: block;
 }
 
-.enif-input-invalid {
-    border: 2px solid #cd5c5c;
-}
-
-.enif-input-valid {
-    border: 2px solid #1761ff;
-}
-
 .enif-input-field {
     margin: 0 auto;
     margin-top: 15px;
     width: 300px;
+    font-size: 0.875rem;
     label {
         font-size: 0.9rem;
         font-weight: bold;
@@ -307,20 +239,6 @@
     margin: 10px 0px;
     height: 2px;
     background-color: #E8E8E8;
-}
-
-
-.enif-fixed-top {
-    position: fixed;
-    top: 0;
-}
-
-.enif-hide-desktop {
-    display: none;
-}
-
-.enif-overflow-hidden {
-    overflow: hidden;
 }
 
 // .enif-input-field input:invalid {

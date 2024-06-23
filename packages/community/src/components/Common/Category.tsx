@@ -1,14 +1,14 @@
 import React from 'react';
-import CategoryType from '../../types/CategoryType';
+import { Category } from 'services/types';
 
 type CategoryProps = {
-  categories: CategoryType[];
+  categories: Category[];
   selected?: string;
   clickAll: () => void;
   clickCategory: (category_id: string) => void;
 };
 
-function Category({
+function CategorySection({
   categories,
   selected,
   clickAll,
@@ -64,4 +64,4 @@ function Category({
   );
 }
 
-export default Category;
+export default CategorySection;

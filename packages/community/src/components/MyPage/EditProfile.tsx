@@ -1,15 +1,9 @@
-import React, {
-  useContext,
-  useState,
-  useEffect,
-  ChangeEvent,
-  useCallback,
-} from 'react';
+import { useState, useEffect, ChangeEvent, useCallback } from 'react';
 
-import UserService from '../../services/UserService';
+import UserService, { UpdateUserInfoRequest } from '../../services/UserService';
 import Loading from '../Common/Loading';
 import ProfileComponent from './ProfileComponent';
-import AuthContext from '../../contexts/AuthContext';
+import { useAuth } from 'contexts/auth';
 
 type InputFormat = {
   label: string;
@@ -85,7 +79,7 @@ const defaultUserFormat: InputFormat[] = [
 ];
 
 function EditProfile() {
-  const authContext = useContext(AuthContext);
+  const authContext = useAuth();
 
   const [userInfo, setUserInfo] = useState(defaultUserFormat);
   const [profileImg, setProfileImg] = useState<File>();
@@ -99,7 +93,7 @@ function EditProfile() {
 
     await UserService.retrieveUserInfo()
       .then((res) => {
-        const resUserInfo = res.data.userInfo;
+        const resUserInfo = res.userInfo;
 
         setUserInfo((_userInfo) =>
           _userInfo.map((info) => {
@@ -180,13 +174,14 @@ function EditProfile() {
 
   const updateInfo = async () => {
     setIsShow(false);
-    const data = new FormData();
+    const data = {} as UpdateUserInfoRequest;
     userInfo.forEach((info) => {
-      data.append(info.label, info.value);
+      data[info.label as keyof Omit<UpdateUserInfoRequest, 'profileImg'>] =
+        info.value;
     });
 
     if (profileImg) {
-      data.append('profileImg', profileImg);
+      data.profileImg = profileImg;
     }
 
     await UserService.updateUserInfo(data)

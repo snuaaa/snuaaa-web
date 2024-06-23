@@ -1,23 +1,20 @@
-import React from 'react';
-// import { Link } from 'react-router-dom';
-import ContentStateEnum from '../../common/ContentStateEnum';
 import { breakLine } from '../../utils/breakLine';
 import ActionDrawer from '../Common/ActionDrawer';
 import history from '../../common/history';
-import AlbumType from '../../types/AlbumType';
+import { Album } from 'services/types';
 
 type AlbumInfoProps = {
-  albumInfo: AlbumType;
+  albumInfo: Album;
   my_id: number;
-  setAlbumState: (state: number) => void;
-  deleteAlbum: () => void;
+  onClickEdit: () => void;
+  onClickDelete: () => void;
 };
 
 function AlbumInfo({
   albumInfo,
   my_id,
-  setAlbumState,
-  deleteAlbum,
+  onClickEdit,
+  onClickDelete,
 }: AlbumInfoProps) {
   const content = albumInfo;
   const album = albumInfo.album;
@@ -36,12 +33,12 @@ function AlbumInfo({
             </div>
             <h5 className="alb-title">{content.title}</h5>
             <i
-              className={`${album.is_private ? 'ri-user-fill' : 'ri-group-fill'} color-gray1 enif-f-1x`}
+              className={`${album.is_private ? 'ri-user-fill' : 'ri-group-fill'} color-gray1 text-base`}
             ></i>
             {my_id === user.user_id && (
               <ActionDrawer
-                clickEdit={() => setAlbumState(ContentStateEnum.EDITTING)}
-                clickDelete={deleteAlbum}
+                clickEdit={onClickEdit}
+                clickDelete={onClickDelete}
               />
             )}
             <p className="alb-author">{user.nickname}</p>
