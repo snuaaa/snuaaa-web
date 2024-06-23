@@ -19,7 +19,7 @@ const NewPosts = ({ posts }: { posts: Content[] }) => {
             className="px-3 py-[12.5px] flex max-w-full border-t border-solid border-gray-200 last:border-b gap-1"
             key={content_id}
           >
-            <div className="shrink-0 w-1/5 grow-0 text-[#A3A3A3]">
+            <div className="shrink-0 w-1/5 grow-0 text-[#A3A3A3] truncate">
               <Link to={`/board/${board_id}`}>{board_name}</Link>
             </div>
             <div className="w-[45%] pr-1">
