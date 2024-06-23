@@ -14,7 +14,7 @@ function AttachFile(props: AttachFileProps) {
           <li key={index}>
             <p>{file.name}</p>
             <i
-              className="ri-close-circle-line ri-icons enif-pointer"
+              className="ri-close-circle-line ri-icons cursor-pointer"
               onClick={() => props.removeFile(index)}
             ></i>
           </li>
@@ -46,7 +46,7 @@ function AttachFile(props: AttachFileProps) {
       </div>
       <label htmlFor="attach_file">
         <div className="attach-btn-wrapper">
-          <i className="ri-upload-2-fill enif-pointer"></i>&nbsp; 파일첨부
+          <i className="ri-upload-2-fill cursor-pointer"></i>&nbsp; 파일첨부
         </div>
       </label>
       <input

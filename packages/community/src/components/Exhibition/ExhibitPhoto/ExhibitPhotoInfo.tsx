@@ -6,6 +6,7 @@ import Image from 'components/Common/AaaImage';
 import 'react-datepicker/dist/react-datepicker.css';
 import { ExhibitPhoto } from 'services/types';
 import { useAuth } from 'contexts/auth';
+import { Divider } from 'ui';
 
 type ExhibitPhotoInfoProps = {
   photoInfo: ExhibitPhoto;
@@ -38,8 +39,8 @@ function ExhibitPhotoInfo({
               <div className="info-title-date">
                 <h4>{content.title}</h4>
               </div>
-              <div className="info-basic enif-flex-horizontal">
-                <div className="enif-flex-horizontal">
+              <div className="info-basic flex flex-row items-center">
+                <div className="flex flex-row items-center">
                   <i className="ri-icons ri-eye-fill"></i>
                   <p className="">{content.view_num}</p>
                   {userInfo && (
@@ -49,7 +50,7 @@ function ExhibitPhotoInfo({
                     </>
                   )}
                 </div>
-                <div className="enif-flex-horizontal">
+                <div className="flex flex-row items-center">
                   <i className="ri-icons ri-time-line"></i>
                   <p className="">{convertFullDate(content.createdAt)}</p>
                 </div>
@@ -67,7 +68,7 @@ function ExhibitPhotoInfo({
                     photo.exposure_time ||
                     photo.iso) && (
                     <>
-                      <div className="enif-divider"></div>
+                      <Divider />
                       <div className="info-infos-wrapper">
                         {(photographerInfo || photo.photographer_alt) && (
                           <div className="photo-info-unit">
@@ -139,7 +140,7 @@ function ExhibitPhotoInfo({
             </div>
             {content.text && (
               <>
-                <div className="enif-divider"></div>
+                <Divider />
                 <div className="info-text-wrapper">
                   <p>{breakLine(content.text)}</p>
                 </div>

@@ -124,7 +124,7 @@ const CreatePost: FC<Props> = (props) => {
       <div className="writepost-wrapper">
         <div className="writepost-header">
           <i
-            className="ri-arrow-left-line enif-pointer"
+            className="ri-arrow-left-line cursor-pointer"
             onClick={props.onClose}
           ></i>
           <h5>글쓰기</h5>

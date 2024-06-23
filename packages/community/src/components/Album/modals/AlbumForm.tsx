@@ -99,6 +99,7 @@ const AlbumForm: FC<Props> = (props) => {
                   name="title"
                   placeholder="앨범 제목"
                   value={props.title}
+                  className="border border-solid border-gray-300 rounded-md w-full h-10 px-3 py-2"
                   onChange={props.handleChange}
                 />
               </td>
@@ -110,6 +111,7 @@ const AlbumForm: FC<Props> = (props) => {
                   name="text"
                   placeholder="앨범 설명"
                   value={props.text}
+                  className="border border-solid border-gray-300 rounded-md w-full h-10 px-3 py-2"
                   onChange={props.handleChange}
                 />
               </td>

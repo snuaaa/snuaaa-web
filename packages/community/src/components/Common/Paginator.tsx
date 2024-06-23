@@ -46,12 +46,12 @@ function Paginator({ pageIdx, pageNum, clickPage }: PagenatorType) {
   return (
     <div className="paginator-wrapper">
       <i
-        className="ri-arrow-left-s-line enif-f-1p5x enif-pointer"
+        className="ri-arrow-left-s-line text-2xl cursor-pointer"
         onClick={clickBefore}
       ></i>
       <ul>{makePaginator()}</ul>
       <i
-        className="ri-arrow-right-s-line enif-f-1p5x enif-pointer"
+        className="ri-arrow-right-s-line text-2xl cursor-pointer"
         onClick={clickNext}
       ></i>
     </div>

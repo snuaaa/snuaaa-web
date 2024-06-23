@@ -22,7 +22,7 @@ function ThumbnailList({
       return (
         <div key={index} className="block-constant">
           <div className="remove-icon-wrapper" onClick={() => removeImg(index)}>
-            <i className="ri-close-circle-line enif-pointer enif-f-1p5x"></i>
+            <i className="ri-close-circle-line cursor-pointer text-2xl"></i>
           </div>
           <img
             className={imgClass}

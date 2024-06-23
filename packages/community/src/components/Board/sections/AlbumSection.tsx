@@ -8,6 +8,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import PhotoBoardService from 'services/PhotoBoardService';
 import { Board } from 'services/types';
 import { useAuth } from 'contexts/auth';
+import { Divider } from 'ui';
 
 const ALBUM_ROW_NUM = 12;
 
@@ -56,8 +57,8 @@ export const AlbumSection: FC<Props> = ({ boardInfo }) => {
     <>
       <div className="board-search-wrapper">
         <div className="board-search-input">
-          <i className="ri-search-line enif-f-1x"></i>
-          <input type="text" />
+          {/* <i className="ri-search-line text-base"></i>
+          <input type="text" /> */}
         </div>
         <div>
           {authContext.authInfo.user.grade <= boardInfo.lv_write && (
@@ -70,7 +71,7 @@ export const AlbumSection: FC<Props> = ({ boardInfo }) => {
           )}
         </div>
       </div>
-      <div className="enif-divider"></div>
+      <Divider />
       <AlbumList board_id={boardInfo.board_id} albums={data.albumInfo ?? []} />
       {isCreating && (
         <CreateAlbum

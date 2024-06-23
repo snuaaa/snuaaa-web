@@ -10,7 +10,7 @@ function EditMyInfo() {
     <div>
       <div className="my-title-wrapper">
         <Link to={'/mypage/info'}>
-          <i className="ri-arrow-left-line enif-f-1p5x"></i>
+          <i className="ri-arrow-left-line text-2xl"></i>
         </Link>
         <h3>프로필 수정</h3>
       </div>

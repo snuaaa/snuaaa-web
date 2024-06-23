@@ -33,7 +33,7 @@ function AlbumInfo({
             </div>
             <h5 className="alb-title">{content.title}</h5>
             <i
-              className={`${album.is_private ? 'ri-user-fill' : 'ri-group-fill'} color-gray1 enif-f-1x`}
+              className={`${album.is_private ? 'ri-user-fill' : 'ri-group-fill'} color-gray1 text-base`}
             ></i>
             {my_id === user.user_id && (
               <ActionDrawer

@@ -3,7 +3,7 @@
 }
 
 .color-gray1 {
-  color: #a3a3a3;
+  color: $color-gray2;
 }
 
 .break-line {
@@ -188,7 +188,7 @@
     justify-content: center;
     align-items: center;
     margin-right: auto;
-    color: #a3a3a3;
+    color: $color-gray2;
   }
   .like-num-wrapper {
     display: flex;
@@ -202,7 +202,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    color: #a3a3a3;
+    color: $color-gray2;
   }
 }
 

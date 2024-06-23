@@ -332,7 +332,7 @@ const PhotoPage: FC = () => {
             >
               <div className="photo-alb-title-wrp">
                 <i
-                  className="ri-arrow-left-s-line enif-pointer"
+                  className="ri-arrow-left-s-line cursor-pointer"
                   onClick={() => moveToAlbum(-1)}
                 ></i>
                 <Link className="photo-alb-title" to={backLink}>
@@ -340,11 +340,11 @@ const PhotoPage: FC = () => {
                   <h5>{parentAlbum ? parentAlbum.title : '기본앨범'}</h5>
                 </Link>
                 <i
-                  className="ri-arrow-right-s-line enif-pointer"
+                  className="ri-arrow-right-s-line cursor-pointer"
                   onClick={() => moveToAlbum(1)}
                 ></i>
                 <div className="enif-modal-close" onClick={closePhoto}>
-                  <i className="ri-close-fill enif-f-1p5x enif-pointer"></i>
+                  <i className="ri-close-fill text-2xl cursor-pointer"></i>
                 </div>
               </div>
               <div className="photo-section-bottom">
@@ -360,7 +360,7 @@ const PhotoPage: FC = () => {
                           className="photo-move-btn"
                           onClick={() => moveToPhoto(-1)}
                         >
-                          <i className="ri-arrow-left-s-line ri-icons enif-pointer"></i>
+                          <i className="ri-arrow-left-s-line ri-icons cursor-pointer"></i>
                         </button>
                       </div>
                     )}
@@ -368,16 +368,16 @@ const PhotoPage: FC = () => {
                     {isArrowVisible && (
                       <div className="photo-move-action next">
                         <button
-                          className="photo-move-btn enif-flex-center"
+                          className="photo-move-btn flex items-center center"
                           onClick={() => moveToPhoto(1)}
                         >
-                          <i className="ri-arrow-right-s-line ri-icons enif-pointer"></i>
+                          <i className="ri-arrow-right-s-line ri-icons cursor-pointer"></i>
                         </button>
                       </div>
                     )}
-                    <div className="photo-action-fullscreen-wrapper enif-flex-center">
+                    <div className="photo-action-fullscreen-wrapper flex items-center center">
                       <i
-                        className={`${fullscreenClass} enif-pointer enif-f-1p2x`}
+                        className={`${fullscreenClass} cursor-pointer enif-f-1p2x`}
                         onClick={clickFullScreen}
                       ></i>
                     </div>

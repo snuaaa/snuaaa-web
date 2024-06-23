@@ -27,7 +27,7 @@ function ProfileMini({ userInfo }: { userInfo: User }) {
       <div className={descClass}>{breakLine(userInfo.introduction)}</div>
       <div className="icon-expand">
         <i
-          className={`${isExpand ? 'ri-arrow-up-s-line' : 'ri-arrow-down-s-line'} enif-f-1x enif-pointer`}
+          className={`${isExpand ? 'ri-arrow-up-s-line' : 'ri-arrow-down-s-line'} text-base cursor-pointer`}
           onClick={() => setIsExpand(!isExpand)}
         ></i>
       </div>

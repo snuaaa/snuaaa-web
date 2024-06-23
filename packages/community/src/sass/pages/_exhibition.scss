@@ -4,7 +4,7 @@
     width: 500px;
     margin: 0 auto;
     padding: 2rem 2rem 3rem 2rem;
-    background-color: #ffffff;
+    background-color: $color-white;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -31,12 +31,13 @@
             flex-shrink: 0;
         }
         input {
-            height: 1.5rem;
-            // flex-shrink: 1;
             width: 50%;
+            height: 1.3rem;
+            border: 1px solid #C9C9C9;
         }
         textarea {
             resize: none;
+            border: 1px solid #C9C9C9;
         }
     }
 }

@@ -1,14 +1,8 @@
-import { useFetch } from 'hooks/useFetch';
-import { useCallback } from 'react';
+import aaaHistory from './data/history_tmp';
 
 function AaaHistory() {
   //TODO : User who is admin can be edit data.
   //TODO : convert to database from json
-
-  const fetchFunction = useCallback(() => import('./history_tmp.json'), []);
-
-  const { data: aaaHistory } = useFetch({ fetch: fetchFunction });
-
   function makeHistoryList() {
     if (aaaHistory && aaaHistory.length > 0) {
       return aaaHistory.map((his) => {

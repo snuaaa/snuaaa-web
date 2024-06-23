@@ -27,7 +27,7 @@ section {
   padding-right: 150px;
   padding-bottom: 50px;
   margin: 0 auto;
-  background-color: #ffffff;
+  background-color: $color-white;
   font-size: 13px;
   // padding: 30px;
   h2 {
@@ -35,7 +35,7 @@ section {
     font-size: 23px;
     font-weight: bold;
     margin: 0px 0px 0px 0px;
-    color: #000e2c;
+    color: $color-blue1;
   }
 }
 

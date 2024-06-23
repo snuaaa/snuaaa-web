@@ -20,9 +20,9 @@
         }
         .selected {
             background-color: $color-aqua;
-            color: #ffffff;
+            color: $color-white;
             &:hover {
-                color: #ffffff;
+                color: $color-white;
             }
         }
     }

@@ -23,7 +23,7 @@
       position: absolute;
       margin-top: -3px;
       margin-left: 5px;
-      color: #ffffff;
+      color: $color-white;
     }
   }
 }
@@ -88,7 +88,7 @@
     margin: 0 auto;
     margin-top: 15px;
     width: 400px;
-    background-color: #fff;
+    background-color: $color-white;
     border: 1px solid #c9c9c9;
     border-radius: 20px;
     padding: 10px;
@@ -105,10 +105,9 @@
       height: 35px;
       width: 55%;
       border: none;
-      // font-family: 'NIXGONM-Vb';
 
       &:disabled {
-        background-color: #fff;
+        background-color: $color-white;
         color: #666666;
       }
     }
@@ -119,24 +118,19 @@
     }
   }
 
-  .enif-input-invalid {
-    border: 2px solid #cd5c5c;
-  }
-
   .btn-wrapper {
     margin-top: 20px;
     button {
-      font-family: "NIXGONM-Vb";
       border: none;
       border-radius: 5px;
     }
     .btn-withdraw {
       float: left;
-      background-color: #ffffff;
+      background-color: $color-white;
       width: 100px;
       height: 40px;
       color: #666666;
-      border: 1px solid #ffffff;
+      border: 1px solid $color-white;
       transition: all 0.3s;
       cursor: pointer;
       &:hover {
@@ -148,7 +142,7 @@
       background-color: #49a0ae;
       width: 100px;
       height: 40px;
-      color: #ffffff;
+      color: $color-white;
       font-size: 16px;
       cursor: pointer;
       &:disabled {
@@ -223,9 +217,8 @@
     button {
       width: 150px;
       height: 35px;
-      font-family: "NIXGONM-Vb", Arial, Tahoma, Verdana, sans-serif;
       font-size: 16px;
-      color: #ffffff;
+      color: $color-white;
       background-color: $color_aqua;
       border: none;
       cursor: pointer;
@@ -279,7 +272,6 @@
         h5 {
           text-align: center;
           font-weight: bold;
-          font-family: "NIXGONM-Vb";
         }
         .grade-unit {
           width: 100%;
@@ -289,7 +281,6 @@
           p {
             width: 5.5rem;
             padding: 0px 0.5rem;
-            font-family: "NIXGONM-Vb";
           }
         }
         .profile-img-wrapper {
@@ -316,7 +307,7 @@
       width: 100%;
       height: 30px;
       margin: 0 auto;
-      background: linear-gradient(rgba(255, 255, 255, 0.01), #ffffff);
+      background: linear-gradient(rgba(255, 255, 255, 0.01), $color-white);
     }
     &.expanded::after {
       display: none;
@@ -356,7 +347,6 @@
     border: 1px solid $color-gray4;
     border-radius: 12px;
     background-color: $color-white;
-    font-family: NIXGONM-Vb;
     font-size: 14px;
     &.selected {
       background-color: $color-aqua;
@@ -371,7 +361,7 @@
   h4 {
     font-size: 20px;
     font-weight: bold;
-    color: #7193c4;
+    color: $color_blue3;
     padding: 10px 0 10px 5px;
   }
   .my-post-wrapper {
@@ -387,7 +377,7 @@
     .my-post-boardname {
       display: inline-block;
       width: 25%;
-      color: #a3a3a3;
+      color: $color-gray2;
     }
     .my-post-title {
       display: inline-block;
@@ -402,7 +392,7 @@
     .my-post-date {
       display: inline-block;
       flex-shrink: 0;
-      color: #a3a3a3;
+      color:$color-gray2;
       // width: 20%;
     }
   }
@@ -418,7 +408,7 @@
       width: 25%;
       flex-shrink: 0;
       a {
-        color: #a3a3a3;
+        color: $color-gray2;
       }
     }
     .my-cmt-contents-link {
@@ -426,7 +416,7 @@
       width: 55%;
       flex-grow: 1;
       .my-cmt-title {
-        color: #a3a3a3;
+        color: $color-gray2;
         width: 100%;
         text-overflow: ellipsis;
         overflow: hidden;
@@ -434,7 +424,7 @@
       }
       .my-cmt-cmt {
         margin-top: 5px;
-        color: #000000;
+        color: $color-black;
         width: 100%;
         text-overflow: ellipsis;
         overflow: hidden;
@@ -444,7 +434,7 @@
     .my-cmt-date {
       display: inline-block;
       // width: 20%;
-      color: #a3a3a3;
+      color: $color-gray2;
     }
   }
   .my-photo-list-wrapper {

@@ -134,7 +134,7 @@ export const Comment: FC<Props> = ({ comment, parent_id, onUpdate }) => {
                 <div className="actions-wrapper">
                   <div className="edit-wrapper">
                     <i
-                      className="ri-edit-2-line enif-pointer action-icons"
+                      className="ri-edit-2-line cursor-pointer action-icons"
                       onClick={() =>
                         setEditingComment(comment.comment_id, comment.text)
                       }
@@ -142,7 +142,7 @@ export const Comment: FC<Props> = ({ comment, parent_id, onUpdate }) => {
                   </div>
                   <div className="delete-wrapper">
                     <i
-                      className="ri-delete-bin-line enif-pointer action-icons"
+                      className="ri-delete-bin-line cursor-pointer action-icons"
                       onClick={() => deleteComment(comment.comment_id)}
                     ></i>
                   </div>
@@ -179,14 +179,14 @@ export const Comment: FC<Props> = ({ comment, parent_id, onUpdate }) => {
               </div>
               {parentCommentId === comment.parent_comment_id ? (
                 <p
-                  className="enif-pointer"
+                  className="cursor-pointer"
                   onClick={() => onClickSubComment(0)}
                 >
                   답글 달기 취소
                 </p>
               ) : (
                 <p
-                  className="enif-pointer"
+                  className="cursor-pointer"
                   onClick={() => onClickSubComment(comment.parent_comment_id)}
                 >
                   답글 달기
@@ -216,7 +216,7 @@ export const Comment: FC<Props> = ({ comment, parent_id, onUpdate }) => {
               <div className="actions-wrapper">
                 <div className="edit-wrapper">
                   <i
-                    className="ri-edit-2-line enif-pointer action-icons"
+                    className="ri-edit-2-line cursor-pointer action-icons"
                     onClick={() =>
                       setEditingComment(comment.comment_id, comment.text)
                     }
@@ -224,7 +224,7 @@ export const Comment: FC<Props> = ({ comment, parent_id, onUpdate }) => {
                 </div>
                 <div className="delete-wrapper">
                   <i
-                    className="ri-delete-bin-line enif-pointer action-icons"
+                    className="ri-delete-bin-line cursor-pointer action-icons"
                     onClick={() => deleteComment(comment.comment_id)}
                   ></i>
                 </div>
@@ -258,12 +258,15 @@ export const Comment: FC<Props> = ({ comment, parent_id, onUpdate }) => {
               <p>{comment.likeUsers.length}</p>
             </div>
             {parentCommentId === comment.comment_id ? (
-              <p className="enif-pointer" onClick={() => onClickSubComment(0)}>
+              <p
+                className="cursor-pointer"
+                onClick={() => onClickSubComment(0)}
+              >
                 답글 달기 취소
               </p>
             ) : (
               <p
-                className="enif-pointer"
+                className="cursor-pointer"
                 onClick={() => onClickSubComment(comment.comment_id)}
               >
                 답글 달기

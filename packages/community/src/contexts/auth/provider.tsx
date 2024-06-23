@@ -83,7 +83,7 @@ const Provider = ({ children }: PropsWithChildren) => {
 
   if (
     !authInfo.isLoggedIn &&
-    !['/auth/login', 'auth/signup'].includes(location.pathname)
+    !['/auth/login', '/auth/signup'].includes(location.pathname)
   ) {
     return <Redirect to="/auth/login" />;
   }

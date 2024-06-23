@@ -20,7 +20,7 @@
       top: 0;
       // margin-top: -3px;
       margin-left: 5px;
-      color: #ffffff;
+      color: $color-white;
     }
     h5 {
       flex-grow: 1;
@@ -93,7 +93,6 @@
 }
 
 .doc-text-wrp {
-  font-family: "Minguk-Regular";
   font-size: 0.9rem;
   min-height: 300px;
   line-height: 150%;
@@ -155,7 +154,7 @@
   }
 
   .attach-btn-wrapper {
-    background-color: #a3a3a3;
+    background-color: $color-gray2;
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
     min-height: 50px;
@@ -166,7 +165,7 @@
     justify-content: center;
     align-items: center;
     font-size: 14px;
-    color: #ffffff;
+    color: $color-white;
     cursor: pointer;
     transition: all 0.3s;
     &:hover {

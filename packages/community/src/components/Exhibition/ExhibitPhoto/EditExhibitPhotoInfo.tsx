@@ -144,19 +144,19 @@ function EditExhibitPhotoInfo({
                             </div>
                             <div className="photo-info">
                                 <div className="label-wrapper"><label>Location</label></div>
-                                <input className="enif-wid-half" type="text" name="location" onChange={(e) => handleChange(e)} value={photo.location}></input>
+                                <input className="w-1/2" type="text" name="location" onChange={(e) => handleChange(e)} value={photo.location}></input>
                             </div>
                             <div className="photo-info">
                                 <div className="label-wrapper"><label>Camera</label></div>
-                                <input className="enif-wid-half" type="text" name="camera" onChange={(e) => handleChange(e)} value={photo.camera}></input>
+                                <input className="w-1/2" type="text" name="camera" onChange={(e) => handleChange(e)} value={photo.camera}></input>
                             </div>
                             <div className="photo-info">
                                 <div className="label-wrapper"><label>Lens</label></div>
                                 <div>
                                     <input type="text" name="lens" onChange={(e) => handleChange(e)} value={photo.lens}></input>
-                                    <div className="enif-flex-horizontal">
+                                    <div className="flex flex-row items-center">
                                         <div><label>@</label></div>
-                                        <input className="enif-wid-half" type="text" name="focal_length" onChange={(e) => handleChange(e)} value={photo.focal_length}></input>mm
+                                        <input className="w-1/2" type="text" name="focal_length" onChange={(e) => handleChange(e)} value={photo.focal_length}></input>mm
                                     </div>
                                 </div>
                             </div>
@@ -165,15 +165,15 @@ function EditExhibitPhotoInfo({
                                 <div className="input-wrapper">
                                     <div>
                                         <label>F/</label>
-                                        <input className="enif-wid-quater" type="text" name="f_stop" onChange={(e) => handleChange(e)} value={photo.f_stop}></input>
+                                        <input className="w-1/4" type="text" name="f_stop" onChange={(e) => handleChange(e)} value={photo.f_stop}></input>
                                     </div>
                                     <div>
                                         <label>time</label>
-                                        <input className="enif-wid-quater" type="text" name="exposure_time" onChange={(e) => handleChange(e)} value={photo.exposure_time}></input>
+                                        <input className="w-1/4" type="text" name="exposure_time" onChange={(e) => handleChange(e)} value={photo.exposure_time}></input>
                                     </div>
                                     <div>
                                         <label>ISO</label>
-                                        <input className="enif-wid-quater" type="text" name="iso" onChange={(e) => handleChange(e)} value={photo.iso}></input>
+                                        <input className="w-1/4" type="text" name="iso" onChange={(e) => handleChange(e)} value={photo.iso}></input>
                                     </div>
                                 </div>
                             </div>

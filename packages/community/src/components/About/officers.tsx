@@ -1,14 +1,8 @@
-import { useCallback } from 'react';
-import { useFetch } from 'hooks/useFetch';
+import officers from './data/officers_tmp';
 
 function Officers() {
   //TODO : User who is admin can be edit data.
   //TODO : convert to database from json
-
-  const fetchFunction = useCallback(() => import('./officers_tmp.json'), []);
-
-  const { data: officers } = useFetch({ fetch: fetchFunction });
-
   const generateOfficerList = () => {
     const officerList = officers?.map((gen) => {
       return (
