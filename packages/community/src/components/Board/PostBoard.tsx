@@ -90,6 +90,10 @@ function PostBoard({ boardInfo }: PostBoardProps) {
     }
   }, [location.state]);
 
+  useEffect(() => {
+    setIsCreating(false);
+  }, [boardInfo.board_id]);
+
   const clickPage = (idx: number) => {
     history.push({
       state: {
