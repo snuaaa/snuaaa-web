@@ -7,3 +7,39 @@ body {
   padding: 0;
   font-family: 'NanumSquareNeo';
 }
+
+@font-face {
+  font-family: 'S-CoreDream-5Medium';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-5Medium.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'NanumSquareNeo';
+  src: url('../src/assets/fonts/NanumSquareNeo.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+#root {
+  height: 100%;
+}
+
+.font-20 {
+  font-size: 20px;
+}
+
+html { height: 100%; } /* always display scrollbars */
+body {
+  height: 100%;
+  font-size: 100%;
+  line-height: 1;
+  font-family:  'NanumSquareNeo', Arial, Tahoma, Verdana, sans-serif;
+}
+
+input, select, textarea { outline: none; }

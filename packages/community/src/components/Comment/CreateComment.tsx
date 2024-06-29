@@ -38,6 +38,7 @@ export const CreateComment: FC<Props> = ({ contentId, onCreate }) => {
         placeholder="댓글을 입력하세요"
         name="text"
         onChange={handleChange}
+        className="w-4/5 h-full resize-none rounded-2xl p-1.5 text-sm"
         value={text}
       ></textarea>
       <button onClick={createComment}>ENTER</button>
