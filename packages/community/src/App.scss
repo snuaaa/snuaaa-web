@@ -1,35 +1,8 @@
-@font-face {
-    font-family: 'S-CoreDream-5Medium';
-    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-5Medium.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'NanumSquareNeo';
-    src: url('../src/assets/fonts/NanumSquareNeo.woff2') format('woff2');
-    font-weight: normal;
-    font-style: normal;
-}
 
 
 
-@import 'sass/reset';
 @import 'sass/common/index';
 @import 'sass/enif';
 @import 'sass/section';
 @import 'sass/mobile';
 
-
-* {
-    box-sizing: border-box;
-}
-
-#root {
-    height: 100%;
-    // overflow: auto;
-}
-
-.font-20 {
-    font-size: 20px;
-}
