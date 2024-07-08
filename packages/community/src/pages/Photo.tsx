@@ -272,6 +272,7 @@ const PhotoPage: FC = () => {
           editContentInfo.toJSON(),
         );
         refresh();
+        setIsEditing(false);
       } catch (err) {
         console.error(err);
         alert('업데이트 실패');
