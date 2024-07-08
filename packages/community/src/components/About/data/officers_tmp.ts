@@ -1,5 +1,11 @@
 const tmpOfficers = [
   {
+    generation: 89,
+    president: '송치호',
+    officers:
+      '부회장: 이효준, 총무: 최시환, 회계: 신윤도, 관측부장: 구현모, 김희서, 박규형, 장비관리부장: 곽민서',
+  },
+  {
     generation: 88,
     president: '문준성',
     officers:
