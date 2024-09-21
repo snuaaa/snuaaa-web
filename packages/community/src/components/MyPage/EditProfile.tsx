@@ -186,8 +186,7 @@ function EditProfile() {
 
     await UserService.updateUserInfo(data)
       .then(() => {
-        alert('업데이트 성공');
-        window.location.reload();
+        fetch();
       })
       .catch((err: Error) => {
         console.error(err);

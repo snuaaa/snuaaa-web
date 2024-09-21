@@ -38,7 +38,7 @@ const UserService = {
     Object.entries(data).forEach(([key, value]) => {
       formData.append(key, value);
     });
-    return API.patch('userinfo', data);
+    return API.patch('userinfo', formData);
   },
 
   deleteUserInfo: function () {
