@@ -1,65 +1,21 @@
 /***** header *****/
 
-
-.main-header-wrapper {
+.main-header {
+    max-width: 1920px;
     width: 100%;
-    text-align: center;
-    background-color: #040c22;
-
-    .main-header {
-        max-width: 1920px;
-        width: 100%;
-        height: 263px;
-        margin: 0 auto;
-        background-image: url("../../assets/img/header.gif");
-        background-repeat: no-repeat;
-        background-size: cover;
-        background-position: center;
-        .header-logo {
-            float: left;
-            margin: 14px 10px 15px 30px;
-            color: white;
-            vertical-align: middle;
-            height: 40px;
-            display: flex;
-            cursor: pointer;
-            img {
-                height: 100%;
-            }
-            p {
-                margin-left: 10px;
-                line-height: 40px;
-                font-size: 17px;
-            }
-        }
-        .profile-img-wrapper {
-            width: 150px;
-            margin: 15px;
-            float: right;
-            color: white;
-
-            .profile-img {
-                width: 50px;
-                height: 50px;
-                cursor: pointer;
-                border-radius: 50%;
-                object-fit: cover;
-                // background-color: $color-white;
-            }
-        }
-        .guest-logout-wrapper {
-            float: right;
-            color: white;
-            margin: 25px;
-            cursor: pointer;
-        }
-    }
+    margin: 0 auto;
+    position: relative;
+    display: flex;
 }
 
-
-
-.pos-relative {
-    position: relative;
+@media screen and (max-width: 800px) {
+    .main-header {
+        width: 100%;
+        height: auto;
+        margin: 0 auto;
+        background-color: #05070e;
+        background-image: none;
+    }
 }
 
 .main-menu-nav-wrapper {
@@ -245,69 +201,11 @@
     top: 0;
 }
 
-.popup-user-wrapper {
-    position: absolute;
-    z-index: 11;
-    display: block;
-    width: 150px;
-    height: 200px;
-    margin-top: 10px;
-    padding-top: 20px;
-    text-align: center;
-    background-color: #6181b0;
-    border-radius: 10px;
-    .btn-toggle {
-        display: none;
-    }
-    .popup-profile-wrapper {
-        display: none;
-    }
-    p {
-        color: $color-white;
-        line-height: 40px;
-        cursor: pointer;
-    }
-}
 
 
 /***** header *****/
 
 @media screen and (max-width: 800px) {
-
-    .main-header-wrapper {
-
-        .main-header {
-            width: 100%;
-            height: auto;
-            margin: 0 auto;
-            background-color: #05070e;
-            background-image: none;
-            .header-logo {
-                margin: 0;
-                img {
-                    padding: 0.25rem;
-                    width: 3rem;
-                    height: 3rem;
-                }
-                p {
-                    margin-left: 0;
-                    line-height: 3rem;
-                }
-            }
-            .profile-img-wrapper {
-                width: 3rem;
-                margin: 0.3rem;
-                .profile-img {
-                    width: 2.5rem;
-                    height: 2.5rem;
-                }
-            }
-            .guest-logout-wrapper {
-                margin: 15px 15px 15px 0px;
-                font-size: 0.8rem;
-            }
-        }
-    }
 
     .main-menu-nav-wrapper {
         width: 100%;
@@ -402,47 +300,7 @@
         width: 100%;
         background-color: $color-white;
         box-shadow: 0 2px 2px rgba(0, 0, 0, 0.05), 0 1px 0 rgba(0, 0, 0, 0.05);
-    }
-    
-    .popup-user-wrapper {
-        position: fixed;
-        // display: block;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        margin-top: 0;
-        padding-top: 5rem;
-        text-align: center;
-        background-color: #06234eee;
-        //#000929d1
-        border-radius: 0;
-        z-index: 99;
-        .btn-toggle {
-            display: block;
-            position: absolute;
-            top: 0;
-            right: 0;
-            margin: 1rem;
-            width: 2rem;
-            .ri-icons {
-                font-size: 2rem;
-            }
-        }
-        p {
-            font-size: 1.5rem;
-            line-height: 4rem;
-        }
-        .popup-profile-wrapper {
-            display: inline;
-            .popup-profile {
-                width: 8rem;
-                height: 8rem;
-                border-radius: 50%;
-                object-fit: cover;
-            }
-        }
-    }
+    }    
 }
 
 @media screen and (max-width: 350px) {

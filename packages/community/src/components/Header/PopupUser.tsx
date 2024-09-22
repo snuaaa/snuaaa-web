@@ -4,13 +4,14 @@ import Image from '../../components/Common/AaaImage';
 import imgProfile from '../../assets/img/common/profile.png';
 import { useAuth } from 'contexts/auth';
 
-type PopupUserProps = {
+type Props = {
   profile_path: string;
   togglePopup: () => void;
   logout: () => void;
 };
 
-function PopupUser({ profile_path, togglePopup, logout }: PopupUserProps) {
+// TODO: rename to ProfileMenu
+function PopupUser({ profile_path, togglePopup, logout }: Props) {
   const authContext = useAuth();
 
   useEffect(() => {
@@ -20,39 +21,49 @@ function PopupUser({ profile_path, togglePopup, logout }: PopupUserProps) {
       // window.removeEventListener('click', togglePopup);
       document.body.classList.remove('enif-overflow-hidden-mobile');
     };
-  }, [togglePopup]);
+  }, []);
+
+  // 전회장(4)은 제외
+  const hasManagementAuthority =
+    authContext.authInfo.user.grade <= 6 &&
+    authContext.authInfo.user.grade !== 4;
 
   return (
-    <div className="popup-user-wrapper" onClick={(e) => e.stopPropagation()}>
-      <div className="btn-toggle" onClick={togglePopup}>
-        <i className="ri-icons ri-close-fill"></i>
+    <div
+      className="fixed md:absolute left-0 md:left-auto top-0 md:top-[70px] z-[99] md:z-[11] w-full md:w-[150px] h-full md:h-[200px] bg-[#06234eee] md:bg-[#6181b0] md:rounded-[10px]
+        flex flex-col items-center pt-20 md:pt-8 text-white gap-8 md:gap-5"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div className="absolute top-4 right-4 md:hidden" onClick={togglePopup}>
+        <i className="ri-icons ri-close-fill text-3xl"></i>
       </div>
-      <div className="popup-profile-wrapper">
+      <div className="md:hidden">
         <Image
           imgSrc={profile_path}
           defaultImgSrc={imgProfile}
-          className="popup-profile"
+          className="w-32 h-32 rounded-full object-cover"
         />
       </div>
       <Link to="/mypage/info" onClick={togglePopup}>
-        <p>My Page</p>
+        <p className="text-2xl md:text-base">My Page</p>
       </Link>
-      {authContext.authInfo.user.grade <= 6 && (
+      {hasManagementAuthority && (
         <Link to="/mgt/user" onClick={togglePopup}>
-          <p>
+          <p className="text-2xl md:text-base">
             {/* <i className="ri-admin-line"></i> */}
             회원 관리
           </p>
         </Link>
       )}
-      <p
+      <button
         onClick={() => {
           logout();
           togglePopup();
         }}
+        className="text-2xl md:text-base"
       >
         Log out
-      </p>
+      </button>
     </div>
   );
 }
