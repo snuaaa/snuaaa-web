@@ -43,7 +43,7 @@ function Navigation({ boards }: NavigationProps) {
   }
 
   return (
-    <div className={'main-menu-nav-wrapper pos-relative'}>
+    <div className={'main-menu-nav-wrapper relative'}>
       <nav>
         {/* <input className="nav-toggle" id="nav-toggle" type="checkbox"/> 
                     <label className="navicon" htmlFor="nav-toggle"><span className="navicon-bar"></span></label> */}
