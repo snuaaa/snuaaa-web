@@ -123,6 +123,18 @@ function Navigation({ boards }: NavigationProps) {
             </div>
             <div className="menu-nav-sub">{makeBoardList(photoBoards)}</div>
           </li>
+          <li className="menu-nav">
+            <div className="menu-item-1">
+              <span></span>A-Tools
+            </div>
+            <div className="menu-nav-sub">
+              <ul>
+                <Link to={`/equipment`}>
+                  <li>장비 대여</li>
+                </Link>
+              </ul>
+            </div>
+          </li>
         </ul>
       </nav>
     </div>

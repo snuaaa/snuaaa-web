@@ -148,3 +148,13 @@ export interface Comment {
   children: Comment[];
   likeUsers: User[];
 }
+
+export interface Equipment {
+  id: number;
+  category: string;
+  name: string;
+  description?: string;
+  location: string;
+  status: string;
+  img_path: string;
+}
