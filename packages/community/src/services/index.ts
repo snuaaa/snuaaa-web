@@ -44,8 +44,3 @@ export const API = {
     return axiosInstance.delete(`${SERVER_URL}api/${url}`);
   },
 };
-
-// TODO: fix data type
-export function createAttachedImage(data: FormData) {
-  return axiosInstance.post(SERVER_URL + 'api/image', data);
-}

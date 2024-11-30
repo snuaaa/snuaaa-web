@@ -3,9 +3,7 @@ import React from 'react';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 
 import { Editor as CustomEditor, Viewer as CustomViewer } from '@snuaaa/editor';
-import { createAttachedImage } from 'services';
-
-const SERVER_URL = process.env.REACT_APP_SERVER_URL;
+import UploadService from 'services/UploadService';
 
 class MyUploadAdapter {
   private loader: any;
@@ -18,20 +16,13 @@ class MyUploadAdapter {
   // Starts the upload process.
   upload() {
     // Update the loader's progress.
-    return this.loader.file.then((uploadFile: File) => {
+    return this.loader.file.then((file: File) => {
       return new Promise((resolve, reject) => {
-        const data = new FormData();
-        data.append('attachedImage', uploadFile);
-
-        createAttachedImage(data)
+        UploadService.uploadImage(file)
           .then((response) => {
-            if (response.data.result === 'success') {
-              resolve({
-                default: `${SERVER_URL}static/${response.data.imgPath}`,
-              });
-            } else {
-              reject(response.data.message);
-            }
+            resolve({
+              default: response.data.imgPath,
+            });
           })
           .catch(() => {
             reject('Upload failed');
