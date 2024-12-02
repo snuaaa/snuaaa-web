@@ -13,6 +13,9 @@ type RetrieveAlbumResponse = {
 };
 
 const AlbumService = {
+  /**
+   * @deprecated
+   */
   createPhotosInAlbum: function (
     album_id: number,
     data: FormData,

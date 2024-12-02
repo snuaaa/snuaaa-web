@@ -66,8 +66,8 @@ function CreateExhibitPhotoComponent({
             </div>
             <ThumbnailList
               imgUrls={imgUrls}
-              imgIdx={imgIdx}
-              setImgIdx={setImgIdx}
+              selectedImgIdx={imgIdx}
+              onClickThumbnail={setImgIdx}
               removeImg={removeImg}
             />
           </div>
