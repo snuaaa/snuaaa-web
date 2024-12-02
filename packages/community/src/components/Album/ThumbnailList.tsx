@@ -1,5 +1,5 @@
 type Props = {
-  imgUrls: string[];
+  imgUrls: (string | undefined)[];
   selectedImgIdx: number;
   onClickThumbnail: (idx: number) => void;
   removeImg: (idx: number) => void;
@@ -14,10 +14,7 @@ function ThumbnailList({
   return (
     <>
       {imgUrls.map((imgUrl, index) => {
-        const imgClass =
-          index === selectedImgIdx
-            ? 'photo-thumbnail selected'
-            : 'photo-thumbnail default';
+        const isSelectedImage = index === selectedImgIdx;
         return (
           <div key={index} className="block-constant">
             <div
@@ -26,12 +23,19 @@ function ThumbnailList({
             >
               <i className="ri-close-circle-line cursor-pointer text-2xl"></i>
             </div>
-            <img
-              className={imgClass}
-              src={imgUrl}
-              alt="thumbnail"
-              onClick={() => onClickThumbnail(index)}
-            />
+
+            {imgUrl ? (
+              <img
+                className={`photo-thumbnail ${isSelectedImage ? 'selected' : 'default'}`}
+                src={imgUrl}
+                alt="thumbnail"
+                onClick={() => onClickThumbnail(index)}
+              />
+            ) : (
+              <div className="flex justify-center items-center h-full">
+                <div className="spinner" />
+              </div>
+            )}
           </div>
         );
       })}

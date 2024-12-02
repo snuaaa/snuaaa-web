@@ -1,6 +1,7 @@
-import { ChangeEvent, useCallback, useRef, useState } from 'react';
+import { ChangeEvent, useCallback, useState } from 'react';
 import { List } from 'immutable';
 import PhotoService, { CreatePhotoRequest } from 'services/PhotoService';
+import UploadService from 'services/UploadService';
 
 type Props = {
   boardId: string;
@@ -27,10 +28,7 @@ const DEFAULT_PHOTO_INFO = {
 };
 
 const useCreatePhoto = ({ boardId, albumId, onCreatePhoto }: Props) => {
-  const imgUrls = useRef<string[]>([]);
-
   const [photoInfo, setPhotoInfo] = useState(List<CreatePhotoForm>());
-  const [uploadPhotos, setUploadPhotos] = useState<File[]>([]);
   const [editingIdx, setEditingIdx] = useState(-1);
   const [isCreating, setIsCreating] = useState(false);
 
@@ -65,7 +63,14 @@ const useCreatePhoto = ({ boardId, albumId, onCreatePhoto }: Props) => {
     [editingIdx, photoInfo],
   );
 
-  const uploadFile = (e: ChangeEvent<HTMLInputElement>) => {
+  const uploadImage = useCallback(async (file: File, index: number) => {
+    const { data } = await UploadService.uploadImage(file);
+    setPhotoInfo((photoInfo) =>
+      photoInfo.setIn([index, 'img_url'], data.imgPath),
+    );
+  }, []);
+
+  const handleChangeFile = (e: ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) {
       return;
     }
@@ -83,31 +88,19 @@ const useCreatePhoto = ({ boardId, albumId, onCreatePhoto }: Props) => {
       return;
     }
 
-    const newUploadPhotos: File[] = [];
     const newPhotoInfos = fileArray.map(() => DEFAULT_PHOTO_INFO);
-    fileArray.forEach((file) => {
-      newUploadPhotos.push(file);
-      imgUrls.current.push(URL.createObjectURL(file));
-    });
-
     setPhotoInfo(photoInfo.concat(newPhotoInfos));
-    setUploadPhotos(uploadPhotos.concat(newUploadPhotos));
+    fileArray.forEach((file, index) =>
+      uploadImage(file, photoInfo.size + index),
+    );
   };
 
   const removeImg = useCallback(
     (index: number) => {
-      imgUrls.current = imgUrls.current.filter((value, idx) => {
-        return index !== idx;
-      });
       setEditingIdx(editingIdx - 1);
       setPhotoInfo(photoInfo.delete(index));
-      setUploadPhotos(
-        uploadPhotos.filter((value, idx) => {
-          return index !== idx;
-        }),
-      );
     },
-    [editingIdx, photoInfo, uploadPhotos],
+    [editingIdx, photoInfo],
   );
 
   const handleChangeTag = useCallback(
@@ -152,15 +145,13 @@ const useCreatePhoto = ({ boardId, albumId, onCreatePhoto }: Props) => {
   }, [albumId, boardId, onCreatePhoto, photoInfo]);
 
   return {
-    imgUrls: imgUrls.current,
     editingIdx,
     photoInfo,
-    uploadPhotos,
     isCreating,
     handleChange,
     handleDate,
     setEditingIdx,
-    uploadFile,
+    handleChangeFile,
     removeImg,
     handleChangeTag,
     createPhotos,

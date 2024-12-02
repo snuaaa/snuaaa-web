@@ -1,4 +1,4 @@
-import { FC, useCallback } from 'react';
+import { FC } from 'react';
 import { Tag } from 'services/types';
 import useBlockBackgroundScroll from 'hooks/useBlockBackgroundScroll';
 import useCreatePhoto from './useCreatePhoto';
@@ -26,16 +26,14 @@ const CreatePhoto: FC<Props> = ({
 
   const {
     photoInfo,
-    uploadPhotos,
     handleChangeTag,
     handleDate,
     handleChange,
     createPhotos,
     editingIdx,
     setEditingIdx,
-    imgUrls,
     removeImg,
-    uploadFile,
+    handleChangeFile,
     isCreating,
   } = useCreatePhoto({
     boardId,
@@ -43,15 +41,8 @@ const CreatePhoto: FC<Props> = ({
     onCreatePhoto,
   });
 
-  const handleClickCreate = useCallback(() => {
-    if (!uploadPhotos) {
-      alert('사진을 첨부해주세요');
-      return;
-    }
-    createPhotos();
-  }, [createPhotos, uploadPhotos]);
-
   const selectedPhotoInfo = photoInfo?.get(editingIdx);
+  const imgUrls = photoInfo?.map((info) => info.img_url).toArray() ?? [];
 
   return (
     <div className="crt-photo-popup">
@@ -78,13 +69,13 @@ const CreatePhoto: FC<Props> = ({
                 id="photos"
                 multiple
                 accept="image/*"
-                onChange={uploadFile}
+                onChange={handleChangeFile}
               />
             </div>
           </div>
 
           <div className="crt-photo-center">
-            <PreviewImage imgUrl={imgUrls[editingIdx]} />
+            <PreviewImage imgUrl={photoInfo.get(editingIdx)?.img_url} />
           </div>
 
           <div className="crt-photo-right">
@@ -126,7 +117,7 @@ const CreatePhoto: FC<Props> = ({
               <button
                 className="btn-ok"
                 disabled={isCreating}
-                onClick={handleClickCreate}
+                onClick={createPhotos}
               >
                 완료
               </button>
