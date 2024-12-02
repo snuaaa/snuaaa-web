@@ -18,6 +18,21 @@ type Props = {
   onCancel: () => void;
 };
 
+const defaultPhotoInfo = {
+  title: '',
+  text: '',
+  board_id: '',
+  // date: '',
+  location: '',
+  camera: '',
+  lens: '',
+  focal_length: '',
+  f_stop: '',
+  exposure_time: '',
+  iso: '',
+  tags: [],
+};
+
 export const CreatePhoto: FC<Props> = ({
   boardId,
   tags,
@@ -27,7 +42,6 @@ export const CreatePhoto: FC<Props> = ({
 }) => {
   useBlockBackgroundScroll();
 
-  const currentSize = useRef(0);
   const imgUrls = useRef<string[]>([]);
 
   const [photoInfo, setPhotoInfo] = useState(List<CreatePhotoRequest>());
@@ -65,44 +79,31 @@ export const CreatePhoto: FC<Props> = ({
   );
 
   const uploadFile = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      if (uploadPhotos.length + e.target.files.length > 20) {
-        alert('한 번에 20장 이상의 사진은 업로드 할 수 없습니다.');
-      } else {
-        let tmpSize = currentSize.current;
-        for (let i = 0; i < e.target.files.length; i++) {
-          tmpSize += e.target.files[i].size;
-        }
-
-        if (tmpSize > MAX_SIZE) {
-          alert('한 번에 100MB 이상의 사진은 업로드 할 수 없습니다.');
-        } else {
-          currentSize.current = tmpSize;
-          const nUploadPhotos = [];
-          const nPhotoInfos = [];
-          for (let i = 0; i < e.target.files.length; i++) {
-            nUploadPhotos.push(e.target.files[i]);
-            nPhotoInfos.push({
-              title: '',
-              text: '',
-              board_id: boardId,
-              // date: '',
-              location: '',
-              camera: '',
-              lens: '',
-              focal_length: '',
-              f_stop: '',
-              exposure_time: '',
-              iso: '',
-              tags: [],
-            });
-            imgUrls.current.push(URL.createObjectURL(e.target.files[i]));
-          }
-          setPhotoInfo(photoInfo.concat(nPhotoInfos));
-          setUploadPhotos(uploadPhotos.concat(nUploadPhotos));
-        }
-      }
+    if (!e.target.files) {
+      return;
     }
+    if (e.target.files.length > 50) {
+      alert('한 번에 50장 이상의 사진은 업로드 할 수 없습니다.');
+      return;
+    }
+
+    const fileArray = Array.from(e.target.files);
+    const sizeSum = fileArray.reduce((acc, file) => {
+      return acc + file.size;
+    }, 0);
+    if (sizeSum > MAX_SIZE) {
+      alert('한 번에 100MB 이상의 사진은 업로드 할 수 없습니다.');
+      return;
+    }
+
+    const nUploadPhotos = [];
+    const newPhotoInfos = fileArray.map(() => defaultPhotoInfo);
+    for (let i = 0; i < e.target.files.length; i++) {
+      nUploadPhotos.push(e.target.files[i]);
+      imgUrls.current.push(URL.createObjectURL(e.target.files[i]));
+    }
+    setPhotoInfo(photoInfo.concat(newPhotoInfos));
+    setUploadPhotos(uploadPhotos.concat(nUploadPhotos));
   };
 
   const removeImg = useCallback(
