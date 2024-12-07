@@ -19,6 +19,9 @@ function AaaImage({
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
   const imgUrl = useMemo(() => {
+    if (imgSrc?.startsWith('http')) {
+      return imgSrc;
+    }
     return local
       ? imgSrc
       : process.env.REACT_APP_SERVER_URL + 'static' + imgSrc;

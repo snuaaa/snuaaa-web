@@ -64,9 +64,13 @@ const useCreatePhoto = ({ boardId, albumId, onCreatePhoto }: Props) => {
   );
 
   const uploadImage = useCallback(async (file: File, index: number) => {
-    const { data } = await UploadService.uploadImage(file);
+    const { data } = await UploadService.uploadImage(file, true);
     setPhotoInfo((photoInfo) =>
-      photoInfo.setIn([index, 'img_url'], data.imgPath),
+      photoInfo.set(index, {
+        ...photoInfo.get(index),
+        img_url: data.imgUrl,
+        thumbnail_url: data.thumbnailUrl,
+      }),
     );
   }, []);
 

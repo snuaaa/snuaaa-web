@@ -42,7 +42,7 @@ const CreatePhoto: FC<Props> = ({
   });
 
   const selectedPhotoInfo = photoInfo?.get(editingIdx);
-  const imgUrls = photoInfo?.map((info) => info.img_url).toArray() ?? [];
+  const imgUrls = photoInfo?.map((info) => info.thumbnail_url).toArray() ?? [];
 
   return (
     <div className="crt-photo-popup">

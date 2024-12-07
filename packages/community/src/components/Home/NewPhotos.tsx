@@ -19,7 +19,10 @@ function NewPhotos({ title, board_id, photos }: NewPhotosProps) {
       <div className="grid grid-cols-3 gap-px">
         {photos.map((content) => {
           return (
-            <div key={content.content_id}>
+            <div
+              key={content.content_id}
+              className="relative w-full h-0 pb-[100%]"
+            >
               <Link
                 to={{
                   pathname: `/photo/${content.content_id}`,
@@ -30,7 +33,13 @@ function NewPhotos({ title, board_id, photos }: NewPhotosProps) {
                 }}
               >
                 {content.photo && (
-                  <Image imgSrc={content.photo.thumbnail_path} />
+                  <Image
+                    className="absolute object-cover h-full w-full"
+                    imgSrc={
+                      content.photo.thumbnail_url ??
+                      content.photo.thumbnail_path
+                    }
+                  />
                 )}
               </Link>
             </div>

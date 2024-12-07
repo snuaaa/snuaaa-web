@@ -21,7 +21,7 @@ class MyUploadAdapter {
         UploadService.uploadImage(file)
           .then((response) => {
             resolve({
-              default: response.data.imgPath,
+              default: response.data.imgUrl,
             });
           })
           .catch(() => {
