@@ -18,6 +18,8 @@ export interface CreatePhotoRequest {
   iso?: string;
   date?: Date;
   tags?: string[];
+  img_url: string;
+  thumbnail_url: string;
 }
 
 const PhotoService = {
@@ -39,6 +41,14 @@ const PhotoService = {
 
   deletePhoto: function (photo_id: number) {
     return API.delete(`photo/${photo_id}`);
+  },
+
+  createPhoto: function (data: {
+    list: CreatePhotoRequest[];
+    board_id: string;
+    album_id?: number;
+  }) {
+    return API.post('photo', data);
   },
 };
 
