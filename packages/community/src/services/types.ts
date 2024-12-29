@@ -78,8 +78,10 @@ export interface Album extends Content {
 export interface Photo extends Content {
   parent?: Album;
   photo: {
-    file_path: string;
-    thumbnail_path: string;
+    file_path?: string;
+    thumbnail_path?: string;
+    img_url?: string;
+    thumbnail_url?: string;
     location?: string;
     camera?: string;
     lens?: string;

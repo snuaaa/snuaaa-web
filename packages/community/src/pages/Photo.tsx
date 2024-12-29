@@ -282,7 +282,7 @@ const PhotoPage: FC = () => {
                         </button>
                       </div>
                     )}
-                    <Image imgSrc={photoInfo.file_path} />
+                    <Image imgSrc={photoInfo.img_url ?? photoInfo.file_path} />
                     {isArrowVisible && (
                       <div className="photo-move-action next">
                         <button

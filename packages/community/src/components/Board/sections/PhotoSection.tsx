@@ -2,7 +2,7 @@ import PhotoList from 'components/Album/PhotoList';
 import Loading from 'components/Common/Loading';
 import Paginator from 'components/Common/Paginator';
 import Tag from 'components/Common/Tag';
-import { CreatePhoto } from 'components/Photo/CreatePhoto';
+import CreatePhotoModal from 'components/Photo/CreateModal';
 import { useAuth } from 'contexts/auth';
 import { useFetch } from 'hooks/useFetch';
 import { ChangeEvent, FC, useCallback, useMemo, useState } from 'react';
@@ -131,7 +131,7 @@ export const PhotoSection: FC<Props> = ({ boardInfo }) => {
           <Divider />
           <PhotoList photos={data.photoInfo ?? []} />
           {isCreating && (
-            <CreatePhoto
+            <CreatePhotoModal
               boardId={boardInfo.board_id}
               tags={boardInfo.tags}
               onCreatePhoto={handleCreatePhoto}

@@ -1,7 +1,7 @@
 import React from 'react';
 
 type PreviewImageProps = {
-  imgUrl: string;
+  imgUrl?: string;
 };
 
 function PreviewImage({ imgUrl }: PreviewImageProps) {

@@ -75,7 +75,7 @@ function PhotoList({ photos }: PhotoListProps) {
                     <p>{contentInfo.comment_num}</p>
                   </div>
                 </div>
-                <Image imgSrc={photo.thumbnail_path} />
+                <Image imgSrc={photo.thumbnail_url ?? photo.thumbnail_path} />
               </Link>
             </div>
           );

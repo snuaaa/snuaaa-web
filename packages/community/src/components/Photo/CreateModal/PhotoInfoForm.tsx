@@ -3,19 +3,15 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { CreatePhotoRequest } from 'services/PhotoService';
 
-type CreatePhotoInfoProps = {
-  photoInfo: CreatePhotoRequest;
+type Props = {
+  photoInfo: Omit<CreatePhotoRequest, 'img_url' | 'thumbnail_url'>;
   handleChange: (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => void;
   handleDate: (date: Date) => void;
 };
 
-function CreatePhotoInfo({
-  photoInfo,
-  handleChange,
-  handleDate,
-}: CreatePhotoInfoProps) {
+function PhotoInfoForm({ photoInfo, handleChange, handleDate }: Props) {
   return (
     <div className="photo-input-area-wrapper">
       <input
@@ -134,4 +130,4 @@ function CreatePhotoInfo({
   );
 }
 
-export default CreatePhotoInfo;
+export default PhotoInfoForm;

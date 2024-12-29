@@ -59,7 +59,9 @@ const PhotoBoardService = {
     }
   },
 
-  // TODO: fix data type
+  /**
+   * @deprecated
+   */
   createPhotosInPhotoBoard: function (board_id: string, data: FormData) {
     return API.post(`photoboard/${board_id}/photos`, data);
   },
