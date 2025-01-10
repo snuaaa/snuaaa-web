@@ -28,7 +28,6 @@ export const useFetch = <T,>({ fetch }: Props<T>) => {
   }, [fetch]);
 
   const refresh = useCallback(async () => {
-    // console.log('refresh');
     const refreshedData = await fetch();
     // NOTE: fetch 중 component가 unmount된 경우에는 무시
     if (isUnmounted.current) {
