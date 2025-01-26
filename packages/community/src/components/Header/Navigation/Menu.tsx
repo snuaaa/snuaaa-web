@@ -1,3 +1,4 @@
+import useDeviceType, { DeviceType } from 'hooks/useDeviceType';
 import { Link } from 'react-router-dom';
 import { Board } from 'services/types';
 
@@ -22,6 +23,9 @@ type Props = {
 
 function Menu(props: Props) {
   const { menuName } = props;
+
+  const deviceType = useDeviceType();
+
   return (
     <li className="menu-nav">
       <div className="menu-item-1">
@@ -40,7 +44,9 @@ function Menu(props: Props) {
               <li key={link.name}>
                 {link.isExternal ? (
                   <a href={link.url} target="_blank" rel="noreferrer">
-                    {link.name}
+                    {deviceType === DeviceType.Mobile
+                      ? link.shortName ?? link.name
+                      : link.name}
                   </a>
                 ) : (
                   <Link to={link.url}>{link.name}</Link>
