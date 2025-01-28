@@ -16,6 +16,7 @@ function Navigation({ boards }: NavigationProps) {
   const communityBoards: Board[] = [];
   const officialBoards: Board[] = [];
   const photoBoards: Board[] = [];
+  const equipmentBoards: Board[] = [];
 
   if (boards && boards.length > 0) {
     boards.forEach((board) => {
@@ -27,6 +28,8 @@ function Navigation({ boards }: NavigationProps) {
         officialBoards.push(board);
       } else if (board.menu === 4) {
         photoBoards.push(board);
+      } else if (board.menu === 5) {
+        equipmentBoards.push(board);
       }
     });
   }

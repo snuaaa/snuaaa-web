@@ -4,7 +4,7 @@ import EquipmentService from 'services/EquipmentService';
 
 const Rent: FC = () => {
   const fetchFunction = useCallback(() => {
-    return EquipmentService.retrieveList();
+    return EquipmentService.retrieveList(0);
   }, []);
 
   const { data, refresh } = useFetch({ fetch: fetchFunction });
