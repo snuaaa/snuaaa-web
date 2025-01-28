@@ -1,16 +1,45 @@
+import { useState, useEffect } from 'react';
 import EquipmentMain from 'components/Equipment/Main';
 import EquipmentRent from 'components/Equipment/Rent';
+import EquipmentAdmin from 'components/Equipment/Admin';
 import { FC } from 'react';
 import { Route, Switch } from 'react-router-dom';
+import {
+  EquipmentCategories,
+  EquipmentCategoryContext,
+} from 'contexts/EquipmentCategoryContext';
+import { useAuth } from 'contexts/auth';
+import EquipmentService from 'services/EquipmentService';
 
 const EquipmentPage: FC = () => {
+  const [equipmentCategories, setEquipmentCategories] =
+    useState<EquipmentCategories>([]);
+  const authContext = useAuth();
+
+  useEffect(() => {
+    if (authContext.authInfo.isLoggedIn) {
+      fetch();
+    }
+  }, [authContext.authInfo]);
+
+  const fetch = async () => {
+    try {
+      const categoryRes = await EquipmentService.retrieveCategoryList();
+      setEquipmentCategories(categoryRes);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <div>
-      <h2>장비 대여</h2>
-      <Switch>
-        <Route path="/equipment/rent/" component={EquipmentRent} />
-        <Route path="/equipment/" component={EquipmentMain} />
-      </Switch>
+      <EquipmentCategoryContext.Provider value={equipmentCategories}>
+        <Switch>
+          <Route path="/equipment/rent/" component={EquipmentRent} />
+          <Route path="/equipment/admin/" component={EquipmentAdmin} />
+          <Route path="/equipment/" component={EquipmentMain} />
+        </Switch>
+      </EquipmentCategoryContext.Provider>
     </div>
   );
 };

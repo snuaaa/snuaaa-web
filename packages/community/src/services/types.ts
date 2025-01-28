@@ -151,6 +151,7 @@ export interface Comment {
   likeUsers: User[];
 }
 
+// TODO: match DTO with server API
 export interface Equipment {
   id: number;
   category: string;
@@ -159,4 +160,9 @@ export interface Equipment {
   location: string;
   status: string;
   img_path: string;
+}
+
+export interface EquipmentCategory {
+  id: number;
+  name: string;
 }
