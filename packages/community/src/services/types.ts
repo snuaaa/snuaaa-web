@@ -152,11 +152,15 @@ export interface Comment {
 // TODO: match DTO with server API
 export interface Equipment {
   id: number;
-  category: string;
+  category_id: number;
   name: string;
   description?: string;
   location: string;
   status: string;
+  rent_status: string;
+  renter?: User;
+  start_date?: string;
+  end_date?: string;
   img_path: string;
 }
 
