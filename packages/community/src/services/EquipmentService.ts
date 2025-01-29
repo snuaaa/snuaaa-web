@@ -20,7 +20,7 @@ export type EquipmentSearchInfo = {
 
 const EquipmentService = {
   retrieveCategoryList: function () {
-    return API.get<EquipmentCategories>('equipment/categories');
+    return API.get<EquipmentCategories>('equipment/category');
   },
 
   searchList: function (searchInfo: EquipmentSearchInfo, pageIdx: number) {
