@@ -42,7 +42,6 @@ const EquipList: React.FC<EquipListProps> = ({
   refreshFlag = undefined,
 }) => {
   const equipmentCategories = useContext(EquipmentCategoryContext);
-  const target = useRef<HTMLDivElement>(null);
   const [limit, setLimit] = useState<number>(LIMIT_UNIT);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -74,6 +73,10 @@ const EquipList: React.FC<EquipListProps> = ({
     setLimit(LIMIT_UNIT);
   }, [searchInfo]);
 
+  const increaseLimit = () => {
+    setLimit((prevLimit) => prevLimit + LIMIT_UNIT);
+  };
+
   const onIntersect = useCallback(
     async (
       [entry]: IntersectionObserverEntry[],
@@ -91,21 +94,24 @@ const EquipList: React.FC<EquipListProps> = ({
     [],
   );
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(onIntersect);
-    if (target.current) {
-      observer.observe(target.current);
-    }
-    return () => observer.disconnect();
-  }, [onIntersect]);
+  const cleanupCallback = useRef(() => {
+    /*left empty on purpose*/
+  });
+
+  const refCallback = useCallback(
+    (e: HTMLDivElement | null) => {
+      if (e) {
+        const observer = new IntersectionObserver(onIntersect);
+        observer.observe(e);
+        cleanupCallback.current = () => observer.disconnect();
+      } else cleanupCallback.current();
+    },
+    [onIntersect],
+  );
 
   if (!data) {
     return <Loading />;
   }
-
-  const increaseLimit = () => {
-    setLimit((prevLimit) => prevLimit + LIMIT_UNIT);
-  };
 
   const makeEquipList = (equips: Equipment[]) => {
     if (equips.length > 0 && equipmentCategories) {
@@ -267,7 +273,7 @@ const EquipList: React.FC<EquipListProps> = ({
     // TODO: reused photo list loader, but may need to customize
     <>
       <div className="flex flex-wrap">{makeEquipList(equipments)}</div>
-      <div className="equip-list-loader-wrapper" ref={target}>
+      <div className="equip-list-loader-wrapper" ref={refCallback}>
         {isLoading && limit < equipments.length && <SpinningLoader size={40} />}
       </div>
     </>
