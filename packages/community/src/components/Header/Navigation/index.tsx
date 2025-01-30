@@ -60,21 +60,21 @@ function Navigation({ boards }: NavigationProps) {
   const photoBoards: Board[] = boards.filter((board) => board.menu === 4);
 
   return (
-    <div className={'main-menu-nav-wrapper relative'}>
-      <nav>
-        {/* <input className="nav-toggle" id="nav-toggle" type="checkbox"/> 
-                    <label className="navicon" htmlFor="nav-toggle"><span className="navicon-bar"></span></label> */}
-        <ul className="nav-items flex justify-center items-center">
-          <Menu menuName={<NavLink to="/">★</NavLink>} />
-          <Menu menuName="A.A.A." menuItems={aboutAAALinks} />
-          <Menu menuName="Notice" menuItems={noticeBoards} />
-          <Menu menuName="Daily" menuItems={communityBoards} />
-          <Menu menuName="Docu" menuItems={officialBoards} />
-          <Menu menuName="Photo" menuItems={photoBoards} />
-          <Menu menuName="Tools" menuItems={toolsLinks} />
-        </ul>
-      </nav>
-    </div>
+    <nav
+      className={
+        'sticky top-0 h-8 md:h-[42px] bg-[#7092C4] md:bg-[#000E2C] w-full z-10 text-[0.8rem] md:text-base shadow-[0_1px_1px_0_rgba(105,105,105,0.61)] md:shadow-[0_2px_2px_0_rgba(50,45,119,0.61)]'
+      }
+    >
+      <ul className="h-full w-full flex justify-around md:justify-center items-center">
+        <Menu menuName={<NavLink to="/">★</NavLink>} />
+        <Menu menuName="A.A.A." menuItems={aboutAAALinks} />
+        <Menu menuName="Notice" menuItems={noticeBoards} />
+        <Menu menuName="Daily" menuItems={communityBoards} />
+        <Menu menuName="Docu" menuItems={officialBoards} />
+        <Menu menuName="Photo" menuItems={photoBoards} />
+        <Menu menuName="Tools" menuItems={toolsLinks} />
+      </ul>
+    </nav>
   );
 }
 
