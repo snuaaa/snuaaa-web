@@ -20,6 +20,7 @@ import { useAuth } from 'contexts/auth';
 import Loading from 'components/Common/Loading';
 import Paginator from 'components/Common/Paginator';
 import EquipList from './EquipList';
+import EquipmentEdit, { EditModalInfo } from './EquipmentEdit';
 
 const stateOptions = [
   {
@@ -55,31 +56,16 @@ const Admin: FC = () => {
   const location = useLocation<LocationState>();
   const authContext = useAuth();
 
+  const [editModalInfo, setEditModalInfo] = useState<EditModalInfo>({
+    isModalOpen: false,
+    equipment: null,
+  });
+
   const [keyword, setKeyword] = useState(
     location.state?.searchInfo?.keyword ?? '',
   );
 
   const pageIdx = location.state?.page ?? 1;
-
-  const fetchFunction = useCallback(
-    async () => {
-      //const searchInfo = location.state && location.state.searchInfo;
-      //
-      //return searchInfo
-      //  ? EquipmentService.searchList(searchInfo, pageIdx)
-      //  : EquipmentService.retrieveList(pageIdx);
-      // Disable paging for now
-      return EquipmentService.retrieveList(1);
-    },
-    [
-      /*location.state, pageIdx*/
-    ],
-  );
-
-  const { data } = useFetch({ fetch: fetchFunction });
-
-  const equipCount = data?.equipCount ?? 0;
-  const equipments = data?.equipInfo ?? [];
 
   // Should use pagination or not?
   // TODO: make page selector
@@ -91,6 +77,21 @@ const Admin: FC = () => {
       },
     });
   };*/
+
+  useEffect(() => {
+    if (!location.state) {
+      history.replace({
+        state: {
+          page: 1,
+          searchInfo: {
+            category_id: 0,
+            status: '',
+            keyword: '',
+          },
+        },
+      });
+    }
+  }, []);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.name === 'category') {
@@ -141,9 +142,12 @@ const Admin: FC = () => {
     setKeyword(e.target.value);
   };
 
-  if (!data) {
-    return <Loading />;
-  }
+  const setIsModalOpen = (val: boolean) => {
+    setEditModalInfo({
+      ...editModalInfo,
+      isModalOpen: val,
+    });
+  };
 
   return (
     <div className="board-wrapper">
@@ -155,13 +159,13 @@ const Admin: FC = () => {
             selectName="category"
             optionList={equipmentCategories}
             onSelect={handleChange}
-            selectedOption={location.state.searchInfo.category_id}
+            selectedOption={location.state?.searchInfo.category_id ?? 0}
           />
           <SelectBox
             selectName="status"
             optionList={stateOptions}
             onSelect={handleChange}
-            selectedOption={location.state.searchInfo.status}
+            selectedOption={location.state?.searchInfo.status ?? ''}
           />
         </div>
         {/* TODO: change CSS style
@@ -182,14 +186,23 @@ const Admin: FC = () => {
         </div>
         {authContext.authInfo.user.grade <= 8 && ( // TODO: change this to equipment authority check
           //TODO: display modal
-          <button className="board-btn-write">
+          <button
+            className="board-btn-write"
+            onClick={() =>
+              setEditModalInfo({
+                isModalOpen: true,
+                equipment: null,
+              })
+            }
+          >
             <i className="ri-pencil-line enif-f-1p2x"></i>장비 추가
           </button>
         )}
       </div>
       <EquipList
-        equipments={equipments}
-        searchInfo={location.state.searchInfo}
+        editModalInfo={editModalInfo}
+        setEditModalInfo={setEditModalInfo}
+        searchInfo={location.state?.searchInfo ?? undefined}
         isAdmin={true}
       />
       {/*equipCount > 0 && (
@@ -199,6 +212,13 @@ const Admin: FC = () => {
           clickPage={clickPage}
         />
       )*/}
+      {editModalInfo.isModalOpen && (
+        <EquipmentEdit
+          editModalInfo={editModalInfo}
+          onFinishEdit={() => setIsModalOpen(false)}
+          onCancel={() => setIsModalOpen(false)}
+        />
+      )}
     </div>
   );
 };
