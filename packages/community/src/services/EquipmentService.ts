@@ -42,6 +42,10 @@ const EquipmentService = {
     return API.post<Equipment>('equipment/', data);
   },
 
+  deleteEquipment: function (id: number) {
+    return API.delete(`equipment/${id}`);
+  },
+
   retrieveList: function (pageIdx: number) {
     return API.get<RetrieveEquipmentListResponse>('equipment/');
   },
