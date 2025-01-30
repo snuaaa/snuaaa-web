@@ -9,7 +9,7 @@ import React, {
 } from 'react';
 import { Equipment } from 'services/types';
 import Image from '../../components/Common/AaaImage';
-import EquipmentStatusEnum from 'common/EquipmentStatusEnum';
+import { EquipmentStatusEnum } from 'common/EquipmentStatusEnum';
 import EquipmentRentEnum from 'common/EquipmentRentEnum';
 import { convertDateMMDD } from 'utils/convertDate';
 import SpinningLoader from 'components/Common/SpinningLoader';
@@ -21,7 +21,6 @@ import Loading from 'components/Common/Loading';
 const LIMIT_UNIT = 12;
 
 type EquipListProps = {
-  editModalInfo: EditModalInfo;
   setEditModalInfo: React.Dispatch<React.SetStateAction<EditModalInfo>>;
   searchInfo:
     | {
@@ -31,15 +30,16 @@ type EquipListProps = {
       }
     | undefined;
   isAdmin: boolean;
+  refreshFlag: boolean;
 };
 
 const fakeFetch = (delay = 500) => new Promise((res) => setTimeout(res, delay));
 
 const EquipList: React.FC<EquipListProps> = ({
-  editModalInfo,
-  setEditModalInfo,
+  setEditModalInfo, // only for admin
   searchInfo,
   isAdmin,
+  refreshFlag,
 }) => {
   const equipmentCategories = useContext(EquipmentCategoryContext);
   const target = useRef<HTMLDivElement>(null);
@@ -61,7 +61,11 @@ const EquipList: React.FC<EquipListProps> = ({
     ],
   );
 
-  const { data } = useFetch({ fetch: fetchFunction });
+  const { data, refresh } = useFetch({ fetch: fetchFunction });
+
+  useEffect(() => {
+    refresh();
+  }, [refreshFlag]);
 
   const equipCount = data?.equipCount ?? 0;
   const equipments = data?.equipInfo ?? [];
@@ -259,18 +263,11 @@ const EquipList: React.FC<EquipListProps> = ({
     return null;
   };
 
-  const setIsModalOpen = (val: boolean) => {
-    setEditModalInfo({
-      ...editModalInfo,
-      isModalOpen: val,
-    });
-  };
-
   return (
     // TODO: reused photo list loader, but may need to customize
     <>
       <div className="flex flex-wrap">{makeEquipList(equipments)}</div>
-      <div className="photo-list-loader-wrapper" ref={target}>
+      <div className="equip-list-loader-wrapper" ref={target}>
         {isLoading && limit < equipments.length && <SpinningLoader size={40} />}
       </div>
     </>

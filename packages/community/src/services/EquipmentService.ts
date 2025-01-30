@@ -18,6 +18,17 @@ export type EquipmentSearchInfo = {
   keyword: string;
 };
 
+export type EquipmentUploadRequest = {
+  id?: number;
+  category_id: number;
+  name: string;
+  description: string;
+  location: string;
+  maker: string;
+  status: string;
+  img_path: string;
+};
+
 const EquipmentService = {
   retrieveCategoryList: function () {
     return API.get<EquipmentCategories>('equipment/category');
@@ -25,6 +36,10 @@ const EquipmentService = {
 
   searchList: function (searchInfo: EquipmentSearchInfo, pageIdx: number) {
     return API.get<RetrieveEquipmentListResponse>('equipment/search');
+  },
+
+  uploadEquipment: function (data: EquipmentUploadRequest) {
+    return API.post<Equipment>('equipment/', data);
   },
 
   retrieveList: function (pageIdx: number) {

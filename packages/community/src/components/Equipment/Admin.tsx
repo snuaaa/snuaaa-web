@@ -7,13 +7,17 @@ import {
   useContext,
   useEffect,
   useState,
+  useRef,
 } from 'react';
 import BoardName from '../Board/BoardName';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import EquipmentService, {
   EquipmentSearchInfo,
 } from 'services/EquipmentService';
-import EquipmentStatusEnum from 'common/EquipmentStatusEnum';
+import {
+  EquipmentStatusEnum,
+  EquipmentStatusOptions,
+} from 'common/EquipmentStatusEnum';
 import SelectBox from 'components/Common/SelectBox';
 import { EquipmentCategoryContext } from 'contexts/EquipmentCategoryContext';
 import { useAuth } from 'contexts/auth';
@@ -21,29 +25,6 @@ import Loading from 'components/Common/Loading';
 import Paginator from 'components/Common/Paginator';
 import EquipList from './EquipList';
 import EquipmentEdit, { EditModalInfo } from './EquipmentEdit';
-
-const stateOptions = [
-  {
-    id: EquipmentStatusEnum.OK,
-    name: '양호',
-  },
-  {
-    id: EquipmentStatusEnum.BROKEN,
-    name: '수리 필요',
-  },
-  {
-    id: EquipmentStatusEnum.LOST,
-    name: '분실',
-  },
-  {
-    id: EquipmentStatusEnum.REPAIRING,
-    name: '수리 중',
-  },
-  {
-    id: EquipmentStatusEnum.ETC,
-    name: '기타',
-  },
-];
 
 type LocationState = {
   page: number;
@@ -58,17 +39,18 @@ const Admin: FC = () => {
 
   const [editModalInfo, setEditModalInfo] = useState<EditModalInfo>({
     isModalOpen: false,
-    equipment: null,
+    equipment: undefined,
   });
+
+  const [refreshFlag, setRefreshFlag] = useState<boolean>(false);
 
   const [keyword, setKeyword] = useState(
     location.state?.searchInfo?.keyword ?? '',
   );
 
-  const pageIdx = location.state?.page ?? 1;
-
   // Should use pagination or not?
   // TODO: make page selector
+  //const pageIdx = location.state?.page ?? 1;
   /*const clickPage = (idx: number) => {
     history.push({
       state: {
@@ -91,7 +73,7 @@ const Admin: FC = () => {
         },
       });
     }
-  }, []);
+  });
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.name === 'category') {
@@ -163,7 +145,7 @@ const Admin: FC = () => {
           />
           <SelectBox
             selectName="status"
-            optionList={stateOptions}
+            optionList={EquipmentStatusOptions}
             onSelect={handleChange}
             selectedOption={location.state?.searchInfo.status ?? ''}
           />
@@ -191,7 +173,7 @@ const Admin: FC = () => {
             onClick={() =>
               setEditModalInfo({
                 isModalOpen: true,
-                equipment: null,
+                equipment: undefined,
               })
             }
           >
@@ -199,11 +181,22 @@ const Admin: FC = () => {
           </button>
         )}
       </div>
+      {editModalInfo.isModalOpen && (
+        <EquipmentEdit
+          editModalInfo={editModalInfo}
+          onFinishEdit={() => {
+            setIsModalOpen(false);
+            setRefreshFlag(!refreshFlag);
+          }}
+          onCancel={() => setIsModalOpen(false)}
+        />
+      )}
+      {/*TODO: make sure equiplist is re-rendered after equipment edit*/}
       <EquipList
-        editModalInfo={editModalInfo}
         setEditModalInfo={setEditModalInfo}
         searchInfo={location.state?.searchInfo ?? undefined}
         isAdmin={true}
+        refreshFlag={refreshFlag}
       />
       {/*equipCount > 0 && (
         <Paginator
@@ -212,13 +205,6 @@ const Admin: FC = () => {
           clickPage={clickPage}
         />
       )*/}
-      {editModalInfo.isModalOpen && (
-        <EquipmentEdit
-          editModalInfo={editModalInfo}
-          onFinishEdit={() => setIsModalOpen(false)}
-          onCancel={() => setIsModalOpen(false)}
-        />
-      )}
     </div>
   );
 };
