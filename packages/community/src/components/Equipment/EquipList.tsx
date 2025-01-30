@@ -13,23 +13,31 @@ import EquipmentStatusEnum from 'common/EquipmentStatusEnum';
 import EquipmentRentEnum from 'common/EquipmentRentEnum';
 import { convertDateMMDD } from 'utils/convertDate';
 import SpinningLoader from 'components/Common/SpinningLoader';
+import EquipmentEdit, { EditModalInfo } from './EquipmentEdit';
+import EquipmentService from 'services/EquipmentService';
+import { useFetch } from 'hooks/useFetch';
+import Loading from 'components/Common/Loading';
 
 const LIMIT_UNIT = 12;
 
 type EquipListProps = {
-  equipments: Equipment[];
-  searchInfo: {
-    category_id: number;
-    status: string;
-    keyword: string;
-  };
+  editModalInfo: EditModalInfo;
+  setEditModalInfo: React.Dispatch<React.SetStateAction<EditModalInfo>>;
+  searchInfo:
+    | {
+        category_id: number;
+        status: string;
+        keyword: string;
+      }
+    | undefined;
   isAdmin: boolean;
 };
 
 const fakeFetch = (delay = 500) => new Promise((res) => setTimeout(res, delay));
 
 const EquipList: React.FC<EquipListProps> = ({
-  equipments,
+  editModalInfo,
+  setEditModalInfo,
   searchInfo,
   isAdmin,
 }) => {
@@ -37,6 +45,26 @@ const EquipList: React.FC<EquipListProps> = ({
   const target = useRef<HTMLDivElement>(null);
   const [limit, setLimit] = useState<number>(LIMIT_UNIT);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const fetchFunction = useCallback(
+    async () => {
+      //const searchInfo = location.state && location.state.searchInfo;
+      //
+      //return searchInfo
+      //  ? EquipmentService.searchList(searchInfo, pageIdx)
+      //  : EquipmentService.retrieveList(pageIdx);
+      // Disable paging for now
+      return EquipmentService.retrieveList(1);
+    },
+    [
+      /*location.state, pageIdx*/
+    ],
+  );
+
+  const { data } = useFetch({ fetch: fetchFunction });
+
+  const equipCount = data?.equipCount ?? 0;
+  const equipments = data?.equipInfo ?? [];
 
   useEffect(() => {
     setLimit(LIMIT_UNIT);
@@ -67,6 +95,10 @@ const EquipList: React.FC<EquipListProps> = ({
     return () => observer.disconnect();
   }, [onIntersect]);
 
+  if (!data) {
+    return <Loading />;
+  }
+
   const increaseLimit = () => {
     setLimit((prevLimit) => prevLimit + LIMIT_UNIT);
   };
@@ -76,13 +108,19 @@ const EquipList: React.FC<EquipListProps> = ({
       return equips
         .filter((equip) => {
           if (
+            searchInfo &&
             searchInfo.category_id !== 0 &&
             equip.category_id !== searchInfo.category_id
           )
             return false;
-          if (searchInfo.status !== '' && equip.status !== searchInfo.status)
+          if (
+            searchInfo &&
+            searchInfo.status !== '' &&
+            equip.status !== searchInfo.status
+          )
             return false;
           if (
+            searchInfo &&
             searchInfo.keyword !== '' &&
             !equip.name.toLowerCase().includes(searchInfo.keyword.toLowerCase())
           )
@@ -95,7 +133,17 @@ const EquipList: React.FC<EquipListProps> = ({
               <div className="w-1/3 h-72 flex flex-col" key={equip.id}>
                 <div className="relative flex-grow border-2 border-gray-250 mx-2 my-2 px-3">
                   <div className="z-1 absolute top-0 right-0">
-                    <i className="ri-pencil-line text-2xl"></i>
+                    <button
+                      className=""
+                      onClick={() => {
+                        setEditModalInfo({
+                          isModalOpen: true,
+                          equipment: equip,
+                        });
+                      }}
+                    >
+                      <i className="ri-pencil-line text-2xl"></i>
+                    </button>
                   </div>
                   <div className="text-base font-bold mt-2 mr-3">
                     {equip.name}
@@ -105,7 +153,7 @@ const EquipList: React.FC<EquipListProps> = ({
                   </div>
                   <div className="h-100 my-2">
                     <div className="font-bold mr-3 inline-block">분류</div>
-                    <div className="equip-info-content inline-block">
+                    <div className="inline-block">
                       {
                         equipmentCategories.find(
                           (category) => category.id === equip.category_id,
@@ -117,7 +165,7 @@ const EquipList: React.FC<EquipListProps> = ({
                     <div className="font-bold mr-3 inline-block">상태</div>
                     <div
                       className={
-                        'equip-info-content inline-block ' +
+                        'inline-block ' +
                         (equip.status === EquipmentStatusEnum.OK
                           ? 'text-green-600'
                           : equip.status === EquipmentStatusEnum.BROKEN
@@ -142,19 +190,17 @@ const EquipList: React.FC<EquipListProps> = ({
                   </div>
                   <div className="my-2">
                     <div className="font-bold mr-3 inline-block">위치</div>
-                    <div className="equip-info-content inline-block">
-                      {equip.location}
-                    </div>
+                    <div className="inline-block">{equip.location}</div>
                   </div>
                   {isAdmin ? (
                     <div
                       className={
                         'w-xs text-white text-center font-bold py-2 mx-2 my-4 ' +
                         (equip.rent_status === EquipmentRentEnum.RENTABLE
-                          ? 'bg-cyan-600'
+                          ? 'bg-cyan-500'
                           : equip.rent_status === EquipmentRentEnum.RENTED
-                            ? 'bg-red-600'
-                            : 'bg-yellow-600')
+                            ? 'bg-red-400'
+                            : 'bg-yellow-400')
                       }
                     >
                       {equip.rent_status === EquipmentRentEnum.RENTABLE
@@ -170,7 +216,14 @@ const EquipList: React.FC<EquipListProps> = ({
                     </div>
                   ) : (
                     <div className="equip-rent-wrapper">
-                      <div className="equip-rent-status">
+                      <div
+                        className={
+                          'w-3/5 text-center font-bold py-2 ml-2 my-4 float-left ' +
+                          (equip.rent_status === EquipmentRentEnum.RENTABLE
+                            ? 'text-cyan-600 border border-cyan-600'
+                            : 'text-black bg-gray-200')
+                        }
+                      >
                         {equip.rent_status === EquipmentRentEnum.RENTABLE
                           ? '바로 대여'
                           : equip.rent_status === EquipmentRentEnum.UNRENTABLE
@@ -182,7 +235,14 @@ const EquipList: React.FC<EquipListProps> = ({
                                 convertDateMMDD(equip.end_date)
                               : ''}
                       </div>
-                      <div className="equip-cart-button">
+                      <div
+                        className={
+                          'text-center w-1/5 font-bold py-2 mr-2 my-4 float-right ' +
+                          (equip.rent_status === EquipmentRentEnum.RENTABLE
+                            ? 'text-cyan-600 border border-cyan-600'
+                            : 'text-black bg-gray-200')
+                        }
+                      >
                         {equip.rent_status === EquipmentRentEnum.RENTABLE
                           ? '+'
                           : '-'}
@@ -197,6 +257,13 @@ const EquipList: React.FC<EquipListProps> = ({
         });
     }
     return null;
+  };
+
+  const setIsModalOpen = (val: boolean) => {
+    setEditModalInfo({
+      ...editModalInfo,
+      isModalOpen: val,
+    });
   };
 
   return (
