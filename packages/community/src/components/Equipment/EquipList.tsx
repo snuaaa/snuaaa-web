@@ -182,7 +182,7 @@ const EquipList: React.FC<EquipListProps> = ({
                             ? 'text-red-600'
                             : equip.status === EquipmentStatusEnum.REPAIRING
                               ? 'text-yellow-600'
-                              : 'text-gray-600')
+                              : 'text-gray-500')
                       }
                     >
                       {equip.status === EquipmentStatusEnum.OK

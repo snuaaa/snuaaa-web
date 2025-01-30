@@ -219,6 +219,8 @@ const EquipmentEdit: React.FC<Props> = ({
               <button
                 className="text-base border border-red-500 text-red-500 text-center font-bold py-2 mx-2 mb-4 mt-2 px-8"
                 onClick={async () => {
+                  const goDrop = window.confirm('정말로 삭제하시겠습니까?');
+                  if (!goDrop) return;
                   await deleteEquipment();
                   onFinishEdit();
                 }}
