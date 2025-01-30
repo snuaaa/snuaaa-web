@@ -158,6 +158,7 @@ export interface Equipment {
   name: string;
   description?: string;
   location: string;
+  maker: string;
   status: string;
   rent_status: string;
   renter?: User;

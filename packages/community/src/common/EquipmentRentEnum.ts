@@ -1,7 +1,7 @@
 const EquipmentRentEnum = Object.freeze({
-  RENTABLE: 'AB',
-  RENTED: 'ED',
-  UNRENTABLE: 'UN',
+  RENTABLE: 'RENTABLE',
+  RENTED: 'RENTED',
+  UNRENTABLE: 'UNRENTABLE',
 });
 
 export default EquipmentRentEnum;
