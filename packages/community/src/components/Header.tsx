@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import logo from '../assets/img/logo_white.png';
 import imgProfile from '../assets/img/common/profile.png';
-import Navigation from '../components/Header/Navigation/index';
+import Navigation from '../components/Header/Navigation';
 import PopupUser from '../components/Header/PopupUser';
 import Image from '../components/Common/AaaImage';
 import { useHistory } from 'react-router';

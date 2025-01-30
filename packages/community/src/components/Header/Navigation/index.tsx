@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import { Board } from 'services/types';
-import Menu, { MenuLink } from './Menu';
+import Menu from './Menu';
+import { MenuLink } from './types';
 
 type NavigationProps = {
   boards: Board[];
