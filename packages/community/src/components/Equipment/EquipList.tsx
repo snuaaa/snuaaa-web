@@ -30,7 +30,7 @@ type EquipListProps = {
       }
     | undefined;
   isAdmin: boolean;
-  refreshFlag: boolean;
+  refreshFlag?: boolean;
 };
 
 const fakeFetch = (delay = 500) => new Promise((res) => setTimeout(res, delay));
@@ -39,7 +39,7 @@ const EquipList: React.FC<EquipListProps> = ({
   setEditModalInfo, // only for admin
   searchInfo,
   isAdmin,
-  refreshFlag,
+  refreshFlag = undefined,
 }) => {
   const equipmentCategories = useContext(EquipmentCategoryContext);
   const target = useRef<HTMLDivElement>(null);
@@ -65,7 +65,7 @@ const EquipList: React.FC<EquipListProps> = ({
 
   useEffect(() => {
     refresh();
-  }, [refreshFlag]);
+  }, [refresh, refreshFlag]);
 
   const equipCount = data?.equipCount ?? 0;
   const equipments = data?.equipInfo ?? [];
