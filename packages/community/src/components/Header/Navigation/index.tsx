@@ -54,11 +54,6 @@ const toolsLinks: MenuLink[] = [
 ];
 
 function Navigation({ boards }: NavigationProps) {
-  const activeStyle = {
-    fontWeight: 900,
-    color: '#fad55f',
-  };
-
   const noticeBoards: Board[] = boards.filter((board) => board.menu === 1);
   const communityBoards: Board[] = boards.filter((board) => board.menu === 2);
   const officialBoards: Board[] = boards.filter((board) => board.menu === 3);
@@ -70,17 +65,13 @@ function Navigation({ boards }: NavigationProps) {
         {/* <input className="nav-toggle" id="nav-toggle" type="checkbox"/> 
                     <label className="navicon" htmlFor="nav-toggle"><span className="navicon-bar"></span></label> */}
         <ul className="nav-items">
-          <li className="menu-nav">
-            <NavLink to="/" activeStyle={activeStyle}>
-              <div className="menu-item-1">★</div>
-            </NavLink>
-          </li>
-          <Menu menuName="A.A.A." links={aboutAAALinks} />
-          <Menu menuName="A-Notice" boards={noticeBoards} />
-          <Menu menuName="A-Daily" boards={communityBoards} />
-          <Menu menuName="A-Docu" boards={officialBoards} />
-          <Menu menuName="A-Photo" boards={photoBoards} />
-          <Menu menuName="A-Tools" links={toolsLinks} />
+          <Menu menuName={<NavLink to="/">★</NavLink>} />
+          <Menu menuName="A.A.A." menuItems={aboutAAALinks} />
+          <Menu menuName="A-Notice" menuItems={noticeBoards} />
+          <Menu menuName="A-Daily" menuItems={communityBoards} />
+          <Menu menuName="A-Docu" menuItems={officialBoards} />
+          <Menu menuName="A-Photo" menuItems={photoBoards} />
+          <Menu menuName="A-Tools" menuItems={toolsLinks} />
         </ul>
       </nav>
     </div>
