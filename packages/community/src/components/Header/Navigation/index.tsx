@@ -64,14 +64,14 @@ function Navigation({ boards }: NavigationProps) {
       <nav>
         {/* <input className="nav-toggle" id="nav-toggle" type="checkbox"/> 
                     <label className="navicon" htmlFor="nav-toggle"><span className="navicon-bar"></span></label> */}
-        <ul className="nav-items">
+        <ul className="nav-items flex justify-center items-center">
           <Menu menuName={<NavLink to="/">★</NavLink>} />
           <Menu menuName="A.A.A." menuItems={aboutAAALinks} />
-          <Menu menuName="A-Notice" menuItems={noticeBoards} />
-          <Menu menuName="A-Daily" menuItems={communityBoards} />
-          <Menu menuName="A-Docu" menuItems={officialBoards} />
-          <Menu menuName="A-Photo" menuItems={photoBoards} />
-          <Menu menuName="A-Tools" menuItems={toolsLinks} />
+          <Menu menuName="Notice" menuItems={noticeBoards} />
+          <Menu menuName="Daily" menuItems={communityBoards} />
+          <Menu menuName="Docu" menuItems={officialBoards} />
+          <Menu menuName="Photo" menuItems={photoBoards} />
+          <Menu menuName="Tools" menuItems={toolsLinks} />
         </ul>
       </nav>
     </div>
