@@ -1,9 +1,9 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import defaultAlbumCover from 'assets/img/default_photo_img.png';
 import defaultStarAlbumCover from 'assets/img/default_photo_img_star.png';
 import Image from '../Common/AaaImage';
 import { Album } from 'services/types';
+import { getThumbnailPath } from 'utils/getThumbnailPath';
 
 type AlbumListProps = {
   board_id: string;
@@ -19,14 +19,8 @@ function AlbumList({ board_id, albums }: AlbumListProps) {
       const contentInfo = album;
       const categoryInfo = album.category;
       // let thumbnailInfo = album.thumbnail && album.thumbnail.photo
-      let thumbnailPath = '';
-      if (album.album.thumbnail && album.album.thumbnail.photo) {
-        thumbnailPath = album.album.thumbnail.photo.thumbnail_path;
-      } else if (album.children && album.children[0]) {
-        thumbnailPath = album.children[0].photo.thumbnail_path;
-      } else {
-        thumbnailPath = '';
-      }
+      const thumbnailPath = getThumbnailPath(album);
+
       let color;
       if (categoryInfo && categoryInfo.category_color) {
         color = {

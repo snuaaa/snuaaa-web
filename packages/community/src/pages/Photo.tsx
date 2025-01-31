@@ -1,15 +1,6 @@
-import {
-  ChangeEvent,
-  FC,
-  useCallback,
-  useState,
-  useEffect,
-  useRef,
-  useMemo,
-} from 'react';
+import { FC, useCallback, useState, useEffect, useRef, useMemo } from 'react';
 import { useHistory, useParams } from 'react-router';
 import { Link } from 'react-router-dom';
-import { Record } from 'immutable';
 
 import Comment from 'components/Comment';
 import FullScreenPortal from 'router/FullScreenPortal';
@@ -76,14 +67,12 @@ const PhotoPage: FC = () => {
   });
 
   const [contentInfo, setContentInfo] = useState<Photo>();
-  const [editContentInfo, setEditContentInfo] = useState<Record<Photo>>();
   const [isLiked, setIsLiked] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     if (data) {
       setContentInfo(data.photoInfo);
-      setEditContentInfo(Record(data.photoInfo));
       setIsLiked(data.likeInfo);
     }
   }, [data]);
@@ -179,67 +168,6 @@ const PhotoPage: FC = () => {
     }
   }, [isFullScreen]);
 
-  const handleChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      if (!editContentInfo) {
-        return;
-      }
-      const name: string = e.target.name;
-
-      if (name === 'title' || name === 'text') {
-        setEditContentInfo(editContentInfo.set(name, e.target.value));
-      } else {
-        setEditContentInfo(
-          editContentInfo.setIn(['photo', name], e.target.value),
-        );
-      }
-    },
-    [editContentInfo],
-  );
-
-  const handleDate = useCallback(
-    (date: Date) => {
-      if (!editContentInfo) {
-        return;
-      }
-
-      setEditContentInfo(editContentInfo.setIn(['photo', 'date'], date));
-    },
-    [editContentInfo],
-  );
-
-  const handleTag = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      if (!editContentInfo || !data) {
-        return;
-      }
-      const tagId: string = e.target.id.replace('crt_', '');
-      const tags = editContentInfo.get('tags');
-      if (tags) {
-        const isSelectedTag = tags.some((tag) => tag.tag_id === tagId);
-
-        if (isSelectedTag) {
-          setEditContentInfo(
-            editContentInfo.set(
-              'tags',
-              tags.filter((tag) => tagId !== tag.tag_id),
-            ),
-          );
-        } else {
-          setEditContentInfo(
-            editContentInfo.set(
-              'tags',
-              tags.concat(
-                data.boardTagInfo.filter((tag) => tagId === tag.tag_id),
-              ),
-            ),
-          );
-        }
-      }
-    },
-    [data, editContentInfo],
-  );
-
   const likePhoto = useCallback(async () => {
     if (!contentInfo) {
       return;
@@ -263,22 +191,6 @@ const PhotoPage: FC = () => {
       console.error(err);
     }
   }, [contentInfo, isLiked, photoId]);
-
-  const updatePhoto = useCallback(async () => {
-    if (editContentInfo) {
-      try {
-        await PhotoService.updatePhoto(
-          Number(photoId),
-          editContentInfo.toJSON(),
-        );
-        refresh();
-        setIsEditing(false);
-      } catch (err) {
-        console.error(err);
-        alert('업데이트 실패');
-      }
-    }
-  }, [editContentInfo, photoId, refresh]);
 
   const parentAlbum = contentInfo?.parent;
 
@@ -315,6 +227,11 @@ const PhotoPage: FC = () => {
     setIsArrowVisible(true);
   }, []);
 
+  const onUpdate = useCallback(() => {
+    refresh();
+    setIsEditing(false);
+  }, [refresh]);
+
   const fullscreenClass = isFullScreen
     ? 'ri-fullscreen-exit-fill'
     : 'ri-fullscreen-fill';
@@ -322,7 +239,7 @@ const PhotoPage: FC = () => {
 
   return (
     <FullScreenPortal>
-      {!(contentInfo && editContentInfo && photoInfo) ? (
+      {!(contentInfo && photoInfo) ? (
         <Loading />
       ) : (
         <>
@@ -365,7 +282,7 @@ const PhotoPage: FC = () => {
                         </button>
                       </div>
                     )}
-                    <Image imgSrc={photoInfo.file_path} />
+                    <Image imgSrc={photoInfo.img_url ?? photoInfo.file_path} />
                     {isArrowVisible && (
                       <div className="photo-move-action next">
                         <button
@@ -387,13 +304,10 @@ const PhotoPage: FC = () => {
                 <div className="photo-section-right">
                   {isEditing ? (
                     <EditPhotoInfo
-                      photoInfo={editContentInfo}
+                      photoInfo={contentInfo}
                       boardTagInfo={data?.boardTagInfo ?? []}
                       onCancel={() => setIsEditing(false)}
-                      updatePhoto={updatePhoto}
-                      handleChange={handleChange}
-                      handleDate={handleDate}
-                      handleTag={handleTag}
+                      onUpdate={onUpdate}
                     />
                   ) : (
                     <>
