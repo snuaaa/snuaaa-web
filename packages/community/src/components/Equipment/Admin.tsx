@@ -1,28 +1,18 @@
-import { useFetch } from 'hooks/useFetch';
 import {
   ChangeEvent,
   KeyboardEvent,
   FC,
-  useCallback,
   useContext,
   useEffect,
   useState,
-  useRef,
 } from 'react';
 import BoardName from '../Board/BoardName';
-import { Link, useHistory, useLocation } from 'react-router-dom';
-import EquipmentService, {
-  EquipmentSearchInfo,
-} from 'services/EquipmentService';
-import {
-  EquipmentStatusEnum,
-  EquipmentStatusOptions,
-} from 'common/EquipmentStatusEnum';
+import { useHistory, useLocation } from 'react-router-dom';
+import { EquipmentSearchInfo } from 'services/EquipmentService';
+import { EquipmentStatusOptions } from 'common/EquipmentStatusEnum';
 import SelectBox from 'components/Common/SelectBox';
 import { EquipmentCategoryContext } from 'contexts/EquipmentCategoryContext';
 import { useAuth } from 'contexts/auth';
-import Loading from 'components/Common/Loading';
-import Paginator from 'components/Common/Paginator';
 import EquipList from './EquipList';
 import EquipmentEdit, { EditModalInfo } from './EquipmentEdit';
 
@@ -47,18 +37,6 @@ const Admin: FC = () => {
   const [keyword, setKeyword] = useState(
     location.state?.searchInfo?.keyword ?? '',
   );
-
-  // Should use pagination or not?
-  // TODO: make page selector
-  //const pageIdx = location.state?.page ?? 1;
-  /*const clickPage = (idx: number) => {
-    history.push({
-      state: {
-        ...location.state,
-        page: idx,
-      },
-    });
-  };*/
 
   useEffect(() => {
     if (!location.state) {
@@ -191,20 +169,12 @@ const Admin: FC = () => {
           onCancel={() => setIsModalOpen(false)}
         />
       )}
-      {/*TODO: make sure equiplist is re-rendered after equipment edit*/}
       <EquipList
         setEditModalInfo={setEditModalInfo}
         searchInfo={location.state?.searchInfo ?? undefined}
         isAdmin={true}
         refreshFlag={refreshFlag}
       />
-      {/*equipCount > 0 && (
-        <Paginator
-          pageIdx={pageIdx}
-          pageNum={Math.ceil(equipCount / PAGEEQUIPNUM)}
-          clickPage={clickPage}
-        />
-      )*/}
     </div>
   );
 };

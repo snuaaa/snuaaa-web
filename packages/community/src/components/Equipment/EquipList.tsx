@@ -13,7 +13,7 @@ import { EquipmentStatusEnum } from 'common/EquipmentStatusEnum';
 import EquipmentRentEnum from 'common/EquipmentRentEnum';
 import { convertDateMMDD } from 'utils/convertDate';
 import SpinningLoader from 'components/Common/SpinningLoader';
-import EquipmentEdit, { EditModalInfo } from './EquipmentEdit';
+import { EditModalInfo } from './EquipmentEdit';
 import EquipmentService from 'services/EquipmentService';
 import { useFetch } from 'hooks/useFetch';
 import Loading from 'components/Common/Loading';
@@ -45,20 +45,9 @@ const EquipList: React.FC<EquipListProps> = ({
   const [limit, setLimit] = useState<number>(LIMIT_UNIT);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const fetchFunction = useCallback(
-    async () => {
-      //const searchInfo = location.state && location.state.searchInfo;
-      //
-      //return searchInfo
-      //  ? EquipmentService.searchList(searchInfo, pageIdx)
-      //  : EquipmentService.retrieveList(pageIdx);
-      // Disable paging for now
-      return EquipmentService.retrieveList(1);
-    },
-    [
-      /*location.state, pageIdx*/
-    ],
-  );
+  const fetchFunction = useCallback(async () => {
+    return EquipmentService.retrieveList(1);
+  }, []);
 
   const { data, refresh } = useFetch({ fetch: fetchFunction });
 
@@ -66,7 +55,7 @@ const EquipList: React.FC<EquipListProps> = ({
     refresh();
   }, [refresh, refreshFlag]);
 
-  const equipCount = data?.equipCount ?? 0;
+  //const equipCount = data?.equipCount ?? 0;
   const equipments = data?.equipInfo ?? [];
 
   useEffect(() => {
@@ -270,7 +259,6 @@ const EquipList: React.FC<EquipListProps> = ({
   };
 
   return (
-    // TODO: reused photo list loader, but may need to customize
     <>
       <div className="flex flex-wrap">{makeEquipList(equipments)}</div>
       <div className="equip-list-loader-wrapper" ref={refCallback}>

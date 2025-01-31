@@ -1,13 +1,9 @@
-import EquipmentRentEnum from 'common/EquipmentRentEnum';
 import {
   EquipmentStatusEnum,
   EquipmentStatusOptions,
 } from 'common/EquipmentStatusEnum';
-import { useAuth } from 'contexts/auth';
 import { EquipmentCategoryContext } from 'contexts/EquipmentCategoryContext';
-import useBlockBackgroundScroll from 'hooks/useBlockBackgroundScroll';
-import { useCallback, useContext, useState } from 'react';
-import { useHistory, useParams } from 'react-router';
+import { useContext, useState } from 'react';
 import EquipmentService, {
   EquipmentUploadRequest,
 } from 'services/EquipmentService';
@@ -31,7 +27,6 @@ const EquipmentEdit: React.FC<Props> = ({
   onCancel,
 }) => {
   //useBlockBackgroundScroll();
-  const history = useHistory();
   const categories = useContext(EquipmentCategoryContext);
   const [name, setName] = useState(editModalInfo.equipment?.name ?? '');
   const [categoryId, setCategoryId] = useState(
