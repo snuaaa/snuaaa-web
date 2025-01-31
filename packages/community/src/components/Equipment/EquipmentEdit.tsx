@@ -8,6 +8,8 @@ import EquipmentService, {
   EquipmentUploadRequest,
 } from 'services/EquipmentService';
 import { Equipment } from 'services/types';
+import SelectComponent from './SelectComponent';
+import InputField from './InputField';
 
 export type EditModalInfo = {
   isModalOpen: boolean;
@@ -28,12 +30,14 @@ const EquipmentEdit: React.FC<Props> = ({
 }) => {
   //useBlockBackgroundScroll();
   const categories = useContext(EquipmentCategoryContext);
+
+  // States for equipment information
   const [name, setName] = useState(editModalInfo.equipment?.name ?? '');
   const [categoryId, setCategoryId] = useState(
     editModalInfo.equipment?.category_id ?? 1,
   );
   const [status, setStatus] = useState(
-    editModalInfo.equipment?.status ?? EquipmentStatusEnum.OK,
+    editModalInfo.equipment?.status ?? EquipmentStatusEnum.OK.value,
   );
   const [location, setLocation] = useState(
     editModalInfo.equipment?.location ?? '',
@@ -42,85 +46,7 @@ const EquipmentEdit: React.FC<Props> = ({
   const [description, setDescription] = useState(
     editModalInfo.equipment?.description ?? '',
   );
-  const imgPath = 'https://placehold.co/600x400';
-
-  const createSelect = <T extends number | string>(
-    name: string,
-    options: readonly { id: T; name: string }[] | null,
-    state: T,
-    callback: (value: T) => void,
-    required = true,
-  ) => {
-    return (
-      <div className="flex w-full mx-auto items-center">
-        <div className="w-1/4">
-          <label
-            htmlFor={name}
-            className="block font-bold text-gray-950 text-left pr-1"
-          >
-            {name}
-            <div className="text-red-600 inline">{required && '*'}</div>
-          </label>
-        </div>
-        <div className="w-3/4">
-          <select
-            name={name}
-            className="border border-gray-300 rounded-xs m-2 p-1 w-full bg-white text-gray-950"
-            value={state}
-            onChange={(e) => callback(e.target.value as T)}
-          >
-            {options &&
-              options.map((option) => (
-                <option key={option.id} value={option.id}>
-                  {option.name}
-                </option>
-              ))}
-          </select>
-        </div>
-      </div>
-    );
-  };
-
-  const createInputField = (
-    name: string,
-    placeholder: string,
-    state: string,
-    callback: (value: string) => void,
-    required = false,
-  ) => {
-    return (
-      <div className="flex w-full mx-auto items-center">
-        <div className="w-1/4">
-          <label
-            htmlFor={name}
-            className="block font-bold text-gray-950 text-left pr-1"
-          >
-            {name}
-            <div className="text-red-600 inline">{required && '*'}</div>
-          </label>
-        </div>
-        <div className="w-3/4">
-          <input
-            type="text"
-            name={name}
-            className="border border-gray-300 rounded-xs m-2 p-1 w-full"
-            placeholder={placeholder}
-            required={required}
-            value={state}
-            onChange={(e) => callback(e.target.value)}
-          />
-        </div>
-      </div>
-    );
-  };
-
-  const createCategorySelect = () => {
-    return createSelect('분류', categories, categoryId, setCategoryId);
-  };
-
-  const createStatusSelect = () => {
-    return createSelect('상태', EquipmentStatusOptions, status, setStatus);
-  };
+  const imgPath = 'https://placehold.co/600x400'; // Temporary image path
 
   const handleSubmit = async () => {
     const data: EquipmentUploadRequest = {
@@ -167,37 +93,47 @@ const EquipmentEdit: React.FC<Props> = ({
           </div>
         </div>
         <div className="w-56 mx-auto text-xs">
-          {createInputField(
-            '장비명',
-            '장비명을 입력하세요.',
-            name,
-            setName,
-            true,
-          )}
-          {createCategorySelect()}
-          {createStatusSelect()}
-          {createInputField(
-            '위치',
-            '위치를 입력하세요.',
-            location,
-            setLocation,
-            true,
-          )}
-          {createInputField(
-            '제조사',
-            '제조사를 입력하세요.',
-            maker,
-            setMaker,
-            true,
-          )}
+          <InputField
+            name="장비명"
+            placeholder="장비명을 입력하세요."
+            value={name}
+            onChange={setName}
+            required={true}
+          />
+          <SelectComponent
+            name="분류"
+            options={categories}
+            value={categoryId}
+            onChange={setCategoryId}
+          />
+          <SelectComponent
+            name="상태"
+            options={EquipmentStatusOptions}
+            value={status}
+            onChange={setStatus}
+          />
+          <InputField
+            name="위치"
+            placeholder="위치를 입력하세요."
+            value={location}
+            onChange={setLocation}
+            required={true}
+          />
+          <InputField
+            name="제조사"
+            placeholder="제조사를 입력하세요."
+            value={maker}
+            onChange={setMaker}
+            required={true}
+          />
           {/*TODO: 기증자 필드 추가해야 할까요?*/}
-          {createInputField(
-            '추가 설명',
-            '선택 입력',
-            description,
-            setDescription,
-            false,
-          )}
+          <InputField
+            name="설명"
+            placeholder="설명을 입력하세요."
+            value={description}
+            onChange={setDescription}
+            required={true}
+          />
           <div className="flex w-full mx-auto items-center justify-center">
             <button
               className="text-base border border-gray-400 text-white text-center font-bold py-2 mx-2 mt-4 mb-2 bg-gray-400 px-8"

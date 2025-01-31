@@ -15,6 +15,7 @@ import { EquipmentCategoryContext } from 'contexts/EquipmentCategoryContext';
 import { useAuth } from 'contexts/auth';
 import EquipList from './EquipList';
 import EquipmentEdit, { EditModalInfo } from './EquipmentEdit';
+import { set } from 'immutable';
 
 type LocationState = {
   page: number;
@@ -27,16 +28,13 @@ const Admin: FC = () => {
   const location = useLocation<LocationState>();
   const authContext = useAuth();
 
-  const [editModalInfo, setEditModalInfo] = useState<EditModalInfo>({
-    isModalOpen: false,
-    equipment: undefined,
-  });
-
-  const [refreshFlag, setRefreshFlag] = useState<boolean>(false);
-
   const [keyword, setKeyword] = useState(
     location.state?.searchInfo?.keyword ?? '',
   );
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Should use pagination or not? : NO!!!!
 
   useEffect(() => {
     if (!location.state) {
@@ -102,13 +100,6 @@ const Admin: FC = () => {
     setKeyword(e.target.value);
   };
 
-  const setIsModalOpen = (val: boolean) => {
-    setEditModalInfo({
-      ...editModalInfo,
-      isModalOpen: val,
-    });
-  };
-
   return (
     <div className="board-wrapper">
       <BoardName board_id={undefined} board_name={'장비 관리'} />
@@ -148,33 +139,39 @@ const Admin: FC = () => {
           //TODO: display modal
           <button
             className="board-btn-write"
-            onClick={() =>
-              setEditModalInfo({
-                isModalOpen: true,
-                equipment: undefined,
-              })
-            }
+            onClick={() => setIsModalOpen(true)}
           >
             <i className="ri-pencil-line enif-f-1p2x"></i>장비 추가
           </button>
         )}
       </div>
-      {editModalInfo.isModalOpen && (
-        <EquipmentEdit
-          editModalInfo={editModalInfo}
-          onFinishEdit={() => {
-            setIsModalOpen(false);
-            setRefreshFlag(!refreshFlag);
-          }}
-          onCancel={() => setIsModalOpen(false)}
-        />
-      )}
+      {/*TODO: make sure equiplist is re-rendered after equipment edit*/}
       <EquipList
-        setEditModalInfo={setEditModalInfo}
         searchInfo={location.state?.searchInfo ?? undefined}
         isAdmin={true}
-        refreshFlag={refreshFlag}
       />
+      {isModalOpen && (
+        <EquipmentEdit
+          editModalInfo={{
+            isModalOpen: false,
+            equipment: undefined,
+          }}
+          onFinishEdit={() => {
+            setIsModalOpen(false);
+            window.location.reload();
+          }}
+          onCancel={() => {
+            setIsModalOpen(false);
+          }}
+        />
+      )}
+      {/*equipCount > 0 && (
+        <Paginator
+          pageIdx={pageIdx}
+          pageNum={Math.ceil(equipCount / PAGEEQUIPNUM)}
+          clickPage={clickPage}
+        />
+      )*/}
     </div>
   );
 };
