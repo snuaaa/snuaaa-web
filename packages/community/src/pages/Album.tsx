@@ -4,7 +4,7 @@ import Loading from 'components/Common/Loading';
 import PhotoList from 'components/Album/PhotoList';
 import AlbumInfo from 'components/Album/AlbumInfo';
 import { EditAlbum } from 'components/Album/modals/EditAlbum';
-import { CreatePhoto } from 'components/Photo/CreatePhoto';
+import CreatePhotoModal from 'components/Photo/CreateModal';
 import BoardName from 'components/Board/BoardName';
 import AlbumService from 'services/AlbumService';
 
@@ -98,7 +98,7 @@ const AlbumPage: FC = () => {
         <Divider />
         <PhotoList photos={photos} />
         {isModalOpen && (
-          <CreatePhoto
+          <CreatePhotoModal
             albumId={albumInfo.content_id}
             boardId={albumInfo.board_id}
             tags={tagInfo}

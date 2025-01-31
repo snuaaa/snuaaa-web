@@ -1,42 +1,46 @@
-import React from 'react';
-
-type ThumbnailListProps = {
-  imgUrls: string[];
-  imgIdx: number;
-  setImgIdx: (idx: number) => void;
+type Props = {
+  imgUrls: (string | undefined)[];
+  selectedImgIdx: number;
+  onClickThumbnail: (idx: number) => void;
   removeImg: (idx: number) => void;
 };
 
 function ThumbnailList({
   imgUrls,
-  imgIdx,
-  setImgIdx,
+  selectedImgIdx,
+  onClickThumbnail,
   removeImg,
-}: ThumbnailListProps) {
-  const makeThumbnails = () => {
-    const thumbnailList = imgUrls.map((imgUrl, index) => {
-      const imgClass =
-        index === imgIdx
-          ? 'photo-thumbnail selected'
-          : 'photo-thumbnail default';
-      return (
-        <div key={index} className="block-constant">
-          <div className="remove-icon-wrapper" onClick={() => removeImg(index)}>
-            <i className="ri-close-circle-line cursor-pointer text-2xl"></i>
-          </div>
-          <img
-            className={imgClass}
-            src={imgUrl}
-            alt="thumbnail"
-            onClick={() => setImgIdx(index)}
-          />
-        </div>
-      );
-    });
-    return thumbnailList;
-  };
+}: Props) {
+  return (
+    <>
+      {imgUrls.map((imgUrl, index) => {
+        const isSelectedImage = index === selectedImgIdx;
+        return (
+          <div key={index} className="block-constant">
+            <div
+              className="remove-icon-wrapper"
+              onClick={() => removeImg(index)}
+            >
+              <i className="ri-close-circle-line cursor-pointer text-2xl"></i>
+            </div>
 
-  return <>{makeThumbnails()}</>;
+            {imgUrl ? (
+              <img
+                className={`photo-thumbnail ${isSelectedImage ? 'selected' : 'default'}`}
+                src={imgUrl}
+                alt="thumbnail"
+                onClick={() => onClickThumbnail(index)}
+              />
+            ) : (
+              <div className="flex justify-center items-center h-full">
+                <div className="spinner" />
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </>
+  );
 }
 
 export default ThumbnailList;

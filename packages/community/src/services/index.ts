@@ -1,4 +1,4 @@
-import axios, { AxiosPromise } from 'axios';
+import axios, { AxiosPromise, AxiosRequestConfig } from 'axios';
 import { getToken } from '../utils/token';
 
 const SERVER_URL = process.env.REACT_APP_SERVER_URL;
@@ -22,8 +22,8 @@ export const API = {
   },
 
   // TODO: fix
-  post: function <T>(url: string, data: unknown) {
-    return axiosInstance.post<T>(`${SERVER_URL}api/${url}`, data);
+  post: function <T>(url: string, data: unknown, config?: AxiosRequestConfig) {
+    return axiosInstance.post<T>(`${SERVER_URL}api/${url}`, data, config);
   },
 
   postWithProgress: function (
@@ -44,8 +44,3 @@ export const API = {
     return axiosInstance.delete(`${SERVER_URL}api/${url}`);
   },
 };
-
-// TODO: fix data type
-export function createAttachedImage(data: FormData) {
-  return axiosInstance.post(SERVER_URL + 'api/image', data);
-}
