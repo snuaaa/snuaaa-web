@@ -45,13 +45,13 @@ const aboutAAALinks: MenuLink[] = [
   },
 ];
 
-const toolsLinks: MenuLink[] = [
-  {
-    name: '장비 대여',
-    url: 'https://archive.snuaaa.net/EquipmentSystem',
-    isExternal: true,
-  },
-];
+// const toolsLinks: MenuLink[] = [
+//   {
+//     name: '장비 대여',
+//     url: 'https://archive.snuaaa.net/EquipmentSystem',
+//     isExternal: true,
+//   },
+// ];
 
 function Navigation({ boards }: NavigationProps) {
   const noticeBoards: Board[] = boards.filter((board) => board.menu === 1);
@@ -72,7 +72,7 @@ function Navigation({ boards }: NavigationProps) {
         <Menu menuName="Daily" menuItems={communityBoards} />
         <Menu menuName="Docu" menuItems={officialBoards} />
         <Menu menuName="Photo" menuItems={photoBoards} />
-        <Menu menuName="Tools" menuItems={toolsLinks} />
+        {/* <Menu menuName="Tools" menuItems={toolsLinks} /> */}
       </ul>
     </nav>
   );
