@@ -55,7 +55,7 @@ const EquipRentItem: React.FC<{
   };
 
   return (
-    <div className="w-1/3 h-72 flex flex-col" key={equip.id}>
+    <div className="w-1/2 h-72 flex flex-col" key={equip.id}>
       <div
         className={
           'relative flex-grow mx-2 my-2 px-3' +

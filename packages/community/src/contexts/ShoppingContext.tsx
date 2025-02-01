@@ -25,24 +25,28 @@ export const useShopping = (): ShoppingCartInterface => {
 export const ShoppingProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const shoppingCart = new ShoppingCart();
+  // useRef로 ShoppingCart 인스턴스를 유지
+  const shoppingCartRef = React.useRef(new ShoppingCart());
+  const shoppingCart = shoppingCartRef.current;
+
+  // 상태는 cart 배열만 관리하도록 변경
   const [cart, setCart] = React.useState<number[]>(shoppingCart.getItems());
 
   const addItem = (equipId: number) => {
     if (shoppingCart.addItem(equipId)) {
-      setCart(shoppingCart.getItems());
+      setCart([...shoppingCart.getItems()]);
     }
   };
 
   const removeItem = (equipId: number) => {
     if (shoppingCart.removeItem(equipId)) {
-      setCart(shoppingCart.getItems());
+      setCart([...shoppingCart.getItems()]);
     }
   };
 
   const clearCart = () => {
     shoppingCart.clear();
-    setCart(shoppingCart.getItems());
+    setCart([]);
   };
 
   const submit = (
