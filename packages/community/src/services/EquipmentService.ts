@@ -1,6 +1,6 @@
 import { EquipmentCategories } from 'contexts/EquipmentCategoryContext';
 import { API } from './index';
-
+import { SearchInfo } from './types';
 import { Equipment } from './types';
 
 export type RetrieveEquipmentListResponse = {
@@ -10,12 +10,6 @@ export type RetrieveEquipmentListResponse = {
 
 export type RentEquipmentRequest = {
   equipmentIds: number[];
-};
-
-export type EquipmentSearchInfo = {
-  category_id: number;
-  status: string;
-  keyword: string;
 };
 
 export type EquipmentUploadRequest = {
@@ -29,12 +23,17 @@ export type EquipmentUploadRequest = {
   img_path: string;
 };
 
+export type RentResponse = {
+  successIds: number[];
+  failureIds: number[];
+};
+
 const EquipmentService = {
   retrieveCategoryList: function () {
     return API.get<EquipmentCategories>('equipment/category');
   },
 
-  searchList: function (searchInfo: EquipmentSearchInfo, pageIdx: number) {
+  searchList: function (searchInfo: SearchInfo, pageIdx: number) {
     return API.get<RetrieveEquipmentListResponse>('equipment/search');
   },
 
@@ -55,7 +54,7 @@ const EquipmentService = {
   },
 
   rentEquipment: function (data: RentEquipmentRequest) {
-    return API.post<Equipment>(`equipment/rent/`, data);
+    return API.post<RentResponse>(`equipment/rent/`, data);
   },
 };
 

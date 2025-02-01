@@ -171,3 +171,9 @@ export interface EquipmentCategory {
   id: number;
   name: string;
 }
+
+export type SearchInfo = {
+  category_id: number;
+  status: string;
+  keyword: string;
+};

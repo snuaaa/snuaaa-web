@@ -1,18 +1,37 @@
+import { Equipment, SearchInfo } from 'services/types';
+import React, { useContext } from 'react';
 import { EquipmentCategoryContext } from 'contexts/EquipmentCategoryContext';
-import React, { useContext, useState } from 'react';
-import { Equipment } from 'services/types';
-import EquipManageItem from './EquipManageItem';
-import { is } from 'immutable';
-import { SearchInfo } from 'services/types';
+import { useShopping } from 'contexts/ShoppingContext';
+import EquipRentItem from './EquipRentItem';
+import EquipmentService, {
+  RentEquipmentRequest,
+} from 'services/EquipmentService';
 
-const ItemModelProvider: React.FC<{
+const RentModelProvider: React.FC<{
   equips: Equipment[];
   searchInfo: SearchInfo | undefined;
   limit: number;
   confirm: () => void;
 }> = ({ equips, searchInfo, limit, confirm }) => {
   const equipmentCategories = useContext(EquipmentCategoryContext);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { cart, addItem, removeItem } = useShopping();
+
+  const immediateRent = (equipId: number) => {
+    const datarequest: RentEquipmentRequest = {
+      equipmentIds: [equipId],
+    };
+    EquipmentService.rentEquipment(datarequest)
+      .then((res) => {
+        if (res.data.successIds.includes(equipId)) {
+          confirm();
+        } else {
+          alert('대여에 실패했습니다.');
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
 
   if (equips.length > 0 && equipmentCategories) {
     return equips
@@ -40,17 +59,13 @@ const ItemModelProvider: React.FC<{
       .map((equip, index) => {
         if (index < limit) {
           return (
-            <EquipManageItem
+            <EquipRentItem
               equip={equip}
               key={equip.id}
-              onFinish={() => {
-                confirm();
-                setIsModalOpen(false);
-              }}
-              onCancel={() => {
-                setIsModalOpen(false);
-              }}
-              check={() => !isModalOpen}
+              addItem={() => addItem(equip.id)}
+              removeItem={() => removeItem(equip.id)}
+              immdeiateRent={() => immediateRent(equip.id)}
+              selected={cart.includes(equip.id)}
             />
           );
         }
@@ -60,4 +75,4 @@ const ItemModelProvider: React.FC<{
   return null;
 };
 
-export default ItemModelProvider;
+export default RentModelProvider;
