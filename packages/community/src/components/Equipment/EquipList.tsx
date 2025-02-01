@@ -46,7 +46,7 @@ const EquipList: React.FC<{ isAdmin: boolean }> = ({ isAdmin }) => {
     }
   }, [location.state]);
 
-  const increaseLimit = () => {
+  const increaseLimit: () => void = () => {
     setLimit((prevLimit) => prevLimit + LIMIT_UNIT);
   };
 
