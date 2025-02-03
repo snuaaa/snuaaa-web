@@ -16,6 +16,9 @@ import EquipList from './EquipList';
 // import EquipmentEdit from './EquipmentEdit';
 import { equipmentStatusOptions } from './common';
 import { Equipment } from 'services/types';
+import { useModal, withModal } from 'contexts/modal';
+import EditModal from './Modal/Edit';
+import CreateModal from './Modal/Create';
 
 type LocationState = {
   page: number;
@@ -33,6 +36,8 @@ const Admin: FC = () => {
   const [keyword, setKeyword] = useState(
     location.state?.searchInfo?.keyword ?? '',
   );
+
+  const { openModal } = useModal();
 
   useEffect(() => {
     if (!location.state) {
@@ -99,19 +104,12 @@ const Admin: FC = () => {
   };
 
   const handleClickEquipmentEdit = (equipment: Equipment) => {
-    // TODO: open EditModal
-    // setEditModalInfo({
-    //   isModalOpen: true,
-    //   equipment: equipmentId,
-    // });
+    openModal(<EditModal editingEquipment={equipment} />);
   };
 
-  // const setIsModalOpen = (val: boolean) => {
-  //   setEditModalInfo({
-  //     ...editModalInfo,
-  //     isModalOpen: val,
-  //   });
-  // };
+  const handleClickCreate = () => {
+    openModal(<CreateModal />);
+  };
 
   return (
     <div className="board-wrapper">
@@ -150,29 +148,11 @@ const Admin: FC = () => {
         </div>
         {authContext.authInfo.user.grade <= 8 && ( // TODO: change this to equipment authority check
           //TODO: display modal
-          <button
-            className="board-btn-write"
-            onClick={() => {
-              // setEditModalInfo({
-              //   isModalOpen: true,
-              //   equipment: undefined,
-              // })
-            }}
-          >
+          <button className="board-btn-write" onClick={handleClickCreate}>
             <i className="ri-pencil-line enif-f-1p2x"></i>장비 추가
           </button>
         )}
       </div>
-      {/* {editModalInfo.isModalOpen && (
-        <EquipmentEdit
-          editModalInfo={editModalInfo}
-          onFinishEdit={() => {
-            setIsModalOpen(false);
-            setRefreshFlag(!refreshFlag);
-          }}
-          onCancel={() => setIsModalOpen(false)}
-        />
-      )} */}
       <EquipList
         onClickEquipmentEdit={handleClickEquipmentEdit}
         searchInfo={location.state?.searchInfo ?? undefined}
@@ -183,4 +163,4 @@ const Admin: FC = () => {
   );
 };
 
-export default Admin;
+export default withModal(Admin);

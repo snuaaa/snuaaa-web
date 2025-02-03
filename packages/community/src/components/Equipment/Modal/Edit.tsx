@@ -4,19 +4,22 @@ import EquipmentService, {
   EquipmentUploadRequest,
 } from 'services/EquipmentService';
 import { Equipment } from 'services/types';
+import { useModal } from 'contexts/modal';
 
 type Props = {
   editingEquipment: Equipment;
-  onCancel: () => void;
 };
 
-const CreateModal: FC<Props> = ({ editingEquipment, onCancel }) => {
+const EditModal: FC<Props> = ({ editingEquipment }) => {
   const [equipment, setEquipment] = useState<EquipmentUploadRequest>({
     ...editingEquipment,
   });
 
+  const { closeModal } = useModal();
+
   const handleSubmit = async () => {
     // TODO: Implement Edit Equipment
+    closeModal();
   };
 
   const handleChangeInput = (
@@ -41,9 +44,9 @@ const CreateModal: FC<Props> = ({ editingEquipment, onCancel }) => {
       onChangeInput={handleChangeInput}
       onChangeSelect={handleChangeSelect}
       onSubmit={handleSubmit}
-      onCancel={onCancel}
+      onCancel={closeModal}
     />
   );
 };
 
-export default CreateModal;
+export default EditModal;

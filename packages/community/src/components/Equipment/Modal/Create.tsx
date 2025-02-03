@@ -4,12 +4,9 @@ import EquipmentService, {
   EquipmentUploadRequest,
 } from 'services/EquipmentService';
 import { EquipmentStatus } from 'services/types';
+import { useModal } from 'contexts/modal';
 
-type Props = {
-  onCancel: () => void;
-};
-
-const CreateModal: FC<Props> = ({ onCancel }) => {
+const CreateModal: FC = () => {
   const [equipment, setEquipment] = useState<EquipmentUploadRequest>({
     name: '',
     category_id: 0,
@@ -19,6 +16,8 @@ const CreateModal: FC<Props> = ({ onCancel }) => {
     description: '',
     img_path: '',
   });
+
+  const { closeModal } = useModal();
 
   const handleSubmit = async () => {
     await EquipmentService.uploadEquipment(equipment);
@@ -46,7 +45,7 @@ const CreateModal: FC<Props> = ({ onCancel }) => {
       onChangeInput={handleChangeInput}
       onChangeSelect={handleChangeSelect}
       onSubmit={handleSubmit}
-      onCancel={onCancel}
+      onCancel={closeModal}
     />
   );
 };
