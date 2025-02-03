@@ -5,10 +5,14 @@ import {
   useContext,
   useEffect,
   useState,
+  useCallback,
+  useMemo,
 } from 'react';
 import BoardName from '../Board/BoardName';
 import { useHistory, useLocation } from 'react-router-dom';
-import { EquipmentSearchInfo } from 'services/EquipmentService';
+import EquipmentService, {
+  EquipmentSearchInfo,
+} from 'services/EquipmentService';
 import SelectBox from 'components/Common/SelectBox';
 import { EquipmentCategoryContext } from 'contexts/EquipmentCategoryContext';
 import { useAuth } from 'contexts/auth';
@@ -19,6 +23,10 @@ import { Equipment } from 'services/types';
 import { useModal, withModal } from 'contexts/modal';
 import EditModal from './Modal/Edit';
 import CreateModal from './Modal/Create';
+import { useFetch } from 'hooks/useFetch';
+import Loading from 'components/Common/Loading';
+
+const LIMIT_UNIT = 12;
 
 type LocationState = {
   page: number;
@@ -31,11 +39,17 @@ const Admin: FC = () => {
   const location = useLocation<LocationState>();
   const authContext = useAuth();
 
-  const [refreshFlag, setRefreshFlag] = useState<boolean>(false);
-
   const [keyword, setKeyword] = useState(
     location.state?.searchInfo?.keyword ?? '',
   );
+
+  const fetchFunction = useCallback(async () => {
+    return EquipmentService.retrieveList(1);
+  }, []);
+
+  const [limit, setLimit] = useState<number>(LIMIT_UNIT);
+
+  const { data, refresh } = useFetch({ fetch: fetchFunction });
 
   const { openModal } = useModal();
 
@@ -79,6 +93,7 @@ const Admin: FC = () => {
         },
       });
     }
+    setLimit(LIMIT_UNIT);
   };
 
   const search = async () => {
@@ -110,6 +125,45 @@ const Admin: FC = () => {
   const handleClickCreate = () => {
     openModal(<CreateModal />);
   };
+
+  const searchInfo = location.state?.searchInfo;
+
+  // TODO: Server side filtering
+  const filteredEquipments = useMemo(
+    () =>
+      data?.equipInfo
+        .filter((equip) => {
+          if (
+            searchInfo &&
+            searchInfo.category_id !== 0 &&
+            equip.category_id !== searchInfo.category_id
+          )
+            return false;
+          if (
+            searchInfo &&
+            searchInfo.status !== '' &&
+            equip.status !== searchInfo.status
+          )
+            return false;
+          if (
+            searchInfo &&
+            searchInfo.keyword !== '' &&
+            !equip.name.toLowerCase().includes(searchInfo.keyword.toLowerCase())
+          )
+            return false;
+          return true;
+        })
+        .slice(0, limit) ?? [],
+    [data?.equipInfo, limit, searchInfo],
+  );
+
+  const increaseLimit = () => {
+    setLimit((prevLimit) => prevLimit + LIMIT_UNIT);
+  };
+
+  if (!data) {
+    return <Loading />;
+  }
 
   return (
     <div className="board-wrapper">
@@ -154,10 +208,10 @@ const Admin: FC = () => {
         )}
       </div>
       <EquipList
+        equipmentList={filteredEquipments}
         onClickEquipmentEdit={handleClickEquipmentEdit}
-        searchInfo={location.state?.searchInfo ?? undefined}
-        isAdmin={true}
-        refreshFlag={refreshFlag}
+        onNext={increaseLimit}
+        canMoveNext={data.equipInfo.length > limit}
       />
     </div>
   );

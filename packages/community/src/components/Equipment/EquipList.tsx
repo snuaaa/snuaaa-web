@@ -1,13 +1,5 @@
 import { EquipmentCategoryContext } from 'contexts/EquipmentCategoryContext';
-import React, {
-  memo,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { memo, useCallback, useContext, useRef, useState } from 'react';
 import {
   Equipment,
   EquipmentRentStatus,
@@ -16,11 +8,6 @@ import {
 import Image from '../../components/Common/AaaImage';
 import { convertDateMMDD } from 'utils/convertDate';
 import SpinningLoader from 'components/Common/SpinningLoader';
-import EquipmentService from 'services/EquipmentService';
-import { useFetch } from 'hooks/useFetch';
-import Loading from 'components/Common/Loading';
-
-const LIMIT_UNIT = 12;
 
 const equipmentStatusColorMap: Record<EquipmentStatus, string> = {
   [EquipmentStatus.OK]: 'text-green-600',
@@ -53,49 +40,24 @@ const mapEquipmentRentText = (equip: Equipment) => {
 };
 
 type Props = {
-  onClickEquipmentEdit: (equip: Equipment) => void;
-  searchInfo:
-    | {
-        category_id: number;
-        status: string;
-        keyword: string;
-      }
-    | undefined;
-  isAdmin: boolean;
-  refreshFlag?: boolean;
+  onClickEquipmentEdit?: (equip: Equipment) => void;
+  equipmentList: Equipment[];
+  canMoveNext: boolean;
+  onNext: () => void;
 };
 
 const fakeFetch = (delay = 500) => new Promise((res) => setTimeout(res, delay));
 
 const EquipList: React.FC<Props> = ({
   onClickEquipmentEdit, // only for admin
-  searchInfo,
-  isAdmin,
-  refreshFlag = undefined,
+  equipmentList,
+  canMoveNext,
+  onNext,
 }) => {
   const equipmentCategories = useContext(EquipmentCategoryContext);
-  const [limit, setLimit] = useState<number>(LIMIT_UNIT);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const fetchFunction = useCallback(async () => {
-    return EquipmentService.retrieveList(1);
-  }, []);
-
-  const { data, refresh } = useFetch({ fetch: fetchFunction });
-
-  useEffect(() => {
-    refresh();
-  }, [refresh, refreshFlag]);
-
   //const equipCount = data?.equipCount ?? 0;
-
-  useEffect(() => {
-    setLimit(LIMIT_UNIT);
-  }, [searchInfo]);
-
-  const increaseLimit = () => {
-    setLimit((prevLimit) => prevLimit + LIMIT_UNIT);
-  };
 
   const onIntersect = useCallback(
     async (
@@ -105,7 +67,7 @@ const EquipList: React.FC<Props> = ({
       if (entry.isIntersecting) {
         setIsLoading(true);
         await fakeFetch();
-        increaseLimit();
+        onNext();
         setIsLoading(false);
       } else {
         setIsLoading(false);
@@ -118,7 +80,7 @@ const EquipList: React.FC<Props> = ({
     /*left empty on purpose*/
   });
 
-  const refCallback = useCallback(
+  const loaderRef = useCallback(
     (e: HTMLDivElement | null) => {
       if (e) {
         const observer = new IntersectionObserver(onIntersect);
@@ -129,50 +91,19 @@ const EquipList: React.FC<Props> = ({
     [onIntersect],
   );
 
-  // TODO: Server side filtering
-  const filteredEquipments = useMemo(
-    () =>
-      data?.equipInfo
-        .filter((equip) => {
-          if (
-            searchInfo &&
-            searchInfo.category_id !== 0 &&
-            equip.category_id !== searchInfo.category_id
-          )
-            return false;
-          if (
-            searchInfo &&
-            searchInfo.status !== '' &&
-            equip.status !== searchInfo.status
-          )
-            return false;
-          if (
-            searchInfo &&
-            searchInfo.keyword !== '' &&
-            !equip.name.toLowerCase().includes(searchInfo.keyword.toLowerCase())
-          )
-            return false;
-          return true;
-        })
-        .slice(0, limit) ?? [],
-    [data?.equipInfo, limit, searchInfo],
-  );
-
-  if (!data) {
-    return <Loading />;
-  }
-
   return (
     <>
       <div className="flex flex-wrap">
-        {filteredEquipments.map((equip) => (
+        {equipmentList.map((equip) => (
           <div className="w-1/3 h-72 flex flex-col" key={equip.id}>
             <div className="relative flex-grow border-2 border-gray-250 mx-2 my-2 px-3">
-              <div className="z-1 absolute top-0 right-0">
-                <button onClick={() => onClickEquipmentEdit(equip)}>
-                  <i className="ri-pencil-line text-2xl"></i>
-                </button>
-              </div>
+              {onClickEquipmentEdit && (
+                <div className="z-1 absolute top-0 right-0">
+                  <button onClick={() => onClickEquipmentEdit(equip)}>
+                    <i className="ri-pencil-line text-2xl"></i>
+                  </button>
+                </div>
+              )}
               <div className="text-base font-bold mt-2 mr-3">{equip.name}</div>
               <div className="equip-picture">
                 <Image imgSrc={equip.img_path} />
@@ -199,7 +130,7 @@ const EquipList: React.FC<Props> = ({
                 <div className="font-bold mr-3 inline-block">위치</div>
                 <div className="inline-block">{equip.location}</div>
               </div>
-              {isAdmin ? (
+              {onClickEquipmentEdit ? (
                 <div
                   className={`w-xs text-white text-center font-bold py-2 mx-2 my-4 ${equipmentRentColorMap[equip.rent_status]}`}
                 >
@@ -235,10 +166,8 @@ const EquipList: React.FC<Props> = ({
           </div>
         ))}
       </div>
-      <div className="equip-list-loader-wrapper" ref={refCallback}>
-        {isLoading && limit < data.equipInfo.length && (
-          <SpinningLoader size={40} />
-        )}
+      <div className="equip-list-loader-wrapper" ref={loaderRef}>
+        {isLoading && canMoveNext && <SpinningLoader size={40} />}
       </div>
     </>
   );
