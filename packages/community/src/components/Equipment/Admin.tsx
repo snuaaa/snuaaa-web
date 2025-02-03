@@ -9,12 +9,12 @@ import {
 import BoardName from '../Board/BoardName';
 import { useHistory, useLocation } from 'react-router-dom';
 import { EquipmentSearchInfo } from 'services/EquipmentService';
-import { EquipmentStatusOptions } from 'common/EquipmentStatusEnum';
 import SelectBox from 'components/Common/SelectBox';
 import { EquipmentCategoryContext } from 'contexts/EquipmentCategoryContext';
 import { useAuth } from 'contexts/auth';
 import EquipList from './EquipList';
 import EquipmentEdit, { EditModalInfo } from './EquipmentEdit';
+import { equipmentStatusOptions } from './common';
 
 type LocationState = {
   page: number;
@@ -123,7 +123,7 @@ const Admin: FC = () => {
           />
           <SelectBox
             selectName="status"
-            optionList={EquipmentStatusOptions}
+            optionList={equipmentStatusOptions}
             onSelect={handleChange}
             selectedOption={location.state?.searchInfo.status ?? ''}
           />

@@ -7,10 +7,12 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Equipment } from 'services/types';
+import {
+  Equipment,
+  EquipmentRentStatus,
+  EquipmentStatus,
+} from 'services/types';
 import Image from '../../components/Common/AaaImage';
-import { EquipmentStatusEnum } from 'common/EquipmentStatusEnum';
-import EquipmentRentEnum from 'common/EquipmentRentEnum';
 import { convertDateMMDD } from 'utils/convertDate';
 import SpinningLoader from 'components/Common/SpinningLoader';
 import { EditModalInfo } from './EquipmentEdit';
@@ -19,6 +21,36 @@ import { useFetch } from 'hooks/useFetch';
 import Loading from 'components/Common/Loading';
 
 const LIMIT_UNIT = 12;
+
+const equipmentStatusColorMap: Record<EquipmentStatus, string> = {
+  [EquipmentStatus.OK]: 'text-green-600',
+  [EquipmentStatus.BROKEN]: 'text-red-600',
+  [EquipmentStatus.REPAIRING]: 'text-yellow-600',
+  [EquipmentStatus.LOST]: 'text-gray-500',
+  [EquipmentStatus.ETC]: 'text-gray-500',
+};
+
+const equipmentStatusTextMap: Record<EquipmentStatus, string> = {
+  [EquipmentStatus.OK]: '양호',
+  [EquipmentStatus.BROKEN]: '수리 필요',
+  [EquipmentStatus.REPAIRING]: '수리 중',
+  [EquipmentStatus.LOST]: '분실',
+  [EquipmentStatus.ETC]: '기타',
+};
+
+const equipmentRentColorMap: Record<EquipmentRentStatus, string> = {
+  [EquipmentRentStatus.RENTABLE]: 'bg-cyan-500',
+  [EquipmentRentStatus.UNRENTABLE]: 'bg-yellow-400',
+  [EquipmentRentStatus.RENTED]: 'bg-red-400',
+};
+
+const mapEquipmentRentText = (equip: Equipment) => {
+  return equip.rent_status === EquipmentRentStatus.RENTABLE
+    ? '대여 가능'
+    : equip.rent_status === EquipmentRentStatus.UNRENTABLE
+      ? '대여 불가'
+      : `${equip.renter?.nickname} ~ ${convertDateMMDD(equip.end_date)}`;
+};
 
 type EquipListProps = {
   setEditModalInfo: React.Dispatch<React.SetStateAction<EditModalInfo>>;
@@ -163,28 +195,9 @@ const EquipList: React.FC<EquipListProps> = ({
                   <div className="my-2">
                     <div className="font-bold mr-3 inline-block">상태</div>
                     <div
-                      className={
-                        'inline-block ' +
-                        (equip.status === EquipmentStatusEnum.OK
-                          ? 'text-green-600'
-                          : equip.status === EquipmentStatusEnum.BROKEN
-                            ? 'text-red-600'
-                            : equip.status === EquipmentStatusEnum.REPAIRING
-                              ? 'text-yellow-600'
-                              : 'text-gray-500')
-                      }
+                      className={`inline-block ${equipmentStatusColorMap[equip.status]}`}
                     >
-                      {equip.status === EquipmentStatusEnum.OK
-                        ? '양호'
-                        : equip.status === EquipmentStatusEnum.BROKEN
-                          ? '수리 필요'
-                          : equip.status === EquipmentStatusEnum.REPAIRING
-                            ? '수리 중'
-                            : equip.status === EquipmentStatusEnum.LOST
-                              ? '분실'
-                              : equip.status === EquipmentStatusEnum.ETC
-                                ? '기타'
-                                : '기타'}
+                      {equipmentStatusTextMap[equip.status]}
                     </div>
                   </div>
                   <div className="my-2">
@@ -193,56 +206,31 @@ const EquipList: React.FC<EquipListProps> = ({
                   </div>
                   {isAdmin ? (
                     <div
-                      className={
-                        'w-xs text-white text-center font-bold py-2 mx-2 my-4 ' +
-                        (equip.rent_status === EquipmentRentEnum.RENTABLE
-                          ? 'bg-cyan-500'
-                          : equip.rent_status === EquipmentRentEnum.RENTED
-                            ? 'bg-red-400'
-                            : 'bg-yellow-400')
-                      }
+                      className={`w-xs text-white text-center font-bold py-2 mx-2 my-4 ${equipmentRentColorMap[equip.rent_status]}`}
                     >
-                      {equip.rent_status === EquipmentRentEnum.RENTABLE
-                        ? '대여 가능'
-                        : equip.rent_status === EquipmentRentEnum.UNRENTABLE
-                          ? '대여 불가'
-                          : equip.rent_status === EquipmentRentEnum.RENTED
-                            ? equip.renter?.nickname +
-                              ' ~' +
-                              // parse date to MM/DD format
-                              convertDateMMDD(equip.end_date)
-                            : ''}
+                      {mapEquipmentRentText(equip)}
                     </div>
                   ) : (
                     <div className="equip-rent-wrapper">
                       <div
                         className={
                           'w-3/5 text-center font-bold py-2 ml-2 my-4 float-left ' +
-                          (equip.rent_status === EquipmentRentEnum.RENTABLE
+                          (equip.rent_status === EquipmentRentStatus.RENTABLE
                             ? 'text-cyan-600 border border-cyan-600'
                             : 'text-black bg-gray-200')
                         }
                       >
-                        {equip.rent_status === EquipmentRentEnum.RENTABLE
-                          ? '바로 대여'
-                          : equip.rent_status === EquipmentRentEnum.UNRENTABLE
-                            ? '대여 불가'
-                            : equip.rent_status === EquipmentRentEnum.RENTED
-                              ? equip.renter?.nickname +
-                                ' ~' +
-                                // parse date to MM/DD format
-                                convertDateMMDD(equip.end_date)
-                              : ''}
+                        {mapEquipmentRentText(equip)}
                       </div>
                       <div
                         className={
                           'text-center w-1/5 font-bold py-2 mr-2 my-4 float-right ' +
-                          (equip.rent_status === EquipmentRentEnum.RENTABLE
+                          (equip.rent_status === EquipmentRentStatus.RENTABLE
                             ? 'text-cyan-600 border border-cyan-600'
                             : 'text-black bg-gray-200')
                         }
                       >
-                        {equip.rent_status === EquipmentRentEnum.RENTABLE
+                        {equip.rent_status === EquipmentRentStatus.RENTABLE
                           ? '+'
                           : '-'}
                       </div>

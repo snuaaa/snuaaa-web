@@ -1,13 +1,10 @@
-import {
-  EquipmentStatusEnum,
-  EquipmentStatusOptions,
-} from 'common/EquipmentStatusEnum';
 import { EquipmentCategoryContext } from 'contexts/EquipmentCategoryContext';
 import { useContext, useState } from 'react';
 import EquipmentService, {
   EquipmentUploadRequest,
 } from 'services/EquipmentService';
-import { Equipment } from 'services/types';
+import { Equipment, EquipmentStatus } from 'services/types';
+import { equipmentStatusOptions } from './common';
 
 export type EditModalInfo = {
   isModalOpen: boolean;
@@ -33,7 +30,7 @@ const EquipmentEdit: React.FC<Props> = ({
     editModalInfo.equipment?.category_id ?? 1,
   );
   const [status, setStatus] = useState(
-    editModalInfo.equipment?.status ?? EquipmentStatusEnum.OK,
+    editModalInfo.equipment?.status ?? EquipmentStatus.OK,
   );
   const [location, setLocation] = useState(
     editModalInfo.equipment?.location ?? '',
@@ -119,7 +116,7 @@ const EquipmentEdit: React.FC<Props> = ({
   };
 
   const createStatusSelect = () => {
-    return createSelect('상태', EquipmentStatusOptions, status, setStatus);
+    return createSelect('상태', equipmentStatusOptions, status, setStatus);
   };
 
   const handleSubmit = async () => {
