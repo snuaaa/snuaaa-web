@@ -17,7 +17,6 @@ import SelectBox from 'components/Common/SelectBox';
 import { EquipmentCategoryContext } from 'contexts/EquipmentCategoryContext';
 import { useAuth } from 'contexts/auth';
 import EquipList from './EquipList';
-// import EquipmentEdit from './EquipmentEdit';
 import { equipmentStatusOptions } from './common';
 import { Equipment } from 'services/types';
 import { useModal, withModal } from 'contexts/modal';
@@ -119,11 +118,11 @@ const Admin: FC = () => {
   };
 
   const handleClickEquipmentEdit = (equipment: Equipment) => {
-    openModal(<EditModal editingEquipment={equipment} />);
+    openModal(<EditModal editingEquipment={equipment} onEdit={refresh} />);
   };
 
   const handleClickCreate = () => {
-    openModal(<CreateModal />);
+    openModal(<CreateModal onCreate={refresh} />);
   };
 
   const searchInfo = location.state?.searchInfo;

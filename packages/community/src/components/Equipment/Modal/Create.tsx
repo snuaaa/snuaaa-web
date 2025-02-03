@@ -6,10 +6,14 @@ import EquipmentService, {
 import { EquipmentStatus } from 'services/types';
 import { useModal } from 'contexts/modal';
 
-const CreateModal: FC = () => {
+type Props = {
+  onCreate: () => void;
+};
+
+const CreateModal: FC<Props> = ({ onCreate }) => {
   const [equipment, setEquipment] = useState<EquipmentUploadRequest>({
     name: '',
-    category_id: 0,
+    category_id: 1,
     status: EquipmentStatus.OK,
     location: '',
     maker: '',
@@ -21,6 +25,8 @@ const CreateModal: FC = () => {
 
   const handleSubmit = async () => {
     await EquipmentService.uploadEquipment(equipment);
+    closeModal();
+    onCreate();
   };
 
   const handleChangeInput = (

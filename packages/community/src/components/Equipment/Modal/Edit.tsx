@@ -8,9 +8,10 @@ import { useModal } from 'contexts/modal';
 
 type Props = {
   editingEquipment: Equipment;
+  onEdit: () => void;
 };
 
-const EditModal: FC<Props> = ({ editingEquipment }) => {
+const EditModal: FC<Props> = ({ editingEquipment, onEdit }) => {
   const [equipment, setEquipment] = useState<EquipmentUploadRequest>({
     ...editingEquipment,
   });
@@ -20,6 +21,7 @@ const EditModal: FC<Props> = ({ editingEquipment }) => {
   const handleSubmit = async () => {
     // TODO: Implement Edit Equipment
     closeModal();
+    onEdit();
   };
 
   const handleChangeInput = (
