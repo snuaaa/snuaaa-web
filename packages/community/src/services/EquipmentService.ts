@@ -1,7 +1,7 @@
 import { EquipmentCategories } from 'contexts/EquipmentCategoryContext';
 import { API } from './index';
 
-import { Equipment } from './types';
+import { Equipment, EquipmentStatus } from './types';
 
 export type RetrieveEquipmentListResponse = {
   equipCount: number;
@@ -22,10 +22,10 @@ export type EquipmentUploadRequest = {
   id?: number;
   category_id: number;
   name: string;
-  description: string;
+  description?: string;
   location: string;
   maker: string;
-  status: string;
+  status: EquipmentStatus;
   img_path: string;
 };
 

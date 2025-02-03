@@ -13,8 +13,9 @@ import SelectBox from 'components/Common/SelectBox';
 import { EquipmentCategoryContext } from 'contexts/EquipmentCategoryContext';
 import { useAuth } from 'contexts/auth';
 import EquipList from './EquipList';
-import EquipmentEdit, { EditModalInfo } from './EquipmentEdit';
+// import EquipmentEdit from './EquipmentEdit';
 import { equipmentStatusOptions } from './common';
+import { Equipment } from 'services/types';
 
 type LocationState = {
   page: number;
@@ -26,11 +27,6 @@ const Admin: FC = () => {
   const history = useHistory();
   const location = useLocation<LocationState>();
   const authContext = useAuth();
-
-  const [editModalInfo, setEditModalInfo] = useState<EditModalInfo>({
-    isModalOpen: false,
-    equipment: undefined,
-  });
 
   const [refreshFlag, setRefreshFlag] = useState<boolean>(false);
 
@@ -102,12 +98,20 @@ const Admin: FC = () => {
     setKeyword(e.target.value);
   };
 
-  const setIsModalOpen = (val: boolean) => {
-    setEditModalInfo({
-      ...editModalInfo,
-      isModalOpen: val,
-    });
+  const handleClickEquipmentEdit = (equipment: Equipment) => {
+    // TODO: open EditModal
+    // setEditModalInfo({
+    //   isModalOpen: true,
+    //   equipment: equipmentId,
+    // });
   };
+
+  // const setIsModalOpen = (val: boolean) => {
+  //   setEditModalInfo({
+  //     ...editModalInfo,
+  //     isModalOpen: val,
+  //   });
+  // };
 
   return (
     <div className="board-wrapper">
@@ -148,18 +152,18 @@ const Admin: FC = () => {
           //TODO: display modal
           <button
             className="board-btn-write"
-            onClick={() =>
-              setEditModalInfo({
-                isModalOpen: true,
-                equipment: undefined,
-              })
-            }
+            onClick={() => {
+              // setEditModalInfo({
+              //   isModalOpen: true,
+              //   equipment: undefined,
+              // })
+            }}
           >
             <i className="ri-pencil-line enif-f-1p2x"></i>장비 추가
           </button>
         )}
       </div>
-      {editModalInfo.isModalOpen && (
+      {/* {editModalInfo.isModalOpen && (
         <EquipmentEdit
           editModalInfo={editModalInfo}
           onFinishEdit={() => {
@@ -168,9 +172,9 @@ const Admin: FC = () => {
           }}
           onCancel={() => setIsModalOpen(false)}
         />
-      )}
+      )} */}
       <EquipList
-        setEditModalInfo={setEditModalInfo}
+        onClickEquipmentEdit={handleClickEquipmentEdit}
         searchInfo={location.state?.searchInfo ?? undefined}
         isAdmin={true}
         refreshFlag={refreshFlag}

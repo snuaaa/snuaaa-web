@@ -4,6 +4,7 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -15,7 +16,6 @@ import {
 import Image from '../../components/Common/AaaImage';
 import { convertDateMMDD } from 'utils/convertDate';
 import SpinningLoader from 'components/Common/SpinningLoader';
-import { EditModalInfo } from './EquipmentEdit';
 import EquipmentService from 'services/EquipmentService';
 import { useFetch } from 'hooks/useFetch';
 import Loading from 'components/Common/Loading';
@@ -52,8 +52,8 @@ const mapEquipmentRentText = (equip: Equipment) => {
       : `${equip.renter?.nickname} ~ ${convertDateMMDD(equip.end_date)}`;
 };
 
-type EquipListProps = {
-  setEditModalInfo: React.Dispatch<React.SetStateAction<EditModalInfo>>;
+type Props = {
+  onClickEquipmentEdit: (equip: Equipment) => void;
   searchInfo:
     | {
         category_id: number;
@@ -67,8 +67,8 @@ type EquipListProps = {
 
 const fakeFetch = (delay = 500) => new Promise((res) => setTimeout(res, delay));
 
-const EquipList: React.FC<EquipListProps> = ({
-  setEditModalInfo, // only for admin
+const EquipList: React.FC<Props> = ({
+  onClickEquipmentEdit, // only for admin
   searchInfo,
   isAdmin,
   refreshFlag = undefined,
@@ -88,7 +88,6 @@ const EquipList: React.FC<EquipListProps> = ({
   }, [refresh, refreshFlag]);
 
   //const equipCount = data?.equipCount ?? 0;
-  const equipments = data?.equipInfo ?? [];
 
   useEffect(() => {
     setLimit(LIMIT_UNIT);
@@ -130,13 +129,10 @@ const EquipList: React.FC<EquipListProps> = ({
     [onIntersect],
   );
 
-  if (!data) {
-    return <Loading />;
-  }
-
-  const makeEquipList = (equips: Equipment[]) => {
-    if (equips.length > 0 && equipmentCategories) {
-      return equips
+  // TODO: Server side filtering
+  const filteredEquipments = useMemo(
+    () =>
+      data?.equipInfo
         .filter((equip) => {
           if (
             searchInfo &&
@@ -158,99 +154,91 @@ const EquipList: React.FC<EquipListProps> = ({
             return false;
           return true;
         })
-        .map((equip, index) => {
-          if (index < limit) {
-            return (
-              <div className="w-1/3 h-72 flex flex-col" key={equip.id}>
-                <div className="relative flex-grow border-2 border-gray-250 mx-2 my-2 px-3">
-                  <div className="z-1 absolute top-0 right-0">
-                    <button
-                      className=""
-                      onClick={() => {
-                        setEditModalInfo({
-                          isModalOpen: true,
-                          equipment: equip,
-                        });
-                      }}
-                    >
-                      <i className="ri-pencil-line text-2xl"></i>
-                    </button>
-                  </div>
-                  <div className="text-base font-bold mt-2 mr-3">
-                    {equip.name}
-                  </div>
-                  <div className="equip-picture">
-                    <Image imgSrc={equip.img_path} />
-                  </div>
-                  <div className="h-100 my-2">
-                    <div className="font-bold mr-3 inline-block">분류</div>
-                    <div className="inline-block">
-                      {
-                        equipmentCategories.find(
-                          (category) => category.id === equip.category_id,
-                        )?.name
-                      }
-                    </div>
-                  </div>
-                  <div className="my-2">
-                    <div className="font-bold mr-3 inline-block">상태</div>
-                    <div
-                      className={`inline-block ${equipmentStatusColorMap[equip.status]}`}
-                    >
-                      {equipmentStatusTextMap[equip.status]}
-                    </div>
-                  </div>
-                  <div className="my-2">
-                    <div className="font-bold mr-3 inline-block">위치</div>
-                    <div className="inline-block">{equip.location}</div>
-                  </div>
-                  {isAdmin ? (
-                    <div
-                      className={`w-xs text-white text-center font-bold py-2 mx-2 my-4 ${equipmentRentColorMap[equip.rent_status]}`}
-                    >
-                      {mapEquipmentRentText(equip)}
-                    </div>
-                  ) : (
-                    <div className="equip-rent-wrapper">
-                      <div
-                        className={
-                          'w-3/5 text-center font-bold py-2 ml-2 my-4 float-left ' +
-                          (equip.rent_status === EquipmentRentStatus.RENTABLE
-                            ? 'text-cyan-600 border border-cyan-600'
-                            : 'text-black bg-gray-200')
-                        }
-                      >
-                        {mapEquipmentRentText(equip)}
-                      </div>
-                      <div
-                        className={
-                          'text-center w-1/5 font-bold py-2 mr-2 my-4 float-right ' +
-                          (equip.rent_status === EquipmentRentStatus.RENTABLE
-                            ? 'text-cyan-600 border border-cyan-600'
-                            : 'text-black bg-gray-200')
-                        }
-                      >
-                        {equip.rent_status === EquipmentRentStatus.RENTABLE
-                          ? '+'
-                          : '-'}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            );
-          }
-          return null;
-        });
-    }
-    return null;
-  };
+        .slice(0, limit) ?? [],
+    [data?.equipInfo, limit, searchInfo],
+  );
+
+  if (!data) {
+    return <Loading />;
+  }
 
   return (
     <>
-      <div className="flex flex-wrap">{makeEquipList(equipments)}</div>
+      <div className="flex flex-wrap">
+        {filteredEquipments.map((equip) => (
+          <div className="w-1/3 h-72 flex flex-col" key={equip.id}>
+            <div className="relative flex-grow border-2 border-gray-250 mx-2 my-2 px-3">
+              <div className="z-1 absolute top-0 right-0">
+                <button onClick={() => onClickEquipmentEdit(equip)}>
+                  <i className="ri-pencil-line text-2xl"></i>
+                </button>
+              </div>
+              <div className="text-base font-bold mt-2 mr-3">{equip.name}</div>
+              <div className="equip-picture">
+                <Image imgSrc={equip.img_path} />
+              </div>
+              <div className="h-100 my-2">
+                <div className="font-bold mr-3 inline-block">분류</div>
+                <div className="inline-block">
+                  {
+                    equipmentCategories?.find(
+                      (category) => category.id === equip.category_id,
+                    )?.name
+                  }
+                </div>
+              </div>
+              <div className="my-2">
+                <div className="font-bold mr-3 inline-block">상태</div>
+                <div
+                  className={`inline-block ${equipmentStatusColorMap[equip.status]}`}
+                >
+                  {equipmentStatusTextMap[equip.status]}
+                </div>
+              </div>
+              <div className="my-2">
+                <div className="font-bold mr-3 inline-block">위치</div>
+                <div className="inline-block">{equip.location}</div>
+              </div>
+              {isAdmin ? (
+                <div
+                  className={`w-xs text-white text-center font-bold py-2 mx-2 my-4 ${equipmentRentColorMap[equip.rent_status]}`}
+                >
+                  {mapEquipmentRentText(equip)}
+                </div>
+              ) : (
+                <div className="equip-rent-wrapper">
+                  <div
+                    className={
+                      'w-3/5 text-center font-bold py-2 ml-2 my-4 float-left ' +
+                      (equip.rent_status === EquipmentRentStatus.RENTABLE
+                        ? 'text-cyan-600 border border-cyan-600'
+                        : 'text-black bg-gray-200')
+                    }
+                  >
+                    {mapEquipmentRentText(equip)}
+                  </div>
+                  <div
+                    className={
+                      'text-center w-1/5 font-bold py-2 mr-2 my-4 float-right ' +
+                      (equip.rent_status === EquipmentRentStatus.RENTABLE
+                        ? 'text-cyan-600 border border-cyan-600'
+                        : 'text-black bg-gray-200')
+                    }
+                  >
+                    {equip.rent_status === EquipmentRentStatus.RENTABLE
+                      ? '+'
+                      : '-'}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
       <div className="equip-list-loader-wrapper" ref={refCallback}>
-        {isLoading && limit < equipments.length && <SpinningLoader size={40} />}
+        {isLoading && limit < data.equipInfo.length && (
+          <SpinningLoader size={40} />
+        )}
       </div>
     </>
   );

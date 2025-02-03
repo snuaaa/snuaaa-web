@@ -2,23 +2,23 @@ import { EquipmentStatus } from 'services/types';
 
 export const equipmentStatusOptions = [
   {
-    id: EquipmentStatus.OK,
+    value: EquipmentStatus.OK,
     name: '양호',
   },
   {
-    id: EquipmentStatus.BROKEN,
+    value: EquipmentStatus.BROKEN,
     name: '수리 필요',
   },
   {
-    id: EquipmentStatus.LOST,
+    value: EquipmentStatus.LOST,
     name: '분실',
   },
   {
-    id: EquipmentStatus.REPAIRING,
+    value: EquipmentStatus.REPAIRING,
     name: '수리 중',
   },
   {
-    id: EquipmentStatus.ETC,
+    value: EquipmentStatus.ETC,
     name: '기타',
   },
 ];
