@@ -1,7 +1,6 @@
-import { EquipmentCategories } from 'contexts/EquipmentCategoryContext';
 import { API } from './index';
 
-import { Equipment } from './types';
+import { Equipment, EquipmentCategory, EquipmentStatus } from './types';
 
 export type RetrieveEquipmentListResponse = {
   equipCount: number;
@@ -34,7 +33,19 @@ export type UpdateEquipmentRequest = CreateEquipmentRequest &
 
 const EquipmentService = {
   retrieveCategoryList: function () {
-    return API.get<EquipmentCategories>('equipment/category');
+    return API.get<EquipmentCategory[]>('equipment/category');
+  },
+
+  uploadCategory: function (name: string) {
+    return API.post<EquipmentCategory>('equipment/category', { name });
+  },
+
+  updateCategory: function (id: number, name: string) {
+    return API.post<EquipmentCategory>(`equipment/category/${id}`, { name });
+  },
+
+  deleteCategory: function (id: number) {
+    return API.delete(`equipment/category/${id}`);
   },
 
   searchList: function (searchInfo: EquipmentSearchInfo, pageIdx: number) {

@@ -37,11 +37,11 @@ const EquipmentForm: React.FC<Props> = ({
   onDelete,
 }) => {
   //useBlockBackgroundScroll();
-  const categories = useContext(EquipmentCategoryContext);
+  const { categories } = useContext(EquipmentCategoryContext);
   // const imgPath = 'https://placehold.co/600x400';
 
   const categoryOptions =
-    categories?.map((category) => ({
+    categories.map((category) => ({
       value: category.id,
       name: category.name,
     })) ?? [];
