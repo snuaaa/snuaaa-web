@@ -1,3 +1,4 @@
+import BoardName from 'components/Board/BoardName';
 import { useFetch } from 'hooks/useFetch';
 import { FC, useCallback } from 'react';
 import { Link } from 'react-router-dom';
@@ -11,7 +12,12 @@ const Main: FC = () => {
   const { data, refresh } = useFetch({ fetch: fetchFunction });
 
   return (
-    <div>
+    <div className="board-wrapper">
+      <BoardName board_id={undefined} board_name={'장비 대여'} />
+      {/*TODO: check access rights*/}
+      <Link to="/equipment/admin">
+        <div className="text-right mr-4 text-gray-600">장비 관리 &gt;&gt;</div>
+      </Link>
       <h3 className="mt-4 text-base font-bold">나의 대여 장비 목록</h3>
       <div className="flex justify-center">
         <Link to="/equipment/rent">

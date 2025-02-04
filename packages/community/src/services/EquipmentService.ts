@@ -1,15 +1,59 @@
+import { EquipmentCategories } from 'contexts/EquipmentCategoryContext';
 import { API } from './index';
 
 import { Equipment } from './types';
 
-export type RetrieveEquipmentListResponse = Equipment[];
+export type RetrieveEquipmentListResponse = {
+  equipCount: number;
+  equipInfo: Equipment[];
+};
 
 export type RentEquipmentRequest = {
   equipmentIds: number[];
 };
 
+export type EquipmentSearchInfo = {
+  category_id: number;
+  status: string;
+  keyword: string;
+};
+
+export type CreateEquipmentRequest = Pick<
+  Equipment,
+  | 'category_id'
+  | 'name'
+  | 'description'
+  | 'location'
+  | 'maker'
+  | 'status'
+  | 'img_path'
+>;
+
+export type UpdateEquipmentRequest = CreateEquipmentRequest &
+  Pick<Equipment, 'id'>;
+
 const EquipmentService = {
-  retrieveList: function () {
+  retrieveCategoryList: function () {
+    return API.get<EquipmentCategories>('equipment/category');
+  },
+
+  searchList: function (searchInfo: EquipmentSearchInfo, pageIdx: number) {
+    return API.get<RetrieveEquipmentListResponse>('equipment/search');
+  },
+
+  createEquipment: function (data: CreateEquipmentRequest) {
+    return API.post<Equipment>('equipment/', data);
+  },
+
+  updateEquipment: function (data: UpdateEquipmentRequest) {
+    return API.patch<Equipment>('equipment/', data);
+  },
+
+  deleteEquipment: function (id: number) {
+    return API.delete(`equipment/${id}`);
+  },
+
+  retrieveList: function (pageIdx: number) {
     return API.get<RetrieveEquipmentListResponse>('equipment/');
   },
 
