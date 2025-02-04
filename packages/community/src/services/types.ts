@@ -153,11 +153,11 @@ export interface Comment {
 
 // TODO: value 개선
 export enum EquipmentStatus {
-  OK = 'O',
-  BROKEN = 'B',
-  LOST = 'L',
-  REPAIRING = 'R',
-  ETC = 'E',
+  OK = 'OK',
+  BROKEN = 'BROKEN',
+  LOST = 'LOST',
+  REPAIRING = 'REPAIRING',
+  ETC = 'ETC',
 }
 
 export enum EquipmentRentStatus {
