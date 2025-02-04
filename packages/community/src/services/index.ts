@@ -36,8 +36,8 @@ export const API = {
     });
   },
 
-  patch: function (url: string, data: unknown): AxiosPromise {
-    return axiosInstance.patch(`${SERVER_URL}api/${url}`, data);
+  patch: function <T = unknown>(url: string, data: unknown): AxiosPromise {
+    return axiosInstance.patch<T>(`${SERVER_URL}api/${url}`, data);
   },
 
   delete: function (url: string): AxiosPromise {

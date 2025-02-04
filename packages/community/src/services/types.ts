@@ -151,16 +151,31 @@ export interface Comment {
   likeUsers: User[];
 }
 
+// TODO: value 개선
+export enum EquipmentStatus {
+  OK = 'O',
+  BROKEN = 'B',
+  LOST = 'L',
+  REPAIRING = 'R',
+  ETC = 'E',
+}
+
+export enum EquipmentRentStatus {
+  RENTABLE = 'RENTABLE',
+  RENTED = 'RENTED',
+  UNRENTABLE = 'UNRENTABLE',
+}
+
 // TODO: match DTO with server API
 export interface Equipment {
   id: number;
   category_id: number;
   name: string;
-  description?: string;
+  description: string;
   location: string;
   maker: string;
-  status: string;
-  rent_status: string;
+  status: EquipmentStatus;
+  rent_status: EquipmentRentStatus;
   renter?: User;
   start_date?: string;
   end_date?: string;
