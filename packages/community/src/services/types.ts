@@ -171,7 +171,7 @@ export interface Equipment {
   id: number;
   category_id: number;
   name: string;
-  description?: string;
+  description: string;
   location: string;
   maker: string;
   status: EquipmentStatus;

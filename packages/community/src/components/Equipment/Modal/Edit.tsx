@@ -1,7 +1,7 @@
 import { FC, useState } from 'react';
 import EquipmentForm from '../Form';
 import EquipmentService, {
-  EquipmentUploadRequest,
+  UpdateEquipmentRequest,
 } from 'services/EquipmentService';
 import { Equipment } from 'services/types';
 import { useModal } from 'contexts/modal';
@@ -12,7 +12,7 @@ type Props = {
 };
 
 const EditModal: FC<Props> = ({ editingEquipment, onEdit }) => {
-  const [equipment, setEquipment] = useState<EquipmentUploadRequest>({
+  const [equipment, setEquipment] = useState<UpdateEquipmentRequest>({
     ...editingEquipment,
   });
 
@@ -20,20 +20,21 @@ const EditModal: FC<Props> = ({ editingEquipment, onEdit }) => {
 
   const handleSubmit = async () => {
     // TODO: Implement Edit Equipment
+    await EquipmentService.updateEquipment(equipment);
     closeModal();
     onEdit();
   };
 
   const handleChangeInput = (
-    key: keyof EquipmentUploadRequest,
-    value: EquipmentUploadRequest[keyof EquipmentUploadRequest],
+    key: keyof UpdateEquipmentRequest,
+    value: UpdateEquipmentRequest[keyof UpdateEquipmentRequest],
   ) => {
     setEquipment((prev) => ({ ...prev, [key]: value }));
   };
 
   const handleChangeSelect = (
-    key: keyof EquipmentUploadRequest,
-    value: EquipmentUploadRequest[keyof EquipmentUploadRequest],
+    key: keyof UpdateEquipmentRequest,
+    value: UpdateEquipmentRequest[keyof UpdateEquipmentRequest],
   ) => {
     setEquipment((prev) => ({ ...prev, [key]: value }));
   };

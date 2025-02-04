@@ -1,7 +1,7 @@
 import { FC, useState } from 'react';
 import EquipmentForm from '../Form';
 import EquipmentService, {
-  EquipmentUploadRequest,
+  CreateEquipmentRequest,
 } from 'services/EquipmentService';
 import { EquipmentStatus } from 'services/types';
 import { useModal } from 'contexts/modal';
@@ -11,7 +11,7 @@ type Props = {
 };
 
 const CreateModal: FC<Props> = ({ onCreate }) => {
-  const [equipment, setEquipment] = useState<EquipmentUploadRequest>({
+  const [equipment, setEquipment] = useState<CreateEquipmentRequest>({
     name: '',
     category_id: 1,
     status: EquipmentStatus.OK,
@@ -24,21 +24,21 @@ const CreateModal: FC<Props> = ({ onCreate }) => {
   const { closeModal } = useModal();
 
   const handleSubmit = async () => {
-    await EquipmentService.uploadEquipment(equipment);
+    await EquipmentService.createEquipment(equipment);
     closeModal();
     onCreate();
   };
 
   const handleChangeInput = (
-    key: keyof EquipmentUploadRequest,
-    value: EquipmentUploadRequest[keyof EquipmentUploadRequest],
+    key: keyof CreateEquipmentRequest,
+    value: CreateEquipmentRequest[keyof CreateEquipmentRequest],
   ) => {
     setEquipment((prev) => ({ ...prev, [key]: value }));
   };
 
   const handleChangeSelect = (
-    key: keyof EquipmentUploadRequest,
-    value: EquipmentUploadRequest[keyof EquipmentUploadRequest],
+    key: keyof CreateEquipmentRequest,
+    value: CreateEquipmentRequest[keyof CreateEquipmentRequest],
   ) => {
     setEquipment((prev) => ({ ...prev, [key]: value }));
   };
