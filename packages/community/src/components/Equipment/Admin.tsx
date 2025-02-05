@@ -25,23 +25,15 @@ import CreateModal from './Modal/Create';
 import { useFetch } from 'hooks/useFetch';
 import Loading from 'components/Common/Loading';
 import EditCategoriesModal from './Modal/EditCategories';
+import EquipSearchBar, { EquipSearchLocationState } from './EquipSearchBar';
 
 const LIMIT_UNIT = 12;
-
-type LocationState = {
-  page: number;
-  searchInfo: EquipmentSearchInfo;
-};
 
 const Admin: FC = () => {
   const { categories } = useContext(EquipmentCategoryContext);
   const history = useHistory();
-  const location = useLocation<LocationState>();
+  const location = useLocation<EquipSearchLocationState>();
   const authContext = useAuth();
-
-  const [keyword, setKeyword] = useState(
-    location.state?.searchInfo?.keyword ?? '',
-  );
 
   const fetchFunction = useCallback(async () => {
     return EquipmentService.retrieveList(1);
@@ -54,69 +46,8 @@ const Admin: FC = () => {
   const { openModal } = useModal();
 
   useEffect(() => {
-    if (!location.state) {
-      history.replace({
-        state: {
-          page: 1,
-          searchInfo: {
-            category_id: 0,
-            status: '',
-            keyword: '',
-          },
-        },
-      });
-    }
-  });
-
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.name === 'category') {
-      history.push({
-        state: {
-          ...location.state,
-          page: 1,
-          searchInfo: {
-            ...location.state.searchInfo,
-            category_id: +e.target.value,
-          },
-        },
-      });
-    }
-    if (e.target.name === 'status') {
-      history.push({
-        state: {
-          ...location.state,
-          page: 1,
-          searchInfo: {
-            ...location.state.searchInfo,
-            status: e.target.value,
-          },
-        },
-      });
-    }
     setLimit(LIMIT_UNIT);
-  };
-
-  const search = async () => {
-    history.push({
-      state: {
-        ...location.state,
-        searchInfo: {
-          ...location.state.searchInfo,
-          keyword: keyword,
-        },
-      },
-    });
-  };
-
-  const handleSearchKeyDown = (e: KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      search();
-    }
-  };
-
-  const handleSearchKeyword = (e: ChangeEvent<HTMLInputElement>) => {
-    setKeyword(e.target.value);
-  };
+  }, [location.state]);
 
   const handleClickEquipmentEdit = (equipment: Equipment) => {
     openModal(<EditModal editingEquipment={equipment} onEdit={refresh} />);
@@ -126,35 +57,56 @@ const Admin: FC = () => {
     openModal(<CreateModal onCreate={refresh} />);
   };
 
-  const searchInfo = location.state?.searchInfo;
-
   // TODO: Server side filtering
   const filteredEquipments = useMemo(
     () =>
-      data?.equipInfo
-        .filter((equip) => {
-          if (
-            searchInfo &&
-            searchInfo.category_id !== 0 &&
-            equip.category_id !== searchInfo.category_id
-          )
-            return false;
-          if (
-            searchInfo &&
-            searchInfo.status !== '' &&
-            equip.status !== searchInfo.status
-          )
-            return false;
-          if (
-            searchInfo &&
-            searchInfo.keyword !== '' &&
-            !equip.name.toLowerCase().includes(searchInfo.keyword.toLowerCase())
-          )
-            return false;
-          return true;
-        })
-        .slice(0, limit) ?? [],
-    [data?.equipInfo, limit, searchInfo],
+      (location.state
+        ? data?.equipInfo.filter((equip) => {
+            if (
+              location.state.category_id &&
+              location.state.category_id !== 0 &&
+              equip.category_id !== location.state?.category_id
+            )
+              return false;
+            if (
+              location.state.status !== '' &&
+              equip.status !== location.state.status
+            )
+              return false;
+            if (
+              location.state.rent_status !== '' &&
+              equip.rent_status !== location.state.rent_status
+            )
+              return false;
+            if (
+              location.state.keyword !== '' &&
+              !equip.name
+                .toLowerCase()
+                .includes(location.state.keyword.toLowerCase())
+              // TODO: Add nickname search here
+            )
+              return false;
+            if (
+              location.state.maker !== '' &&
+              !equip.maker
+                .toLowerCase()
+                .includes(location.state.maker.toLowerCase())
+            )
+              return false;
+            return true;
+          })
+        : data?.equipInfo
+      )
+        ?.sort(
+          (a, b) =>
+            (location.state.sort_by === 'category_id'
+              ? a[location.state.sort_by] - b[location.state.sort_by]
+              : a[location.state.sort_by].localeCompare(
+                  b[location.state.sort_by],
+                )) * (location.state.sort_order === 'ASC' ? 1 : -1),
+        )
+        ?.slice(0, limit) ?? [],
+    [data?.equipInfo, limit, location.state],
   );
 
   const increaseLimit = () => {
@@ -170,42 +122,6 @@ const Admin: FC = () => {
       <BoardName board_id={undefined} board_name={'장비 관리'} />
       <div className="board-search-wrapper">
         <div className="text-lg font-bold">현재 보유 장비</div>
-        <div className="board-select-wrapper">
-          <SelectBox
-            selectName="category"
-            optionList={categories}
-            onSelect={handleChange}
-            selectedOption={location.state?.searchInfo.category_id ?? 0}
-          />
-          <button
-            className="px-2 h-full bg-gray-400"
-            onClick={() => openModal(<EditCategoriesModal />)}
-          >
-            <i className="ri-pencil-line text-lg"></i>
-          </button>
-          <SelectBox
-            selectName="status"
-            optionList={equipmentStatusOptions}
-            onSelect={handleChange}
-            selectedOption={location.state?.searchInfo.status ?? ''}
-          />
-        </div>
-        {/* TODO: change CSS style
-          1) create new equip-search-input
-          2) use tailwind css
-        */}
-        <div className="board-search-input">
-          <input
-            type="text"
-            className="w-10"
-            onChange={handleSearchKeyword}
-            value={keyword}
-            onKeyDown={handleSearchKeyDown}
-          />
-          <button className="board-search-btn" onClick={search}>
-            <i className="ri-search-line text-base"></i>
-          </button>
-        </div>
         {authContext.authInfo.user.grade <= 8 && ( // TODO: change this to equipment authority check
           //TODO: display modal
           <button className="board-btn-write" onClick={handleClickCreate}>
@@ -213,6 +129,7 @@ const Admin: FC = () => {
           </button>
         )}
       </div>
+      <EquipSearchBar />
       <EquipList
         equipmentList={filteredEquipments}
         onClickEquipmentEdit={handleClickEquipmentEdit}

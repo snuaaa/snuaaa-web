@@ -183,7 +183,7 @@ const EquipList: React.FC<Props> = ({
           </div>
         ))}
       </div>
-      <div className="equip-list-loader-wrapper" ref={loaderRef}>
+      <div className="w-full flex justify-center" ref={loaderRef}>
         {isLoading && canMoveNext && <SpinningLoader size={40} />}
       </div>
     </>
