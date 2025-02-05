@@ -36,7 +36,7 @@ const EquipmentService = {
     return API.get<EquipmentCategory[]>('equipment/category');
   },
 
-  uploadCategory: function (name: string) {
+  createCategory: function (name: string) {
     return API.post<EquipmentCategory>('equipment/category', { name });
   },
 

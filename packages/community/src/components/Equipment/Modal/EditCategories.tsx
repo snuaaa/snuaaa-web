@@ -16,7 +16,7 @@ const EditCategoriesModal: FC = () => {
   const onCategoryUpdate = async (id: number | null, name: string) => {
     //setEditCategoryId(id);
     if (id) await EquipmentService.updateCategory(id, name);
-    else await EquipmentService.uploadCategory(name);
+    else await EquipmentService.createCategory(name);
     setEditCategoryId(null);
     setIsCreating(false);
     refreshCategories();
