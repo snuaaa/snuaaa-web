@@ -41,7 +41,7 @@ const EquipmentService = {
   },
 
   updateCategory: function (id: number, name: string) {
-    return API.post<EquipmentCategory>(`equipment/category/${id}`, { name });
+    return API.patch<EquipmentCategory>(`equipment/category`, { id, name });
   },
 
   deleteCategory: function (id: number) {
