@@ -1,3 +1,4 @@
+import Paginator from 'components/Common/Paginator';
 import { useModal } from 'contexts/modal';
 import { useFetch } from 'hooks/useFetch';
 import { FC, useCallback, useState } from 'react';
@@ -9,6 +10,8 @@ import { convertFullDate } from 'utils/convertDate';
 type Props = {
   id: number;
 };
+
+const RENTROWNUM = 10;
 
 const PaymentStatusTextMap: Record<PaymentStatus, string> = {
   [PaymentStatus.RECEIVED_PAYMENT]: '지연 반납(연체료 완납)',
@@ -53,7 +56,7 @@ const RentRecords: FC<Props> = ({ id }) => {
           </button>
         </div>
         <h3 className="text-xl font-bold mt-4 mb-2">대여 기록</h3>
-        <div className="my-8">
+        <div className="mt-8">
           <div className="flex items-center text-gray-950 border first:rounded-t-lg last:rounded-b-lg border-gray-300 w-full py-2">
             <div className="w-1/5">대여자</div>
             <div className="w-1/5">대여시각</div>
@@ -112,6 +115,13 @@ const RentRecords: FC<Props> = ({ id }) => {
               )}
             </>
           ))}
+        </div>
+        <div>
+          <Paginator
+            pageIdx={pageIdx}
+            pageNum={Math.ceil(rentCount / RENTROWNUM)}
+            clickPage={clickPage}
+          />
         </div>
       </div>
     </div>
