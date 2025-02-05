@@ -13,6 +13,7 @@ type Props = {
 const CreateModal: FC<Props> = ({ onCreate }) => {
   const [equipment, setEquipment] = useState<CreateEquipmentRequest>({
     name: '',
+    nickname: '',
     category_id: 1,
     status: EquipmentStatus.OK,
     location: '',

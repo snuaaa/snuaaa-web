@@ -22,6 +22,7 @@ export type CreateEquipmentRequest = Pick<
   Equipment,
   | 'category_id'
   | 'name'
+  | 'nickname'
   | 'description'
   | 'location'
   | 'maker'
