@@ -44,7 +44,7 @@ const EditCategoriesModal: FC = () => {
           {categories.map((category) => {
             return editCategoryId === category.id ? (
               <div
-                className="flex items-center text-gray-950 border first:rounded-t-lg border-gray-300 w-56 py-1"
+                className="flex items-center text-gray-950 border first:rounded-t-lg last:rounded-b-lg border-gray-300 w-56 py-1"
                 key={category.id}
               >
                 <EditCategoryEntry
@@ -55,7 +55,7 @@ const EditCategoriesModal: FC = () => {
               </div>
             ) : (
               <div
-                className="flex items-center text-gray-950 border first:rounded-t-lg border-gray-300 w-56 py-1"
+                className="flex items-center text-gray-950 border first:rounded-t-lg last:rounded-b-lg border-gray-300 w-56 py-1"
                 key={category.id}
               >
                 <div className="w-3/4">{category.name}</div>
@@ -102,20 +102,19 @@ const EditCategoriesModal: FC = () => {
                 if (!editCategoryId && !isCreating) setIsCreating(true);
               }}
               disabled={editCategoryId != null || isCreating}
+              className="flex items-center text-gray-950 border first:rounded-t-lg last:rounded-b-lg border-gray-300 w-56 py-1 justify-center"
             >
-              <div className="flex items-center text-gray-950 border last:rounded-b-lg border-gray-300 w-56 py-1 justify-center">
-                <i
-                  className={
-                    'ri-add-line text-lg ' +
-                    (editCategoryId || isCreating
-                      ? 'text-gray-400'
-                      : 'text-gray-900')
-                  }
-                ></i>
-              </div>
+              <i
+                className={
+                  'ri-add-line text-lg ' +
+                  (editCategoryId || isCreating
+                    ? 'text-gray-400'
+                    : 'text-gray-900')
+                }
+              ></i>
             </button>
           ) : (
-            <div className="flex items-center text-gray-950 border last:rounded-b-lg border-gray-300 w-56 py-1">
+            <div className="flex items-center text-gray-950 border first:rounded-t-lg last:rounded-b-lg border-gray-300 w-56 py-1">
               <EditCategoryEntry
                 defaultValue=""
                 onFinish={(name) => onCategoryUpdate(null, name)}
