@@ -8,6 +8,10 @@ import {
 import Image from '../../components/Common/AaaImage';
 import { convertDateMMDD } from 'utils/convertDate';
 import SpinningLoader from 'components/Common/SpinningLoader';
+import RentRecords from './Modal/RentRecords';
+import { JSX } from 'react/jsx-runtime';
+import { useModal } from 'contexts/modal';
+import EquipmentService from 'services/EquipmentService';
 
 const equipmentStatusColorMap: Record<EquipmentStatus, string> = {
   [EquipmentStatus.OK]: 'text-green-600',
@@ -56,6 +60,7 @@ const EquipList: React.FC<Props> = ({
 }) => {
   const equipmentCategories = useContext(EquipmentCategoryContext);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { openModal } = useModal();
 
   //const equipCount = data?.equipCount ?? 0;
 
@@ -102,6 +107,18 @@ const EquipList: React.FC<Props> = ({
                   <button onClick={() => onClickEquipmentEdit(equip)}>
                     <i className="ri-pencil-line text-2xl"></i>
                   </button>
+                  <button
+                    onClick={() => openModal(<RentRecords id={equip.id} />)}
+                  >
+                    <i className="ri-file-list-2-line text-2xl"></i>
+                  </button>
+                  {/*
+                  <button
+                    onClick={() => EquipmentService.deleteEquipment(equip.id)}
+                  >
+                    <i className="ri-delete-bin-line text-2xl"></i>
+                  </button>
+                  */}
                 </div>
               )}
               <div className="text-base font-bold mt-2 mr-3">{equip.name}</div>
