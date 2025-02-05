@@ -4,7 +4,7 @@ import { useFetch } from 'hooks/useFetch';
 import { FC, useCallback, useState } from 'react';
 import { useLocation } from 'react-router';
 import EquipmentService from 'services/EquipmentService';
-import { PaymentStatus } from 'services/types';
+import { PenaltyStatus } from 'services/types';
 import { convertFullDate } from 'utils/convertDate';
 
 type Props = {
@@ -13,16 +13,16 @@ type Props = {
 
 const RENTROWNUM = 10;
 
-const PaymentStatusTextMap: Record<PaymentStatus, string> = {
-  [PaymentStatus.RECEIVED_PAYMENT]: '지연 반납(연체료 완납)',
-  [PaymentStatus.NEED_PAYMENT]: '지연 반납(연체료 미납)',
-  [PaymentStatus.UNNECESSARY]: '정상 반납',
+const PenaltyStatusTextMap: Record<PenaltyStatus, string> = {
+  [PenaltyStatus.RECEIVED_PAYMENT]: '지연 반납(연체료 완납)',
+  [PenaltyStatus.NEED_PAYMENT]: '지연 반납(연체료 미납)',
+  [PenaltyStatus.NO_PENALTY]: '정상 반납',
 };
 
-const PaymentStatusColorMap: Record<PaymentStatus, string> = {
-  [PaymentStatus.RECEIVED_PAYMENT]: 'text-gray-600',
-  [PaymentStatus.NEED_PAYMENT]: 'text-red-600',
-  [PaymentStatus.UNNECESSARY]: 'text-green-600',
+const PenaltyStatusColorMap: Record<PenaltyStatus, string> = {
+  [PenaltyStatus.RECEIVED_PAYMENT]: 'text-gray-600',
+  [PenaltyStatus.NEED_PAYMENT]: 'text-red-600',
+  [PenaltyStatus.NO_PENALTY]: 'text-green-600',
 };
 
 const RentRecords: FC<Props> = ({ id }) => {
@@ -90,13 +90,13 @@ const RentRecords: FC<Props> = ({ id }) => {
                   className={
                     'w-1/5 ' +
                     (rentRecord.rentReturn &&
-                      PaymentStatusColorMap[
-                        rentRecord.rentReturn.payment_status
+                      PenaltyStatusColorMap[
+                        rentRecord.rentReturn.penalty_status
                       ])
                   }
                 >
                   {rentRecord.rentReturn
-                    ? PaymentStatusTextMap[rentRecord.rentReturn.payment_status]
+                    ? PenaltyStatusTextMap[rentRecord.rentReturn.penalty_status]
                     : '대여 중'}
                 </div>
               </button>

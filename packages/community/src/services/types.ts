@@ -186,8 +186,8 @@ export interface EquipmentCategory {
   name: string;
 }
 
-export enum PaymentStatus {
-  UNNECESSARY = 'UNNECESSARY',
+export enum PenaltyStatus {
+  NO_PENALTY = 'NOPENALTY',
   NEED_PAYMENT = 'NEEDPAYMENT',
   RECEIVED_PAYMENT = 'RECEIVEDPAYMENT',
 }
@@ -196,7 +196,7 @@ export interface RentReturn {
   rent_id: number;
   photo_path: string;
   return_date: string;
-  payment_status: PaymentStatus;
+  penalty_status: PenaltyStatus;
 }
 
 export interface Rent {
