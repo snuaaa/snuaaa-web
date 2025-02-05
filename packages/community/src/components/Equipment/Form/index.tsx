@@ -1,9 +1,10 @@
 import { EquipmentCategoryContext } from 'contexts/EquipmentCategoryContext';
-import { useContext } from 'react';
+import { ChangeEvent, useContext } from 'react';
 import { Equipment } from 'services/types';
 import { equipmentStatusOptions } from '../common';
 import InputField from './InputField';
 import Select from './Select';
+import UploadService from 'services/UploadService';
 
 type Props = {
   title: string;
@@ -17,11 +18,12 @@ type Props = {
     | 'location'
     | 'maker'
     | 'description'
+    | 'img_path'
   >;
   onChangeInput: (
     key: keyof Pick<
       Equipment,
-      'name' | 'nickname' | 'location' | 'maker' | 'description'
+      'name' | 'nickname' | 'location' | 'maker' | 'description' | 'img_path'
     >,
     value: string,
   ) => void;
@@ -47,13 +49,23 @@ const EquipmentForm: React.FC<Props> = ({
 }) => {
   //useBlockBackgroundScroll();
   const { categories } = useContext(EquipmentCategoryContext);
-  // const imgPath = 'https://placehold.co/600x400';
 
   const categoryOptions =
     categories.map((category) => ({
       value: category.id,
       name: category.name,
     })) ?? [];
+
+  const handleChangeFile = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const { data } = await UploadService.uploadImage(file, true);
+    onChangeInput('img_path', data.imgUrl);
+  };
+
+  const handleRemoveFile = () => {
+    onChangeInput('img_path', '');
+  };
 
   return (
     <div className="fixed z-30 top-0 left-0 w-full h-full bg-black/40 flex items-center justify-center">
@@ -67,15 +79,40 @@ const EquipmentForm: React.FC<Props> = ({
           </button>
         </div>
         <h3 className="text-lg font-bold mt-2">{title}</h3>
-        <div className="rounded-sm h-30 w-56 justify-center align-center mx-auto border border-2 border-gray-300 border-dashed py-2 mt-2 mb-4">
-          <img
-            className="h-20 mx-auto m-2"
-            src="https://placehold.co/600x400"
-            alt="장비 이미지"
-          />
-          <div className="text-gray-600 ul">
-            <u>사진 불러오기</u>
-          </div>
+        <div className="flex relative rounded-sm h-32 w-56 justify-center items-center mx-auto border-2 border-gray-300 border-dashed py-2 mt-2 mb-4">
+          {equipment.img_path ? (
+            <>
+              <div className="flex justify-center items-center">
+                <img
+                  src={equipment.img_path}
+                  alt="장비 이미지"
+                  className="h-32 w-56 object-contain rounded-md"
+                />
+              </div>
+              <button
+                className="absolute top-0 right-0 w-6 h-6 flex justify-center items-center text-white bg-[#EF645D]"
+                onClick={handleRemoveFile}
+              >
+                <i className="ri-close-line text-2xl"></i>
+              </button>
+            </>
+          ) : (
+            <>
+              <label
+                htmlFor="input-img"
+                className="w-full h-full cursor-pointer flex justify-center items-center"
+              >
+                <p className="text-gray-600 underline">사진 불러오기</p>
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                id="input-img"
+                className="hidden"
+                onChange={handleChangeFile}
+              />
+            </>
+          )}
         </div>
         <div className="w-56 mx-auto text-xs">
           <InputField
