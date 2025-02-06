@@ -25,6 +25,14 @@ const EditModal: FC<Props> = ({ editingEquipment, onEdit }) => {
     onEdit();
   };
 
+  const handleDelete = async () => {
+    const goDrop = window.confirm('정말로 삭제하시겠습니까?');
+    if (!goDrop) return;
+    await EquipmentService.deleteEquipment(equipment.id);
+    closeModal();
+    onEdit();
+  };
+
   const handleChangeInput = (
     key: keyof UpdateEquipmentRequest,
     value: UpdateEquipmentRequest[keyof UpdateEquipmentRequest],
@@ -47,6 +55,7 @@ const EditModal: FC<Props> = ({ editingEquipment, onEdit }) => {
       onChangeInput={handleChangeInput}
       onChangeSelect={handleChangeSelect}
       onSubmit={handleSubmit}
+      onDelete={handleDelete}
       onCancel={closeModal}
     />
   );
