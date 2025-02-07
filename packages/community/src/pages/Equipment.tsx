@@ -4,16 +4,15 @@ import EquipmentRent from 'components/Equipment/Rent';
 import EquipmentAdmin from 'components/Equipment/Admin';
 import { FC } from 'react';
 import { Route, Switch } from 'react-router-dom';
-import {
-  EquipmentCategories,
-  EquipmentCategoryContext,
-} from 'contexts/EquipmentCategoryContext';
+import { EquipmentCategoryContext } from 'contexts/EquipmentCategoryContext';
 import { useAuth } from 'contexts/auth';
 import EquipmentService from 'services/EquipmentService';
+import { EquipmentCategory } from 'services/types';
 
 const EquipmentPage: FC = () => {
-  const [equipmentCategories, setEquipmentCategories] =
-    useState<EquipmentCategories>([]);
+  const [equipmentCategories, setEquipmentCategories] = useState<
+    EquipmentCategory[]
+  >([]);
   const authContext = useAuth();
 
   useEffect(() => {
@@ -33,7 +32,9 @@ const EquipmentPage: FC = () => {
 
   return (
     <div>
-      <EquipmentCategoryContext.Provider value={equipmentCategories}>
+      <EquipmentCategoryContext.Provider
+        value={{ categories: equipmentCategories, refreshCategories: fetch }}
+      >
         <Switch>
           <Route path="/equipment/rent/" component={EquipmentRent} />
           <Route path="/equipment/admin/" component={EquipmentAdmin} />

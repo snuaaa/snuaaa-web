@@ -8,6 +8,10 @@ import {
 import Image from '../../components/Common/AaaImage';
 import { convertDateMMDD } from 'utils/convertDate';
 import SpinningLoader from 'components/Common/SpinningLoader';
+import RentRecords from './Modal/RentRecords';
+import { JSX } from 'react/jsx-runtime';
+import { useModal } from 'contexts/modal';
+import EquipmentService from 'services/EquipmentService';
 
 const equipmentStatusColorMap: Record<EquipmentStatus, string> = {
   [EquipmentStatus.OK]: 'text-green-600',
@@ -54,8 +58,9 @@ const EquipList: React.FC<Props> = ({
   canMoveNext,
   onNext,
 }) => {
-  const equipmentCategories = useContext(EquipmentCategoryContext);
+  const { categories } = useContext(EquipmentCategoryContext);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { openModal } = useModal();
 
   //const equipCount = data?.equipCount ?? 0;
 
@@ -102,6 +107,18 @@ const EquipList: React.FC<Props> = ({
                   <button onClick={() => onClickEquipmentEdit(equip)}>
                     <i className="ri-pencil-line text-2xl"></i>
                   </button>
+                  <button
+                    onClick={() => openModal(<RentRecords id={equip.id} />)}
+                  >
+                    <i className="ri-file-list-2-line text-2xl"></i>
+                  </button>
+                  {/*
+                  <button
+                    onClick={() => EquipmentService.deleteEquipment(equip.id)}
+                  >
+                    <i className="ri-delete-bin-line text-2xl"></i>
+                  </button>
+                  */}
                 </div>
               )}
               <div className="text-base font-bold mt-2 mr-3">{equip.name}</div>
@@ -112,7 +129,7 @@ const EquipList: React.FC<Props> = ({
                 <div className="font-bold mr-3 inline-block">분류</div>
                 <div className="inline-block">
                   {
-                    equipmentCategories?.find(
+                    categories.find(
                       (category) => category.id === equip.category_id,
                     )?.name
                   }

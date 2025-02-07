@@ -1,10 +1,10 @@
 import React from 'react';
 import { EquipmentCategory } from 'services/types';
 
-type EquipmentCategories = EquipmentCategory[];
-
-const EquipmentCategoryContext =
-  React.createContext<EquipmentCategories | null>(null);
+const EquipmentCategoryContext = React.createContext<{
+  categories: EquipmentCategory[];
+  refreshCategories: () => void;
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+}>({ categories: [], refreshCategories: () => {} });
 
 export { EquipmentCategoryContext };
-export type { EquipmentCategories };
