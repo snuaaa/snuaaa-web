@@ -1,19 +1,21 @@
-import { FC, useState } from 'react';
+import { FC, useContext, useState } from 'react';
 import EquipmentForm from '../Form';
 import EquipmentService, {
   CreateEquipmentRequest,
 } from 'services/EquipmentService';
 import { EquipmentStatus } from 'services/types';
 import { useModal } from 'contexts/modal';
+import { EquipmentCategoryContext } from 'contexts/EquipmentCategoryContext';
 
 type Props = {
   onCreate: () => void;
 };
 
 const CreateModal: FC<Props> = ({ onCreate }) => {
+  const { categories } = useContext(EquipmentCategoryContext);
   const [equipment, setEquipment] = useState<CreateEquipmentRequest>({
     name: '',
-    category_id: 1,
+    category_id: categories[0].id,
     status: EquipmentStatus.OK,
     location: '',
     maker: '',

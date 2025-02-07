@@ -24,6 +24,7 @@ import EditModal from './Modal/Edit';
 import CreateModal from './Modal/Create';
 import { useFetch } from 'hooks/useFetch';
 import Loading from 'components/Common/Loading';
+import EditCategoriesModal from './Modal/EditCategories';
 
 const LIMIT_UNIT = 12;
 
@@ -33,7 +34,7 @@ type LocationState = {
 };
 
 const Admin: FC = () => {
-  const equipmentCategories = useContext(EquipmentCategoryContext);
+  const { categories } = useContext(EquipmentCategoryContext);
   const history = useHistory();
   const location = useLocation<LocationState>();
   const authContext = useAuth();
@@ -172,10 +173,16 @@ const Admin: FC = () => {
         <div className="board-select-wrapper">
           <SelectBox
             selectName="category"
-            optionList={equipmentCategories}
+            optionList={categories}
             onSelect={handleChange}
             selectedOption={location.state?.searchInfo.category_id ?? 0}
           />
+          <button
+            className="px-2 h-full bg-gray-400"
+            onClick={() => openModal(<EditCategoriesModal />)}
+          >
+            <i className="ri-pencil-line text-lg"></i>
+          </button>
           <SelectBox
             selectName="status"
             optionList={equipmentStatusOptions}
