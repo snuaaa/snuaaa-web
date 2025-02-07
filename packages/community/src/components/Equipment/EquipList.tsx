@@ -58,7 +58,7 @@ const EquipList: React.FC<Props> = ({
   canMoveNext,
   onNext,
 }) => {
-  const equipmentCategories = useContext(EquipmentCategoryContext);
+  const { categories } = useContext(EquipmentCategoryContext);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { openModal } = useModal();
 
@@ -129,7 +129,7 @@ const EquipList: React.FC<Props> = ({
                 <div className="font-bold mr-3 inline-block">분류</div>
                 <div className="inline-block">
                   {
-                    equipmentCategories?.find(
+                    categories.find(
                       (category) => category.id === equip.category_id,
                     )?.name
                   }

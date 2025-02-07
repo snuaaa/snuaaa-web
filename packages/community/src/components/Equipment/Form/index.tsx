@@ -37,11 +37,11 @@ const EquipmentForm: React.FC<Props> = ({
   onDelete,
 }) => {
   //useBlockBackgroundScroll();
-  const categories = useContext(EquipmentCategoryContext);
+  const { categories } = useContext(EquipmentCategoryContext);
   // const imgPath = 'https://placehold.co/600x400';
 
   const categoryOptions =
-    categories?.map((category) => ({
+    categories.map((category) => ({
       value: category.id,
       name: category.name,
     })) ?? [];
@@ -115,11 +115,7 @@ const EquipmentForm: React.FC<Props> = ({
           <div className="flex w-full mx-auto items-center justify-center">
             <button
               className="text-base border border-gray-400 text-white text-center font-bold py-2 mx-2 mt-4 mb-2 bg-gray-400 px-8"
-              onClick={async () => {
-                onSubmit();
-                // await handleSubmit();
-                // onFinishEdit();
-              }}
+              onClick={onSubmit}
             >
               {submitText}
             </button>
@@ -128,13 +124,7 @@ const EquipmentForm: React.FC<Props> = ({
             <div className="flex w-full mx-auto items-center justify-center">
               <button
                 className="text-base border border-red-500 text-red-500 text-center font-bold py-2 mx-2 mb-4 mt-2 px-8"
-                onClick={async () => {
-                  onDelete();
-                  // const goDrop = window.confirm('정말로 삭제하시겠습니까?');
-                  // if (!goDrop) return;
-                  // await deleteEquipment();
-                  // onFinishEdit();
-                }}
+                onClick={onDelete}
               >
                 장비 삭제
               </button>
