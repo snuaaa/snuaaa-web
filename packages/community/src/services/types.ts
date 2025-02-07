@@ -166,7 +166,6 @@ export enum EquipmentRentStatus {
   UNRENTABLE = 'UNRENTABLE',
 }
 
-// TODO: match DTO with server API
 export interface Equipment {
   id: number;
   category_id: number;
@@ -185,4 +184,25 @@ export interface Equipment {
 export interface EquipmentCategory {
   id: number;
   name: string;
+}
+
+export enum PenaltyStatus {
+  NO_PENALTY = 'NOPENALTY',
+  NEED_PAYMENT = 'NEEDPAYMENT',
+  RECEIVED_PAYMENT = 'RECEIVEDPAYMENT',
+}
+
+export interface RentReturn {
+  rent_id: number;
+  photo_path: string;
+  return_date: string;
+  penalty_status: PenaltyStatus;
+}
+
+export interface Rent {
+  id: number;
+  start_date: string;
+  end_date: string;
+  rentReturn?: RentReturn;
+  user: User;
 }
