@@ -170,6 +170,7 @@ export interface Equipment {
   id: number;
   category_id: number;
   name: string;
+  nickname: string;
   description: string;
   location: string;
   maker: string;

@@ -10,10 +10,19 @@ type Props = {
   submitText: string;
   equipment: Pick<
     Equipment,
-    'name' | 'category_id' | 'status' | 'location' | 'maker' | 'description'
+    | 'name'
+    | 'nickname'
+    | 'category_id'
+    | 'status'
+    | 'location'
+    | 'maker'
+    | 'description'
   >;
   onChangeInput: (
-    key: keyof Pick<Equipment, 'name' | 'location' | 'maker' | 'description'>,
+    key: keyof Pick<
+      Equipment,
+      'name' | 'nickname' | 'location' | 'maker' | 'description'
+    >,
     value: string,
   ) => void;
   onChangeSelect: (
@@ -105,7 +114,12 @@ const EquipmentForm: React.FC<Props> = ({
             required
           />
 
-          {/*TODO: 기증자 필드 추가해야 할까요?*/}
+          <InputField
+            name="별명"
+            placeholder="별명을 입력하세요."
+            value={equipment.nickname}
+            onChange={(e) => onChangeInput('nickname', e.target.value)}
+          />
           <InputField
             name="추가 설명"
             placeholder="선택 입력"
