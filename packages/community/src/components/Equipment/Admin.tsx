@@ -16,7 +16,6 @@ import EquipmentService, {
 import SelectBox from 'components/Common/SelectBox';
 import { EquipmentCategoryContext } from 'contexts/EquipmentCategoryContext';
 import { useAuth } from 'contexts/auth';
-import EquipList from './EquipList';
 import { equipmentStatusOptions } from './common';
 import { Equipment } from 'services/types';
 import { useModal, withModal } from 'contexts/modal';
@@ -29,6 +28,7 @@ import EquipSearchBar, {
   EquipSearchLocationState,
   SortBy,
 } from './EquipSearchBar';
+import EquipList from './EquipList';
 
 const LIMIT_UNIT = 12;
 
