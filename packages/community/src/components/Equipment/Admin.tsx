@@ -57,55 +57,56 @@ const Admin: FC = () => {
     openModal(<CreateModal onCreate={refresh} />);
   };
 
-  // TODO: Server side filtering
   const filteredEquipments = useMemo(
     () =>
       (location.state
-        ? data?.equipInfo.filter((equip) => {
-            if (
-              location.state.category_id &&
-              location.state.category_id !== 0 &&
-              equip.category_id !== location.state?.category_id
+        ? data?.equipInfo
+            .filter((equip) => {
+              if (
+                location.state.category_id &&
+                location.state.category_id !== 0 &&
+                equip.category_id !== location.state?.category_id
+              )
+                return false;
+              if (
+                location.state.status !== '' &&
+                equip.status !== location.state.status
+              )
+                return false;
+              if (
+                location.state.rent_status !== '' &&
+                equip.rent_status !== location.state.rent_status
+              )
+                return false;
+              if (
+                location.state.keyword !== '' &&
+                !equip.name
+                  .toLowerCase()
+                  .includes(location.state.keyword.toLowerCase()) &&
+                !equip.nickname
+                  .toLowerCase()
+                  .includes(location.state.keyword.toLowerCase())
+              )
+                return false;
+              if (
+                location.state.maker !== '' &&
+                !equip.maker
+                  .toLowerCase()
+                  .includes(location.state.maker.toLowerCase())
+              )
+                return false;
+              return true;
+            })
+            ?.sort(
+              (a, b) =>
+                (location.state.sort_by === 'category_id'
+                  ? a[location.state.sort_by] - b[location.state.sort_by]
+                  : a[location.state.sort_by].localeCompare(
+                      b[location.state.sort_by],
+                    )) * (location.state.sort_order === 'ASC' ? 1 : -1),
             )
-              return false;
-            if (
-              location.state.status !== '' &&
-              equip.status !== location.state.status
-            )
-              return false;
-            if (
-              location.state.rent_status !== '' &&
-              equip.rent_status !== location.state.rent_status
-            )
-              return false;
-            if (
-              location.state.keyword !== '' &&
-              !equip.name
-                .toLowerCase()
-                .includes(location.state.keyword.toLowerCase())
-              // TODO: Add nickname search here
-            )
-              return false;
-            if (
-              location.state.maker !== '' &&
-              !equip.maker
-                .toLowerCase()
-                .includes(location.state.maker.toLowerCase())
-            )
-              return false;
-            return true;
-          })
         : data?.equipInfo
-      )
-        ?.sort(
-          (a, b) =>
-            (location.state.sort_by === 'category_id'
-              ? a[location.state.sort_by] - b[location.state.sort_by]
-              : a[location.state.sort_by].localeCompare(
-                  b[location.state.sort_by],
-                )) * (location.state.sort_order === 'ASC' ? 1 : -1),
-        )
-        ?.slice(0, limit) ?? [],
+      )?.slice(0, limit) ?? [],
     [data?.equipInfo, limit, location.state],
   );
 

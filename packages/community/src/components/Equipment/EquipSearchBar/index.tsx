@@ -133,7 +133,7 @@ const EquipSearchBar: FC = () => {
         <SearchSelect
           name="category"
           options={
-            equipmentCategories?.map((option) => ({
+            equipmentCategories?.categories.map((option) => ({
               value: option.id,
               name: option.name,
             })) ?? []
