@@ -130,7 +130,6 @@ const Admin: FC = () => {
           </button>
         )}
       </div>
-      <EquipSearchBar />
       <EquipList
         equipmentList={filteredEquipments}
         onClickEquipmentEdit={handleClickEquipmentEdit}
