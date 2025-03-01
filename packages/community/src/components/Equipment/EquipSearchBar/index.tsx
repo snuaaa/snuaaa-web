@@ -8,14 +8,14 @@ import { equipmentRentStatusOptions, equipmentStatusOptions } from '../common';
 
 export enum SortBy {
   NAME = 'name', // 장비명
-  CREATEDAT = 'createdAt', // 등록일자
-  category = 'category_id', // 분류
+  CREATED_AT = 'createdAt', // 등록일자
+  CATEGORY = 'category_id', // 분류
 }
 
 const sortByOptions = [
   { value: SortBy.NAME, name: '정렬 기준: 장비명' },
-  { value: SortBy.CREATEDAT, name: '정렬 기준: 등록일자' },
-  { value: SortBy.category, name: '정렬 기준: 분류' },
+  { value: SortBy.CREATED_AT, name: '정렬 기준: 등록일자' },
+  { value: SortBy.CATEGORY, name: '정렬 기준: 분류' },
 ];
 
 enum SortOrder {
@@ -57,7 +57,7 @@ const EquipSearchBar: FC = () => {
           maker: '',
           status: '',
           rent_status: '',
-          sort_by: SortBy.CREATEDAT,
+          sort_by: SortBy.CREATED_AT,
           sort_order: SortOrder.DESC,
         },
       });
@@ -186,7 +186,7 @@ const EquipSearchBar: FC = () => {
           name="sort_by"
           options={sortByOptions}
           onChange={handleSelectChange}
-          value={location.state?.sort_by ?? SortBy.CREATEDAT}
+          value={location.state?.sort_by ?? SortBy.CREATED_AT}
         />
         <SearchSelect
           name="sort_order"
