@@ -1,5 +1,13 @@
 import { EquipmentCategoryContext } from 'contexts/EquipmentCategoryContext';
-import React, { memo, useCallback, useContext, useRef, useState } from 'react';
+import React, {
+  memo,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
   Equipment,
   EquipmentRentStatus,
@@ -10,9 +18,12 @@ import SpinningLoader from 'components/Common/SpinningLoader';
 import RentRecords from '../Modal/RentRecords';
 import { JSX } from 'react/jsx-runtime';
 import { useModal } from 'contexts/modal';
-import EquipmentService from 'services/EquipmentService';
-import EquipSearchBar from '../EquipSearchBar';
+import EquipmentService, {
+  RetrieveEquipmentListResponse,
+} from 'services/EquipmentService';
+import EquipSearchBar, { EquipSearchLocationState } from '../EquipSearchBar';
 import EquipItem from './EquipItem';
+import { useLocation } from 'react-router';
 
 const equipmentRentColorMap: Record<EquipmentRentStatus, string> = {
   [EquipmentRentStatus.RENTABLE]: 'bg-cyan-500',
@@ -32,25 +43,87 @@ type Props = {
   onClickEquipmentEdit?: (equip: Equipment) => void;
   onClickEquipmentRent?: (equip: Equipment) => void;
   onClickEquipmentCart?: (equip: Equipment) => void;
-  equipmentList: Equipment[];
-  canMoveNext: boolean;
-  onNext: () => void;
+  data: RetrieveEquipmentListResponse;
 };
 
 const fakeFetch = (delay = 500) => new Promise((res) => setTimeout(res, delay));
+
+const LIMIT_UNIT = 12;
 
 const EquipList: React.FC<Props> = ({
   onClickEquipmentEdit, // only for admin
   onClickEquipmentRent,
   onClickEquipmentCart,
-  equipmentList,
-  canMoveNext,
-  onNext,
+  data,
 }) => {
+  const location = useLocation<EquipSearchLocationState>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { openModal } = useModal();
 
   //const equipCount = data?.equipCount ?? 0;
+
+  const [limit, setLimit] = useState<number>(LIMIT_UNIT);
+
+  const filteredEquipments = useMemo(
+    () =>
+      (location.state
+        ? data?.equipInfo
+            .filter((equip) => {
+              if (
+                location.state.category_id &&
+                location.state.category_id !== 0 &&
+                equip.category_id !== location.state?.category_id
+              )
+                return false;
+              if (
+                location.state.status !== '' &&
+                equip.status !== location.state.status
+              )
+                return false;
+              if (
+                location.state.rent_status !== '' &&
+                equip.rent_status !== location.state.rent_status
+              )
+                return false;
+              if (
+                location.state.keyword !== '' &&
+                !equip.name
+                  .toLowerCase()
+                  .includes(location.state.keyword.toLowerCase()) &&
+                !equip.nickname
+                  .toLowerCase()
+                  .includes(location.state.keyword.toLowerCase())
+              )
+                return false;
+              if (
+                location.state.maker !== '' &&
+                !equip.maker
+                  .toLowerCase()
+                  .includes(location.state.maker.toLowerCase())
+              )
+                return false;
+              return true;
+            })
+            ?.sort(
+              (a, b) =>
+                (location.state.sort_by === 'category_id'
+                  ? a[location.state.sort_by] - b[location.state.sort_by]
+                  : a[location.state.sort_by].localeCompare(
+                      b[location.state.sort_by],
+                    )) * (location.state.sort_order === 'ASC' ? 1 : -1),
+            )
+        : data?.equipInfo
+      )?.slice(0, limit) ?? [],
+    [data?.equipInfo, limit, location.state],
+  );
+
+  useEffect(() => {
+    setLimit(LIMIT_UNIT);
+  }, [location.state]);
+
+  const increaseLimit = () => {
+    setLimit((prevLimit) => prevLimit + LIMIT_UNIT);
+  };
 
   const onIntersect = useCallback(
     async (
@@ -60,7 +133,7 @@ const EquipList: React.FC<Props> = ({
       if (entry.isIntersecting) {
         setIsLoading(true);
         await fakeFetch();
-        onNext();
+        increaseLimit();
         setIsLoading(false);
       } else {
         setIsLoading(false);
@@ -88,7 +161,7 @@ const EquipList: React.FC<Props> = ({
     <>
       <EquipSearchBar />
       <div className="flex flex-wrap">
-        {equipmentList.map((equip) => (
+        {filteredEquipments.map((equip) => (
           <EquipItem equip={equip}>
             {onClickEquipmentEdit && (
               <>
@@ -152,7 +225,9 @@ const EquipList: React.FC<Props> = ({
         ))}
       </div>
       <div className="w-full flex justify-center" ref={loaderRef}>
-        {isLoading && canMoveNext && <SpinningLoader size={40} />}
+        {isLoading && data.equipInfo.length < limit && (
+          <SpinningLoader size={40} />
+        )}
       </div>
     </>
   );

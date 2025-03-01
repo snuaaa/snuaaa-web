@@ -1,22 +1,7 @@
-import {
-  ChangeEvent,
-  KeyboardEvent,
-  FC,
-  useContext,
-  useEffect,
-  useState,
-  useCallback,
-  useMemo,
-} from 'react';
+import { FC, useCallback } from 'react';
 import BoardName from '../Board/BoardName';
-import { useHistory, useLocation } from 'react-router-dom';
-import EquipmentService, {
-  EquipmentSearchInfo,
-} from 'services/EquipmentService';
-import SelectBox from 'components/Common/SelectBox';
-import { EquipmentCategoryContext } from 'contexts/EquipmentCategoryContext';
+import EquipmentService from 'services/EquipmentService';
 import { useAuth } from 'contexts/auth';
-import { equipmentStatusOptions } from './common';
 import { Equipment } from 'services/types';
 import { useModal, withModal } from 'contexts/modal';
 import EditModal from './Modal/Edit';
@@ -30,27 +15,16 @@ import EquipSearchBar, {
 } from './EquipSearchBar';
 import EquipList from './EquipList';
 
-const LIMIT_UNIT = 12;
-
 const Admin: FC = () => {
-  const { categories } = useContext(EquipmentCategoryContext);
-  const history = useHistory();
-  const location = useLocation<EquipSearchLocationState>();
   const authContext = useAuth();
 
   const fetchFunction = useCallback(async () => {
     return EquipmentService.retrieveList(1);
   }, []);
 
-  const [limit, setLimit] = useState<number>(LIMIT_UNIT);
-
   const { data, refresh } = useFetch({ fetch: fetchFunction });
 
   const { openModal } = useModal();
-
-  useEffect(() => {
-    setLimit(LIMIT_UNIT);
-  }, [location.state]);
 
   const handleClickEquipmentEdit = (equipment: Equipment) => {
     openModal(<EditModal editingEquipment={equipment} onEdit={refresh} />);
@@ -146,12 +120,7 @@ const Admin: FC = () => {
           </button>
         )}
       </div>
-      <EquipList
-        equipmentList={filteredEquipments}
-        onClickEquipmentEdit={handleClickEquipmentEdit}
-        onNext={increaseLimit}
-        canMoveNext={data.equipInfo.length > limit}
-      />
+      <EquipList data={data} onClickEquipmentEdit={handleClickEquipmentEdit} />
     </div>
   );
 };
