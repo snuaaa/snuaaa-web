@@ -5,7 +5,7 @@ type Props<T extends number | string> = {
   options: readonly { value: T; name: string }[];
   onChange: ChangeEventHandler<HTMLSelectElement>;
   value: T;
-  ALLOption?: string;
+  defaultOption?: string;
 };
 
 const SearchSelect = <T extends number | string>({
@@ -13,7 +13,7 @@ const SearchSelect = <T extends number | string>({
   options,
   onChange,
   value,
-  ALLOption,
+  defaultOption,
 }: Props<T>) => {
   const defaultVal = typeof value === 'string' ? '' : 0;
   return (
@@ -26,9 +26,9 @@ const SearchSelect = <T extends number | string>({
       value={value}
       onChange={onChange}
     >
-      {ALLOption && (
+      {defaultOption && (
         <option key="ALL" value={defaultVal}>
-          {ALLOption}
+          {defaultOption}
         </option>
       )}
       {options &&

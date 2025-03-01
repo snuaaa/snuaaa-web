@@ -140,7 +140,7 @@ const EquipSearchBar: FC = () => {
           }
           onChange={handleSelectChange}
           value={location.state?.category_id ?? 0}
-          ALLOption="분류"
+          defaultOption="분류"
         />
 
         <SearchSelect
@@ -148,14 +148,14 @@ const EquipSearchBar: FC = () => {
           options={equipmentStatusOptions}
           onChange={handleSelectChange}
           value={location.state?.status ?? ''}
-          ALLOption="상태"
+          defaultOption="상태"
         />
         <SearchSelect
           name="rent_status"
           options={equipmentRentStatusOptions}
           onChange={handleSelectChange}
           value={location.state?.rent_status ?? ''}
-          ALLOption="대여 상태"
+          defaultOption="대여 상태"
         />
 
         <SearchString
