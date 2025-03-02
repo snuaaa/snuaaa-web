@@ -1,6 +1,12 @@
 import { API } from './index';
 
-import { Equipment, EquipmentCategory, EquipmentStatus, Rent } from './types';
+import {
+  Equipment,
+  EquipmentCategory,
+  EquipmentStatus,
+  MyRent,
+  Rent,
+} from './types';
 
 export type RetrieveEquipmentListResponse = {
   equipCount: number;
@@ -75,7 +81,7 @@ const EquipmentService = {
   },
 
   retrieveMyRentList: function () {
-    return API.get<Equipment[]>('equipment/rent/me');
+    return API.get<MyRent[]>('equipment/rent/me');
   },
 
   retrieveRentRecord: function (equipmentId: number, pageIdx: number) {
@@ -84,7 +90,7 @@ const EquipmentService = {
     );
   },
 
-  rentEquipment: function (data: RentEquipmentRequest) {
+  rentEquipments: function (data: RentEquipmentRequest) {
     return API.post<Equipment>(`equipment/rent/`, data);
   },
 };

@@ -208,3 +208,11 @@ export interface Rent {
   rentReturn?: RentReturn;
   user: User;
 }
+
+export interface MyRent {
+  id: number;
+  start_date: string;
+  end_date: string;
+  equipment: Equipment;
+  rentReturn?: RentReturn;
+}

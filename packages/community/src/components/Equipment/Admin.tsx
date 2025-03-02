@@ -14,6 +14,7 @@ import EquipSearchBar, {
   SortBy,
 } from './EquipSearchBar';
 import EquipList from './EquipList';
+import EquipSearchBar from './EquipSearchBar';
 
 const Admin: FC = () => {
   const authContext = useAuth();
@@ -120,7 +121,12 @@ const Admin: FC = () => {
           </button>
         )}
       </div>
-      <EquipList data={data} onClickEquipmentEdit={handleClickEquipmentEdit} />
+      <EquipSearchBar />
+      <EquipList
+        data={data}
+        onClickEquipmentEdit={handleClickEquipmentEdit}
+        columns={3}
+      />
     </div>
   );
 };

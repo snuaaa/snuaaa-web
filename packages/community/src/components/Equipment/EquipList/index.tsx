@@ -31,9 +31,17 @@ const equipmentRentColorMap: Record<EquipmentRentStatus, string> = {
   [EquipmentRentStatus.RENTED]: 'bg-red-400',
 };
 
-const mapEquipmentRentText = (equip: Equipment) => {
+const mapEquipmentRentStatText = (equip: Equipment) => {
   return equip.rent_status === EquipmentRentStatus.RENTABLE
     ? '대여 가능'
+    : equip.rent_status === EquipmentRentStatus.UNRENTABLE
+      ? '대여 불가'
+      : `${equip.renter?.nickname} ~ ${convertDateMMDD(equip.end_date)}`;
+};
+
+const mapEquipmentRentButtonText = (equip: Equipment) => {
+  return equip.rent_status === EquipmentRentStatus.RENTABLE
+    ? '바로 대여'
     : equip.rent_status === EquipmentRentStatus.UNRENTABLE
       ? '대여 불가'
       : `${equip.renter?.nickname} ~ ${convertDateMMDD(equip.end_date)}`;
@@ -44,6 +52,7 @@ type Props = {
   onClickEquipmentRent?: (equip: Equipment) => void;
   onClickEquipmentCart?: (equip: Equipment) => void;
   data: RetrieveEquipmentListResponse;
+  columns: number;
 };
 
 const fakeFetch = (delay = 500) => new Promise((res) => setTimeout(res, delay));
@@ -55,6 +64,7 @@ const EquipList: React.FC<Props> = ({
   onClickEquipmentRent,
   onClickEquipmentCart,
   data,
+  columns,
 }) => {
   const location = useLocation<EquipSearchLocationState>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -159,10 +169,9 @@ const EquipList: React.FC<Props> = ({
 
   return (
     <>
-      <EquipSearchBar />
       <div className="flex flex-wrap">
         {filteredEquipments.map((equip) => (
-          <EquipItem equip={equip}>
+          <EquipItem equip={equip} columns={columns} key={equip.id}>
             {onClickEquipmentEdit && (
               <>
                 <div className="z-1 absolute top-0 right-0">
@@ -174,18 +183,11 @@ const EquipList: React.FC<Props> = ({
                   >
                     <i className="ri-file-list-2-line text-2xl"></i>
                   </button>
-                  {/*
-                  <button
-                    onClick={() => EquipmentService.deleteEquipment(equip.id)}
-                  >
-                    <i className="ri-delete-bin-line text-2xl"></i>
-                  </button>
-                  */}
                 </div>
                 <div
-                  className={`w-xs text-white text-center font-bold py-2 mx-2 my-4 ${equipmentRentColorMap[equip.rent_status]}`}
+                  className={`w-xs text-white text-center font-bold py-2 my-4 ${equipmentRentColorMap[equip.rent_status]}`}
                 >
-                  {mapEquipmentRentText(equip)}
+                  {mapEquipmentRentStatText(equip)}
                 </div>
               </>
             )}
@@ -201,7 +203,7 @@ const EquipList: React.FC<Props> = ({
                       : 'text-black bg-gray-200')
                   }
                 >
-                  {mapEquipmentRentText(equip)}
+                  {mapEquipmentRentButtonText(equip)}
                 </button>
               )}
               {onClickEquipmentCart && (

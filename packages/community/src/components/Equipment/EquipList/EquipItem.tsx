@@ -21,12 +21,20 @@ const equipmentStatusTextMap: Record<EquipmentStatus, string> = {
 
 type Props = {
   equip: Equipment;
+  columns: number;
 };
 
-const EquipItem: FC<PropsWithChildren<Props>> = ({ equip, children }) => {
+const EquipItem: FC<PropsWithChildren<Props>> = ({
+  equip,
+  columns,
+  children,
+}) => {
   const { categories } = useContext(EquipmentCategoryContext);
   return (
-    <div className="w-1/3 h-72 flex flex-col" key={equip.id}>
+    <div
+      className={'w-1/' + columns.toString() + ' h-72 flex flex-col'}
+      key={equip.id}
+    >
       <div className="relative flex-grow border-2 border-gray-250 mx-2 my-2 px-3">
         <div className="text-base font-bold mt-2 mr-3">{equip.name}</div>
         <div className="equip-picture">
