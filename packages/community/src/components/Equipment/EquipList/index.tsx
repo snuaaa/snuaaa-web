@@ -53,6 +53,7 @@ type Props = {
   onClickEquipmentCart?: (equip: Equipment) => void;
   data: RetrieveEquipmentListResponse;
   columns: number;
+  cart?: Equipment[];
 };
 
 const fakeFetch = (delay = 500) => new Promise((res) => setTimeout(res, delay));
@@ -65,6 +66,7 @@ const EquipList: React.FC<Props> = ({
   onClickEquipmentCart,
   data,
   columns,
+  cart,
 }) => {
   const location = useLocation<EquipSearchLocationState>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -218,7 +220,9 @@ const EquipList: React.FC<Props> = ({
                   }
                 >
                   {equip.rent_status === EquipmentRentStatus.RENTABLE
-                    ? '+'
+                    ? cart?.find((eq: Equipment) => eq.id === equip.id)
+                      ? 'X'
+                      : '+'
                     : '-'}
                 </button>
               )}
