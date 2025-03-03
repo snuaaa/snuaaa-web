@@ -23,13 +23,13 @@ const Rent: FC = () => {
   }
 
   const handleClickEquipmentRent = (equipment: Equipment) => {
-    EquipmentService.rentEquipments({ equipmentIds: [equipment.id] }).then(
-      () => {
-        refresh();
-        if (cart.find((equip: Equipment) => equip.id === equipment.id))
+    window.confirm('이 장비를 대여하시겠습니까?') &&
+      EquipmentService.rentEquipments({ equipmentIds: [equipment.id] }).then(
+        () => {
+          refresh();
           setCart(cart.filter((equip: Equipment) => equip.id !== equipment.id));
-      },
-    );
+        },
+      );
   };
 
   const handleClickEquipmentCart = (equipment: Equipment) => {
@@ -41,12 +41,13 @@ const Rent: FC = () => {
   };
 
   const handleClickRentAll = () => {
-    EquipmentService.rentEquipments({
-      equipmentIds: cart.map((equip) => equip.id),
-    }).then(() => {
-      refresh();
-      setCart([]);
-    });
+    window.confirm(`총 ${cart.length}개의 장비를 대여하시겠습니까?`) &&
+      EquipmentService.rentEquipments({
+        equipmentIds: cart.map((equip) => equip.id),
+      }).then(() => {
+        refresh();
+        setCart([]);
+      });
   };
 
   return (
@@ -66,6 +67,7 @@ const Rent: FC = () => {
             onClickEquipmentCart={handleClickEquipmentCart}
             data={data}
             columns={2}
+            cart={cart}
           />
         </span>
         <span className="w-1/3 overflow-y-auto h-screen">
