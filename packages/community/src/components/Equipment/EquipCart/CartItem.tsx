@@ -13,7 +13,9 @@ const CartItem: FC<Props> = ({ equip, onClickCancel, columns }) => {
   const { categories } = useContext(EquipmentCategoryContext);
   return (
     <div
-      className={'w-1/' + columns.toString() + ' h-24 flex flex-col'}
+      className={
+        (columns === 1 ? 'w-full' : 'w-1/' + columns.toString()) + ' h-24 flex'
+      }
       key={equip.id}
     >
       <div className="relative flex-grow border-2 border-gray-250 mx-1 my-2">
