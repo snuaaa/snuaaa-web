@@ -25,7 +25,10 @@ import CreateModal from './Modal/Create';
 import { useFetch } from 'hooks/useFetch';
 import Loading from 'components/Common/Loading';
 import EditCategoriesModal from './Modal/EditCategories';
-import EquipSearchBar, { EquipSearchLocationState } from './EquipSearchBar';
+import EquipSearchBar, {
+  EquipSearchLocationState,
+  SortBy,
+} from './EquipSearchBar';
 
 const LIMIT_UNIT = 12;
 
@@ -55,6 +58,19 @@ const Admin: FC = () => {
 
   const handleClickCreate = () => {
     openModal(<CreateModal onCreate={refresh} />);
+  };
+
+  const sortCompareFunction = (
+    equipA: Equipment,
+    equipB: Equipment,
+    sortBy: SortBy,
+    sortOrder: 'ASC' | 'DESC',
+  ) => {
+    const order = sortOrder === 'ASC' ? 1 : -1;
+    if (sortBy === SortBy.CATEGORY) {
+      return (equipA.category_id - equipB.category_id) * order;
+    }
+    return equipA[sortBy].localeCompare(equipB[sortBy]) * order;
   };
 
   const filteredEquipments = useMemo(
@@ -97,13 +113,13 @@ const Admin: FC = () => {
                 return false;
               return true;
             })
-            ?.sort(
-              (a, b) =>
-                (location.state.sort_by === 'category_id'
-                  ? a[location.state.sort_by] - b[location.state.sort_by]
-                  : a[location.state.sort_by].localeCompare(
-                      b[location.state.sort_by],
-                    )) * (location.state.sort_order === 'ASC' ? 1 : -1),
+            ?.sort((a, b) =>
+              sortCompareFunction(
+                a,
+                b,
+                location.state.sort_by,
+                location.state.sort_order,
+              ),
             )
         : data?.equipInfo
       )?.slice(0, limit) ?? [],
