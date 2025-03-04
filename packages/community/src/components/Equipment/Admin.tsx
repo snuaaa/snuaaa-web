@@ -14,7 +14,6 @@ import EquipSearchBar, {
   SortBy,
 } from './EquipSearchBar';
 import EquipList from './EquipList';
-import EquipSearchBar from './EquipSearchBar';
 
 const Admin: FC = () => {
   const authContext = useAuth();
@@ -33,76 +32,6 @@ const Admin: FC = () => {
 
   const handleClickCreate = () => {
     openModal(<CreateModal onCreate={refresh} />);
-  };
-
-  const sortCompareFunction = (
-    equipA: Equipment,
-    equipB: Equipment,
-    sortBy: SortBy,
-    sortOrder: 'ASC' | 'DESC',
-  ) => {
-    const order = sortOrder === 'ASC' ? 1 : -1;
-    if (sortBy === SortBy.CATEGORY) {
-      return (equipA.category_id - equipB.category_id) * order;
-    }
-    return equipA[sortBy].localeCompare(equipB[sortBy]) * order;
-  };
-
-  const filteredEquipments = useMemo(
-    () =>
-      (location.state
-        ? data?.equipInfo
-            .filter((equip) => {
-              if (
-                location.state.category_id &&
-                location.state.category_id !== 0 &&
-                equip.category_id !== location.state?.category_id
-              )
-                return false;
-              if (
-                location.state.status !== '' &&
-                equip.status !== location.state.status
-              )
-                return false;
-              if (
-                location.state.rent_status !== '' &&
-                equip.rent_status !== location.state.rent_status
-              )
-                return false;
-              if (
-                location.state.keyword !== '' &&
-                !equip.name
-                  .toLowerCase()
-                  .includes(location.state.keyword.toLowerCase()) &&
-                !equip.nickname
-                  .toLowerCase()
-                  .includes(location.state.keyword.toLowerCase())
-              )
-                return false;
-              if (
-                location.state.maker !== '' &&
-                !equip.maker
-                  .toLowerCase()
-                  .includes(location.state.maker.toLowerCase())
-              )
-                return false;
-              return true;
-            })
-            ?.sort((a, b) =>
-              sortCompareFunction(
-                a,
-                b,
-                location.state.sort_by,
-                location.state.sort_order,
-              ),
-            )
-        : data?.equipInfo
-      )?.slice(0, limit) ?? [],
-    [data?.equipInfo, limit, location.state],
-  );
-
-  const increaseLimit = () => {
-    setLimit((prevLimit) => prevLimit + LIMIT_UNIT);
   };
 
   if (!data) {

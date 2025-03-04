@@ -21,7 +21,10 @@ import { useModal } from 'contexts/modal';
 import EquipmentService, {
   RetrieveEquipmentListResponse,
 } from 'services/EquipmentService';
-import EquipSearchBar, { EquipSearchLocationState } from '../EquipSearchBar';
+import EquipSearchBar, {
+  EquipSearchLocationState,
+  SortBy,
+} from '../EquipSearchBar';
 import EquipItem from './EquipItem';
 import { useLocation } from 'react-router';
 
@@ -76,6 +79,19 @@ const EquipList: React.FC<Props> = ({
 
   const [limit, setLimit] = useState<number>(LIMIT_UNIT);
 
+  const sortCompareFunction = (
+    equipA: Equipment,
+    equipB: Equipment,
+    sortBy: SortBy,
+    sortOrder: 'ASC' | 'DESC',
+  ) => {
+    const order = sortOrder === 'ASC' ? 1 : -1;
+    if (sortBy === SortBy.CATEGORY) {
+      return (equipA.category_id - equipB.category_id) * order;
+    }
+    return equipA[sortBy].localeCompare(equipB[sortBy]) * order;
+  };
+
   const filteredEquipments = useMemo(
     () =>
       (location.state
@@ -116,13 +132,13 @@ const EquipList: React.FC<Props> = ({
                 return false;
               return true;
             })
-            ?.sort(
-              (a, b) =>
-                (location.state.sort_by === 'category_id'
-                  ? a[location.state.sort_by] - b[location.state.sort_by]
-                  : a[location.state.sort_by].localeCompare(
-                      b[location.state.sort_by],
-                    )) * (location.state.sort_order === 'ASC' ? 1 : -1),
+            ?.sort((a, b) =>
+              sortCompareFunction(
+                a,
+                b,
+                location.state.sort_by,
+                location.state.sort_order,
+              ),
             )
         : data?.equipInfo
       )?.slice(0, limit) ?? [],
