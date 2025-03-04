@@ -180,6 +180,7 @@ export interface Equipment {
   start_date?: string;
   end_date?: string;
   img_path: string;
+  createdAt: string;
 }
 
 export interface EquipmentCategory {

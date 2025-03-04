@@ -1,4 +1,4 @@
-import { EquipmentStatus } from 'services/types';
+import { EquipmentRentStatus, EquipmentStatus } from 'services/types';
 
 export const equipmentStatusOptions = [
   {
@@ -20,5 +20,20 @@ export const equipmentStatusOptions = [
   {
     value: EquipmentStatus.ETC,
     name: '기타',
+  },
+];
+
+export const equipmentRentStatusOptions = [
+  {
+    value: EquipmentRentStatus.RENTABLE,
+    name: '대여 가능',
+  },
+  {
+    value: EquipmentRentStatus.UNRENTABLE,
+    name: '대여 불가',
+  },
+  {
+    value: EquipmentRentStatus.RENTED,
+    name: '대여 중',
   },
 ];

@@ -12,6 +12,7 @@ import RentRecords from './Modal/RentRecords';
 import { JSX } from 'react/jsx-runtime';
 import { useModal } from 'contexts/modal';
 import EquipmentService from 'services/EquipmentService';
+import EquipSearchBar from './EquipSearchBar';
 
 const equipmentStatusColorMap: Record<EquipmentStatus, string> = {
   [EquipmentStatus.OK]: 'text-green-600',
@@ -98,6 +99,7 @@ const EquipList: React.FC<Props> = ({
 
   return (
     <>
+      <EquipSearchBar />
       <div className="flex flex-wrap">
         {equipmentList.map((equip) => (
           <div className="w-1/3 h-72 flex flex-col" key={equip.id}>
@@ -183,7 +185,7 @@ const EquipList: React.FC<Props> = ({
           </div>
         ))}
       </div>
-      <div className="equip-list-loader-wrapper" ref={loaderRef}>
+      <div className="w-full flex justify-center" ref={loaderRef}>
         {isLoading && canMoveNext && <SpinningLoader size={40} />}
       </div>
     </>
