@@ -97,7 +97,7 @@ export const useEquipment = () => {
   const context = useContext(EquipmentContext);
 
   if (!context) {
-    throw new Error('useModal must be used within a EquipmentProvider');
+    throw new Error('useEquipment must be used within a EquipmentProvider');
   }
 
   return context;
