@@ -88,7 +88,7 @@ const EquipItem: FC<Props> = ({ equip, columns, type }) => {
       <div className="relative flex-grow border-2 border-gray-250 mx-2 my-2 px-3">
         <div className="text-base font-bold mt-2 mr-3">{equip.name}</div>
         <div className="equip-picture">
-          <Image imgSrc={equip.img_path} />
+          <Image imgSrc={equip.img_path} className="h-24 mx-auto my-1" />
         </div>
         <div className="h-100 my-2">
           <div className="font-bold mr-3 inline-block">분류</div>

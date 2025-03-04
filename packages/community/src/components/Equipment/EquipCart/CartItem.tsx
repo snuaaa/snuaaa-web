@@ -18,7 +18,7 @@ const CartItem: FC<Props> = ({ equip, onClickCancel, columns }) => {
     >
       <div className="relative flex-grow border-2 border-gray-250 mx-1 my-2">
         <div className="equip-picture">
-          <Image imgSrc={equip.img_path} />
+          <Image imgSrc={equip.img_path} className="h-16 mx-auto" />
         </div>
         <div className="text-xs font-bold my-1">{equip.name}</div>
         <div className="z-1 absolute top-0 right-0 bg-cyan-600 text-white text-xs font-bold px-1">
