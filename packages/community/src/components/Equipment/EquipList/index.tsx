@@ -1,79 +1,31 @@
-import { EquipmentCategoryContext } from 'contexts/EquipmentCategoryContext';
 import React, {
   memo,
   useCallback,
-  useContext,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from 'react';
-import {
-  Equipment,
-  EquipmentRentStatus,
-  EquipmentStatus,
-} from 'services/types';
-import { convertDateMMDD } from 'utils/convertDate';
 import SpinningLoader from 'components/Common/SpinningLoader';
-import RentRecords from '../Modal/RentRecords';
-import { JSX } from 'react/jsx-runtime';
-import { useModal } from 'contexts/modal';
-import EquipmentService, {
-  RetrieveEquipmentListResponse,
-} from 'services/EquipmentService';
-import EquipSearchBar, {
-  EquipSearchLocationState,
-  SortBy,
-} from '../EquipSearchBar';
+import { EquipSearchLocationState, SortBy } from '../EquipSearchBar';
+import { RetrieveEquipmentListResponse } from 'services/EquipmentService';
 import EquipItem from './EquipItem';
 import { useLocation } from 'react-router';
-
-const equipmentRentColorMap: Record<EquipmentRentStatus, string> = {
-  [EquipmentRentStatus.RENTABLE]: 'bg-cyan-500',
-  [EquipmentRentStatus.UNRENTABLE]: 'bg-yellow-400',
-  [EquipmentRentStatus.RENTED]: 'bg-red-400',
-};
-
-const mapEquipmentRentStatText = (equip: Equipment) => {
-  return equip.rent_status === EquipmentRentStatus.RENTABLE
-    ? '대여 가능'
-    : equip.rent_status === EquipmentRentStatus.UNRENTABLE
-      ? '대여 불가'
-      : `${equip.renter?.nickname} ~ ${convertDateMMDD(equip.end_date)}`;
-};
-
-const mapEquipmentRentButtonText = (equip: Equipment) => {
-  return equip.rent_status === EquipmentRentStatus.RENTABLE
-    ? '바로 대여'
-    : equip.rent_status === EquipmentRentStatus.UNRENTABLE
-      ? '대여 불가'
-      : `${equip.renter?.nickname} ~ ${convertDateMMDD(equip.end_date)}`;
-};
+import { Equipment } from 'services/types';
 
 type Props = {
-  onClickEquipmentEdit?: (equip: Equipment) => void;
-  onClickEquipmentRent?: (equip: Equipment) => void;
-  onClickEquipmentCart?: (equip: Equipment) => void;
+  type: 'rent' | 'admin';
   data: RetrieveEquipmentListResponse;
   columns: number;
-  cart?: Equipment[];
 };
 
 const fakeFetch = (delay = 500) => new Promise((res) => setTimeout(res, delay));
 
 const LIMIT_UNIT = 12;
 
-const EquipList: React.FC<Props> = ({
-  onClickEquipmentEdit, // only for admin
-  onClickEquipmentRent,
-  onClickEquipmentCart,
-  data,
-  columns,
-  cart,
-}) => {
+const EquipList: React.FC<Props> = ({ data, columns, type }) => {
   const location = useLocation<EquipSearchLocationState>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { openModal } = useModal();
 
   //const equipCount = data?.equipCount ?? 0;
 
@@ -189,61 +141,12 @@ const EquipList: React.FC<Props> = ({
     <>
       <div className="flex flex-wrap">
         {filteredEquipments.map((equip) => (
-          <EquipItem equip={equip} columns={columns} key={equip.id}>
-            {onClickEquipmentEdit && (
-              <>
-                <div className="z-1 absolute top-0 right-0">
-                  <button onClick={() => onClickEquipmentEdit(equip)}>
-                    <i className="ri-pencil-line text-2xl"></i>
-                  </button>
-                  <button
-                    onClick={() => openModal(<RentRecords id={equip.id} />)}
-                  >
-                    <i className="ri-file-list-2-line text-2xl"></i>
-                  </button>
-                </div>
-                <div
-                  className={`w-xs text-white text-center font-bold py-2 my-4 ${equipmentRentColorMap[equip.rent_status]}`}
-                >
-                  {mapEquipmentRentStatText(equip)}
-                </div>
-              </>
-            )}
-            <div>
-              {onClickEquipmentRent && (
-                <button
-                  onClick={() => onClickEquipmentRent(equip)}
-                  disabled={equip.rent_status !== EquipmentRentStatus.RENTABLE}
-                  className={
-                    'w-3/5 text-center font-bold py-2 ml-2 my-4 float-left ' +
-                    (equip.rent_status === EquipmentRentStatus.RENTABLE
-                      ? 'text-cyan-600 border border-cyan-600'
-                      : 'text-black bg-gray-200')
-                  }
-                >
-                  {mapEquipmentRentButtonText(equip)}
-                </button>
-              )}
-              {onClickEquipmentCart && (
-                <button
-                  onClick={() => onClickEquipmentCart(equip)}
-                  disabled={equip.rent_status !== EquipmentRentStatus.RENTABLE}
-                  className={
-                    'text-center w-1/5 font-bold py-2 mr-2 my-4 float-right ' +
-                    (equip.rent_status === EquipmentRentStatus.RENTABLE
-                      ? 'text-cyan-600 border border-cyan-600'
-                      : 'text-black bg-gray-200')
-                  }
-                >
-                  {equip.rent_status === EquipmentRentStatus.RENTABLE
-                    ? cart?.find((eq: Equipment) => eq.id === equip.id)
-                      ? 'X'
-                      : '+'
-                    : '-'}
-                </button>
-              )}
-            </div>
-          </EquipItem>
+          <EquipItem
+            equip={equip}
+            columns={columns}
+            key={equip.id}
+            type={type}
+          ></EquipItem>
         ))}
       </div>
       <div className="w-full flex justify-center" ref={loaderRef}>

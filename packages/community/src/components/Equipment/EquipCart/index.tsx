@@ -1,18 +1,15 @@
 import { FC } from 'react';
-import { Equipment } from 'services/types';
 import CartItem from './CartItem';
+import { useEquipment } from '../contexts';
 
-type Props = {
-  equipments: Equipment[];
-  onClickCancel: (equip: Equipment) => void;
-  onClickRentAll: () => void;
-};
+const EquipCart: FC = () => {
+  const { cart, rentAllEquipment, removeFromCart } = useEquipment();
 
-const EquipCart: FC<Props> = ({
-  equipments,
-  onClickCancel,
-  onClickRentAll,
-}) => {
+  const handleClickRentAll = () => {
+    window.confirm(`총 ${cart.length}개의 장비를 대여하시겠습니까?`) &&
+      rentAllEquipment();
+  };
+
   return (
     <div className="text-center px-2">
       <h3 className="font-bold text-base text-center text-cyan-600 pt-6 pb-2">
@@ -23,21 +20,21 @@ const EquipCart: FC<Props> = ({
         <br /> 대여하려면 + 를 클릭하세요.
       </div>
       <div className="flex flex-wrap">
-        {equipments.map((equip) => (
+        {cart.map((equip) => (
           <CartItem
             key={equip.id}
             equip={equip}
             columns={2}
-            onClickCancel={() => onClickCancel(equip)}
+            onClickCancel={() => removeFromCart(equip)}
           />
         ))}
       </div>
       <button
         className={
           'w-full text-base text-center text-white font-bold py-2 my-2 ' +
-          (equipments.length === 0 ? 'bg-gray-200' : 'bg-cyan-600')
+          (cart.length === 0 ? 'bg-gray-200' : 'bg-cyan-600')
         }
-        onClick={onClickRentAll}
+        onClick={handleClickRentAll}
       >
         일괄 대여 하기
       </button>

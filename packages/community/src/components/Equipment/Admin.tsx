@@ -1,42 +1,26 @@
-import { FC, useCallback } from 'react';
+import { FC } from 'react';
 import BoardName from '../Board/BoardName';
-import EquipmentService from 'services/EquipmentService';
 import { useAuth } from 'contexts/auth';
-import { Equipment } from 'services/types';
 import { useModal, withModal } from 'contexts/modal';
-import EditModal from './Modal/Edit';
 import CreateModal from './Modal/Create';
-import { useFetch } from 'hooks/useFetch';
 import Loading from 'components/Common/Loading';
-import EditCategoriesModal from './Modal/EditCategories';
-import EquipSearchBar, {
-  EquipSearchLocationState,
-  SortBy,
-} from './EquipSearchBar';
 import EquipList from './EquipList';
+import EquipSearchBar from './EquipSearchBar';
+import { useEquipment, withEquipment } from './contexts';
 
 const Admin: FC = () => {
   const authContext = useAuth();
 
-  const fetchFunction = useCallback(async () => {
-    return EquipmentService.retrieveList(1);
-  }, []);
-
-  const { data, refresh } = useFetch({ fetch: fetchFunction });
-
+  const { data, refresh } = useEquipment();
   const { openModal } = useModal();
-
-  const handleClickEquipmentEdit = (equipment: Equipment) => {
-    openModal(<EditModal editingEquipment={equipment} onEdit={refresh} />);
-  };
-
-  const handleClickCreate = () => {
-    openModal(<CreateModal onCreate={refresh} />);
-  };
 
   if (!data) {
     return <Loading />;
   }
+
+  const handleClickCreate = () => {
+    openModal(<CreateModal onCreate={refresh} />);
+  };
 
   return (
     <div className="board-wrapper">
@@ -51,13 +35,9 @@ const Admin: FC = () => {
         )}
       </div>
       <EquipSearchBar />
-      <EquipList
-        data={data}
-        onClickEquipmentEdit={handleClickEquipmentEdit}
-        columns={3}
-      />
+      <EquipList data={data} columns={3} type="admin" />
     </div>
   );
 };
 
-export default withModal(Admin);
+export default withModal(withEquipment(Admin));
