@@ -7,6 +7,7 @@ import Loading from 'components/Common/Loading';
 import EquipList from './EquipList';
 import EquipSearchBar from './EquipSearchBar';
 import { useEquipment, withEquipment } from './contexts';
+import EditCategoriesModal from './Modal/EditCategories';
 
 const Admin: FC = () => {
   const authContext = useAuth();
@@ -17,6 +18,10 @@ const Admin: FC = () => {
   if (!data) {
     return <Loading />;
   }
+
+  const handleClickEditCategory = () => {
+    openModal(<EditCategoriesModal />);
+  };
 
   const handleClickCreate = () => {
     openModal(<CreateModal onCreate={refresh} />);
@@ -29,9 +34,20 @@ const Admin: FC = () => {
         <div className="text-lg font-bold">현재 보유 장비</div>
         {authContext.authInfo.user.grade <= 8 && ( // TODO: change this to equipment authority check
           //TODO: display modal
-          <button className="board-btn-write" onClick={handleClickCreate}>
-            <i className="ri-pencil-line enif-f-1p2x"></i>장비 추가
-          </button>
+          <>
+            <button
+              className="bg-[#49A0AE] text-white ml-auto flex justify-center items-center text-base px-2 py-1"
+              onClick={handleClickEditCategory}
+            >
+              <i className="ri-pencil-line enif-f-1p2x"></i>장비 분류 수정
+            </button>
+            <button
+              className="bg-[#49A0AE] text-white ml-2 flex justify-center items-center text-base px-2 py-1"
+              onClick={handleClickCreate}
+            >
+              <i className="ri-pencil-line enif-f-1p2x"></i>장비 추가
+            </button>
+          </>
         )}
       </div>
       <EquipSearchBar />
