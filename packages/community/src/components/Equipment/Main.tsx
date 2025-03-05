@@ -4,6 +4,8 @@ import { FC, useCallback } from 'react';
 import Image from '../Common/AaaImage';
 import { Link } from 'react-router-dom';
 import EquipmentService from 'services/EquipmentService';
+import { useModal, withModal } from 'contexts/modal';
+import RentReturn from './Modal/RentReturn';
 
 const Main: FC = () => {
   const fetchFunction = useCallback(() => {
@@ -11,6 +13,8 @@ const Main: FC = () => {
   }, []);
 
   const { data, refresh } = useFetch({ fetch: fetchFunction });
+
+  const { openModal } = useModal();
 
   const getTimeLeft = (end_date: string) => {
     const now = new Date();
@@ -46,14 +50,18 @@ const Main: FC = () => {
                   className="object-contain max-w-full max-h-full"
                 />
               </div>
-              <div className="flex flex-col-reverse">
+              <div className="flex flex-col-reverse ml-1">
                 <div className="font-bold text-red-400 text-xs py-1">
                   {getTimeLeft(rent.end_date)}
                 </div>
                 <div className="font-bold py-1">{rent.equipment.name}</div>
               </div>
               <div className="z-1 absolute top-0 right-0 bg-red-400 text-white text-xs font-bold px-1">
-                <button onClick={() => alert('장비 반납')}>
+                <button
+                  onClick={() =>
+                    openModal(<RentReturn rent={rent} onSubmit={refresh} />)
+                  }
+                >
                   <i className="ri-arrow-go-back-line text-xl"></i>
                 </button>
               </div>
@@ -82,4 +90,4 @@ const Main: FC = () => {
   );
 };
 
-export default Main;
+export default withModal(Main);

@@ -102,13 +102,14 @@ const RentRecords: FC<Props> = ({ id }) => {
               </button>
               {rentRecord.rentReturn && photoRentId === rentRecord.id && (
                 <div className="flex items-center text-gray-950 border first:rounded-t-lg last:rounded-b-lg border-gray-300 w-full py-2">
-                  <button onClick={() => clickRecord(rentRecord.id)}>
+                  <button
+                    onClick={() => clickRecord(rentRecord.id)}
+                    className="mx-auto"
+                  >
                     <img
-                      src={
-                        // TODO: change to rentRecord.rentReturn.photo_path
-                        /*rentRecord.rentReturn.photo_path*/ 'https://placehold.co/600x400'
-                      }
+                      src={rentRecord.rentReturn.photo_path}
                       alt="returned equip"
+                      className="max-w-full max-h-72 object-contain"
                     />
                   </button>
                 </div>
