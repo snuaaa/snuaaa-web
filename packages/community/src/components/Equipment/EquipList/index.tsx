@@ -44,58 +44,56 @@ const EquipList: React.FC<Props> = ({ data, columns, type }) => {
     return equipA[sortBy].localeCompare(equipB[sortBy]) * order;
   };
 
-  const filteredEquipments = useMemo(
-    () =>
-      (location.state
-        ? data?.equipInfo
-            .filter((equip) => {
-              if (
-                location.state.category_id &&
-                location.state.category_id !== 0 &&
-                equip.category_id !== location.state?.category_id
-              )
-                return false;
-              if (
-                location.state.status !== '' &&
-                equip.status !== location.state.status
-              )
-                return false;
-              if (
-                location.state.rent_status !== '' &&
-                equip.rent_status !== location.state.rent_status
-              )
-                return false;
-              if (
-                location.state.keyword !== '' &&
-                !equip.name
-                  .toLowerCase()
-                  .includes(location.state.keyword.toLowerCase()) &&
-                !equip.nickname
-                  .toLowerCase()
-                  .includes(location.state.keyword.toLowerCase())
-              )
-                return false;
-              if (
-                location.state.maker !== '' &&
-                !equip.maker
-                  .toLowerCase()
-                  .includes(location.state.maker.toLowerCase())
-              )
-                return false;
-              return true;
-            })
-            ?.sort((a, b) =>
-              sortCompareFunction(
-                a,
-                b,
-                location.state.sort_by,
-                location.state.sort_order,
-              ),
+  const [filteredEquipments, equipCount] = useMemo(() => {
+    const filtered = location.state
+      ? data?.equipInfo
+          .filter((equip) => {
+            if (
+              location.state.category_id &&
+              location.state.category_id !== 0 &&
+              equip.category_id !== location.state?.category_id
             )
-        : data?.equipInfo
-      )?.slice(0, limit) ?? [],
-    [data?.equipInfo, limit, location.state],
-  );
+              return false;
+            if (
+              location.state.status !== '' &&
+              equip.status !== location.state.status
+            )
+              return false;
+            if (
+              location.state.rent_status !== '' &&
+              equip.rent_status !== location.state.rent_status
+            )
+              return false;
+            if (
+              location.state.keyword !== '' &&
+              !equip.name
+                .toLowerCase()
+                .includes(location.state.keyword.toLowerCase()) &&
+              !equip.nickname
+                .toLowerCase()
+                .includes(location.state.keyword.toLowerCase())
+            )
+              return false;
+            if (
+              location.state.maker !== '' &&
+              !equip.maker
+                .toLowerCase()
+                .includes(location.state.maker.toLowerCase())
+            )
+              return false;
+            return true;
+          })
+          ?.sort((a, b) =>
+            sortCompareFunction(
+              a,
+              b,
+              location.state.sort_by,
+              location.state.sort_order,
+            ),
+          )
+      : data?.equipInfo;
+    return [filtered.slice(0, limit) ?? [], filtered.length];
+  }, [data?.equipInfo, limit, location.state]);
 
   useEffect(() => {
     setLimit(LIMIT_UNIT);
@@ -110,7 +108,7 @@ const EquipList: React.FC<Props> = ({ data, columns, type }) => {
       [entry]: IntersectionObserverEntry[],
       observer: IntersectionObserver,
     ) => {
-      if (entry.isIntersecting) {
+      if (entry.isIntersecting && !isLoading && limit < equipCount) {
         setIsLoading(true);
         await fakeFetch();
         increaseLimit();
@@ -150,9 +148,7 @@ const EquipList: React.FC<Props> = ({ data, columns, type }) => {
         ))}
       </div>
       <div className="w-full flex justify-center" ref={loaderRef}>
-        {isLoading && data.equipInfo.length < limit && (
-          <SpinningLoader size={40} />
-        )}
+        {isLoading && <SpinningLoader size={40} />}
       </div>
     </>
   );
