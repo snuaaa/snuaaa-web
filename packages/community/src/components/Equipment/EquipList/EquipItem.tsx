@@ -1,8 +1,11 @@
 import { FC, useContext } from 'react';
 import {
   Equipment,
+  equipmentRentColorMap,
   EquipmentRentStatus,
   EquipmentStatus,
+  equipmentStatusColorMap,
+  equipmentStatusTextMap,
 } from 'services/types';
 import Image from '../../Common/AaaImage';
 import { EquipmentCategoryContext } from 'contexts/EquipmentCategoryContext';
@@ -11,28 +14,7 @@ import { useEquipment } from '../contexts';
 import EditModal from '../Modal/Edit';
 import { useModal } from 'contexts/modal';
 import RentRecords from '../Modal/RentRecords';
-
-const equipmentRentColorMap: Record<EquipmentRentStatus, string> = {
-  [EquipmentRentStatus.RENTABLE]: 'bg-cyan-500',
-  [EquipmentRentStatus.UNRENTABLE]: 'bg-yellow-400',
-  [EquipmentRentStatus.RENTED]: 'bg-red-400',
-};
-
-const equipmentStatusColorMap: Record<EquipmentStatus, string> = {
-  [EquipmentStatus.OK]: 'text-green-600',
-  [EquipmentStatus.BROKEN]: 'text-red-600',
-  [EquipmentStatus.REPAIRING]: 'text-yellow-600',
-  [EquipmentStatus.LOST]: 'text-gray-500',
-  [EquipmentStatus.ETC]: 'text-gray-500',
-};
-
-const equipmentStatusTextMap: Record<EquipmentStatus, string> = {
-  [EquipmentStatus.OK]: '양호',
-  [EquipmentStatus.BROKEN]: '수리 필요',
-  [EquipmentStatus.REPAIRING]: '수리 중',
-  [EquipmentStatus.LOST]: '분실',
-  [EquipmentStatus.ETC]: '기타',
-};
+import EquipDescription from '../Modal/EquipDescription';
 
 const mapEquipmentRentStatText = (equip: Equipment) => {
   return equip.rent_status === EquipmentRentStatus.RENTABLE
@@ -116,7 +98,7 @@ const EquipItem: FC<Props> = ({ equip, columns, type }) => {
         </div>
         {type === 'admin' ? (
           <>
-            <div className="z-1 absolute top-0 right-0">
+            <div className="z-1 absolute top-0 right-0 bg-gray-200 px-1 text-gray-500">
               <button onClick={() => handleClickEquipmentEdit(equip)}>
                 <i className="ri-pencil-line text-2xl"></i>
               </button>
@@ -132,6 +114,15 @@ const EquipItem: FC<Props> = ({ equip, columns, type }) => {
           </>
         ) : (
           <div>
+            <div className="z-1 absolute top-0 right-0 bg-gray-200 px-1 text-gray-500">
+              <button
+                onClick={() =>
+                  openModal(<EquipDescription equipment={equip} />)
+                }
+              >
+                <i className="ri-information-line text-2xl"></i>
+              </button>
+            </div>
             <button
               onClick={() => handleClickEquipmentRent(equip)}
               disabled={equip.rent_status !== EquipmentRentStatus.RENTABLE}
