@@ -37,3 +37,25 @@ export const equipmentRentStatusOptions = [
     name: '대여 중',
   },
 ];
+
+export const equipmentStatusColorMap: Record<EquipmentStatus, string> = {
+  [EquipmentStatus.OK]: 'text-green-600',
+  [EquipmentStatus.BROKEN]: 'text-red-600',
+  [EquipmentStatus.REPAIRING]: 'text-yellow-600',
+  [EquipmentStatus.LOST]: 'text-gray-500',
+  [EquipmentStatus.ETC]: 'text-gray-500',
+};
+
+export const equipmentStatusTextMap: Record<EquipmentStatus, string> = {
+  [EquipmentStatus.OK]: '양호',
+  [EquipmentStatus.BROKEN]: '수리 필요',
+  [EquipmentStatus.REPAIRING]: '수리 중',
+  [EquipmentStatus.LOST]: '분실',
+  [EquipmentStatus.ETC]: '기타',
+};
+
+export const equipmentRentColorMap: Record<EquipmentRentStatus, string> = {
+  [EquipmentRentStatus.RENTABLE]: 'bg-cyan-500',
+  [EquipmentRentStatus.UNRENTABLE]: 'bg-yellow-400',
+  [EquipmentRentStatus.RENTED]: 'bg-red-400',
+};
