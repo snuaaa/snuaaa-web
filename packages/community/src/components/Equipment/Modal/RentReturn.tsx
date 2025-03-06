@@ -16,7 +16,7 @@ const RentReturn: FC<Props> = ({ rent, onSubmit }) => {
   const { closeModal } = useModal();
   const [imgPath, setImgPath] = useState<string | undefined>();
 
-  const onClickSubmit = () => {
+  const handleClickSubmit = () => {
     if (!imgPath) {
       alert('반납할 장비의 사진을 등록해주세요!');
       return;
@@ -88,7 +88,7 @@ const RentReturn: FC<Props> = ({ rent, onSubmit }) => {
         <div className="flex w-full mx-auto items-center justify-center">
           <button
             className="text-base border border-gray-400 text-white text-center font-bold py-2 mx-2 mt-4 mb-2 bg-red-400 px-8"
-            onClick={onClickSubmit}
+            onClick={handleClickSubmit}
           >
             반납 완료
           </button>
