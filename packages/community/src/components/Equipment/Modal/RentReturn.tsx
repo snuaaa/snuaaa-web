@@ -1,11 +1,8 @@
 import { useModal } from 'contexts/modal';
-import { useFetch } from 'hooks/useFetch';
-import { ChangeEvent, FC, useCallback, useState } from 'react';
-import { useLocation } from 'react-router';
+import { ChangeEvent, FC, useState } from 'react';
 import EquipmentService from 'services/EquipmentService';
-import { Equipment, MyRent, PenaltyStatus } from 'services/types';
+import { MyRent } from 'services/types';
 import UploadService from 'services/UploadService';
-import { convertFullDate } from 'utils/convertDate';
 
 type Props = {
   rent: MyRent;
