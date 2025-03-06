@@ -48,9 +48,13 @@ export const EquipmentProvider = ({ children }: PropsWithChildren) => {
 
   const rentSingleEquipment = useCallback(
     async (equipment: Equipment) => {
-      await EquipmentService.rentEquipments({
-        equipmentIds: [equipment.id],
-      });
+      try {
+        await EquipmentService.rentEquipments({
+          equipmentIds: [equipment.id],
+        });
+      } catch (e) {
+        alert('대여 권한이 없습니다!');
+      }
       removeFromCart(equipment);
       await refresh();
     },
@@ -58,9 +62,13 @@ export const EquipmentProvider = ({ children }: PropsWithChildren) => {
   );
 
   const rentAllEquipment = useCallback(async () => {
-    await EquipmentService.rentEquipments({
-      equipmentIds: cart.map((equip) => equip.id),
-    });
+    try {
+      await EquipmentService.rentEquipments({
+        equipmentIds: cart.map((equip) => equip.id),
+      });
+    } catch (e) {
+      alert('대여 권한이 없습니다!');
+    }
     setCart([]);
     await refresh();
   }, [cart, refresh]);
