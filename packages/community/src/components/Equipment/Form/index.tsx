@@ -5,6 +5,7 @@ import { equipmentStatusOptions } from '../common';
 import InputField from './InputField';
 import Select from './Select';
 import UploadService from 'services/UploadService';
+import TextArea from './TextArea';
 
 type Props = {
   title: string;
@@ -157,7 +158,7 @@ const EquipmentForm: React.FC<Props> = ({
             value={equipment.nickname}
             onChange={(e) => onChangeInput('nickname', e.target.value)}
           />
-          <InputField
+          <TextArea
             name="추가 설명"
             placeholder="선택 입력"
             value={equipment.description}
