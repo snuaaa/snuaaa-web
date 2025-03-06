@@ -6,6 +6,10 @@ import { Link } from 'react-router-dom';
 import EquipmentService from 'services/EquipmentService';
 import { useModal, withModal } from 'contexts/modal';
 import RentReturn from './Modal/RentReturn';
+import { useAuth } from 'contexts/auth';
+
+//const EQUIP_RENT_GRADE = 7;
+const EQUIP_ADMIN_GRADE = 6;
 
 const Main: FC = () => {
   const fetchFunction = useCallback(() => {
@@ -15,6 +19,8 @@ const Main: FC = () => {
   const { data, refresh } = useFetch({ fetch: fetchFunction });
 
   const { openModal } = useModal();
+
+  const authContext = useAuth();
 
   const getTimeLeft = (end_date: string) => {
     const now = new Date();
@@ -33,12 +39,13 @@ const Main: FC = () => {
   return (
     <div className="board-wrapper">
       <BoardName board_id={undefined} board_name={'장비 대여'} />
-      {/*TODO: check access rights*/}
-      <div className="text-right">
-        <Link to="/equipment/admin" className="w-fit mr-4 text-gray-600">
-          장비 관리 &gt;&gt;
-        </Link>
-      </div>
+      {authContext.authInfo.user.grade <= EQUIP_ADMIN_GRADE && (
+        <div className="text-right">
+          <Link to="/equipment/admin" className="w-fit mr-4 text-gray-600">
+            장비 관리 &gt;&gt;
+          </Link>
+        </div>
+      )}
       <h3 className="mt-4 text-base font-bold">나의 대여 장비 목록</h3>
       <div className="flex flex-wrap">
         {data?.map((rent) => (
