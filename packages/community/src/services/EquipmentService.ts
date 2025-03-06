@@ -95,9 +95,7 @@ const EquipmentService = {
   },
 
   returnEquipment: function (rentId: number, photo_path: string) {
-    return API.post<{ result?: 'Success' }>(`equipment/rent/${rentId}/return`, {
-      photo_path,
-    });
+    return API.post(`equipment/rent/${rentId}/return`, { photo_path });
   },
 };
 
