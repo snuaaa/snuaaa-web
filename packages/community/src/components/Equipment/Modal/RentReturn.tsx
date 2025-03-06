@@ -14,7 +14,7 @@ type Props = {
 
 const RentReturn: FC<Props> = ({ rent, onSubmit }) => {
   const { closeModal } = useModal();
-  const [imgPath, setImgPath] = useState<string>('');
+  const [imgPath, setImgPath] = useState<string | undefined>();
 
   const onClickSubmit = () => {
     if (!imgPath) {
@@ -37,7 +37,7 @@ const RentReturn: FC<Props> = ({ rent, onSubmit }) => {
   };
 
   const handleRemoveFile = () => {
-    setImgPath('');
+    setImgPath(undefined);
   };
 
   return (
