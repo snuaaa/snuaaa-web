@@ -108,7 +108,7 @@ const EquipList: React.FC<Props> = ({ data, columns, type }) => {
       [entry]: IntersectionObserverEntry[],
       observer: IntersectionObserver,
     ) => {
-      if (entry.isIntersecting && !isLoading && limit < equipCount) {
+      if (entry.isIntersecting && limit < equipCount) {
         setIsLoading(true);
         await fakeFetch();
         increaseLimit();
@@ -117,7 +117,7 @@ const EquipList: React.FC<Props> = ({ data, columns, type }) => {
         setIsLoading(false);
       }
     },
-    [],
+    [limit, equipCount],
   );
 
   const cleanupCallback = useRef(() => {
