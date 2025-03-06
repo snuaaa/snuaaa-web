@@ -13,17 +13,19 @@ const RentReturn: FC<Props> = ({ rent, onSubmit }) => {
   const { closeModal } = useModal();
   const [imgPath, setImgPath] = useState<string | undefined>();
 
-  const handleClickSubmit = () => {
+  const handleClickSubmit = async () => {
     if (!imgPath) {
       alert('반납할 장비의 사진을 등록해주세요!');
       return;
     }
-    EquipmentService.returnEquipment(rent.id, imgPath).then((res) => {
-      if (!res.data.result) alert('반납에 실패했습니다.');
-      else alert('반납이 완료되었습니다.');
-      onSubmit();
-      closeModal();
-    });
+    try {
+      await EquipmentService.returnEquipment(rent.id, imgPath);
+      alert('반납이 완료되었습니다.');
+    } catch (e) {
+      alert('반납에 실패했습니다!');
+    }
+    onSubmit();
+    closeModal();
   };
 
   const handleChangeFile = async (e: ChangeEvent<HTMLInputElement>) => {
