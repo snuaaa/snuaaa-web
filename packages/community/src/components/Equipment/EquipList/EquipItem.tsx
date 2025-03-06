@@ -73,7 +73,7 @@ const EquipItem: FC<Props> = ({ equip, columns, type }) => {
         <div className="equip-picture">
           <Image imgSrc={equip.img_path} className="h-24 mx-auto my-1" />
         </div>
-        <div className="h-100 my-2">
+        <div className="my-2">
           <div className="font-bold mr-3 inline-block">분류</div>
           <div className="inline-block">
             {
@@ -111,7 +111,7 @@ const EquipItem: FC<Props> = ({ equip, columns, type }) => {
             </div>
           </>
         ) : (
-          <div>
+          <>
             <div className="z-1 absolute top-0 right-0 bg-gray-200 px-1 text-gray-500">
               <button
                 onClick={() =>
@@ -121,35 +121,41 @@ const EquipItem: FC<Props> = ({ equip, columns, type }) => {
                 <i className="ri-information-line text-2xl"></i>
               </button>
             </div>
-            <button
-              onClick={() => handleClickEquipmentRent(equip)}
-              disabled={equip.rent_status !== EquipmentRentStatus.RENTABLE}
-              className={
-                'w-3/5 text-center font-bold py-2 ml-2 my-4 float-left ' +
-                (equip.rent_status === EquipmentRentStatus.RENTABLE
-                  ? 'text-cyan-600 border border-cyan-600'
-                  : 'text-black bg-gray-200')
-              }
-            >
-              {mapEquipmentRentButtonText(equip)}
-            </button>
-            <button
-              onClick={() => handleClickEquipmentCart(equip)}
-              disabled={equip.rent_status !== EquipmentRentStatus.RENTABLE}
-              className={
-                'text-center w-1/5 font-bold py-2 mr-2 my-4 float-right ' +
-                (equip.rent_status === EquipmentRentStatus.RENTABLE
-                  ? 'text-cyan-600 border border-cyan-600'
-                  : 'text-black bg-gray-200')
-              }
-            >
-              {equip.rent_status === EquipmentRentStatus.RENTABLE
-                ? cart?.find((eq: Equipment) => eq.id === equip.id)
-                  ? 'X'
-                  : '+'
-                : '-'}
-            </button>
-          </div>
+            <div className="flex">
+              <div className="w-4/5 pr-2">
+                <button
+                  onClick={() => handleClickEquipmentRent(equip)}
+                  disabled={equip.rent_status !== EquipmentRentStatus.RENTABLE}
+                  className={
+                    'text-center font-bold py-2 my-4 w-full float-left ' +
+                    (equip.rent_status === EquipmentRentStatus.RENTABLE
+                      ? 'text-cyan-600 border border-cyan-600'
+                      : 'text-black bg-gray-200')
+                  }
+                >
+                  {mapEquipmentRentButtonText(equip)}
+                </button>
+              </div>
+              <div className="w-1/5">
+                <button
+                  onClick={() => handleClickEquipmentCart(equip)}
+                  disabled={equip.rent_status !== EquipmentRentStatus.RENTABLE}
+                  className={
+                    'text-center w-full font-bold py-2 my-4 float-right ' +
+                    (equip.rent_status === EquipmentRentStatus.RENTABLE
+                      ? 'text-cyan-600 border border-cyan-600'
+                      : 'text-black bg-gray-200')
+                  }
+                >
+                  {equip.rent_status === EquipmentRentStatus.RENTABLE
+                    ? cart?.find((eq: Equipment) => eq.id === equip.id)
+                      ? 'X'
+                      : '+'
+                    : '-'}
+                </button>
+              </div>
+            </div>
+          </>
         )}
       </div>
     </div>
