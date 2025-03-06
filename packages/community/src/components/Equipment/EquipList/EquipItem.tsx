@@ -1,12 +1,5 @@
 import { FC, useContext } from 'react';
-import {
-  Equipment,
-  equipmentRentColorMap,
-  EquipmentRentStatus,
-  EquipmentStatus,
-  equipmentStatusColorMap,
-  equipmentStatusTextMap,
-} from 'services/types';
+import { Equipment, EquipmentRentStatus } from 'services/types';
 import Image from '../../Common/AaaImage';
 import { EquipmentCategoryContext } from 'contexts/EquipmentCategoryContext';
 import { convertDateMMDD } from 'utils/convertDate';
@@ -15,6 +8,11 @@ import EditModal from '../Modal/Edit';
 import { useModal } from 'contexts/modal';
 import RentRecords from '../Modal/RentRecords';
 import EquipDescription from '../Modal/EquipDescription';
+import {
+  equipmentRentColorMap,
+  equipmentStatusColorMap,
+  equipmentStatusTextMap,
+} from '../common';
 
 const mapEquipmentRentStatText = (equip: Equipment) => {
   return equip.rent_status === EquipmentRentStatus.RENTABLE
