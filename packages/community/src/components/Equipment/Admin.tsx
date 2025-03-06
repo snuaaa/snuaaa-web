@@ -36,16 +36,16 @@ const Admin: FC = () => {
           //TODO: display modal
           <>
             <button
-              className="bg-[#49A0AE] text-white ml-auto flex justify-center items-center text-base px-2 py-1"
+              className="bg-[#A3A3A3] text-white ml-auto flex justify-center items-center text-base px-2 py-1 font-bold"
               onClick={handleClickEditCategory}
             >
-              <i className="ri-pencil-line enif-f-1p2x"></i>장비 분류 수정
+              <i className="ri-edit-box-line mr-1"></i> 장비 분류 수정
             </button>
             <button
-              className="bg-[#49A0AE] text-white ml-2 flex justify-center items-center text-base px-2 py-1"
+              className="bg-[#A3A3A3] text-white ml-2 flex justify-center items-center text-base px-2 py-1 font-bold"
               onClick={handleClickCreate}
             >
-              <i className="ri-pencil-line enif-f-1p2x"></i>장비 추가
+              <i className="ri-menu-add-line mr-1"></i> 장비 추가
             </button>
           </>
         )}

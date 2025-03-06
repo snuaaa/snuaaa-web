@@ -70,8 +70,8 @@ const EquipItem: FC<Props> = ({ equip, columns, type }) => {
     >
       <div className="relative flex-grow border-2 border-gray-250 mx-2 my-2 px-3">
         <div className="text-base font-bold mt-2 mr-3">{equip.name}</div>
-        <div className="equip-picture">
-          <Image imgSrc={equip.img_path} className="h-24 mx-auto my-1" />
+        <div className="mt-2 mb-4">
+          <Image imgSrc={equip.img_path} className="h-24 mx-auto" />
         </div>
         <div className="my-2">
           <div className="font-bold mr-3 inline-block">분류</div>
@@ -97,11 +97,14 @@ const EquipItem: FC<Props> = ({ equip, columns, type }) => {
         {type === 'admin' ? (
           <>
             <div className="z-1 absolute top-0 right-0 bg-gray-200 px-1 text-gray-500">
-              <button onClick={() => handleClickEquipmentEdit(equip)}>
-                <i className="ri-pencil-line text-2xl"></i>
+              <button
+                onClick={() => handleClickEquipmentEdit(equip)}
+                className="mr-1"
+              >
+                <i className="ri-edit-2-fill text-xl"></i>
               </button>
               <button onClick={() => openModal(<RentRecords id={equip.id} />)}>
-                <i className="ri-file-list-2-line text-2xl"></i>
+                <i className="ri-file-list-2-line text-xl"></i>
               </button>
             </div>
             <div
@@ -118,7 +121,7 @@ const EquipItem: FC<Props> = ({ equip, columns, type }) => {
                   openModal(<EquipDescription equipment={equip} />)
                 }
               >
-                <i className="ri-information-line text-2xl"></i>
+                <i className="ri-information-line text-xl"></i>
               </button>
             </div>
             <div className="flex">
