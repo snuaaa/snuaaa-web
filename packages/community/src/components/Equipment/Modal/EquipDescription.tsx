@@ -38,7 +38,7 @@ const EquipDescription: React.FC<Props> = ({ equipment }) => {
               >
                 장비명
               </th>
-              <td className="px-6 py-2">Silver</td>
+              <td className="px-6 py-2">{equipment.name}</td>
             </tr>
             <tr className="border-b border-gray-200 dark:border-gray-700">
               <th
