@@ -6,7 +6,7 @@ import CreateModal from './Modal/Create';
 import Loading from 'components/Common/Loading';
 import EquipList from './EquipList';
 import EquipSearchBar from './EquipSearchBar';
-import { useEquipment, withEquipment } from './contexts';
+import useWindowDimensions, { useEquipment, withEquipment } from './contexts';
 import EditCategoriesModal from './Modal/EditCategories';
 
 const Admin: FC = () => {
@@ -14,6 +14,8 @@ const Admin: FC = () => {
 
   const { data, refresh } = useEquipment();
   const { openModal } = useModal();
+
+  const { width } = useWindowDimensions();
 
   if (!data) {
     return <Loading />;
@@ -51,7 +53,7 @@ const Admin: FC = () => {
         )}
       </div>
       <EquipSearchBar />
-      <EquipList data={data} columns={3} type="admin" />
+      <EquipList data={data} columns={width < 500 ? 1 : 3} type="admin" />
     </div>
   );
 };

@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import EquipmentService from 'services/EquipmentService';
 import { useModal, withModal } from 'contexts/modal';
 import RentReturn from './Modal/RentReturn';
+import useWindowDimensions from './contexts';
 
 const Main: FC = () => {
   const fetchFunction = useCallback(() => {
@@ -15,6 +16,7 @@ const Main: FC = () => {
   const { data, refresh } = useFetch({ fetch: fetchFunction });
 
   const { openModal } = useModal();
+  const { width } = useWindowDimensions();
 
   const getTimeLeft = (end_date: string) => {
     const now = new Date();
@@ -33,7 +35,6 @@ const Main: FC = () => {
   return (
     <div className="board-wrapper">
       <BoardName board_id={undefined} board_name={'장비 대여'} />
-      {/*TODO: check access rights*/}
       <div className="text-right">
         <Link to="/equipment/admin" className="w-fit mr-4 text-gray-600">
           장비 관리 &gt;&gt;
@@ -42,7 +43,7 @@ const Main: FC = () => {
       <h3 className="mt-4 text-base font-bold">나의 대여 장비 목록</h3>
       <div className="flex flex-wrap">
         {data?.map((rent) => (
-          <div className="w-1/3 h-24 p-2" key={rent.id}>
+          <div className={`w-1/${width < 500 ? 2 : 3} h-24 p-2`} key={rent.id}>
             <div className="h-full flex w-full relative border-2 border-gray-250">
               <div className="w-2/5 h-full">
                 <Image

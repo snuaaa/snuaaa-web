@@ -5,6 +5,7 @@ import { EquipmentCategoryContext } from 'contexts/EquipmentCategoryContext';
 import SearchString from './SearchString';
 import SearchSelect from './SearchSelect';
 import { equipmentRentStatusOptions, equipmentStatusOptions } from '../common';
+import useWindowDimensions from '../contexts';
 
 export enum SortBy {
   NAME = 'name', // 장비명
@@ -47,6 +48,8 @@ const EquipSearchBar: FC = () => {
     keyword: location.state?.keyword ?? '',
     maker: location.state?.maker ?? '',
   });
+
+  const { width } = useWindowDimensions();
 
   useEffect(() => {
     if (!location.state) {
@@ -129,7 +132,7 @@ const EquipSearchBar: FC = () => {
   return (
     <div className="mx-2 mb-4">
       <div className="mr-2 mb-2 mt-2 text-base">검색</div>
-      <div className="flex w-full">
+      <div className={`flex w-full ${width < 500 ? 'flex-wrap' : ''}`}>
         <SearchSelect
           name="category"
           options={
@@ -157,6 +160,8 @@ const EquipSearchBar: FC = () => {
           value={location.state?.rent_status ?? ''}
           defaultOption="대여 상태"
         />
+
+        {width < 500 && <div className="basis-full h-0"></div>}
 
         <SearchString
           name="keyword"
