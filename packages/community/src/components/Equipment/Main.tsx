@@ -53,7 +53,7 @@ const Main: FC = () => {
         {data?.map((rent) => (
           <div className={`w-1/${width < 500 ? 2 : 3} h-24 p-2`} key={rent.id}>
             <div className="h-full flex w-full relative border-2 border-gray-250">
-              <div className="w-2/5 h-full">
+              <div className="w-2/5 h-full flex items-center">
                 <Image
                   imgSrc={rent.equipment.img_path}
                   className="object-contain max-w-full max-h-full"
@@ -71,7 +71,7 @@ const Main: FC = () => {
                     openModal(<RentReturn rent={rent} onSubmit={refresh} />)
                   }
                 >
-                  <i className="ri-arrow-go-back-line text-xl"></i>
+                  <i className="ri-arrow-go-back-line text-base"></i>
                 </button>
               </div>
             </div>
