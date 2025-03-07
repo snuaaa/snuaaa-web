@@ -49,7 +49,7 @@ const RentRecords: FC<Props> = ({ id }) => {
 
   return (
     <div className="fixed z-30 top-0 left-0 w-full h-full bg-black/40 flex items-center justify-center">
-      <div className="absolute px-20 rounded-lg border border-gray-900 text-center bg-white z-40 py-5">
+      <div className="absolute px-10 rounded-lg border border-gray-900 text-center bg-white z-40 py-5">
         <div>
           <button className="absolute top-0 right-0 m-2" onClick={closeModal}>
             <i className="ri-close-line text-3xl"></i>
@@ -59,9 +59,9 @@ const RentRecords: FC<Props> = ({ id }) => {
         <div className="mt-8">
           <div className="flex items-center text-gray-950 border first:rounded-t-lg last:rounded-b-lg border-gray-300 w-full py-2">
             <div className="w-1/5">대여자</div>
-            <div className="w-1/5">대여시각</div>
-            <div className="w-1/5">반납기한</div>
-            <div className="w-1/5">반납시각</div>
+            <div className="w-1/5">대여 시각</div>
+            <div className="w-1/5">반납 기한</div>
+            <div className="w-1/5">반납 시각</div>
             <div className="w-1/5">
               상태
               {/*대여 중, 정상 반납, 지연 반납(연체료 미납), 지연 반납(연체료 완납)*/}
@@ -75,13 +75,13 @@ const RentRecords: FC<Props> = ({ id }) => {
                 key={rentRecord.id}
               >
                 <div className="w-1/5">{rentRecord.user.nickname}</div>
-                <div className="w-1/5">
+                <div className="w-1/5 break-words">
                   {convertFullDate(rentRecord.start_date)}
                 </div>
-                <div className="w-1/5">
+                <div className="w-1/5 break-words">
                   {convertFullDate(rentRecord.end_date)}
                 </div>
-                <div className="w-1/5">
+                <div className="w-1/5 break-words">
                   {rentRecord.rentReturn
                     ? convertFullDate(rentRecord.rentReturn.return_date)
                     : '-'}

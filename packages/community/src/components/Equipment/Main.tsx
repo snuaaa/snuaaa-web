@@ -7,6 +7,7 @@ import EquipmentService from 'services/EquipmentService';
 import { useModal, withModal } from 'contexts/modal';
 import RentReturn from './Modal/RentReturn';
 import { useAuth } from 'contexts/auth';
+import useWindowDimensions from './contexts';
 
 //const EQUIP_RENT_GRADE = 7;
 const EQUIP_ADMIN_GRADE = 6;
@@ -19,6 +20,7 @@ const Main: FC = () => {
   const { data, refresh } = useFetch({ fetch: fetchFunction });
 
   const { openModal } = useModal();
+  const { width } = useWindowDimensions();
 
   const authContext = useAuth();
 
@@ -49,7 +51,7 @@ const Main: FC = () => {
       <h3 className="mt-4 text-base font-bold">나의 대여 장비 목록</h3>
       <div className="flex flex-wrap">
         {data?.map((rent) => (
-          <div className="w-1/3 h-24 p-2" key={rent.id}>
+          <div className={`w-1/${width < 500 ? 2 : 3} h-24 p-2`} key={rent.id}>
             <div className="h-full flex w-full relative border-2 border-gray-250">
               <div className="w-2/5 h-full">
                 <Image

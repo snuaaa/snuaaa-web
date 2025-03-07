@@ -2,6 +2,7 @@ import { FC, PropsWithChildren, useContext } from 'react';
 import { Equipment, EquipmentStatus } from 'services/types';
 import Image from '../../Common/AaaImage';
 import { EquipmentCategoryContext } from 'contexts/EquipmentCategoryContext';
+import useWindowDimensions from '../contexts';
 
 type Props = {
   equip: Equipment;
@@ -10,7 +11,6 @@ type Props = {
 };
 
 const CartItem: FC<Props> = ({ equip, onClickCancel, columns }) => {
-  const { categories } = useContext(EquipmentCategoryContext);
   return (
     <div
       className={

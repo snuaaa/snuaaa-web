@@ -2,6 +2,7 @@ import { useFetch } from 'hooks/useFetch';
 import React, {
   PropsWithChildren,
   useCallback,
+  useEffect,
   useMemo,
   useState,
 } from 'react';
@@ -122,3 +123,28 @@ export const withEquipment = <T extends NonNullable<unknown>>(
     );
   };
 };
+
+function getWindowDimensions() {
+  const { innerWidth: width, innerHeight: height } = window;
+  return {
+    width,
+    height,
+  };
+}
+
+export default function useWindowDimensions() {
+  const [windowDimensions, setWindowDimensions] = useState(
+    getWindowDimensions(),
+  );
+
+  useEffect(() => {
+    function handleResize() {
+      setWindowDimensions(getWindowDimensions());
+    }
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return windowDimensions;
+}
