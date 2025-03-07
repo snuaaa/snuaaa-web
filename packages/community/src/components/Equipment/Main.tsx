@@ -48,7 +48,7 @@ const Main: FC = () => {
           </Link>
         </div>
       )}
-      <h3 className="mt-4 text-base font-bold">나의 대여 장비 목록</h3>
+      <h3 className="mt-4 text-base font-bold pl-2">나의 대여 장비 목록</h3>
       <div className="flex flex-wrap">
         {data?.map((rent) => (
           <div className={`w-1/${width < 500 ? 2 : 3} h-24 p-2`} key={rent.id}>
@@ -88,7 +88,7 @@ const Main: FC = () => {
           </button>
         </Link>
       </div>
-      <ul className="text-[#A3A3A3] text-sm list-disc mt-4">
+      <ul className="text-[#A3A3A3] text-sm list-disc mt-4 pl-4">
         <li>장비 대여는 사용 당일 신청을 윈칙으로 합니다.</li>
         <li>
           대여가 승인된 시각을 기준으로 최대 48시간 이내에 반납해야 합니다.
