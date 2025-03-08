@@ -95,7 +95,7 @@ const EquipDescription: React.FC<Props> = ({ equipment }) => {
             </tr>
           </table>
         </div>
-        <h3 className="text-lg mt-4 mb-4">추가 설명</h3>
+        <h3 className="text-lg mt-4 mb-4 font-bold">추가 설명</h3>
         <div className="w-80 border border-gray-400 mx-auto px-4 py-2 rounded-sm text-wrap mb-4 text-left text-sm/5">
           {equipment.description}
         </div>
