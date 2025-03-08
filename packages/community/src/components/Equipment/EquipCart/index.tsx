@@ -41,6 +41,7 @@ const EquipCart: FC<Props> = ({ columns }) => {
           (cart.length === 0 ? 'bg-gray-200' : 'bg-cyan-600')
         }
         onClick={handleClickRentAll}
+        disabled={cart.length === 0}
       >
         일괄 대여 하기
       </button>

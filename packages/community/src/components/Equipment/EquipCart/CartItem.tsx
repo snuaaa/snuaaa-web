@@ -1,7 +1,6 @@
-import { FC, PropsWithChildren, useContext } from 'react';
-import { Equipment, EquipmentStatus } from 'services/types';
+import { FC } from 'react';
+import { Equipment } from 'services/types';
 import Image from '../../Common/AaaImage';
-import { EquipmentCategoryContext } from 'contexts/EquipmentCategoryContext';
 
 type Props = {
   equip: Equipment;
