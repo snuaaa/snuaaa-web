@@ -2,7 +2,6 @@ import Paginator from 'components/Common/Paginator';
 import { useModal } from 'contexts/modal';
 import { useFetch } from 'hooks/useFetch';
 import { FC, useCallback, useState } from 'react';
-import { useLocation } from 'react-router';
 import EquipmentService from 'services/EquipmentService';
 import { PenaltyStatus } from 'services/types';
 import { convertFullDate } from 'utils/convertDate';
@@ -33,7 +32,7 @@ const RentRecords: FC<Props> = ({ id }) => {
   const fetchFunction = useCallback(async () => {
     return EquipmentService.retrieveRentRecord(id, pageIdx);
   }, [id, pageIdx]);
-  const { data, refresh } = useFetch({ fetch: fetchFunction });
+  const { data } = useFetch({ fetch: fetchFunction });
 
   const rentCount = data?.count ?? 0;
   const rentRecords = data?.rows ?? [];
