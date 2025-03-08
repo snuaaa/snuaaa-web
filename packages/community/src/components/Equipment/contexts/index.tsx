@@ -124,7 +124,15 @@ export const withEquipment = <T extends NonNullable<unknown>>(
   };
 };
 
-function getWindowDimensions() {
+type ViewportSizeContextState = {
+  width: number;
+  height: number;
+};
+
+const ViewportSizeContext =
+  React.createContext<ViewportSizeContextState | null>(null);
+
+function getWindowViewportSize() {
   const { innerWidth: width, innerHeight: height } = window;
   return {
     width,
@@ -132,19 +140,47 @@ function getWindowDimensions() {
   };
 }
 
-export default function useWindowDimensions() {
-  const [windowDimensions, setWindowDimensions] = useState(
-    getWindowDimensions(),
+export const ViewportSizeProvider = ({ children }: PropsWithChildren) => {
+  const [windowViewportSize, setWindowViewportSize] = useState(
+    getWindowViewportSize(),
   );
 
   useEffect(() => {
     function handleResize() {
-      setWindowDimensions(getWindowDimensions());
+      setWindowViewportSize(getWindowViewportSize());
     }
 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  return windowDimensions;
-}
+  return (
+    <ViewportSizeContext.Provider value={windowViewportSize}>
+      {children}
+    </ViewportSizeContext.Provider>
+  );
+};
+
+export const withViewportSize = <T extends NonNullable<unknown>>(
+  Component: React.FC<T>,
+) => {
+  return (props: T) => {
+    return (
+      <ViewportSizeProvider>
+        <Component {...props} />
+      </ViewportSizeProvider>
+    );
+  };
+};
+
+export const useViewportSize = () => {
+  const context = useContext(ViewportSizeContext);
+
+  if (!context) {
+    throw new Error(
+      'useViewportSize must be used within a ViewportSizeProvider',
+    );
+  }
+
+  return context;
+};

@@ -7,7 +7,7 @@ import EquipmentService from 'services/EquipmentService';
 import { useModal, withModal } from 'contexts/modal';
 import RentReturn from './Modal/RentReturn';
 import { useAuth } from 'contexts/auth';
-import useWindowDimensions from './contexts';
+import { useViewportSize } from './contexts';
 
 //const EQUIP_RENT_GRADE = 7;
 const EQUIP_ADMIN_GRADE = 6;
@@ -20,7 +20,7 @@ const Main: FC = () => {
   const { data, refresh } = useFetch({ fetch: fetchFunction });
 
   const { openModal } = useModal();
-  const { width } = useWindowDimensions();
+  const { width } = useViewportSize();
 
   const authContext = useAuth();
 

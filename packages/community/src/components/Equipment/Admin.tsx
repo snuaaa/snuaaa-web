@@ -6,7 +6,7 @@ import CreateModal from './Modal/Create';
 import Loading from 'components/Common/Loading';
 import EquipList from './EquipList';
 import EquipSearchBar from './EquipSearchBar';
-import useWindowDimensions, { useEquipment, withEquipment } from './contexts';
+import { useEquipment, useViewportSize, withEquipment } from './contexts';
 import EditCategoriesModal from './Modal/EditCategories';
 
 const Admin: FC = () => {
@@ -15,7 +15,7 @@ const Admin: FC = () => {
   const { data, refresh } = useEquipment();
   const { openModal } = useModal();
 
-  const { width } = useWindowDimensions();
+  const { width } = useViewportSize();
 
   if (!data) {
     return <Loading />;
