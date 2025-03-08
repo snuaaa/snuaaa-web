@@ -14,7 +14,7 @@ const EquipDescription: React.FC<Props> = ({ equipment }) => {
 
   return (
     <div className="fixed z-30 top-0 left-0 w-full h-full bg-black/40 flex items-center justify-center">
-      <div className="absolute px-20 rounded-lg border border-gray-900 text-center bg-white z-40 py-5">
+      <div className="absolute px-10 rounded-lg border border-gray-900 text-center bg-white z-40 py-5">
         <div>
           <button className="absolute top-0 right-0 m-2" onClick={closeModal}>
             <i className="ri-close-line text-3xl"></i>
@@ -95,8 +95,8 @@ const EquipDescription: React.FC<Props> = ({ equipment }) => {
             </tr>
           </table>
         </div>
-        <h3 className="text-lg mt-4 mb-4">추가 정보</h3>
-        <div className="w-50 border border-gray-400 mx-auto px-4 py-2 rounded-sm">
+        <h3 className="text-lg mt-4 mb-4">추가 설명</h3>
+        <div className="w-80 border border-gray-400 mx-auto px-4 py-2 rounded-sm text-wrap mb-4 text-left text-sm/5">
           {equipment.description}
         </div>
       </div>
