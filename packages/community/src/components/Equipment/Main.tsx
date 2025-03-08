@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import EquipmentService from 'services/EquipmentService';
 import { useModal, withModal } from 'contexts/modal';
 import RentReturn from './Modal/RentReturn';
-import useWindowDimensions from './contexts';
+import { useViewportSize } from './contexts';
 
 const Main: FC = () => {
   const fetchFunction = useCallback(() => {
@@ -16,7 +16,7 @@ const Main: FC = () => {
   const { data, refresh } = useFetch({ fetch: fetchFunction });
 
   const { openModal } = useModal();
-  const { width } = useWindowDimensions();
+  const { width } = useViewportSize();
 
   const getTimeLeft = (end_date: string) => {
     const now = new Date();

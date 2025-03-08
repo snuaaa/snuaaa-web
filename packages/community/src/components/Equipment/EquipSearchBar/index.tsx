@@ -5,7 +5,7 @@ import { EquipmentCategoryContext } from 'contexts/EquipmentCategoryContext';
 import SearchString from './SearchString';
 import SearchSelect from './SearchSelect';
 import { equipmentRentStatusOptions, equipmentStatusOptions } from '../common';
-import useWindowDimensions from '../contexts';
+import { useViewportSize } from '../contexts';
 
 export enum SortBy {
   NAME = 'name', // 장비명
@@ -49,7 +49,7 @@ const EquipSearchBar: FC = () => {
     maker: location.state?.maker ?? '',
   });
 
-  const { width } = useWindowDimensions();
+  const { width } = useViewportSize();
 
   useEffect(() => {
     if (!location.state) {

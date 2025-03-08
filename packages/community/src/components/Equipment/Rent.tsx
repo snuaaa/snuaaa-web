@@ -6,11 +6,11 @@ import { withModal } from 'contexts/modal';
 import BoardName from 'components/Board/BoardName';
 import EquipCart from './EquipCart';
 import { Link } from 'react-router-dom';
-import useWindowDimensions, { useEquipment, withEquipment } from './contexts';
+import { useEquipment, useViewportSize, withEquipment } from './contexts';
 
 const Rent: FC = () => {
   const { data } = useEquipment();
-  const { width } = useWindowDimensions();
+  const { width } = useViewportSize();
 
   if (!data) {
     return <Loading />;
@@ -56,7 +56,6 @@ const Rent: FC = () => {
             </div>
           </>
         )}
-        {/*TODO: add equip cart for mobile*/}
       </div>
     </div>
   );

@@ -3,7 +3,7 @@ import { Equipment, EquipmentRentStatus } from 'services/types';
 import Image from '../../Common/AaaImage';
 import { EquipmentCategoryContext } from 'contexts/EquipmentCategoryContext';
 import { convertDateMMDD } from 'utils/convertDate';
-import useWindowDimensions, { useEquipment } from '../contexts';
+import { useEquipment, useViewportSize } from '../contexts';
 import EditModal from '../Modal/Edit';
 import { useModal } from 'contexts/modal';
 import RentRecords from '../Modal/RentRecords';
@@ -38,7 +38,7 @@ type Props = {
 
 const EquipItem: FC<Props> = ({ equip, columns, type }) => {
   const { categories } = useContext(EquipmentCategoryContext);
-  const { width } = useWindowDimensions();
+  const { width } = useViewportSize();
 
   const { refresh, rentSingleEquipment, cart, addToCart, removeFromCart } =
     useEquipment();
