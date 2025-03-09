@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import EquipmentService from 'services/EquipmentService';
 import { useModal, withModal } from 'contexts/modal';
 import RentReturn from './Modal/RentReturn';
-import { useViewportSize } from 'contexts/viewportSize';
+import { ViewportSize, useViewportSize } from 'contexts/viewportSize';
 
 const Main: FC = () => {
   const fetchFunction = useCallback(() => {
@@ -16,7 +16,7 @@ const Main: FC = () => {
   const { data, refresh } = useFetch({ fetch: fetchFunction });
 
   const { openModal } = useModal();
-  const { width } = useViewportSize();
+  const viewportSize = useViewportSize();
 
   const getTimeLeft = (end_date: string) => {
     const now = new Date();
@@ -43,7 +43,10 @@ const Main: FC = () => {
       <h3 className="mt-4 text-base font-bold pl-2">나의 대여 장비 목록</h3>
       <div className="flex flex-wrap">
         {data?.map((rent) => (
-          <div className={`w-1/${width < 500 ? 2 : 3} h-24 p-2`} key={rent.id}>
+          <div
+            className={`${viewportSize === ViewportSize.Mobile ? 'w-1/2' : 'w-1/3'} h-24 p-2`}
+            key={rent.id}
+          >
             <div className="h-full flex w-full relative border-2 border-gray-250">
               <div className="w-2/5 h-full flex items-center">
                 <Image

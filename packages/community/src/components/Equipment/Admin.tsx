@@ -8,7 +8,7 @@ import EquipList from './EquipList';
 import EquipSearchBar from './EquipSearchBar';
 import { useEquipment, withEquipment } from './contexts';
 import EditCategoriesModal from './Modal/EditCategories';
-import { useViewportSize } from 'contexts/viewportSize';
+import { ViewportSize, useViewportSize } from 'contexts/viewportSize';
 
 const Admin: FC = () => {
   const authContext = useAuth();
@@ -16,7 +16,7 @@ const Admin: FC = () => {
   const { data, refresh } = useEquipment();
   const { openModal } = useModal();
 
-  const { width } = useViewportSize();
+  const viewportSize = useViewportSize();
 
   if (!data) {
     return <Loading />;
@@ -54,7 +54,11 @@ const Admin: FC = () => {
         )}
       </div>
       <EquipSearchBar />
-      <EquipList data={data} columns={width < 500 ? 1 : 3} type="admin" />
+      <EquipList
+        data={data}
+        columns={viewportSize === ViewportSize.Mobile ? 1 : 3}
+        type="admin"
+      />
     </div>
   );
 };

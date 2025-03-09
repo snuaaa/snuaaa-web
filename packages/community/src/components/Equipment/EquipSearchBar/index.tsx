@@ -5,7 +5,7 @@ import { EquipmentCategoryContext } from 'contexts/EquipmentCategoryContext';
 import SearchString from './SearchString';
 import SearchSelect from './SearchSelect';
 import { equipmentRentStatusOptions, equipmentStatusOptions } from '../common';
-import { useViewportSize } from 'contexts/viewportSize';
+import { ViewportSize, useViewportSize } from 'contexts/viewportSize';
 
 export enum SortBy {
   NAME = 'name', // 장비명
@@ -49,7 +49,7 @@ const EquipSearchBar: FC = () => {
     maker: location.state?.maker ?? '',
   });
 
-  const { width } = useViewportSize();
+  const viewportSize = useViewportSize();
 
   useEffect(() => {
     if (!location.state) {
@@ -132,7 +132,7 @@ const EquipSearchBar: FC = () => {
   return (
     <div className="mx-2 mb-4">
       <div className="mr-2 mb-2 mt-2 text-base">검색</div>
-      <div className={`flex w-full ${width < 500 ? 'flex-wrap' : ''}`}>
+      <div className="flex w-full flex-wrap sm:flex-nowrap">
         <SearchSelect
           name="category"
           options={
@@ -161,7 +161,9 @@ const EquipSearchBar: FC = () => {
           defaultOption="대여 상태"
         />
 
-        {width < 500 && <div className="basis-full h-0"></div>}
+        {viewportSize === ViewportSize.Mobile && (
+          <div className="basis-full h-0"></div>
+        )}
 
         <SearchString
           name="keyword"

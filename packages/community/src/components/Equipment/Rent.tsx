@@ -7,11 +7,11 @@ import BoardName from 'components/Board/BoardName';
 import EquipCart from './EquipCart';
 import { Link } from 'react-router-dom';
 import { useEquipment, withEquipment } from './contexts';
-import { useViewportSize } from 'contexts/viewportSize';
+import { ViewportSize, useViewportSize } from 'contexts/viewportSize';
 
 const Rent: FC = () => {
   const { data } = useEquipment();
-  const { width } = useViewportSize();
+  const viewportSize = useViewportSize();
 
   if (!data) {
     return <Loading />;
@@ -27,15 +27,11 @@ const Rent: FC = () => {
         &lt; BACK
       </Link>
       <div className="w-full">
-        {width > 500 ? (
+        {viewportSize !== ViewportSize.Mobile ? (
           <>
             <EquipSearchBar />
             <div className="w-2/3 overflow-y-auto h-screen inline-block">
-              <EquipList
-                data={data}
-                columns={width < 500 ? 1 : 2}
-                type="rent"
-              />
+              <EquipList data={data} columns={2} type="rent" />
             </div>
             <div className="w-1/3 overflow-y-auto h-screen inline-block">
               <EquipCart columns={2} />
@@ -45,11 +41,7 @@ const Rent: FC = () => {
           <>
             <div className="w-full">
               <EquipSearchBar />
-              <EquipList
-                data={data}
-                columns={width < 500 ? 1 : 2}
-                type="rent"
-              />
+              <EquipList data={data} columns={1} type="rent" />
             </div>
             <div className="h-[15dvh]"></div>
             <div className="fixed z-2 bottom-0 left-0 w-full overflow-y-auto h-1/4 bg-white rounded-t-3xl shadow-[0_0_20px_rgba(0,0,0,0.25)] pt-4">
