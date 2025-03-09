@@ -3,7 +3,7 @@ import { Equipment, EquipmentRentStatus } from 'services/types';
 import Image from '../../Common/AaaImage';
 import { EquipmentCategoryContext } from 'contexts/EquipmentCategoryContext';
 import { convertDateMMDD } from 'utils/convertDate';
-import { useEquipment, useViewportSize } from '../contexts';
+import { useEquipment } from '../contexts';
 import EditModal from '../Modal/Edit';
 import { useModal } from 'contexts/modal';
 import RentRecords from '../Modal/RentRecords';
@@ -13,6 +13,7 @@ import {
   equipmentStatusColorMap,
   equipmentStatusTextMap,
 } from '../common';
+import { useViewportSize } from 'contexts/viewportSize';
 
 const mapEquipmentRentStatText = (equip: Equipment) => {
   return equip.rent_status === EquipmentRentStatus.RENTABLE

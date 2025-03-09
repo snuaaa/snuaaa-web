@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import EquipmentService from 'services/EquipmentService';
 import { useModal, withModal } from 'contexts/modal';
 import RentReturn from './Modal/RentReturn';
-import { useViewportSize } from './contexts';
+import { useViewportSize } from 'contexts/viewportSize';
 
 const Main: FC = () => {
   const fetchFunction = useCallback(() => {

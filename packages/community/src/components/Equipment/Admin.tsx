@@ -6,8 +6,9 @@ import CreateModal from './Modal/Create';
 import Loading from 'components/Common/Loading';
 import EquipList from './EquipList';
 import EquipSearchBar from './EquipSearchBar';
-import { useEquipment, useViewportSize, withEquipment } from './contexts';
+import { useEquipment, withEquipment } from './contexts';
 import EditCategoriesModal from './Modal/EditCategories';
+import { useViewportSize } from 'contexts/viewportSize';
 
 const Admin: FC = () => {
   const authContext = useAuth();
