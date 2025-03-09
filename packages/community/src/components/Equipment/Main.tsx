@@ -7,9 +7,9 @@ import EquipmentService from 'services/EquipmentService';
 import { useModal, withModal } from 'contexts/modal';
 import RentReturn from './Modal/RentReturn';
 
-const getTimeLeft = (end_date: string) => {
+const getTimeLeft = (endDate: string) => {
   const now = new Date();
-  const end = new Date(end_date);
+  const end = new Date(endDate);
   const diff = end.getTime() - now.getTime();
 
   if (diff < 0) return '대여 기간 초과';
