@@ -11,6 +11,20 @@ import { useAuth } from 'contexts/auth';
 //const EQUIP_RENT_GRADE = 7;
 const EQUIP_ADMIN_GRADE = 6;
 
+const getTimeLeft = (end_date: string) => {
+  const now = new Date();
+  const end = new Date(end_date);
+  const diff = end.getTime() - now.getTime();
+
+  if (diff < 0) return '대여 기간 초과';
+
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+  return `${days}d ${hours}h ${minutes}m 남음`;
+};
+
 const Main: FC = () => {
   const fetchFunction = useCallback(() => {
     return EquipmentService.retrieveMyRentList();
@@ -21,20 +35,6 @@ const Main: FC = () => {
   const { openModal } = useModal();
 
   const authContext = useAuth();
-
-  const getTimeLeft = (end_date: string) => {
-    const now = new Date();
-    const end = new Date(end_date);
-    const diff = end.getTime() - now.getTime();
-
-    if (diff < 0) return '대여 기간 초과';
-
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-
-    return `${days}d ${hours}h ${minutes}m 남음`;
-  };
 
   return (
     <div className="board-wrapper">
