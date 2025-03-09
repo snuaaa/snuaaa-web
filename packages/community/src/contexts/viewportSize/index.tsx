@@ -6,22 +6,32 @@ import {
   useState,
 } from 'react';
 
-type ViewportSizeContextState = {
-  width: number;
-  height: number;
-};
+export enum ViewportSize {
+  Mobile = 'Mobile',
+  Tablet = 'Tablet',
+  Desktop = 'Desktop',
+}
+
+// should be synced with tailwindcss breakpoints
+const MOBILE_WIDTH = 640;
+const TABLET_WIDTH = 768;
+
+type ViewportSizeContextState = ViewportSize;
 
 const ViewportSizeContext = createContext<ViewportSizeContextState | null>(
   null,
 );
 
-function getWindowViewportSize() {
-  const { innerWidth: width, innerHeight: height } = window;
-  return {
-    width,
-    height,
-  };
-}
+const getWindowViewportSize = (): ViewportSize => {
+  const { innerWidth } = window;
+  if (innerWidth < MOBILE_WIDTH) {
+    return ViewportSize.Mobile;
+  } else if (innerWidth < TABLET_WIDTH) {
+    return ViewportSize.Tablet;
+  } else {
+    return ViewportSize.Desktop;
+  }
+};
 
 export const ViewportSizeProvider = ({ children }: PropsWithChildren) => {
   const [windowViewportSize, setWindowViewportSize] = useState(
