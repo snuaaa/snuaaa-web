@@ -13,7 +13,7 @@ import {
   equipmentStatusColorMap,
   equipmentStatusTextMap,
 } from '../common';
-import { useViewportSize } from 'contexts/viewportSize';
+import { ViewportSize, useViewportSize } from 'contexts/viewportSize';
 
 const mapEquipmentRentStatText = (equip: Equipment) => {
   return equip.rent_status === EquipmentRentStatus.RENTABLE
@@ -39,7 +39,7 @@ type Props = {
 const EquipItem: FC<Props> = ({ equip, type }) => {
   const { categories } = useContext(EquipmentCategoryContext);
 
-  const { width } = useViewportSize();
+  const viewportSize = useViewportSize();
 
   const { refresh, rentSingleEquipment, cart, addToCart, removeFromCart } =
     useEquipment();
@@ -159,7 +159,7 @@ const EquipItem: FC<Props> = ({ equip, type }) => {
   return (
     <div className="flex flex-col" key={equip.id}>
       <div className="relative flex-grow border-2 border-gray-250 mx-2 my-2 px-3">
-        {width < 500 ? (
+        {viewportSize === ViewportSize.Mobile ? (
           <>
             <div className="w-2/5 inline-block align-middle">
               <div className="my-2">
