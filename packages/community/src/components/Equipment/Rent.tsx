@@ -6,7 +6,8 @@ import { withModal } from 'contexts/modal';
 import BoardName from 'components/Board/BoardName';
 import EquipCart from './EquipCart';
 import { Link } from 'react-router-dom';
-import { useEquipment, useViewportSize, withEquipment } from './contexts';
+import { useEquipment, withEquipment } from './contexts';
+import { useViewportSize } from 'contexts/viewportSize';
 
 const Rent: FC = () => {
   const { data } = useEquipment();

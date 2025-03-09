@@ -5,7 +5,7 @@ import { EquipmentCategoryContext } from 'contexts/EquipmentCategoryContext';
 import SearchString from './SearchString';
 import SearchSelect from './SearchSelect';
 import { equipmentRentStatusOptions, equipmentStatusOptions } from '../common';
-import { useViewportSize } from '../contexts';
+import { useViewportSize } from 'contexts/viewportSize';
 
 export enum SortBy {
   NAME = 'name', // 장비명
