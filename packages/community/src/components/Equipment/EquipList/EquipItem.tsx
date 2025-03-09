@@ -33,12 +33,12 @@ const mapEquipmentRentButtonText = (equip: Equipment) => {
 
 type Props = {
   equip: Equipment;
-  columns: number;
   type: 'rent' | 'admin';
 };
 
-const EquipItem: FC<Props> = ({ equip, columns, type }) => {
+const EquipItem: FC<Props> = ({ equip, type }) => {
   const { categories } = useContext(EquipmentCategoryContext);
+
   const { width } = useViewportSize();
 
   const { refresh, rentSingleEquipment, cart, addToCart, removeFromCart } =
@@ -157,13 +157,7 @@ const EquipItem: FC<Props> = ({ equip, columns, type }) => {
     );
 
   return (
-    <div
-      className={
-        (columns === 1 ? 'w-full' : 'w-1/' + columns.toString()) +
-        ' flex flex-col'
-      }
-      key={equip.id}
-    >
+    <div className="flex flex-col" key={equip.id}>
       <div className="relative flex-grow border-2 border-gray-250 mx-2 my-2 px-3">
         {width < 500 ? (
           <>
