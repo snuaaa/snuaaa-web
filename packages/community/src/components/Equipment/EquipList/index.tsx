@@ -16,7 +16,13 @@ import { Equipment } from 'services/types';
 type Props = {
   type: 'rent' | 'admin';
   data: RetrieveEquipmentListResponse;
-  columns: number;
+  columns: 1 | 2 | 3;
+};
+
+const gridColumnsStyles = {
+  1: 'grid-cols-1',
+  2: 'grid-cols-2',
+  3: 'grid-cols-3',
 };
 
 const fakeFetch = (delay = 500) => new Promise((res) => setTimeout(res, delay));
@@ -137,14 +143,9 @@ const EquipList: React.FC<Props> = ({ data, columns, type }) => {
 
   return (
     <>
-      <div className="flex flex-wrap">
+      <div className={`grid ${gridColumnsStyles[columns]}`}>
         {filteredEquipments.map((equip) => (
-          <EquipItem
-            equip={equip}
-            columns={columns}
-            key={equip.id}
-            type={type}
-          ></EquipItem>
+          <EquipItem equip={equip} key={equip.id} type={type}></EquipItem>
         ))}
       </div>
       <div className="w-full flex justify-center" ref={loaderRef}>
