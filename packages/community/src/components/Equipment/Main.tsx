@@ -7,7 +7,7 @@ import EquipmentService from 'services/EquipmentService';
 import { useModal, withModal } from 'contexts/modal';
 import RentReturn from './Modal/RentReturn';
 import { useAuth } from 'contexts/auth';
-import { useViewportSize } from './contexts';
+import { useViewportSize } from 'contexts/viewportSize';
 
 //const EQUIP_RENT_GRADE = 7;
 const EQUIP_ADMIN_GRADE = 6;

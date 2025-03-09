@@ -8,7 +8,6 @@ import { EquipmentCategoryContext } from 'contexts/EquipmentCategoryContext';
 import { useAuth } from 'contexts/auth';
 import EquipmentService from 'services/EquipmentService';
 import { EquipmentCategory } from 'services/types';
-import { withViewportSize } from 'components/Equipment/contexts';
 
 const EquipmentPage: FC = () => {
   const [equipmentCategories, setEquipmentCategories] = useState<
@@ -46,4 +45,4 @@ const EquipmentPage: FC = () => {
   );
 };
 
-export default withViewportSize(EquipmentPage);
+export default EquipmentPage;
