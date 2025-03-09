@@ -11,9 +11,9 @@ import { useAuth } from 'contexts/auth';
 //const EQUIP_RENT_GRADE = 7;
 const EQUIP_ADMIN_GRADE = 6;
 
-const getTimeLeft = (end_date: string) => {
+const getTimeLeft = (endDate: string) => {
   const now = new Date();
-  const end = new Date(end_date);
+  const end = new Date(endDate);
   const diff = end.getTime() - now.getTime();
 
   if (diff < 0) return '대여 기간 초과';
