@@ -127,7 +127,7 @@ const EquipSearchBar: FC = () => {
   };
 
   return (
-    <div className="mx-2">
+    <div className="mx-2 mb-4">
       <div className="mr-2 mb-2 mt-2 text-base">검색</div>
       <div className="flex w-full">
         <SearchSelect

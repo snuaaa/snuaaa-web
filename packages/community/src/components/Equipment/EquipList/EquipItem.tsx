@@ -82,7 +82,10 @@ const EquipItem: FC<Props> = ({ equip, columns, type }) => {
 
   return (
     <div
-      className={'w-1/' + columns.toString() + ' h-72 flex flex-col'}
+      className={
+        (columns === 1 ? 'w-full' : 'w-1/' + columns.toString()) +
+        ' h-72 flex flex-col'
+      }
       key={equip.id}
     >
       <div className="relative flex-grow border-2 border-gray-250 mx-2 my-2 px-3">

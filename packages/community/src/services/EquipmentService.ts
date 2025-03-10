@@ -93,6 +93,10 @@ const EquipmentService = {
   rentEquipments: function (data: RentEquipmentRequest) {
     return API.post<Equipment>(`equipment/rent/`, data);
   },
+
+  returnEquipment: function (rentId: number, photo_path: string) {
+    return API.post(`equipment/rent/${rentId}/return`, { photo_path });
+  },
 };
 
 export default EquipmentService;

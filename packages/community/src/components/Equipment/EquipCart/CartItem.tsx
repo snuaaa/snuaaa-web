@@ -13,12 +13,17 @@ const CartItem: FC<Props> = ({ equip, onClickCancel, columns }) => {
   const { categories } = useContext(EquipmentCategoryContext);
   return (
     <div
-      className={'w-1/' + columns.toString() + ' h-24 flex flex-col'}
+      className={
+        (columns === 1 ? 'w-full' : 'w-1/' + columns.toString()) + ' h-24 flex'
+      }
       key={equip.id}
     >
-      <div className="relative flex-grow border-2 border-gray-250 mx-1 my-2">
+      <div className="relative flex-grow border-2 border-gray-250 mx-1 my-1">
         <div className="equip-picture">
-          <Image imgSrc={equip.img_path} className="h-16 mx-auto" />
+          <Image
+            imgSrc={equip.img_path}
+            className="max-h-16 object-contain max-w-full mx-auto"
+          />
         </div>
         <div className="text-xs font-bold my-1">{equip.name}</div>
         <div className="z-1 absolute top-0 right-0 bg-cyan-600 text-white text-xs font-bold px-1">
