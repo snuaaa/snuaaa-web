@@ -151,7 +151,6 @@ export interface Comment {
   likeUsers: User[];
 }
 
-// TODO: value 개선
 export enum EquipmentStatus {
   OK = 'OK',
   BROKEN = 'BROKEN',

@@ -13,7 +13,7 @@ const EquipCart: FC = () => {
   return (
     <div className="text-center px-2">
       <h3 className="font-bold text-base text-center text-cyan-600 pt-6 pb-2">
-        여러 장비 대여 하기
+        여러 장비 대여하기
       </h3>
       <div className="text-xs text-center text-gray-800 pt-2 pb-6">
         여러 장비들을 한 번에
