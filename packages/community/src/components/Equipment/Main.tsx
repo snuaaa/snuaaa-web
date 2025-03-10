@@ -11,6 +11,20 @@ import { useAuth } from 'contexts/auth';
 //const EQUIP_RENT_GRADE = 7;
 const EQUIP_ADMIN_GRADE = 6;
 
+const getTimeLeft = (endDate: string) => {
+  const now = new Date();
+  const end = new Date(endDate);
+  const diff = end.getTime() - now.getTime();
+
+  if (diff < 0) return '대여 기간 초과';
+
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+  return `${days}d ${hours}h ${minutes}m 남음`;
+};
+
 const Main: FC = () => {
   const fetchFunction = useCallback(() => {
     return EquipmentService.retrieveMyRentList();
@@ -22,20 +36,6 @@ const Main: FC = () => {
 
   const authContext = useAuth();
 
-  const getTimeLeft = (end_date: string) => {
-    const now = new Date();
-    const end = new Date(end_date);
-    const diff = end.getTime() - now.getTime();
-
-    if (diff < 0) return '대여 기간 초과';
-
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-
-    return `${days}d ${hours}h ${minutes}m 남음`;
-  };
-
   return (
     <div className="board-wrapper">
       <BoardName board_id={undefined} board_name={'장비 대여'} />
@@ -46,12 +46,12 @@ const Main: FC = () => {
           </Link>
         </div>
       )}
-      <h3 className="mt-4 text-base font-bold">나의 대여 장비 목록</h3>
-      <div className="flex flex-wrap">
+      <h3 className="mt-4 text-base font-bold pl-2">나의 대여 장비 목록</h3>
+      <div className="grid grid-cols-2 sm:grid-cols-3">
         {data?.map((rent) => (
-          <div className="w-1/3 h-24 p-2" key={rent.id}>
+          <div className="h-24 p-2" key={rent.id}>
             <div className="h-full flex w-full relative border-2 border-gray-250">
-              <div className="w-2/5 h-full">
+              <div className="w-2/5 h-full flex items-center">
                 <Image
                   imgSrc={rent.equipment.img_path}
                   className="object-contain max-w-full max-h-full"
@@ -69,7 +69,7 @@ const Main: FC = () => {
                     openModal(<RentReturn rent={rent} onSubmit={refresh} />)
                   }
                 >
-                  <i className="ri-arrow-go-back-line text-xl"></i>
+                  <i className="ri-arrow-go-back-line text-base"></i>
                 </button>
               </div>
             </div>
@@ -86,7 +86,7 @@ const Main: FC = () => {
           </button>
         </Link>
       </div>
-      <ul className="text-[#A3A3A3] text-sm list-disc mt-4">
+      <ul className="text-[#A3A3A3] text-sm list-disc mt-4 pl-4">
         <li>장비 대여는 사용 당일 신청을 윈칙으로 합니다.</li>
         <li>
           대여가 승인된 시각을 기준으로 최대 48시간 이내에 반납해야 합니다.

@@ -2,7 +2,11 @@ import { FC } from 'react';
 import CartItem from './CartItem';
 import { useEquipment } from '../contexts';
 
-const EquipCart: FC = () => {
+type Props = {
+  columns: number;
+};
+
+const EquipCart: FC<Props> = ({ columns }) => {
   const { cart, rentAllEquipment, removeFromCart } = useEquipment();
 
   const handleClickRentAll = () => {
@@ -15,16 +19,18 @@ const EquipCart: FC = () => {
       <h3 className="font-bold text-base text-center text-cyan-600 pt-6 pb-2">
         여러 장비 대여하기
       </h3>
-      <div className="text-xs text-center text-gray-800 pt-2 pb-6">
-        여러 장비들을 한 번에
-        <br /> 대여하려면 + 를 클릭하세요.
-      </div>
+      {cart.length === 0 && (
+        <div className="text-xs text-center text-gray-800 pt-2 pb-6">
+          여러 장비들을 한 번에
+          <br /> 대여하려면 + 를 클릭하세요.
+        </div>
+      )}
       <div className="flex flex-wrap">
         {cart.map((equip) => (
           <CartItem
             key={equip.id}
             equip={equip}
-            columns={2}
+            columns={columns}
             onClickCancel={() => removeFromCart(equip)}
           />
         ))}
@@ -35,6 +41,7 @@ const EquipCart: FC = () => {
           (cart.length === 0 ? 'bg-gray-200' : 'bg-cyan-600')
         }
         onClick={handleClickRentAll}
+        disabled={cart.length === 0}
       >
         일괄 대여 하기
       </button>
