@@ -1,138 +1,31 @@
-import {
-  ChangeEvent,
-  KeyboardEvent,
-  FC,
-  useContext,
-  useEffect,
-  useState,
-  useCallback,
-  useMemo,
-} from 'react';
+import { FC } from 'react';
 import BoardName from '../Board/BoardName';
-import { useHistory, useLocation } from 'react-router-dom';
-import EquipmentService, {
-  EquipmentSearchInfo,
-} from 'services/EquipmentService';
-import SelectBox from 'components/Common/SelectBox';
-import { EquipmentCategoryContext } from 'contexts/EquipmentCategoryContext';
 import { useAuth } from 'contexts/auth';
-import EquipList from './EquipList';
-import { equipmentStatusOptions } from './common';
-import { Equipment } from 'services/types';
 import { useModal, withModal } from 'contexts/modal';
-import EditModal from './Modal/Edit';
 import CreateModal from './Modal/Create';
-import { useFetch } from 'hooks/useFetch';
 import Loading from 'components/Common/Loading';
+import EquipList from './EquipList';
+import EquipSearchBar from './EquipSearchBar';
+import { useEquipment, withEquipment } from './contexts';
 import EditCategoriesModal from './Modal/EditCategories';
-import EquipSearchBar, {
-  EquipSearchLocationState,
-  SortBy,
-} from './EquipSearchBar';
-
-const LIMIT_UNIT = 12;
 
 const Admin: FC = () => {
-  const { categories } = useContext(EquipmentCategoryContext);
-  const history = useHistory();
-  const location = useLocation<EquipSearchLocationState>();
   const authContext = useAuth();
 
-  const fetchFunction = useCallback(async () => {
-    return EquipmentService.retrieveList(1);
-  }, []);
-
-  const [limit, setLimit] = useState<number>(LIMIT_UNIT);
-
-  const { data, refresh } = useFetch({ fetch: fetchFunction });
-
+  const { data, refresh } = useEquipment();
   const { openModal } = useModal();
 
-  useEffect(() => {
-    setLimit(LIMIT_UNIT);
-  }, [location.state]);
+  if (!data) {
+    return <Loading />;
+  }
 
-  const handleClickEquipmentEdit = (equipment: Equipment) => {
-    openModal(<EditModal editingEquipment={equipment} onEdit={refresh} />);
+  const handleClickEditCategory = () => {
+    openModal(<EditCategoriesModal />);
   };
 
   const handleClickCreate = () => {
     openModal(<CreateModal onCreate={refresh} />);
   };
-
-  const sortCompareFunction = (
-    equipA: Equipment,
-    equipB: Equipment,
-    sortBy: SortBy,
-    sortOrder: 'ASC' | 'DESC',
-  ) => {
-    const order = sortOrder === 'ASC' ? 1 : -1;
-    if (sortBy === SortBy.CATEGORY) {
-      return (equipA.category_id - equipB.category_id) * order;
-    }
-    return equipA[sortBy].localeCompare(equipB[sortBy]) * order;
-  };
-
-  const filteredEquipments = useMemo(
-    () =>
-      (location.state
-        ? data?.equipInfo
-            .filter((equip) => {
-              if (
-                location.state.category_id &&
-                location.state.category_id !== 0 &&
-                equip.category_id !== location.state?.category_id
-              )
-                return false;
-              if (
-                location.state.status !== '' &&
-                equip.status !== location.state.status
-              )
-                return false;
-              if (
-                location.state.rent_status !== '' &&
-                equip.rent_status !== location.state.rent_status
-              )
-                return false;
-              if (
-                location.state.keyword !== '' &&
-                !equip.name
-                  .toLowerCase()
-                  .includes(location.state.keyword.toLowerCase()) &&
-                !equip.nickname
-                  .toLowerCase()
-                  .includes(location.state.keyword.toLowerCase())
-              )
-                return false;
-              if (
-                location.state.maker !== '' &&
-                !equip.maker
-                  .toLowerCase()
-                  .includes(location.state.maker.toLowerCase())
-              )
-                return false;
-              return true;
-            })
-            ?.sort((a, b) =>
-              sortCompareFunction(
-                a,
-                b,
-                location.state.sort_by,
-                location.state.sort_order,
-              ),
-            )
-        : data?.equipInfo
-      )?.slice(0, limit) ?? [],
-    [data?.equipInfo, limit, location.state],
-  );
-
-  const increaseLimit = () => {
-    setLimit((prevLimit) => prevLimit + LIMIT_UNIT);
-  };
-
-  if (!data) {
-    return <Loading />;
-  }
 
   return (
     <div className="board-wrapper">
@@ -141,19 +34,26 @@ const Admin: FC = () => {
         <div className="text-lg font-bold">현재 보유 장비</div>
         {authContext.authInfo.user.grade <= 8 && ( // TODO: change this to equipment authority check
           //TODO: display modal
-          <button className="board-btn-write" onClick={handleClickCreate}>
-            <i className="ri-pencil-line enif-f-1p2x"></i>장비 추가
-          </button>
+          <>
+            <button
+              className="bg-[#49A0AE] text-white ml-auto flex justify-center items-center text-base px-2 py-1"
+              onClick={handleClickEditCategory}
+            >
+              <i className="ri-pencil-line enif-f-1p2x"></i>장비 분류 수정
+            </button>
+            <button
+              className="bg-[#49A0AE] text-white ml-2 flex justify-center items-center text-base px-2 py-1"
+              onClick={handleClickCreate}
+            >
+              <i className="ri-pencil-line enif-f-1p2x"></i>장비 추가
+            </button>
+          </>
         )}
       </div>
-      <EquipList
-        equipmentList={filteredEquipments}
-        onClickEquipmentEdit={handleClickEquipmentEdit}
-        onNext={increaseLimit}
-        canMoveNext={data.equipInfo.length > limit}
-      />
+      <EquipSearchBar />
+      <EquipList data={data} columns={3} type="admin" />
     </div>
   );
 };
 
-export default withModal(Admin);
+export default withModal(withEquipment(Admin));

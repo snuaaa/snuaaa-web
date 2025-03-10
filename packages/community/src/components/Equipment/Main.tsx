@@ -19,6 +19,11 @@ const Main: FC = () => {
         <div className="text-right mr-4 text-gray-600">장비 관리 &gt;&gt;</div>
       </Link>
       <h3 className="mt-4 text-base font-bold">나의 대여 장비 목록</h3>
+      {data?.map((rent) => (
+        <div key={rent.id} className="flex justify-between mt-2">
+          <div>{rent.equipment.name}</div>
+        </div>
+      ))}
       <div className="flex justify-center">
         <Link to="/equipment/rent">
           <button
