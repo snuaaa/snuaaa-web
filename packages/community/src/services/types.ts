@@ -175,7 +175,7 @@ export interface Equipment {
   maker: string;
   status: EquipmentStatus;
   rent_status: EquipmentRentStatus;
-  renter?: User;
+  renter?: Pick<User, 'nickname'>;
   start_date?: string;
   end_date?: string;
   img_path: string;
