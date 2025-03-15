@@ -65,7 +65,7 @@ const EquipSearchBar: FC = () => {
         },
       });
     }
-  }, []);
+  }, [history, location.state]);
 
   const handleSelectChange = (e: ChangeEvent<HTMLSelectElement>) => {
     if (e.target.name === 'category') {
