@@ -40,7 +40,20 @@ export const ModalProvider = ({ children }: PropsWithChildren) => {
   return (
     <ModalContext.Provider value={modalContextValue}>
       {children}
-      {modal}
+      {modal && (
+        <div
+          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
+          onClick={modalContextValue.closeModal}
+        >
+          <div
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            {modal}
+          </div>
+        </div>
+      )}
     </ModalContext.Provider>
   );
 };
