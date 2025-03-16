@@ -2,6 +2,7 @@ import { NavLink } from 'react-router-dom';
 import { Board } from 'services/types';
 import Menu from './Menu';
 import { MenuLink } from './types';
+import { useAuth } from 'contexts/auth';
 
 type NavigationProps = {
   boards: Board[];
@@ -45,19 +46,22 @@ const aboutAAALinks: MenuLink[] = [
   },
 ];
 
-// const toolsLinks: MenuLink[] = [
-//   {
-//     name: '장비 대여',
-//     url: 'https://archive.snuaaa.net/EquipmentSystem',
-//     isExternal: true,
-//   },
-// ];
+const toolsLinks: MenuLink[] = [
+  {
+    name: '장비 대여',
+    url: '/equipment',
+  },
+];
+
+const TOOLS_ACCESS_GRADE = 7;
 
 function Navigation({ boards }: NavigationProps) {
   const noticeBoards: Board[] = boards.filter((board) => board.menu === 1);
   const communityBoards: Board[] = boards.filter((board) => board.menu === 2);
   const officialBoards: Board[] = boards.filter((board) => board.menu === 3);
   const photoBoards: Board[] = boards.filter((board) => board.menu === 4);
+
+  const authContext = useAuth();
 
   return (
     <nav
@@ -72,7 +76,14 @@ function Navigation({ boards }: NavigationProps) {
         <Menu menuName="Daily" menuItems={communityBoards} />
         <Menu menuName="Docu" menuItems={officialBoards} />
         <Menu menuName="Photo" menuItems={photoBoards} />
-        {/* <Menu menuName="Tools" menuItems={toolsLinks} /> */}
+        <Menu
+          menuName="Tools"
+          menuItems={
+            authContext.authInfo.user.grade <= TOOLS_ACCESS_GRADE
+              ? toolsLinks
+              : []
+          }
+        />
       </ul>
     </nav>
   );

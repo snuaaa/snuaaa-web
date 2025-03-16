@@ -150,3 +150,68 @@ export interface Comment {
   children: Comment[];
   likeUsers: User[];
 }
+
+export enum EquipmentStatus {
+  OK = 'OK',
+  BROKEN = 'BROKEN',
+  LOST = 'LOST',
+  REPAIRING = 'REPAIRING',
+  ETC = 'ETC',
+}
+
+export enum EquipmentRentStatus {
+  RENTABLE = 'RENTABLE',
+  RENTED = 'RENTED',
+  UNRENTABLE = 'UNRENTABLE',
+}
+
+export interface Equipment {
+  id: number;
+  category_id: number;
+  name: string;
+  nickname: string;
+  description: string;
+  location: string;
+  maker: string;
+  status: EquipmentStatus;
+  rent_status: EquipmentRentStatus;
+  renter?: Pick<User, 'nickname'>;
+  start_date?: string;
+  end_date?: string;
+  img_path: string;
+  createdAt: string;
+}
+
+export interface EquipmentCategory {
+  id: number;
+  name: string;
+}
+
+export enum PenaltyStatus {
+  NO_PENALTY = 'NOPENALTY',
+  NEED_PAYMENT = 'NEEDPAYMENT',
+  RECEIVED_PAYMENT = 'RECEIVEDPAYMENT',
+}
+
+export interface RentReturn {
+  rent_id: number;
+  photo_path: string;
+  return_date: string;
+  penalty_status: PenaltyStatus;
+}
+
+export interface Rent {
+  id: number;
+  start_date: string;
+  end_date: string;
+  rentReturn?: RentReturn;
+  user: User;
+}
+
+export interface MyRent {
+  id: number;
+  start_date: string;
+  end_date: string;
+  equipment: Equipment;
+  rentReturn?: RentReturn;
+}
