@@ -1,6 +1,7 @@
 import React, {
   PropsWithChildren,
   ReactElement,
+  useEffect,
   useMemo,
   useState,
 } from 'react';
@@ -18,6 +19,14 @@ const ModalContext = React.createContext<ModalContextState | null>(null);
 export const ModalProvider = ({ children }: PropsWithChildren) => {
   const [modal, setModal] = useState<ReactElement | null>(null);
 
+  useEffect(() => {
+    if (modal) {
+      document.body.classList.add('overflow-hidden');
+    } else {
+      document.body.classList.remove('overflow-hidden');
+    }
+  }, [modal]);
+
   const modalContextValue = useMemo(
     () => ({
       modal,
@@ -31,7 +40,20 @@ export const ModalProvider = ({ children }: PropsWithChildren) => {
   return (
     <ModalContext.Provider value={modalContextValue}>
       {children}
-      {modal}
+      {modal && (
+        <div
+          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
+          onClick={modalContextValue.closeModal}
+        >
+          <div
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            {modal}
+          </div>
+        </div>
+      )}
     </ModalContext.Provider>
   );
 };

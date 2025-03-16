@@ -30,11 +30,13 @@ const Rent: FC = () => {
         {viewportSize !== ViewportSize.Mobile ? (
           <>
             <EquipSearchBar />
-            <div className="w-2/3 overflow-y-auto h-screen inline-block">
-              <EquipList data={data} columns={2} type="rent" />
-            </div>
-            <div className="w-1/3 overflow-y-auto h-screen inline-block">
-              <EquipCart columns={2} />
+            <div className="flex">
+              <div className="w-2/3">
+                <EquipList data={data} columns={2} type="rent" />
+              </div>
+              <div className="w-1/3 sticky top-20 h-fit">
+                <EquipCart columns={2} />
+              </div>
             </div>
           </>
         ) : (

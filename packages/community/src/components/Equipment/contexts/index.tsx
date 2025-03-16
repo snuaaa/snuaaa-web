@@ -2,7 +2,6 @@ import { useFetch } from 'hooks/useFetch';
 import React, {
   PropsWithChildren,
   useCallback,
-  useEffect,
   useMemo,
   useState,
 } from 'react';

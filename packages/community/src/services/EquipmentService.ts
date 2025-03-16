@@ -1,12 +1,6 @@
 import { API } from './index';
 
-import {
-  Equipment,
-  EquipmentCategory,
-  EquipmentStatus,
-  MyRent,
-  Rent,
-} from './types';
+import { Equipment, EquipmentCategory, MyRent, Rent } from './types';
 
 export type RetrieveEquipmentListResponse = {
   equipCount: number;

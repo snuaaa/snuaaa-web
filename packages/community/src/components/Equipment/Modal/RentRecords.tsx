@@ -47,82 +47,78 @@ const RentRecords: FC<Props> = ({ id }) => {
   };
 
   return (
-    <div className="fixed z-30 top-0 left-0 w-full h-full bg-black/40 flex items-center justify-center">
-      <div className="absolute px-10 rounded-lg border border-gray-900 text-center bg-white z-40 py-5">
-        <div>
-          <button className="absolute top-0 right-0 m-2" onClick={closeModal}>
-            <i className="ri-close-line text-3xl"></i>
-          </button>
-        </div>
-        <h3 className="text-xl font-bold mt-4 mb-2">대여 기록</h3>
-        <div className="mt-8">
-          <div className="flex items-center text-gray-950 border first:rounded-t-lg last:rounded-b-lg border-gray-300 w-full py-2">
-            <div className="w-1/5">대여자</div>
-            <div className="w-1/5">대여 시각</div>
-            <div className="w-1/5">반납 기한</div>
-            <div className="w-1/5">반납 시각</div>
-            <div className="w-1/5">
-              상태
-              {/*대여 중, 정상 반납, 지연 반납(연체료 미납), 지연 반납(연체료 완납)*/}
-            </div>
+    <div className="relative px-10 rounded-lg text-center bg-white z-40 py-5">
+      <div>
+        <button className="absolute top-0 right-0 m-2" onClick={closeModal}>
+          <i className="ri-close-line text-3xl"></i>
+        </button>
+      </div>
+      <h3 className="text-xl font-bold mt-4 mb-2">대여 기록</h3>
+      <div className="mt-8">
+        <div className="flex items-center text-gray-950 border first:rounded-t-lg last:rounded-b-lg border-gray-300 w-full py-2">
+          <div className="w-1/5">대여자</div>
+          <div className="w-1/5">대여 시각</div>
+          <div className="w-1/5">반납 기한</div>
+          <div className="w-1/5">반납 시각</div>
+          <div className="w-1/5">
+            상태
+            {/*대여 중, 정상 반납, 지연 반납(연체료 미납), 지연 반납(연체료 완납)*/}
           </div>
-          {rentRecords.map((rentRecord) => (
-            <>
-              <button
-                onClick={() => clickRecord(rentRecord.id)}
-                className="flex items-center text-gray-950 border first:rounded-t-lg last:rounded-b-lg border-gray-300 w-full py-2"
-                key={rentRecord.id}
+        </div>
+        {rentRecords.map((rentRecord) => (
+          <>
+            <button
+              onClick={() => clickRecord(rentRecord.id)}
+              className="flex items-center text-gray-950 border first:rounded-t-lg last:rounded-b-lg border-gray-300 w-full py-2"
+              key={rentRecord.id}
+            >
+              <div className="w-1/5">{rentRecord.user.nickname}</div>
+              <div className="w-1/5 break-words">
+                {convertFullDate(rentRecord.start_date)}
+              </div>
+              <div className="w-1/5 break-words">
+                {convertFullDate(rentRecord.end_date)}
+              </div>
+              <div className="w-1/5 break-words">
+                {rentRecord.rentReturn
+                  ? convertFullDate(rentRecord.rentReturn.return_date)
+                  : '-'}
+              </div>
+              <div
+                className={
+                  'w-1/5 ' +
+                  (rentRecord.rentReturn &&
+                    PenaltyStatusColorMap[rentRecord.rentReturn.penalty_status])
+                }
               >
-                <div className="w-1/5">{rentRecord.user.nickname}</div>
-                <div className="w-1/5 break-words">
-                  {convertFullDate(rentRecord.start_date)}
-                </div>
-                <div className="w-1/5 break-words">
-                  {convertFullDate(rentRecord.end_date)}
-                </div>
-                <div className="w-1/5 break-words">
-                  {rentRecord.rentReturn
-                    ? convertFullDate(rentRecord.rentReturn.return_date)
-                    : '-'}
-                </div>
-                <div
-                  className={
-                    'w-1/5 ' +
-                    (rentRecord.rentReturn &&
-                      PenaltyStatusColorMap[
-                        rentRecord.rentReturn.penalty_status
-                      ])
-                  }
+                {rentRecord.rentReturn
+                  ? PenaltyStatusTextMap[rentRecord.rentReturn.penalty_status]
+                  : '대여 중'}
+              </div>
+            </button>
+            {rentRecord.rentReturn && photoRentId === rentRecord.id && (
+              <div className="flex items-center text-gray-950 border first:rounded-t-lg last:rounded-b-lg border-gray-300 w-full py-2">
+                <button
+                  onClick={() => clickRecord(rentRecord.id)}
+                  className="mx-auto"
                 >
-                  {rentRecord.rentReturn
-                    ? PenaltyStatusTextMap[rentRecord.rentReturn.penalty_status]
-                    : '대여 중'}
-                </div>
-              </button>
-              {rentRecord.rentReturn && photoRentId === rentRecord.id && (
-                <div className="flex items-center text-gray-950 border first:rounded-t-lg last:rounded-b-lg border-gray-300 w-full py-2">
-                  <button
-                    onClick={() => clickRecord(rentRecord.id)}
-                    className="mx-auto"
-                  >
-                    <img
-                      src={rentRecord.rentReturn.photo_path}
-                      alt="returned equip"
-                      className="max-w-full max-h-72 object-contain"
-                    />
-                  </button>
-                </div>
-              )}
-            </>
-          ))}
-        </div>
-        <div>
-          <Paginator
-            pageIdx={pageIdx}
-            pageNum={Math.ceil(rentCount / RENTROWNUM)}
-            clickPage={clickPage}
-          />
-        </div>
+                  <img
+                    src={rentRecord.rentReturn.photo_path}
+                    alt="returned equip"
+                    className="max-w-full max-h-72 object-contain"
+                  />
+                </button>
+              </div>
+            )}
+          </>
+        ))}
+      </div>
+      <div>
+        <Paginator
+          pageIdx={pageIdx}
+          pageNum={Math.ceil(rentCount / RENTROWNUM)}
+          clickPage={clickPage}
+        />
       </div>
     </div>
   );
