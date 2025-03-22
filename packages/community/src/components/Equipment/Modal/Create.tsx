@@ -16,7 +16,7 @@ const CreateModal: FC<Props> = ({ onCreate }) => {
   const [equipment, setEquipment] = useState<CreateEquipmentRequest>({
     name: '',
     nickname: '',
-    category_id: categories[0].id,
+    category_id: categories[0]?.id ?? 0,
     status: EquipmentStatus.OK,
     location: '',
     maker: '',
