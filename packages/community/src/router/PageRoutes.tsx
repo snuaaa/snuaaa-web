@@ -26,6 +26,7 @@ const AllPosts = lazy(() => import('pages/AllPosts'));
 const AllComments = lazy(() => import('pages/AllComments'));
 const MightyCalculator = lazy(() => import('pages/MightyCalculator'));
 const UserManagement = lazy(() => import('pages/UserManagement'));
+const Equipment = lazy(() => import('pages/Equipment'));
 
 type LocationState = {
   background: Location;
@@ -78,6 +79,7 @@ function PageRoutes() {
             <Route path="/comments/all" component={AllComments} />
             <Route path="/mightyCalculator" component={MightyCalculator} />
             <Route path="/mgt/user" component={UserManagement} />
+            <Route path="/equipment" component={Equipment} />
             <Route component={Home} />
           </Switch>
           {isModal && (

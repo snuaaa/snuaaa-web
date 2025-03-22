@@ -74,3 +74,15 @@ export function convertDynamicTime(time) {
     return '방금';
   }
 }
+
+export function convertDateMMDD(date) {
+  let convertedDate = new Date(date);
+
+  let month = convertedDate.getMonth() + 1;
+  let day = convertedDate.getDate();
+
+  month = month < 10 ? '0' + month : month;
+  day = day < 10 ? '0' + day : day;
+
+  return month + '/' + day;
+}
