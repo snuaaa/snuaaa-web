@@ -9,9 +9,9 @@ import React, {
 import SpinningLoader from 'components/Common/SpinningLoader';
 import { EquipSearchLocationState, SortBy } from '../EquipSearchBar';
 import { RetrieveEquipmentListResponse } from 'services/EquipmentService';
-import EquipItem from './EquipItem';
 import { useLocation } from 'react-router';
 import { Equipment } from 'services/types';
+import EquipmentItem from './EquipmentItem';
 
 type Props = {
   type: 'rent' | 'admin';
@@ -143,9 +143,13 @@ const EquipList: React.FC<Props> = ({ data, columns, type }) => {
 
   return (
     <>
-      <div className={`grid ${gridColumnsStyles[columns]}`}>
+      <div className={`grid ${gridColumnsStyles[columns]} gap-4 px-2`}>
         {filteredEquipments.map((equip) => (
-          <EquipItem equip={equip} key={equip.id} type={type}></EquipItem>
+          <EquipmentItem
+            equip={equip}
+            key={equip.id}
+            type={type}
+          ></EquipmentItem>
         ))}
       </div>
       <div className="w-full flex justify-center" ref={loaderRef}>
