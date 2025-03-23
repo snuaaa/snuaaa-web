@@ -167,14 +167,18 @@ const EquipItem: FC<Props> = ({ equip, type }) => {
               </div>
             </div>
             <div className="w-3/5 inline-block pl-4 align-middle">
-              <div className="text-base font-bold mt-2 mr-3">{equip.name}</div>
+              <div className="text-base font-bold mt-2 mr-3 line-clamp-2">
+                {equip.name}
+              </div>
               {basicInfo}
               {buttons}
             </div>
           </>
         ) : (
           <>
-            <div className={`text-base font-bold mt-2 mr-3`}>{equip.name}</div>
+            <div className={`text-base font-bold mt-2 mr-3 line-clamp-2`}>
+              {equip.name}
+            </div>
             <div className="my-2">
               <Image imgSrc={equip.img_path} className="h-24 mx-auto" />
             </div>
