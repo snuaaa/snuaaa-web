@@ -55,7 +55,7 @@ export const equipmentStatusTextMap: Record<EquipmentStatus, string> = {
 };
 
 export const equipmentRentColorMap: Record<EquipmentRentStatus, string> = {
-  [EquipmentRentStatus.RENTABLE]: 'bg-cyan-500',
-  [EquipmentRentStatus.UNRENTABLE]: 'bg-yellow-400',
-  [EquipmentRentStatus.RENTED]: 'bg-red-400',
+  [EquipmentRentStatus.RENTABLE]: 'text-cyan-500',
+  [EquipmentRentStatus.UNRENTABLE]: 'text-yellow-400',
+  [EquipmentRentStatus.RENTED]: 'text-red-400',
 };
