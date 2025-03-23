@@ -1,5 +1,11 @@
 const tmpOfficers = [
   {
+    generation: 90,
+    president: '박규형',
+    officers:
+      '부회장: 최시환, 총무: 박시원, 회계: 진민완, 관측부장: 서윤지, 디딤돌부장: 이서영, 장비관리부장: 최승민, 관측부원: 김윤진, 김이현, 민정환, 장혜원, 최상욱, 디딤돌부원: 구현모, 신윤도, 신혜주, 장비관리부원: 양현제, 오승현',
+  },
+  {
     generation: 89,
     president: '송치호',
     officers:

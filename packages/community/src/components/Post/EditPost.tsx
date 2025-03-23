@@ -19,7 +19,6 @@ type Props = {
 const MAX_SIZE = 20 * 1024 * 1024;
 
 const EditPost: FC<Props> = ({ postInfo, onCancel, onUpdate }) => {
-  console.log('editpost');
   const [removedFiles, setRemovedFiles] = useState<number[]>([]);
   const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
   const [progress, setProgress] = useState<number>(0);
