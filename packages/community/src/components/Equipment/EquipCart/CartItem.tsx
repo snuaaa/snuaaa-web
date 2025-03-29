@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { Equipment } from 'services/types';
+import { Equipment } from '~/services/types';
 import Image from '../../Common/AaaImage';
 
 type Props = {

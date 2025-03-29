@@ -2,9 +2,9 @@ import { useState, ChangeEvent, FC } from 'react';
 import PostService, { CreatePostRequest } from '../../services/PostService';
 import ContentService from '../../services/ContentService';
 import { Prompt } from 'react-router-dom';
-import Editor from 'components/Common/Editor';
+import Editor from '~/components/Common/Editor';
 import AttachFile from './AttachFile';
-import ProgressBar from 'components/Common/ProgressBar';
+import ProgressBar from '~/components/Common/ProgressBar';
 
 const MAX_SIZE = 20 * 1024 * 1024;
 

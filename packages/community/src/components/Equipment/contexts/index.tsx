@@ -1,4 +1,4 @@
-import { useFetch } from 'hooks/useFetch';
+import { useFetch } from '~/hooks/useFetch';
 import React, {
   PropsWithChildren,
   useCallback,
@@ -9,8 +9,8 @@ import React, {
 import { useContext } from 'react';
 import EquipmentService, {
   RetrieveEquipmentListResponse,
-} from 'services/EquipmentService';
-import { Equipment } from 'services/types';
+} from '~/services/EquipmentService';
+import { Equipment } from '~/services/types';
 
 type EquipmentContextState = {
   data?: RetrieveEquipmentListResponse;

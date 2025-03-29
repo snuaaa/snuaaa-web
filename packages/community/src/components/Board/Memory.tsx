@@ -10,10 +10,10 @@ import PhotoBoardService from '../../services/PhotoBoardService';
 import BoardName from '../../components/Board/BoardName';
 
 import { useHistory, useLocation } from 'react-router';
-import { Board } from 'services/types';
-import { useFetch } from 'hooks/useFetch';
-import { useAuth } from 'contexts/auth';
-import { Divider } from 'ui';
+import { Board } from '~/services/types';
+import { useFetch } from '~/hooks/useFetch';
+import { useAuth } from '~/contexts/auth';
+import { Divider } from '~/ui';
 
 const ALBUMROWNUM = 12;
 

@@ -1,9 +1,9 @@
 import { useState, ChangeEvent } from 'react';
-import SignUpComponent from 'components/Signup/SignUpComponent';
-import SignUpSuccess from 'components/Signup/SignUpSuccess';
-import SignUpFailure from 'components/Signup/SignUpFailure';
-import Loading from 'components/Common/Loading';
-import AuthService, { SingUpRequest } from 'services/AuthService';
+import SignUpComponent from '~/components/Signup/SignUpComponent';
+import SignUpSuccess from '~/components/Signup/SignUpSuccess';
+import SignUpFailure from '~/components/Signup/SignUpFailure';
+import Loading from '~/components/Common/Loading';
+import AuthService, { SingUpRequest } from '~/services/AuthService';
 import SignUpInputType from 'types/SignUpInputType';
 
 const defaultFormat: SignUpInputType = {

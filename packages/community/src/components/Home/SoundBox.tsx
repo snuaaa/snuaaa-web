@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Editor from '../Common/Editor';
-import { SoundBoxResponse } from 'services/HomeService';
+import { SoundBoxResponse } from '~/services/HomeService';
 
 const SoundBox = ({ soundBoxInfo }: { soundBoxInfo: SoundBoxResponse }) => {
   return (

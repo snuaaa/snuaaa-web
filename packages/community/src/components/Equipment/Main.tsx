@@ -1,12 +1,12 @@
-import BoardName from 'components/Board/BoardName';
-import { useFetch } from 'hooks/useFetch';
+import BoardName from '~/components/Board/BoardName';
+import { useFetch } from '~/hooks/useFetch';
 import { FC, useCallback } from 'react';
 import Image from '../Common/AaaImage';
 import { Link } from 'react-router-dom';
-import EquipmentService from 'services/EquipmentService';
-import { useModal, withModal } from 'contexts/modal';
+import EquipmentService from '~/services/EquipmentService';
+import { useModal, withModal } from '~/contexts/modal';
 import RentReturn from './Modal/RentReturn';
-import { useAuth } from 'contexts/auth';
+import { useAuth } from '~/contexts/auth';
 
 //const EQUIP_RENT_GRADE = 7;
 const EQUIP_ADMIN_GRADE = 6;

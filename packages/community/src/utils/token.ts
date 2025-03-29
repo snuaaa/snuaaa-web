@@ -1,5 +1,5 @@
 import Cookies from 'universal-cookie';
-import { setApiAuth } from 'services';
+import { setApiAuth } from '~/services';
 
 const cookies = new Cookies();
 

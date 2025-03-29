@@ -2,11 +2,11 @@ import { ChangeEvent, useState } from 'react';
 
 import 'react-datepicker/dist/react-datepicker.css';
 import { Prompt } from 'react-router';
-import UserService from 'services/UserService';
+import UserService from '~/services/UserService';
 import ExhibitPhotoService, {
   ExhibitPhotoInfo,
-} from 'services/ExhibitPhotoService';
-import { ExhibitPhoto, User } from 'services/types';
+} from '~/services/ExhibitPhotoService';
+import { ExhibitPhoto, User } from '~/services/types';
 import CreateExhibitPhotoInfo from './CreateExhibitPhotoInfo';
 
 type EditExhibitPhotoInfoProps = {

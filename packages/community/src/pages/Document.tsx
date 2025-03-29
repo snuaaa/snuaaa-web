@@ -1,16 +1,16 @@
 import { useState, useEffect, ChangeEvent, useCallback } from 'react';
 import { Redirect, useRouteMatch } from 'react-router';
 
-import ContentStateEnum from 'common/ContentStateEnum';
-import Loading from 'components/Common/Loading';
-import DocuComponent from 'components/Document/DocuComponent';
-import EditDocu from 'components/Document/EditDocu';
-import ContentService from 'services/ContentService';
-import DocuService from 'services/DocuService';
+import ContentStateEnum from '~/common/ContentStateEnum';
+import Loading from '~/components/Common/Loading';
+import DocuComponent from '~/components/Document/DocuComponent';
+import EditDocu from '~/components/Document/EditDocu';
+import ContentService from '~/services/ContentService';
+import DocuService from '~/services/DocuService';
 
-import FileService from 'services/FileService';
-import { Content } from 'services/types';
-import { useAuth } from 'contexts/auth';
+import FileService from '~/services/FileService';
+import { Content } from '~/services/types';
+import { useAuth } from '~/contexts/auth';
 
 const MAX_SIZE = 20 * 1024 * 1024;
 

@@ -1,8 +1,8 @@
-import { EquipmentCategoryContext } from 'contexts/EquipmentCategoryContext';
-import { useModal } from 'contexts/modal';
+import { EquipmentCategoryContext } from '~/contexts/EquipmentCategoryContext';
+import { useModal } from '~/contexts/modal';
 import { FC, useContext, useState } from 'react';
 import EditCategoryEntry from './EditCategoryEntry';
-import EquipmentService from 'services/EquipmentService';
+import EquipmentService from '~/services/EquipmentService';
 
 const EditCategoriesModal: FC = () => {
   const { closeModal } = useModal();

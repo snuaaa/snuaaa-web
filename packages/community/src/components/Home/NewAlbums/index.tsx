@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Album } from 'services/types';
+import { Album } from '~/services/types';
 import AlbumItem from './AlbumItem';
 
 type NewAlbumsProps = {

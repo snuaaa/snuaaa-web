@@ -1,4 +1,5 @@
-import React, { useState, SyntheticEvent, useMemo } from 'react';
+import { useState, SyntheticEvent, useMemo } from 'react';
+import { SERVER_URL } from '~/constants/env';
 
 type ImageProps = {
   imgSrc?: string;
@@ -24,7 +25,7 @@ function AaaImage({
     }
     return local
       ? imgSrc
-      : process.env.REACT_APP_SERVER_URL + 'static' + imgSrc;
+      : SERVER_URL + 'static' + imgSrc;
   }, [imgSrc, local]);
 
   const onLoad = (e: SyntheticEvent) => {

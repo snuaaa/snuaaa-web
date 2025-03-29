@@ -1,3 +1,5 @@
+@use "color";
+
 .profile-mini-wrapper {
   display: flex;
   justify-content: center;
@@ -142,11 +144,11 @@
   // bottom: 0;
   // left: 0;
   cursor: default;
-  box-shadow: 1px 1px 1px 2px $color-gray4;
+  box-shadow: 1px 1px 1px 2px color.$color-gray4;
   h5 {
     margin: 2rem;
     font-size: 1.2rem;
-    color: $color-aqua;
+    color: color.$color-aqua;
     text-align: center;
   }
   .profile-popup {
@@ -155,7 +157,7 @@
     align-items: center;
     justify-content: center;
     flex-direction: column;  
-    background-color: $color-white;  
+    background-color: color.$color-white;  
   }
   .profile-img-wrapper {
     width: 58px;
@@ -169,7 +171,7 @@
     margin: 1rem;
     font-size: 1.2rem;
     font-weight: bold;
-    color: $color-black;
+    color: color.$color-black;
     text-align: center;
   }
   .profile-units-wrapper {
@@ -182,7 +184,7 @@
     text-align: left;
     .profile-unit-label {
       width: 30%;
-      color: $color-gray2;
+      color: color.$color-gray2;
     }
     .profile-unit-info {
       width: 70%;
@@ -193,8 +195,8 @@
     padding: 1rem;
     font-size: 1.2rem;
     width: 100%;
-    background-color: $color-aqua;
-    color: $color-white;
+    background-color: color.$color-aqua;
+    color: color.$color-white;
     text-align: center;
   }
 }

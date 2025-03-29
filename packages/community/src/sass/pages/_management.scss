@@ -1,3 +1,5 @@
+@use "../common/color";
+
 .mgt-user-wrp {
   display: flex;
   justify-content: center;
@@ -31,7 +33,7 @@
   td,
   th {
     padding: 0.5rem;
-    border: 1px solid $color-gray5;
+    border: 1px solid color.$color-gray5;
     white-space: nowrap;
     &.selected {
       background-color: rgb(240, 240, 255);      

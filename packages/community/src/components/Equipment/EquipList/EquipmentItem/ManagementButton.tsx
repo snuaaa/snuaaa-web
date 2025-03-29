@@ -1,8 +1,8 @@
 import { FC } from 'react';
-import { Equipment } from 'services/types';
+import { Equipment } from '~/services/types';
 import { useEquipment } from '../../contexts';
 import EditModal from '../../Modal/Edit';
-import { useModal } from 'contexts/modal';
+import { useModal } from '~/contexts/modal';
 import RentRecords from '../../Modal/RentRecords';
 
 type Props = {

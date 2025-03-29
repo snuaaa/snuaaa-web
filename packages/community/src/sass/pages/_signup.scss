@@ -1,3 +1,5 @@
+@use "../common/color";
+
 
 /***** SIGN UP *****/
 
@@ -15,7 +17,7 @@
 
     h2 {
         text-align: center;
-        color: $color-white;
+        color: color.$color-white;
         padding: 1.5rem;
         font-size: 2rem;
     }
@@ -38,7 +40,7 @@
         }
     }
     input[type="checkbox"] {
-        background-color: $color-white;
+        background-color: color.$color-white;
         border: none;
     }
 
@@ -57,7 +59,7 @@
             margin-top: 15px;
             width: 400px;
             // height: 50px;
-            background-color: $color-white;
+            background-color: color.$color-white;
             border-radius: 20px;
             padding: 10px;
             label {
@@ -91,7 +93,7 @@
         }
         .profile-signup {
             background: transparent;
-            border: 1px solid $color-white;
+            border: 1px solid color.$color-white;
             label {
                 width: 100%;
                 span {
@@ -101,7 +103,7 @@
                 .btn-profile {
                     text-align: right;
                     display: inline-block;
-                    background-color: $color-white;
+                    background-color: color.$color-white;
                     padding: 0.5rem;
                     padding-left: 1rem;
                     padding-right: 1rem;

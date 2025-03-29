@@ -3,7 +3,7 @@ import React from 'react';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 
 import { Editor as CustomEditor, Viewer as CustomViewer } from '@snuaaa/editor';
-import UploadService from 'services/UploadService';
+import UploadService from '~/services/UploadService';
 
 class MyUploadAdapter {
   private loader: any;

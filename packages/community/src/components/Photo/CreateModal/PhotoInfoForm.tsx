@@ -1,7 +1,7 @@
 import React, { ChangeEvent } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { CreatePhotoRequest } from 'services/PhotoService';
+import { CreatePhotoRequest } from '~/services/PhotoService';
 
 type Props = {
   photoInfo: Omit<CreatePhotoRequest, 'img_url' | 'thumbnail_url'>;

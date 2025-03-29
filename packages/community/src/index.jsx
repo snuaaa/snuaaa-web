@@ -1,8 +1,6 @@
-import React from 'react';
 import { createRoot } from 'react-dom/client';
-import 'react-app-polyfill/ie11';
 import { Router } from 'react-router-dom';
-import history from 'common/history';
+import history from '~/common/history';
 // import { CookiesProvider } from 'react-cookie';
 
 import './index.css';

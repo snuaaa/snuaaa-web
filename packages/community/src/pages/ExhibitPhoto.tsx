@@ -1,14 +1,14 @@
 import { useState, useEffect, createRef, useCallback } from 'react';
 import { useLocation, useHistory, useParams } from 'react-router';
-import ExhibitPhotoService from 'services/ExhibitPhotoService';
-import FullScreenPortal from 'router/FullScreenPortal';
+import ExhibitPhotoService from '~/services/ExhibitPhotoService';
+import FullScreenPortal from '~/router/FullScreenPortal';
 import { RecordOf, Record } from 'immutable';
 
-import useBlockBackgroundScroll from 'hooks/useBlockBackgroundScroll';
-import { ExhibitPhoto } from 'services/types';
-import ExhibitPhotoComponent from 'components/Exhibition/ExhibitPhoto/ExhibitPhotoComponent';
-import { useFetch } from 'hooks/useFetch';
-import Loading from 'components/Common/Loading';
+import useBlockBackgroundScroll from '~/hooks/useBlockBackgroundScroll';
+import { ExhibitPhoto } from '~/services/types';
+import ExhibitPhotoComponent from '~/components/Exhibition/ExhibitPhoto/ExhibitPhotoComponent';
+import { useFetch } from '~/hooks/useFetch';
+import Loading from '~/components/Common/Loading';
 
 type LocationState = {
   backgroundLocation: string;

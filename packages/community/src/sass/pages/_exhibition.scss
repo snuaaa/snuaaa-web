@@ -1,10 +1,12 @@
+@use "../common/color";
+
 
 .crt-exhibition-wrapper {
     position: relative;
     width: 500px;
     margin: 0 auto;
     padding: 2rem 2rem 3rem 2rem;
-    background-color: $color-white;
+    background-color: color.$color-white;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -111,7 +113,7 @@
             padding: 1rem;
             box-shadow: 1px 1px 3px 1px #ddd;
             text-align: center;
-            color: $color-black;
+            color: color.$color-black;
             /* background-color: #fff; */
             h5 {
                 margin: 0.5rem 0;
@@ -123,7 +125,7 @@
                 font-size: 0.9rem;
             }
             .desc-small {
-                color: $color-gray2;
+                color: color.$color-gray2;
                 font-size: 0.8rem;
             }
         }    

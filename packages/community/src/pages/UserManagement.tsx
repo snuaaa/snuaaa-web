@@ -1,10 +1,10 @@
 import { useEffect, useState, MouseEvent, useCallback } from 'react';
-import UserService from 'services/UserService';
-import { convertFullDate, convertDateWithDay } from 'utils/convertDate';
+import UserService from '~/services/UserService';
+import { convertFullDate, convertDateWithDay } from '~/utils/convertDate';
 import { UsersSearchType } from 'types/SearchTypes';
-import Paginator from 'components/Common/Paginator';
+import Paginator from '~/components/Common/Paginator';
 import { useHistory } from 'react-router';
-import { User } from 'services/types';
+import { User } from '~/services/types';
 import axios from 'axios';
 
 const USER_ROW_NUM = 20;

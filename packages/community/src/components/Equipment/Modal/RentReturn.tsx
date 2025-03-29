@@ -1,8 +1,8 @@
-import { useModal } from 'contexts/modal';
+import { useModal } from '~/contexts/modal';
 import { ChangeEvent, FC, useState } from 'react';
-import EquipmentService from 'services/EquipmentService';
-import { MyRent } from 'services/types';
-import UploadService from 'services/UploadService';
+import EquipmentService from '~/services/EquipmentService';
+import { MyRent } from '~/services/types';
+import UploadService from '~/services/UploadService';
 
 type Props = {
   rent: MyRent;

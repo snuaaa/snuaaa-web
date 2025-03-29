@@ -1,15 +1,15 @@
-import PhotoList from 'components/Album/PhotoList';
-import Loading from 'components/Common/Loading';
-import Paginator from 'components/Common/Paginator';
-import Tag from 'components/Common/Tag';
-import CreatePhotoModal from 'components/Photo/CreateModal';
-import { useAuth } from 'contexts/auth';
-import { useFetch } from 'hooks/useFetch';
+import PhotoList from '~/components/Album/PhotoList';
+import Loading from '~/components/Common/Loading';
+import Paginator from '~/components/Common/Paginator';
+import Tag from '~/components/Common/Tag';
+import CreatePhotoModal from '~/components/Photo/CreateModal';
+import { useAuth } from '~/contexts/auth';
+import { useFetch } from '~/hooks/useFetch';
 import { ChangeEvent, FC, useCallback, useMemo, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import PhotoBoardService from 'services/PhotoBoardService';
-import { Board } from 'services/types';
-import { Divider } from 'ui';
+import PhotoBoardService from '~/services/PhotoBoardService';
+import { Board } from '~/services/types';
+import { Divider } from '~/ui';
 
 const PHOTO_ROW_NUM = 12;
 

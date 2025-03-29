@@ -1,3 +1,5 @@
+@use "../common/color";
+
 /****** ALBUM *******/
 .album-list-wrapper {
     display: flex;
@@ -78,9 +80,9 @@
                 width: 2rem;
                 border: none;
                 border-radius: 50%;
-                background-color: $color_aqua;
+                background-color: color.$color_aqua;
                 cursor: pointer;
-                color: $color_white;
+                color: color.$color_white;
                 font-size: 1rem;
             }
         }
@@ -155,7 +157,7 @@
         width: 100%;
         margin: 5px 0px;
         .select-private-unit {
-            border: 1px solid $color-gray1;
+            border: 1px solid color.$color-gray1;
             padding: 8px;
             margin: 0px 15px;
             display: flex;
@@ -163,12 +165,12 @@
             justify-content: center;
             align-items: center;
             border-radius: 10px;
-            color: $color-gray1;
+            color: color.$color-gray1;
             cursor: pointer;
             &.selected {
-                border: 1px solid $color-aqua;
-                background-color: $color-aqua;
-                color: $color-white;
+                border: 1px solid color.$color-aqua;
+                background-color: color.$color-aqua;
+                color: color.$color-white;
             }
         }
     }

@@ -4,7 +4,7 @@ import Image from '../../components/Common/AaaImage';
 import history from '../../common/history';
 
 import SpinningLoader from '../Common/SpinningLoader';
-import { Photo } from 'services/types';
+import { Photo } from '~/services/types';
 
 type PhotoListProps = {
   photos: Photo[];

@@ -1,10 +1,10 @@
-import AaaHistory from 'components/About/AaaHistory';
-import AboutAAA from 'components/About/aboutAAA';
-import Contact from 'components/About/contact';
-import Equipment from 'components/About/equipment';
-import Observation from 'components/About/observation';
-import Officers from 'components/About/officers';
-import Regulation from 'components/About/regulation';
+import AaaHistory from '~/components/About/AaaHistory';
+import AboutAAA from '~/components/About/aboutAAA';
+import Contact from '~/components/About/contact';
+import Equipment from '~/components/About/equipment';
+import Observation from '~/components/About/observation';
+import Officers from '~/components/About/officers';
+import Regulation from '~/components/About/regulation';
 import { match } from 'react-router';
 
 type AboutProps = {

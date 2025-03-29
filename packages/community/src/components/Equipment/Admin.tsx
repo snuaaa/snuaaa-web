@@ -1,14 +1,14 @@
 import { FC } from 'react';
 import BoardName from '../Board/BoardName';
-import { useAuth } from 'contexts/auth';
-import { useModal, withModal } from 'contexts/modal';
+import { useAuth } from '~/contexts/auth';
+import { useModal, withModal } from '~/contexts/modal';
 import CreateModal from './Modal/Create';
-import Loading from 'components/Common/Loading';
+import Loading from '~/components/Common/Loading';
 import EquipList from './EquipList';
 import EquipSearchBar from './EquipSearchBar';
 import { useEquipment, withEquipment } from './contexts';
 import EditCategoriesModal from './Modal/EditCategories';
-import { ViewportSize, useViewportSize } from 'contexts/viewportSize';
+import { ViewportSize, useViewportSize } from '~/contexts/viewportSize';
 
 const Admin: FC = () => {
   const authContext = useAuth();

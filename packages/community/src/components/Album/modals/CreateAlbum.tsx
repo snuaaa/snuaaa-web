@@ -1,10 +1,10 @@
 import { useState, ChangeEvent } from 'react';
 import PhotoBoardService, {
   CreateAlbumRequest,
-} from 'services/PhotoBoardService';
+} from '~/services/PhotoBoardService';
 
-import useBlockBackgroundScroll from 'hooks/useBlockBackgroundScroll';
-import { Category } from 'services/types';
+import useBlockBackgroundScroll from '~/hooks/useBlockBackgroundScroll';
+import { Category } from '~/services/types';
 import AlbumForm from './AlbumForm';
 
 type CreateAlbumProps = {

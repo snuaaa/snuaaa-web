@@ -4,11 +4,11 @@ import Editor from '../Common/Editor';
 import AttachFile from './AttachFile';
 
 import FileIcon from '../Common/FileIcon';
-import { Content, File as FileType } from 'services/types';
-import PostService from 'services/PostService';
-import ContentService from 'services/ContentService';
-import FileService from 'services/FileService';
-import ProgressBar from 'components/Common/ProgressBar';
+import { Content, File as FileType } from '~/services/types';
+import PostService from '~/services/PostService';
+import ContentService from '~/services/ContentService';
+import FileService from '~/services/FileService';
+import ProgressBar from '~/components/Common/ProgressBar';
 
 type Props = {
   postInfo: Content;

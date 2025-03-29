@@ -1,5 +1,5 @@
 import React from 'react';
-import logoImg from 'assets/img/logo_blue.png';
+import logoImg from '~/assets/img/logo_blue.png';
 
 function AboutAAA() {
   return (

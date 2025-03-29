@@ -1,9 +1,9 @@
 import { ChangeEvent, FC, useCallback, useState } from 'react';
 import ExhibitionService, {
   CreateExhibitionRequest,
-} from 'services/ExhibitionService';
+} from '~/services/ExhibitionService';
 import DatePicker from 'react-datepicker';
-import useBlockBackgroundScroll from 'hooks/useBlockBackgroundScroll';
+import useBlockBackgroundScroll from '~/hooks/useBlockBackgroundScroll';
 
 type Props = {
   boardId: string;

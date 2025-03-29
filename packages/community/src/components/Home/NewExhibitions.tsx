@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Image from '../Common/AaaImage';
-import { Exhibition } from 'services/types';
+import { Exhibition } from '~/services/types';
 
 const NUM_UNIT_DESKTOP = 4;
 const NUM_UNIT_MOBILE = 2;

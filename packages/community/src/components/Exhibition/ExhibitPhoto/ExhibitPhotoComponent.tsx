@@ -1,10 +1,10 @@
 import { Ref, useState } from 'react';
 
-import Image from 'components/Common/AaaImage';
+import Image from '~/components/Common/AaaImage';
 
 import ExhibitPhotoInfo from '../ExhibitPhoto/ExhibitPhotoInfo';
 import EditExhibitPhotoInfo from './EditExhibitPhotoInfo';
-import { ExhibitPhoto } from 'services/types';
+import { ExhibitPhoto } from '~/services/types';
 
 type ExhibitPhotoComponentProps = {
   contentInfo: ExhibitPhoto;

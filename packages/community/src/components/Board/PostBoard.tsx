@@ -14,11 +14,11 @@ import SearchTypeEnum from '../../common/SearchTypeEnum';
 import SelectBox from '../../components/Common/SelectBox';
 
 import { useLocation, useHistory } from 'react-router';
-import { Board } from 'services/types';
-import PostService from 'services/PostService';
-import { useFetch } from 'hooks/useFetch';
-import CreatePost from 'components/Post/CreatePost';
-import { useAuth } from 'contexts/auth';
+import { Board } from '~/services/types';
+import PostService from '~/services/PostService';
+import { useFetch } from '~/hooks/useFetch';
+import CreatePost from '~/components/Post/CreatePost';
+import { useAuth } from '~/contexts/auth';
 
 const POSTROWNUM = 10;
 const searchOptions = [

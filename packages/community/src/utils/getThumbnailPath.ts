@@ -1,4 +1,4 @@
-import { Album } from 'services/types';
+import { Album } from '~/services/types';
 
 export const getThumbnailPath = (album: Album): string | undefined => {
   const thumbnailPhoto =

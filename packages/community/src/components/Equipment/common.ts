@@ -1,4 +1,4 @@
-import { EquipmentRentStatus, EquipmentStatus } from 'services/types';
+import { EquipmentRentStatus, EquipmentStatus } from '~/services/types';
 
 export const equipmentStatusOptions = [
   {

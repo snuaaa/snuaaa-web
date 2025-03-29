@@ -1,8 +1,8 @@
 import { FC } from 'react';
-import { Equipment, EquipmentRentStatus } from 'services/types';
-import { convertDateMMDD } from 'utils/convertDate';
+import { Equipment, EquipmentRentStatus } from '~/services/types';
+import { convertDateMMDD } from '~/utils/convertDate';
 import { useEquipment } from '../../contexts';
-import { useModal } from 'contexts/modal';
+import { useModal } from '~/contexts/modal';
 import EquipDescription from '../../Modal/EquipDescription';
 
 const mapEquipmentRentButtonText = (equip: Equipment) => {

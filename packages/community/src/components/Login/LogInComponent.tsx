@@ -2,7 +2,7 @@ import React, { ChangeEvent } from 'react';
 import { Link } from 'react-router-dom';
 import InputText from '../Common/InputText';
 import Footer from '../Footer';
-import logo from 'assets/img/login_logo.gif';
+import logo from '~/assets/img/login_logo.gif';
 
 type Props = {
   autoLogin: boolean;

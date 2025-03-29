@@ -1,7 +1,7 @@
 import { ChangeEvent, useCallback, useState } from 'react';
 import { List } from 'immutable';
-import PhotoService, { CreatePhotoRequest } from 'services/PhotoService';
-import UploadService from 'services/UploadService';
+import PhotoService, { CreatePhotoRequest } from '~/services/PhotoService';
+import UploadService from '~/services/UploadService';
 
 type Props = {
   boardId: string;

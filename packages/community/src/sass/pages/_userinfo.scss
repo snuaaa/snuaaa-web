@@ -1,3 +1,5 @@
+@use "../common/color";
+
 .userinfo-header {
   display: flex;
   background-color: #fdeed5;
@@ -11,19 +13,19 @@
 .my-page-wrapper {
   margin-top: -15px;
   .my-title-wrapper {
-    background-color: $color_blue3;
+    background-color: color.$color_blue3;
     margin: 0px -150px;
     padding: 10px 0px;
     h3 {
       font-size: 20px;
       text-align: center;
-      color: $color_yellow1;
+      color: color.$color_yellow1;
     }
     a {
       position: absolute;
       margin-top: -3px;
       margin-left: 5px;
-      color: $color-white;
+      color: color.$color-white;
     }
   }
 }
@@ -55,13 +57,13 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        background-color: $color_gray2;
-        color: $color-white;
+        background-color: color.$color_gray2;
+        color: color.$color-white;
         font-size: 1.4rem;
         cursor: pointer;
         transition: all 0.2s;
         &:hover {
-          background-color: $color-gray1;
+          background-color: color.$color-gray1;
         }
       }
     }
@@ -88,7 +90,7 @@
     margin: 0 auto;
     margin-top: 15px;
     width: 400px;
-    background-color: $color-white;
+    background-color: color.$color-white;
     border: 1px solid #c9c9c9;
     border-radius: 20px;
     padding: 10px;
@@ -107,7 +109,7 @@
       border: none;
 
       &:disabled {
-        background-color: $color-white;
+        background-color: color.$color-white;
         color: #666666;
       }
     }
@@ -126,11 +128,11 @@
     }
     .btn-withdraw {
       float: left;
-      background-color: $color-white;
+      background-color: color.$color-white;
       width: 100px;
       height: 40px;
       color: #666666;
-      border: 1px solid $color-white;
+      border: 1px solid color.$color-white;
       transition: all 0.3s;
       cursor: pointer;
       &:hover {
@@ -142,7 +144,7 @@
       background-color: #49a0ae;
       width: 100px;
       height: 40px;
-      color: $color-white;
+      color: color.$color-white;
       font-size: 16px;
       cursor: pointer;
       &:disabled {
@@ -162,13 +164,13 @@
 
 .my-wrapper {
   .my-title-wrapper {
-    background-color: $color_blue3;
+    background-color: color.$color_blue3;
     margin: 0px -150px;
     padding: 10px 0px;
     h3 {
       font-size: 20px;
       text-align: center;
-      color: $color_yellow1;
+      color: color.$color_yellow1;
     }
   }
   .enif-divider {
@@ -218,8 +220,8 @@
       width: 150px;
       height: 35px;
       font-size: 16px;
-      color: $color-white;
-      background-color: $color_aqua;
+      color: color.$color-white;
+      background-color: color.$color_aqua;
       border: none;
       cursor: pointer;
     }
@@ -248,27 +250,27 @@
       margin: 1rem;
       .my-profile-infos-label {
         width: 4rem;
-        color: $color-gray2;
+        color: color.$color-gray2;
         flex-shrink: 0;
       }
     }
     .question-icon {
       cursor: pointer;
       margin: 0px 0.2rem;
-      color: $color-gray2;
+      color: color.$color-gray2;
       // .grade-list-popup-wrp {
       // }
       .grade-list-popup {
         visibility: hidden;
         position: absolute;
         z-index: 1;
-        box-shadow: 1px 1px 1px 2px $color-gray4;
+        box-shadow: 1px 1px 1px 2px color.$color-gray4;
         // width: 200px;
         padding: 1rem;
         display: flex;
         flex-direction: column;
-        color: $color-gray1;
-        background: $color-white;
+        color: color.$color-gray1;
+        background: color.$color-white;
         h5 {
           text-align: center;
           font-weight: bold;
@@ -307,7 +309,7 @@
       width: 100%;
       height: 30px;
       margin: 0 auto;
-      background: linear-gradient(rgba(255, 255, 255, 0.01), $color-white);
+      background: linear-gradient(rgba(255, 255, 255, 0.01), color.$color-white);
     }
     &.expanded::after {
       display: none;
@@ -326,11 +328,11 @@
     margin: 0px 15px;
     font-size: 18px;
     font-weight: bold;
-    color: $color-blue5;
+    color: color.$color-blue5;
     cursor: pointer;
     user-select: none;
     &.selected {
-      color: $color-blue3;
+      color: color.$color-blue3;
     }
   }
 }
@@ -343,15 +345,15 @@
   .my-select-edit-btn {
     margin: 0px 10px;
     padding: 8px 15px;
-    color: $color-gray2;
-    border: 1px solid $color-gray4;
+    color: color.$color-gray2;
+    border: 1px solid color.$color-gray4;
     border-radius: 12px;
-    background-color: $color-white;
+    background-color: color.$color-white;
     font-size: 14px;
     &.selected {
-      background-color: $color-aqua;
-      border-color: $color-aqua;
-      color: $color-white;
+      background-color: color.$color-aqua;
+      border-color: color.$color-aqua;
+      color: color.$color-white;
     }
   }
 }
@@ -361,7 +363,7 @@
   h4 {
     font-size: 20px;
     font-weight: bold;
-    color: $color_blue3;
+    color: color.$color_blue3;
     padding: 10px 0 10px 5px;
   }
   .my-post-wrapper {
@@ -377,7 +379,7 @@
     .my-post-boardname {
       display: inline-block;
       width: 25%;
-      color: $color-gray2;
+      color: color.$color-gray2;
     }
     .my-post-title {
       display: inline-block;
@@ -392,7 +394,7 @@
     .my-post-date {
       display: inline-block;
       flex-shrink: 0;
-      color:$color-gray2;
+      color:color.$color-gray2;
       // width: 20%;
     }
   }
@@ -408,7 +410,7 @@
       width: 25%;
       flex-shrink: 0;
       a {
-        color: $color-gray2;
+        color: color.$color-gray2;
       }
     }
     .my-cmt-contents-link {
@@ -416,7 +418,7 @@
       width: 55%;
       flex-grow: 1;
       .my-cmt-title {
-        color: $color-gray2;
+        color: color.$color-gray2;
         width: 100%;
         text-overflow: ellipsis;
         overflow: hidden;
@@ -424,7 +426,7 @@
       }
       .my-cmt-cmt {
         margin-top: 5px;
-        color: $color-black;
+        color: color.$color-black;
         width: 100%;
         text-overflow: ellipsis;
         overflow: hidden;
@@ -434,7 +436,7 @@
     .my-cmt-date {
       display: inline-block;
       // width: 20%;
-      color: $color-gray2;
+      color: color.$color-gray2;
     }
   }
   .my-photo-list-wrapper {
@@ -506,13 +508,13 @@
   .my-page-wrapper {
     margin-top: 0;
     .my-title-wrapper {
-      background-color: $color_yellow3;
+      background-color: color.$color_yellow3;
       margin: 0px;
       h3 {
-        color: $color_gray2;
+        color: color.$color_gray2;
       }
       a {
-        color: $color_gray2;
+        color: color.$color_gray2;
       }
     }
   }

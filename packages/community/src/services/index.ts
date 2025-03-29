@@ -1,7 +1,6 @@
 import axios, { AxiosPromise, AxiosRequestConfig } from 'axios';
 import { getToken } from '../utils/token';
-
-const SERVER_URL = process.env.REACT_APP_SERVER_URL;
+import { SERVER_URL } from '~/constants/env';
 
 const axiosInstance = axios.create({
   headers: {

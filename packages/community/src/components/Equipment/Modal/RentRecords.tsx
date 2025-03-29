@@ -1,10 +1,10 @@
-import Paginator from 'components/Common/Paginator';
-import { useModal } from 'contexts/modal';
-import { useFetch } from 'hooks/useFetch';
+import Paginator from '~/components/Common/Paginator';
+import { useModal } from '~/contexts/modal';
+import { useFetch } from '~/hooks/useFetch';
 import { FC, useCallback, useState } from 'react';
-import EquipmentService from 'services/EquipmentService';
-import { PenaltyStatus } from 'services/types';
-import { convertFullDate } from 'utils/convertDate';
+import EquipmentService from '~/services/EquipmentService';
+import { PenaltyStatus } from '~/services/types';
+import { convertFullDate } from '~/utils/convertDate';
 
 type Props = {
   id: number;

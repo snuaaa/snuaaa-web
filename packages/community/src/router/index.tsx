@@ -3,8 +3,8 @@ import { Route, Switch } from 'react-router-dom';
 
 import RiseSetContext from '../contexts/RiseSetContext';
 import HomeService, { RiseSet } from '../services/HomeService';
-import Loading from 'components/Common/Loading';
-import { useAuth } from 'contexts/auth';
+import Loading from '../components/Common/Loading';
+import { useAuth } from '../contexts/auth';
 
 const AuthRoutes = lazy(() => import('./AuthRoutes'));
 const PageRoutes = lazy(() => import('./PageRoutes'));

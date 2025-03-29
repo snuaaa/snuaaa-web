@@ -1,3 +1,5 @@
+@use "color";
+
 /*
 moonphase scss copyright
 https://github.com/jshakes/moontonight
@@ -30,7 +32,7 @@ $moon-size: 100%;
       border-radius: 100%;
       transition: all, 0.25s;
       &.black {
-        background: $color-white;
+        background: color.$color-white;
         z-index: 2;
       }
       &.white {

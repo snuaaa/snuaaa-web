@@ -1,13 +1,13 @@
 import { useCallback } from 'react';
 
-import HomeService from 'services/HomeService';
-import Loading from 'components/Common/Loading';
-import MyCommentList from 'components/MyPage/MyCommentList';
-import Paginator from 'components/Common/Paginator';
-import BoardName from 'components/Board/BoardName';
+import HomeService from '~/services/HomeService';
+import Loading from '~/components/Common/Loading';
+import MyCommentList from '~/components/MyPage/MyCommentList';
+import Paginator from '~/components/Common/Paginator';
+import BoardName from '~/components/Board/BoardName';
 
 import { useLocation, useHistory } from 'react-router';
-import { useFetch } from 'hooks/useFetch';
+import { useFetch } from '~/hooks/useFetch';
 
 const COMMENTROWNUM = 10;
 
