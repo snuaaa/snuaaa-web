@@ -2,13 +2,15 @@ import { defineConfig } from 'vite';
 import path from 'path';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite'
- // import ckeditor5 from '@ckeditor/vite-plugin-ckeditor5';
- 
- export default defineConfig({
+import ckeditor5 from '@ckeditor/vite-plugin-ckeditor5';
+import { createRequire } from 'node:module';
+const require = createRequire( import.meta.url );
+
+export default defineConfig({
    plugins: [
      react(),
      tailwindcss(),
-     // ckeditor5({ }),
+     ckeditor5( { theme: require.resolve( '@ckeditor/ckeditor5-theme-lark' ) } )
    ],
    envPrefix: 'REACT_APP_',
    resolve: { alias: { '~': path.resolve(__dirname, './src')}},
@@ -19,12 +21,7 @@ import tailwindcss from '@tailwindcss/vite'
    build: {
      outDir: 'build',
      commonjsOptions: {
-       include: [/@snuaaa\/editor/, /node_modules/],
+       include: [/node_modules/],
      }
    },
-   optimizeDeps: {
-     include: [
-       '@snuaaa/editor'
-     ]
-   }
  })
