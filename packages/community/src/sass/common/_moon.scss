@@ -20,7 +20,7 @@ $moon-size: 100%;
   }
   .half {
     display: inline-block;
-    width: $moon-size / 2;
+    width: calc($moon-size / 2);
     height: $moon-size;
     overflow: hidden;
     position: relative;
@@ -47,8 +47,8 @@ $moon-size: 100%;
           left: 100%;
         }
         @if($percent <= 25) {
-          left: #{100 - ((50 -$percent * 2) * 2%)};
-          width: #{(50 -$percent * 2) * 4%};
+          left: #{100 - ((50 - $percent * 2) * 2%)};
+          width: #{(50 - $percent * 2) * 4%};
         }
       }
       &.white {
