@@ -1,4 +1,4 @@
-import React, { useState, MouseEvent, PropsWithChildren } from 'react';
+import { useState, PropsWithChildren } from 'react';
 import { Link } from 'react-router-dom';
 
 import AaaImage from './AaaImage';
@@ -32,17 +32,13 @@ function UserActionDrawer({
     // window.removeEventListener('click', closeDrawer, true)
   };
 
-  const clickChildren = function (e: MouseEvent<HTMLSpanElement>) {
-    setIsOpened(!isOpened);
-  };
-
   const wrapperClass = className ? className : '';
 
   return (
     <>
       <span
         className={`cursor-pointer actions-drawer-target ${wrapperClass}`}
-        onClick={clickChildren}
+        onClick={() => setIsOpened(!isOpened)}
       >
         {children}
         <div className="actions-drawer">

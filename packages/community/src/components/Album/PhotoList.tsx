@@ -22,7 +22,7 @@ function PhotoList({ photos }: PhotoListProps) {
   const onIntersect = useCallback(
     async (
       [entry]: IntersectionObserverEntry[],
-      observer: IntersectionObserver,
+      // observer: IntersectionObserver,
     ) => {
       if (entry.isIntersecting) {
         setIsLoading(true);

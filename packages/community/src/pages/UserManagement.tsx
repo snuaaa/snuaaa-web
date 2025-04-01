@@ -1,7 +1,7 @@
-import { useEffect, useState, MouseEvent, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import UserService from '~/services/UserService';
 import { convertFullDate, convertDateWithDay } from '~/utils/convertDate';
-import { UsersSearchType } from 'types/SearchTypes';
+import { UsersSearchType } from '~/types/SearchTypes';
 import Paginator from '~/components/Common/Paginator';
 import { useHistory } from 'react-router';
 import { User } from '~/services/types';
@@ -83,7 +83,7 @@ function UserManagement() {
   };
 
   const clickSearchOption =
-    (sort: string) => (e: MouseEvent<HTMLTableHeaderCellElement>) => {
+    (sort: string) => () => {
       setSearchOption({
         sort: sort,
         order:

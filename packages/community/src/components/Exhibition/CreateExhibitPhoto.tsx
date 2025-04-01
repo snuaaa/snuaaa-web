@@ -214,6 +214,7 @@ function CreateExhibitPhoto({
       } catch (err) {
         alert('사진 생성 실패');
         setBtnDisabled(false);
+        console.error(err);
       }
     }
   };

@@ -59,7 +59,9 @@ function CreateDocu(props: CreateDocuProps) {
           const newFiles: File[] = [];
           for (let i = 0; i < e.target.files.length; i++) {
             const tmpFile = e.target.files.item(i);
-            tmpFile && newFiles.push(tmpFile);
+            if (tmpFile) {
+              newFiles.push(tmpFile);
+            }
           }
           if (newFiles && newFiles.length > 0) {
             setAttachedFiles(attachedFiles.concat(...newFiles));

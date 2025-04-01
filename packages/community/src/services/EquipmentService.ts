@@ -54,7 +54,7 @@ const EquipmentService = {
     return API.delete(`equipment/category/${id}`);
   },
 
-  searchList: function (searchInfo: EquipmentSearchInfo, pageIdx: number) {
+  searchList: function () {
     return API.get<RetrieveEquipmentListResponse>('equipment/search');
   },
 
@@ -70,7 +70,7 @@ const EquipmentService = {
     return API.delete(`equipment/${id}`);
   },
 
-  retrieveList: function (pageIdx: number) {
+  retrieveList: function () {
     return API.get<RetrieveEquipmentListResponse>('equipment/');
   },
 

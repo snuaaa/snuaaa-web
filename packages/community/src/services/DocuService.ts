@@ -27,14 +27,16 @@ const DocuService = {
     ctg_id: string,
     generation: number,
   ) {
-    let categoryUrl = '';
-    let genUrl = '';
-    ctg_id && (categoryUrl = `&category=${ctg_id}`);
-    generation && (genUrl = `&generation=${generation}`);
     return API.get<{
       docInfo: Content[];
       docCount: number;
-    }>(`document?page=${pageIdx}${categoryUrl}${genUrl}`);
+    }>('document', {
+      params: {
+        page: pageIdx,
+        category: ctg_id,
+        generation
+      },
+    });
   },
 
   retrieveDocumentsByGeneration: function (generation: number) {

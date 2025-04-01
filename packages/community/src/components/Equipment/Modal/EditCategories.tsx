@@ -27,6 +27,7 @@ const EditCategoriesModal: FC = () => {
       alert(
         '분류 삭제에 실패했습니다.\n해당 분류에 속하는 장비가 존재하는지 확인해 주세요.',
       );
+      console.error(err);
     });
     refreshCategories();
   };

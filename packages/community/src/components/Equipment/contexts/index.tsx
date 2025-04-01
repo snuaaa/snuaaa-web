@@ -28,7 +28,7 @@ const EquipmentContext = React.createContext<EquipmentContextState | null>(
 
 export const EquipmentProvider = ({ children }: PropsWithChildren) => {
   const fetchFunction = useCallback(() => {
-    return EquipmentService.retrieveList(1);
+    return EquipmentService.retrieveList();
   }, []);
 
   const { data, refresh } = useFetch({
@@ -54,6 +54,7 @@ export const EquipmentProvider = ({ children }: PropsWithChildren) => {
         });
       } catch (e) {
         alert('대여 권한이 없습니다!');
+        console.error(e);
       }
       removeFromCart(equipment);
       await refresh();
@@ -68,6 +69,7 @@ export const EquipmentProvider = ({ children }: PropsWithChildren) => {
       });
     } catch (e) {
       alert('대여 권한이 없습니다!');
+      console.error(e);
     }
     setCart([]);
     await refresh();

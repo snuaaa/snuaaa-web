@@ -46,21 +46,12 @@ const UserService = {
   },
 
   retrieveUsers: function (sortOption?: UsersSearchType) {
-    let query = '';
-    if (sortOption) {
-      // query += '/sort?'
-      query += '?';
-      query += `sort=${sortOption.sort}&`;
-      query += `order=${sortOption.order}&`;
-      sortOption.limit && (query += `limit=${sortOption.limit}&`);
-      sortOption.offset && (query += `offset=${sortOption.offset}&`);
-      query.substring(query.length - 1);
-    }
-
     return API.get<{
       userInfo: User[];
       count: number;
-    }>(`userinfo/all${query}`);
+    }>('userinfo/all', {
+      params: sortOption,
+    });
   },
 
   retrieveUserPosts: function (user_uuid?: string) {

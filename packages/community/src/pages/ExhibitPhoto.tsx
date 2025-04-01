@@ -51,7 +51,7 @@ function ExhibitPhotoPage() {
   }, [isFullscreen]);
 
   useEffect(() => {
-    document.onfullscreenchange = function (e) {
+    document.onfullscreenchange = function () {
       toggleFullScreen();
     };
   }, [toggleFullScreen]);
