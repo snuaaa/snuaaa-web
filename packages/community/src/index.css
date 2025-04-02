@@ -40,4 +40,8 @@ body {
   font-family:  'NanumSquareNeo', Arial, Tahoma, Verdana, sans-serif;
 }
 
+button {
+  cursor: pointer;
+}
+
 input, select, textarea { outline: none; }
