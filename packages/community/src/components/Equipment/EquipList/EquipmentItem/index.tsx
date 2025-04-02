@@ -23,7 +23,7 @@ const EquipmentItem: FC<Props> = ({ equip, type }) => {
   const isMobile = viewportSize === ViewportSize.Mobile;
 
   return (
-    <div className="flex relative border-2 border-gray-250 md:flex-col px-3 py-2 gap-6 md:gap-1 items-center md:items-stretch">
+    <div className="flex relative border-2 border-gray-300 md:flex-col px-3 py-2 gap-6 md:gap-1 items-center md:items-stretch">
       {!isMobile && <Title>{equip.name}</Title>}
       <div className="w-2/5 md:w-full flex justify-center">
         <Image imgSrc={equip.img_path} className="h-24" />

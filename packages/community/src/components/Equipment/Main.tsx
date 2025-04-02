@@ -50,7 +50,7 @@ const Main: FC = () => {
       <div className="grid grid-cols-2 sm:grid-cols-3">
         {data?.map((rent) => (
           <div className="h-24 p-2" key={rent.id}>
-            <div className="h-full flex w-full relative border-2 border-gray-250">
+            <div className="h-full flex w-full relative border-2 border-gray-300">
               <div className="w-2/5 h-full flex items-center">
                 <Image
                   imgSrc={rent.equipment.img_path}
