@@ -42,7 +42,7 @@ export const ModalProvider = ({ children }: PropsWithChildren) => {
       {children}
       {modal && (
         <div
-          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-30"
+          className="fixed inset-0 flex items-center justify-center bg-black/50 z-30"
           onClick={modalContextValue.closeModal}
         >
           <div
