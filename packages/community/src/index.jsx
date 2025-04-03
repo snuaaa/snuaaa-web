@@ -6,7 +6,6 @@ import history from '~/common/history';
 import './index.css';
 import 'remixicon/fonts/remixicon.css';
 import App from './App';
-import * as serviceWorker from './serviceWorker';
 import { IS_PROD } from './constants/env';
 
 if (IS_PROD) {
@@ -20,8 +19,6 @@ if (IS_PROD) {
   gtag('config', 'UA-154430849-1');
 }
 
-// const store = createStore(reducers);
-
 // After
 const container = document.getElementById('root');
 const root = createRoot(container); // createRoot(container!) if you use TypeScript
@@ -30,5 +27,3 @@ root.render(
     <App />
   </Router>,
 );
-
-serviceWorker.unregister();
