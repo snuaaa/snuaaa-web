@@ -23,7 +23,7 @@ const RentButton: FC<Props> = ({ equipment }) => {
   const { openModal } = useModal();
 
   const handleClickEquipmentRent = (equipment: Equipment) => {
-    const isConfirmed = window.confirm('이 장비를 대여하시겠습니까?')
+    const isConfirmed = window.confirm('이 장비를 대여하시겠습니까?');
     if (isConfirmed) {
       rentSingleEquipment(equipment);
     }

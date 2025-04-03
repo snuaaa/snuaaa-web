@@ -82,19 +82,18 @@ function UserManagement() {
     }
   };
 
-  const clickSearchOption =
-    (sort: string) => () => {
-      setSearchOption({
-        sort: sort,
-        order:
-          searchOption &&
-          searchOption.sort === sort &&
-          searchOption.order === 'ASC'
-            ? 'DESC'
-            : 'ASC',
-      });
-      setPageIdx(1);
-    };
+  const clickSearchOption = (sort: string) => () => {
+    setSearchOption({
+      sort: sort,
+      order:
+        searchOption &&
+        searchOption.sort === sort &&
+        searchOption.order === 'ASC'
+          ? 'DESC'
+          : 'ASC',
+    });
+    setPageIdx(1);
+  };
 
   const clickPage = (idx: number) => {
     setPageIdx(idx);

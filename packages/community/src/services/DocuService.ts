@@ -34,7 +34,7 @@ const DocuService = {
       params: {
         page: pageIdx,
         category: ctg_id,
-        generation
+        generation,
       },
     });
   },

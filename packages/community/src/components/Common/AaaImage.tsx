@@ -23,9 +23,7 @@ function AaaImage({
     if (imgSrc?.startsWith('http')) {
       return imgSrc;
     }
-    return local
-      ? imgSrc
-      : SERVER_URL + 'static' + imgSrc;
+    return local ? imgSrc : SERVER_URL + 'static' + imgSrc;
   }, [imgSrc, local]);
 
   const onLoad = () => {

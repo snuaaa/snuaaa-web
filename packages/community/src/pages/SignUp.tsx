@@ -179,7 +179,7 @@ function SignUp() {
       await AuthService.duplicateCheck({ check_id: userInfo.id.value });
       // Available ID
       setDupId(false);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
       // Existing ID
       setUserInfo({

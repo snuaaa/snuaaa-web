@@ -7,13 +7,13 @@ import './index.css';
 import 'remixicon/fonts/remixicon.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import { IS_PROD } from './constants/env';
 
-if (process.env.NODE_ENV === 'production') {
+if (IS_PROD) {
   console.log('production mode');
   window.dataLayer = window.dataLayer || [];
-   
+
   function gtag() {
-    // eslint-disable-next-line prefer-rest-params
     window.dataLayer.push(arguments);
   }
   gtag('js', new Date());
