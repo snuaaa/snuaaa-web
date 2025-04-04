@@ -112,7 +112,7 @@ const EquipList: React.FC<Props> = ({ data, columns, type }) => {
   const onIntersect = useCallback(
     async (
       [entry]: IntersectionObserverEntry[],
-      observer: IntersectionObserver,
+      // observer: IntersectionObserver,
     ) => {
       if (entry.isIntersecting && limit < equipCount) {
         setIsLoading(true);

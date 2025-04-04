@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 
@@ -13,7 +14,7 @@ import {
   Strikethrough,
   Underline,
 } from '@ckeditor/ckeditor5-basic-styles';
-import { FontColor, FontBackgroundColor } from '@ckeditor/ckeditor5-font'
+import { FontColor, FontBackgroundColor } from '@ckeditor/ckeditor5-font';
 import { Link } from '@ckeditor/ckeditor5-link';
 import { List, TodoList } from '@ckeditor/ckeditor5-list';
 
@@ -119,7 +120,6 @@ export class Viewer extends ClassicEditor {
     },
   };
 }
-
 
 class MyUploadAdapter {
   private loader: any;

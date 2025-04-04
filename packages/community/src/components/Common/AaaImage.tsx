@@ -1,4 +1,4 @@
-import { useState, SyntheticEvent, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { SERVER_URL } from '~/constants/env';
 
 type ImageProps = {
@@ -23,12 +23,10 @@ function AaaImage({
     if (imgSrc?.startsWith('http')) {
       return imgSrc;
     }
-    return local
-      ? imgSrc
-      : SERVER_URL + 'static' + imgSrc;
+    return local ? imgSrc : SERVER_URL + 'static' + imgSrc;
   }, [imgSrc, local]);
 
-  const onLoad = (e: SyntheticEvent) => {
+  const onLoad = () => {
     setIsLoaded(true);
   };
 

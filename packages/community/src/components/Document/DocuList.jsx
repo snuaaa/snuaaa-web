@@ -4,10 +4,10 @@ import DownloadFile from '../Post/DownloadFile';
 
 const DocuList = ({ documents }) => {
   const makeDocuList = () => {
-    let docuList = documents.map((doc) => {
-      let contentInfo = doc.content;
-      let categoryInfo = doc.content.category;
-      let attachedFileInfo = doc.content.attachedFiles;
+    const docuList = documents.map((doc) => {
+      const contentInfo = doc.content;
+      const categoryInfo = doc.content.category;
+      const attachedFileInfo = doc.content.attachedFiles;
       return (
         <div className="doculist-body" key={contentInfo.content_id}>
           <div className="docu-generation">{doc.generation}</div>

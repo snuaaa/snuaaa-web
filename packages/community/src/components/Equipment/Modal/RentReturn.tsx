@@ -23,6 +23,7 @@ const RentReturn: FC<Props> = ({ rent, onSubmit }) => {
       alert('반납이 완료되었습니다.');
     } catch (e) {
       alert('반납에 실패했습니다!');
+      console.error(e);
     }
     onSubmit();
     closeModal();
