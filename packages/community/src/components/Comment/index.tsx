@@ -2,7 +2,7 @@ import { useCallback, FC } from 'react';
 
 import { Comment } from './Comment';
 import CommentService from '../../services/CommentService';
-import { useFetch } from 'hooks/useFetch';
+import { useFetch } from '~/hooks/useFetch';
 import { CreateComment } from './CreateComment';
 
 type Props = {

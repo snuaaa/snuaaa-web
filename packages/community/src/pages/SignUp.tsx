@@ -1,10 +1,10 @@
 import { useState, ChangeEvent } from 'react';
-import SignUpComponent from 'components/Signup/SignUpComponent';
-import SignUpSuccess from 'components/Signup/SignUpSuccess';
-import SignUpFailure from 'components/Signup/SignUpFailure';
-import Loading from 'components/Common/Loading';
-import AuthService, { SingUpRequest } from 'services/AuthService';
-import SignUpInputType from 'types/SignUpInputType';
+import SignUpComponent from '~/components/Signup/SignUpComponent';
+import SignUpSuccess from '~/components/Signup/SignUpSuccess';
+import SignUpFailure from '~/components/Signup/SignUpFailure';
+import Loading from '~/components/Common/Loading';
+import AuthService, { SingUpRequest } from '~/services/AuthService';
+import SignUpInputType from '~/types/SignUpInputType';
 
 const defaultFormat: SignUpInputType = {
   id: {
@@ -179,6 +179,7 @@ function SignUp() {
       await AuthService.duplicateCheck({ check_id: userInfo.id.value });
       // Available ID
       setDupId(false);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
       // Existing ID
       setUserInfo({

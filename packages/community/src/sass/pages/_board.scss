@@ -1,3 +1,5 @@
+@use "../common/color";
+
 .board-wrapper {
   // padding-top: 15px;
   display: flex;
@@ -9,7 +11,7 @@
   .board-desc {
     padding: 0px 10px;
     font-size: 14px;
-    color: $color-gray2;
+    color: color.$color-gray2;
     text-align: center;
   }
 }
@@ -29,14 +31,14 @@
     align-items: center;
     margin-right: auto;
     input {
-      border: 1px solid $color-gray5;
+      border: 1px solid color.$color-gray5;
       height: 100%;
       padding: 0px 5px;
     }
   }
   .board-search-btn {
-    background-color: $color-gray2;
-    color: $color-white;
+    background-color: color.$color-gray2;
+    color: color.$color-white;
     border: none;
     padding: 5px;
   }
@@ -49,14 +51,14 @@
 
 .board-btn-write {
   margin-left: auto;
-  background-color: $color-aqua;
+  background-color: color.$color-aqua;
   border: none;
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 1rem;
   padding: 0.3rem 0.5rem;
-  color: $color-white;
+  color: color.$color-white;
 }
 
 .background-star {
@@ -90,8 +92,8 @@
 
 .post-list-header {
   display: flex;
-  background-color: $color-gray2;
-  color: $color-white;
+  background-color: color.$color-gray2;
+  color: color.$color-white;
   font-size: 15px;
   .post-list-header-unit {
     padding: 13px 0px;
@@ -118,10 +120,10 @@
 .post-list {
   display: flex;
   padding: 13px 0px;
-  border-top: 1px solid $color-gray4;
+  border-top: 1px solid color.$color-gray4;
   font-size: 14px;
   &:last-child {
-    border-bottom: 1px solid $color-gray4;
+    border-bottom: 1px solid color.$color-gray4;
   }
   &:hover {
     background: #e7f2ff;
@@ -202,7 +204,7 @@
   .post-author {
     display: inline-block;
     cursor: pointer;
-    color: $color-gray2;
+    color: color.$color-gray2;
   }
 
   .post-created {
@@ -222,8 +224,8 @@
     // justify-content: center;
     padding: 15px;
     font-size: 17px;
-    color: $color-white;
-    background-color: $color_gray2;
+    color: color.$color-white;
+    background-color: color.$color_gray2;
     h5 {
       flex-grow: 1;
       text-align: center;
@@ -398,7 +400,7 @@
       padding-left: 1rem;
     }
     .post-list-unit-2 {
-      color: $color-gray1;
+      color: color.$color-gray1;
       font-size: 0.8rem;
       flex-basis: 4rem;
       justify-content: flex-start;

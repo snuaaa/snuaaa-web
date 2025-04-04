@@ -1,9 +1,11 @@
+@use "../common/color";
+
 .mighty-score-table {
     padding: 1rem;
     font-size: 0.9rem;
     td, th {
         padding: 0.5rem;
-        border: 1px solid $color-gray2;
+        border: 1px solid color.$color-gray2;
     }
     th {
         font-weight: bold;
@@ -83,8 +85,8 @@
     margin: 0.5rem;
     padding: 1rem;
     font-size: 1rem;
-    color: $color-white;
-    background-color: $color-aqua;
+    color: color.$color-white;
+    background-color: color.$color-aqua;
     border: none;
     border-radius: 0.5rem;
     &:disabled {
@@ -94,7 +96,7 @@
 }
 
 .mighty-options-wrapper {
-    border: 1px solid $color-gray2;
+    border: 1px solid color.$color-gray2;
     border-radius: 1rem;
     padding: 0.5rem;
     width: 80%;
@@ -123,11 +125,11 @@
             font-size: 0.8rem;
             user-select: none;
             cursor: pointer;
-            border: 1px solid $color-aqua;
+            border: 1px solid color.$color-aqua;
         }
         input[type='checkbox']:checked + label {
             color: #eeeeee;
-            background-color: $color-aqua;
+            background-color: color.$color-aqua;
         }
         label {
             padding: 0.5rem;
@@ -138,8 +140,8 @@
         border-radius: 1rem;
         font-size: 0.8rem;
         user-select: none;
-        border: 1px solid $color-aqua;
-        color: $color-gray2;
+        border: 1px solid color.$color-aqua;
+        color: color.$color-gray2;
         input {
             width: 2.5rem;
         }
@@ -148,7 +150,7 @@
 
 .mighty-btn-back {
     font-size: 1.5rem;
-    color: $color-aqua;
+    color: color.$color-aqua;
     cursor: pointer;
 }
 

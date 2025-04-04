@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Image from '../../components/Common/AaaImage';
 import imgProfile from '../../assets/img/common/profile.png';
-import { useAuth } from 'contexts/auth';
+import { useAuth } from '~/contexts/auth';
 
 type Props = {
   profile_path: string;

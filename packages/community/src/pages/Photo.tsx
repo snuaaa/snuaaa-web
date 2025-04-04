@@ -2,22 +2,22 @@ import { FC, useCallback, useState, useEffect, useRef, useMemo } from 'react';
 import { useHistory, useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 
-import Comment from 'components/Comment';
-import FullScreenPortal from 'router/FullScreenPortal';
+import Comment from '~/components/Comment';
+import FullScreenPortal from '~/router/FullScreenPortal';
 
-import Loading from 'components/Common/Loading';
-import PhotoInfo from 'components/Photo/PhotoInfo';
-import Image from 'components/Common/AaaImage';
-import EditPhotoInfo from 'components/Photo/EditPhotoInfo';
+import Loading from '~/components/Common/Loading';
+import PhotoInfo from '~/components/Photo/PhotoInfo';
+import Image from '~/components/Common/AaaImage';
+import EditPhotoInfo from '~/components/Photo/EditPhotoInfo';
 
-import ContentService from 'services/ContentService';
-import AlbumService from 'services/AlbumService';
-import PhotoService from 'services/PhotoService';
+import ContentService from '~/services/ContentService';
+import AlbumService from '~/services/AlbumService';
+import PhotoService from '~/services/PhotoService';
 
-import { Photo } from 'services/types';
-import { useFetch } from 'hooks/useFetch';
-import useBlockBackgroundScroll from 'hooks/useBlockBackgroundScroll';
-import { useAuth } from 'contexts/auth';
+import { Photo } from '~/services/types';
+import { useFetch } from '~/hooks/useFetch';
+import useBlockBackgroundScroll from '~/hooks/useBlockBackgroundScroll';
+import { useAuth } from '~/contexts/auth';
 
 const VISIBLE_TIME = 3;
 

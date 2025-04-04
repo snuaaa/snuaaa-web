@@ -1,27 +1,23 @@
-import React from 'react';
 import { createRoot } from 'react-dom/client';
-import 'react-app-polyfill/ie11';
 import { Router } from 'react-router-dom';
-import history from 'common/history';
+import history from '~/common/history';
 // import { CookiesProvider } from 'react-cookie';
 
 import './index.css';
 import 'remixicon/fonts/remixicon.css';
 import App from './App';
-import * as serviceWorker from './serviceWorker';
+import { IS_PROD } from './constants/env';
 
-if (process.env.NODE_ENV === 'production') {
+if (IS_PROD) {
   console.log('production mode');
   window.dataLayer = window.dataLayer || [];
-  // eslint-disable-next-line no-inner-declarations
+
   function gtag() {
     window.dataLayer.push(arguments);
   }
   gtag('js', new Date());
   gtag('config', 'UA-154430849-1');
 }
-
-// const store = createStore(reducers);
 
 // After
 const container = document.getElementById('root');
@@ -31,5 +27,3 @@ root.render(
     <App />
   </Router>,
 );
-
-serviceWorker.unregister();

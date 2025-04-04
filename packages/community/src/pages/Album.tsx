@@ -1,16 +1,16 @@
 import { FC, useCallback, useMemo, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
-import Loading from 'components/Common/Loading';
-import PhotoList from 'components/Album/PhotoList';
-import AlbumInfo from 'components/Album/AlbumInfo';
-import { EditAlbum } from 'components/Album/modals/EditAlbum';
-import CreatePhotoModal from 'components/Photo/CreateModal';
-import BoardName from 'components/Board/BoardName';
-import AlbumService from 'services/AlbumService';
+import Loading from '~/components/Common/Loading';
+import PhotoList from '~/components/Album/PhotoList';
+import AlbumInfo from '~/components/Album/AlbumInfo';
+import { EditAlbum } from '~/components/Album/modals/EditAlbum';
+import CreatePhotoModal from '~/components/Photo/CreateModal';
+import BoardName from '~/components/Board/BoardName';
+import AlbumService from '~/services/AlbumService';
 
-import { useFetch } from 'hooks/useFetch';
-import { useAuth } from 'contexts/auth';
-import { Divider } from 'ui';
+import { useFetch } from '~/hooks/useFetch';
+import { useAuth } from '~/contexts/auth';
+import { Divider } from '~/ui';
 
 const AlbumPage: FC = () => {
   const { album_id: albumId } = useParams<{ album_id: string }>();

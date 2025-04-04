@@ -4,7 +4,7 @@ import CreateDocuComponent from '../../components/Document/CreateDocuComponent';
 
 import ContentService from '../../services/ContentService';
 import useBlockBackgroundScroll from '../../hooks/useBlockBackgroundScroll';
-import { Board } from 'services/types';
+import { Board } from '~/services/types';
 
 const MAX_SIZE = 20 * 1024 * 1024;
 
@@ -59,7 +59,9 @@ function CreateDocu(props: CreateDocuProps) {
           const newFiles: File[] = [];
           for (let i = 0; i < e.target.files.length; i++) {
             const tmpFile = e.target.files.item(i);
-            tmpFile && newFiles.push(tmpFile);
+            if (tmpFile) {
+              newFiles.push(tmpFile);
+            }
           }
           if (newFiles && newFiles.length > 0) {
             setAttachedFiles(attachedFiles.concat(...newFiles));

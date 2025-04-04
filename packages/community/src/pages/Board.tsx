@@ -1,13 +1,13 @@
 import { FC } from 'react';
 import { useRouteMatch } from 'react-router';
 
-import PostBoard from 'components/Board/PostBoard';
-import DocuBoard from 'components/Board/DocuBoard';
-import ExhibitBoard from 'components/Board/ExhibitBoard';
-import Loading from 'components/Common/Loading';
-import Memory from 'components/Board/Memory';
-import AstroPhoto from 'components/Board/AstroPhoto';
-import { useBoards } from 'contexts/board';
+import PostBoard from '~/components/Board/PostBoard';
+import DocuBoard from '~/components/Board/DocuBoard';
+import ExhibitBoard from '~/components/Board/ExhibitBoard';
+import Loading from '~/components/Common/Loading';
+import Memory from '~/components/Board/Memory';
+import AstroPhoto from '~/components/Board/AstroPhoto';
+import { useBoards } from '~/contexts/board';
 
 const BoardPage: FC = () => {
   const boardContext = useBoards();

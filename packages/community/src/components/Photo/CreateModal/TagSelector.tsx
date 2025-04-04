@@ -1,5 +1,5 @@
 import { ChangeEvent, FC } from 'react';
-import { Tag } from 'services/types';
+import { Tag } from '~/services/types';
 
 type Props = {
   tag: Tag;

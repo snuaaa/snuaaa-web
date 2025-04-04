@@ -1,7 +1,6 @@
 import axios, { AxiosPromise, AxiosRequestConfig } from 'axios';
 import { getToken } from '../utils/token';
-
-const SERVER_URL = process.env.REACT_APP_SERVER_URL;
+import { SERVER_URL } from '~/constants/env';
 
 const axiosInstance = axios.create({
   headers: {
@@ -14,9 +13,10 @@ export const setApiAuth = (token: string) => {
 };
 
 export const API = {
-  get: async function <Response>(url: string) {
+  get: async function <Response>(url: string, config?: AxiosRequestConfig) {
     const response = await axiosInstance.get<Response>(
       `${SERVER_URL}api/${url}`,
+      config,
     );
     return response.data;
   },

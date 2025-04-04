@@ -1,11 +1,11 @@
 import { ChangeEvent, FC, useState } from 'react';
-import UserService from 'services/UserService';
+import UserService from '~/services/UserService';
 import ExhibitPhotoService, {
   UpdateExhibitPhotoRequest,
-} from 'services/ExhibitPhotoService';
-import Image from 'components/Common/AaaImage';
+} from '~/services/ExhibitPhotoService';
+import Image from '~/components/Common/AaaImage';
 import CreateExhibitPhotoInfo from './CreateExhibitPhotoInfo';
-import { ExhibitPhoto, User } from 'services/types';
+import { ExhibitPhoto, User } from '~/services/types';
 
 type Props = {
   onCancel: () => void;

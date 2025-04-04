@@ -1,3 +1,5 @@
+@use "../common/color";
+
 .post-wrapper {
   // padding-top: 30px;
   width: 100%;
@@ -8,7 +10,7 @@
     font-size: 20px;
     padding-top: 11px;
     padding-bottom: 9px;
-    background-color: $color_aqua;
+    background-color: color.$color_aqua;
     color: #f1f1f1;
     display: flex;
     .post-title-back {
@@ -20,7 +22,7 @@
       top: 0;
       // margin-top: -3px;
       margin-left: 5px;
-      color: $color-white;
+      color: color.$color-white;
     }
     h5 {
       flex-grow: 1;
@@ -66,7 +68,7 @@
         width: 150px;
         padding: 5px 10px;
         border-radius: 5px;
-        background-color: $color_gray5;
+        background-color: color.$color_gray5;
       }
     }
   }
@@ -106,7 +108,7 @@
     a {
       display: inline-flex;
       align-items: center;
-      color: $color_gray1;
+      color: color.$color_gray1;
     }
     .file-download-name {
       font-weight: bold;
@@ -115,7 +117,7 @@
   .file-attached-list {
     display: inline-flex;
     align-items: center;
-    color: $color_gray1;
+    color: color.$color_gray1;
     &.deleted {
       text-decoration: line-through;
     }
@@ -142,7 +144,7 @@
     }
     .ri-icons {
       margin: 0px 0.5rem;
-      color: $color_gray3;
+      color: color.$color_gray3;
       font-size: 1.2rem;
       &:hover {
         color: rgb(255, 79, 79);
@@ -154,7 +156,7 @@
   }
 
   .attach-btn-wrapper {
-    background-color: $color-gray2;
+    background-color: color.$color-gray2;
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
     min-height: 50px;
@@ -165,7 +167,7 @@
     justify-content: center;
     align-items: center;
     font-size: 14px;
-    color: $color-white;
+    color: color.$color-white;
     cursor: pointer;
     transition: all 0.3s;
     &:hover {

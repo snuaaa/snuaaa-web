@@ -1,10 +1,10 @@
-import { EquipmentCategoryContext } from 'contexts/EquipmentCategoryContext';
+import { EquipmentCategoryContext } from '~/contexts/EquipmentCategoryContext';
 import { ChangeEvent, useContext } from 'react';
-import { Equipment } from 'services/types';
+import { Equipment } from '~/services/types';
 import { equipmentStatusOptions } from '../common';
 import InputField from './InputField';
 import Select from './Select';
-import UploadService from 'services/UploadService';
+import UploadService from '~/services/UploadService';
 import TextArea from './TextArea';
 
 type Props = {

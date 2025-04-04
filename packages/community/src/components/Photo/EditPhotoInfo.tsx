@@ -4,8 +4,8 @@ import { Record } from 'immutable';
 import ReactDatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Prompt } from 'react-router';
-import { Photo, Tag } from 'services/types';
-import PhotoService from 'services/PhotoService';
+import { Photo, Tag } from '~/services/types';
+import PhotoService from '~/services/PhotoService';
 
 type PhotoInfoProps = {
   photoInfo: Photo;

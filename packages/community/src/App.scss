@@ -1,8 +1,4 @@
-
-
-
-@import 'sass/common/index';
-@import 'sass/enif';
-@import 'sass/section';
-@import 'sass/mobile';
-
+@use 'sass/common/index';
+@use 'sass/enif';
+@use 'sass/section';
+@use 'sass/mobile';

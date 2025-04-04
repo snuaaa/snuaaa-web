@@ -1,12 +1,12 @@
 import { FC, useContext } from 'react';
-import { Equipment, EquipmentRentStatus } from 'services/types';
-import { EquipmentCategoryContext } from 'contexts/EquipmentCategoryContext';
+import { Equipment, EquipmentRentStatus } from '~/services/types';
+import { EquipmentCategoryContext } from '~/contexts/EquipmentCategoryContext';
 import {
   equipmentRentColorMap,
   equipmentStatusColorMap,
   equipmentStatusTextMap,
 } from '../../common';
-import { convertDateMMDD } from 'utils/convertDate';
+import { convertDateMMDD } from '~/utils/convertDate';
 
 type Props = {
   equipment: Equipment;

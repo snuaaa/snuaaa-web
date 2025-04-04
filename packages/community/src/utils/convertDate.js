@@ -1,7 +1,7 @@
 export function convertDate(date) {
-  let convertedDate = new Date(date);
+  const convertedDate = new Date(date);
 
-  let year = convertedDate.getFullYear().toString().substring(2);
+  const year = convertedDate.getFullYear().toString().substring(2);
   let month = convertedDate.getMonth() + 1;
   let day = convertedDate.getDate();
 
@@ -12,9 +12,9 @@ export function convertDate(date) {
 }
 
 export function convertDateWithDay(date) {
-  let convertedDate = new Date(date);
+  const convertedDate = new Date(date);
 
-  let year = convertedDate.getFullYear().toString();
+  const year = convertedDate.getFullYear().toString();
   let month = convertedDate.getMonth() + 1;
   let day = convertedDate.getDate();
 
@@ -28,9 +28,9 @@ export function convertFullDate(date) {
   if (!date) {
     return '';
   }
-  let convertedDate = new Date(date);
+  const convertedDate = new Date(date);
 
-  let year = convertedDate.getFullYear();
+  const year = convertedDate.getFullYear();
   let month = convertedDate.getMonth() + 1;
   let day = convertedDate.getDate();
   let hour = convertedDate.getHours();
@@ -61,8 +61,8 @@ export function convertTime(time) {
 }
 
 export function convertDynamicTime(time) {
-  let convertedDate = new Date(time);
-  let now = new Date();
+  const convertedDate = new Date(time);
+  const now = new Date();
 
   if (now.getTime() - convertedDate.getTime() > 24 * 60 * 60 * 1000) {
     return convertDate(time);
@@ -76,7 +76,7 @@ export function convertDynamicTime(time) {
 }
 
 export function convertDateMMDD(date) {
-  let convertedDate = new Date(date);
+  const convertedDate = new Date(date);
 
   let month = convertedDate.getMonth() + 1;
   let day = convertedDate.getDate();

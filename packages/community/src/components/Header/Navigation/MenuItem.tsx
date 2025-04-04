@@ -1,7 +1,7 @@
-import { Board } from 'services/types';
+import { Board } from '~/services/types';
 import { MenuLink } from './types';
 import { Link } from 'react-router-dom';
-import useDeviceType, { DeviceType } from 'hooks/useDeviceType';
+import useDeviceType, { DeviceType } from '~/hooks/useDeviceType';
 
 type Props = {
   item: Board | MenuLink;

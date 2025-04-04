@@ -6,11 +6,11 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import SpinningLoader from 'components/Common/SpinningLoader';
+import SpinningLoader from '~/components/Common/SpinningLoader';
 import { EquipSearchLocationState, SortBy } from '../EquipSearchBar';
-import { RetrieveEquipmentListResponse } from 'services/EquipmentService';
+import { RetrieveEquipmentListResponse } from '~/services/EquipmentService';
 import { useLocation } from 'react-router';
-import { Equipment } from 'services/types';
+import { Equipment } from '~/services/types';
 import EquipmentItem from './EquipmentItem';
 
 type Props = {
@@ -112,7 +112,7 @@ const EquipList: React.FC<Props> = ({ data, columns, type }) => {
   const onIntersect = useCallback(
     async (
       [entry]: IntersectionObserverEntry[],
-      observer: IntersectionObserver,
+      // observer: IntersectionObserver,
     ) => {
       if (entry.isIntersecting && limit < equipCount) {
         setIsLoading(true);

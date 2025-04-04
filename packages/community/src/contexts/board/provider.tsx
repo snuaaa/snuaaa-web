@@ -1,8 +1,8 @@
 import { PropsWithChildren, useCallback, useMemo } from 'react';
 import BoardContext from './context';
-import { useFetch } from 'hooks/useFetch';
-import BoardService from 'services/BoardService';
-import { useAuth } from 'contexts/auth';
+import { useFetch } from '~/hooks/useFetch';
+import BoardService from '~/services/BoardService';
+import { useAuth } from '~/contexts/auth';
 
 export const BoardProvider = ({ children }: PropsWithChildren) => {
   const authContext = useAuth();

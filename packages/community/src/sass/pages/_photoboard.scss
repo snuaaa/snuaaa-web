@@ -1,3 +1,5 @@
+@use "../common/color";
+
 .photoboard-wrapper {
 
     .view-type-selector-wrapper {
@@ -10,19 +12,19 @@
             text-align: center;
             padding: 10px 0px 10px 0px;
             // border: 2px solid #686868;
-            background-color: $color-gray5;
-            color: $color-gray2;
+            background-color: color.$color-gray5;
+            color: color.$color-gray2;
             cursor: pointer;
             transition: all 0.5s;
             &:hover {
-                color: $color-gray1;
+                color: color.$color-gray1;
             }
         }
         .selected {
-            background-color: $color-aqua;
-            color: $color-white;
+            background-color: color.$color-aqua;
+            color: color.$color-white;
             &:hover {
-                color: $color-white;
+                color: color.$color-white;
             }
         }
     }

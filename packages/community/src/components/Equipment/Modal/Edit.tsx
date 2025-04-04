@@ -2,9 +2,9 @@ import { FC, useState } from 'react';
 import EquipmentForm from '../Form';
 import EquipmentService, {
   UpdateEquipmentRequest,
-} from 'services/EquipmentService';
-import { Equipment } from 'services/types';
-import { useModal } from 'contexts/modal';
+} from '~/services/EquipmentService';
+import { Equipment } from '~/services/types';
+import { useModal } from '~/contexts/modal';
 
 type Props = {
   editingEquipment: Equipment;

@@ -1,17 +1,19 @@
-@import "./pages/signup";
-@import "./pages/login";
-@import "./pages/intro";
-@import "./pages/board";
-@import "./pages/photoboard";
-@import "./pages/album";
-@import "./pages/document";
-@import "./pages/userinfo";
-@import "./pages/photo";
-@import "./pages/post";
-@import "./pages/home";
-@import "./pages/exhibition";
-@import "./pages/mighty";
-@import "./pages/management";
+@use "pages/signup";
+@use "pages/login";
+@use "pages/intro";
+@use "pages/board";
+@use "pages/photoboard";
+@use "pages/album";
+@use "pages/document";
+@use "pages/userinfo";
+@use "pages/photo";
+@use "pages/post";
+@use "pages/home";
+@use "pages/exhibition";
+@use "pages/mighty";
+@use "pages/management";
+@use "common/color";
+
 
 .section-wrapper {
   display: flex;
@@ -27,7 +29,7 @@ section {
   padding-right: 150px;
   padding-bottom: 50px;
   margin: 0 auto;
-  background-color: $color-white;
+  background-color: color.$color-white;
   font-size: 13px;
   // padding: 30px;
   h2 {
@@ -35,7 +37,7 @@ section {
     font-size: 23px;
     font-weight: bold;
     margin: 0px 0px 0px 0px;
-    color: $color-blue1;
+    color: color.$color-blue1;
   }
 }
 

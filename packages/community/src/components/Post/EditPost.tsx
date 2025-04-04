@@ -4,11 +4,11 @@ import Editor from '../Common/Editor';
 import AttachFile from './AttachFile';
 
 import FileIcon from '../Common/FileIcon';
-import { Content, File as FileType } from 'services/types';
-import PostService from 'services/PostService';
-import ContentService from 'services/ContentService';
-import FileService from 'services/FileService';
-import ProgressBar from 'components/Common/ProgressBar';
+import { Content, File as FileType } from '~/services/types';
+import PostService from '~/services/PostService';
+import ContentService from '~/services/ContentService';
+import FileService from '~/services/FileService';
+import ProgressBar from '~/components/Common/ProgressBar';
 
 type Props = {
   postInfo: Content;
@@ -106,7 +106,9 @@ const EditPost: FC<Props> = ({ postInfo, onCancel, onUpdate }) => {
           const newFiles: File[] = [];
           for (let i = 0; i < e.target.files.length; i++) {
             const tmpFile = e.target.files.item(i);
-            tmpFile && newFiles.push(tmpFile);
+            if (tmpFile) {
+              newFiles.push(tmpFile);
+            }
           }
           if (newFiles && newFiles.length > 0) {
             setAttachedFiles(attachedFiles.concat(...newFiles));

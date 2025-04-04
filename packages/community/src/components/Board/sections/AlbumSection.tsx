@@ -1,14 +1,14 @@
-import CreateAlbum from 'components/Album/modals/CreateAlbum';
-import Loading from 'components/Common/Loading';
-import Paginator from 'components/Common/Paginator';
-import AlbumList from 'components/Album/AlbumList';
-import { useFetch } from 'hooks/useFetch';
+import CreateAlbum from '~/components/Album/modals/CreateAlbum';
+import Loading from '~/components/Common/Loading';
+import Paginator from '~/components/Common/Paginator';
+import AlbumList from '~/components/Album/AlbumList';
+import { useFetch } from '~/hooks/useFetch';
 import { FC, useCallback, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import PhotoBoardService from 'services/PhotoBoardService';
-import { Board } from 'services/types';
-import { useAuth } from 'contexts/auth';
-import { Divider } from 'ui';
+import PhotoBoardService from '~/services/PhotoBoardService';
+import { Board } from '~/services/types';
+import { useAuth } from '~/contexts/auth';
+import { Divider } from '~/ui';
 
 const ALBUM_ROW_NUM = 12;
 

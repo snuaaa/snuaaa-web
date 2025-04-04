@@ -1,12 +1,12 @@
-import { breakLine } from 'utils/breakLine';
-import { convertDate, convertFullDate } from 'utils/convertDate';
-import defaultProfile from 'assets/img/common/profile.png';
-import ActionDrawer from 'components/Common/ActionDrawer';
-import Image from 'components/Common/AaaImage';
+import { breakLine } from '~/utils/breakLine';
+import { convertDate, convertFullDate } from '~/utils/convertDate';
+import defaultProfile from '~/assets/img/common/profile.png';
+import ActionDrawer from '~/components/Common/ActionDrawer';
+import Image from '~/components/Common/AaaImage';
 import 'react-datepicker/dist/react-datepicker.css';
-import { ExhibitPhoto } from 'services/types';
-import { useAuth } from 'contexts/auth';
-import { Divider } from 'ui';
+import { ExhibitPhoto } from '~/services/types';
+import { useAuth } from '~/contexts/auth';
+import { Divider } from '~/ui';
 
 type ExhibitPhotoInfoProps = {
   photoInfo: ExhibitPhoto;

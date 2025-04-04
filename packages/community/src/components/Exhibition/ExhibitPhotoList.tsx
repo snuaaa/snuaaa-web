@@ -1,6 +1,6 @@
 import { Link, useHistory } from 'react-router-dom';
-import Image from 'components/Common/AaaImage';
-import { ExhibitPhoto } from 'services/types';
+import Image from '~/components/Common/AaaImage';
+import { ExhibitPhoto } from '~/services/types';
 
 function ExhibitPhotoList({
   exhibitPhotos,

@@ -1,5 +1,5 @@
 import React from 'react';
-import { RiseSet } from 'services/HomeService';
+import { RiseSet } from '~/services/HomeService';
 
 const defaultRiseSet: RiseSet = {
   aste: 0,

@@ -5,11 +5,11 @@ import { convertDateWithDay } from '../../utils/convertDate';
 import BoardName from '../../components/Board/BoardName';
 import Image from '../../components/Common/AaaImage';
 
-import { Board } from 'services/types';
-import ExhibitionService from 'services/ExhibitionService';
-import { useFetch } from 'hooks/useFetch';
-import CreateExhibition from 'components/Exhibition/CreateExhibition';
-import { useAuth } from 'contexts/auth';
+import { Board } from '~/services/types';
+import ExhibitionService from '~/services/ExhibitionService';
+import { useFetch } from '~/hooks/useFetch';
+import CreateExhibition from '~/components/Exhibition/CreateExhibition';
+import { useAuth } from '~/contexts/auth';
 
 type ExhibitBoardProps = {
   boardInfo: Board;

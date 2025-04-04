@@ -1,5 +1,5 @@
 import React from 'react';
-import MyPageViewEnum from 'common/MyPageViewEnum';
+import MyPageViewEnum from '~/common/MyPageViewEnum';
 
 const MyPageSelector = ({
   selected,

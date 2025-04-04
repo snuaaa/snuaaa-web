@@ -1,7 +1,7 @@
 import React from 'react';
-import icon_weather from 'assets/img/common/icon_weather.png';
-import icon_stella from 'assets/img/common/icon_stella.png';
-import icon_apod from 'assets/img/common/icon_apod.png';
+import icon_weather from '~/assets/img/common/icon_weather.png';
+import icon_stella from '~/assets/img/common/icon_stella.png';
+import icon_apod from '~/assets/img/common/icon_apod.png';
 
 function ExtLinkMobile() {
   return (

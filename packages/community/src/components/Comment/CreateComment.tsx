@@ -1,5 +1,5 @@
 import { ChangeEvent, FC, useState } from 'react';
-import CommentService from 'services/CommentService';
+import CommentService from '~/services/CommentService';
 
 type Props = {
   contentId: number;

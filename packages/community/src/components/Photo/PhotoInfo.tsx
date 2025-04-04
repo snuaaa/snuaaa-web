@@ -5,8 +5,8 @@ import { convertDate, convertFullDate } from '../../utils/convertDate';
 import ActionDrawer from '../Common/ActionDrawer';
 import 'react-datepicker/dist/react-datepicker.css';
 
-import { ExhibitPhoto, Photo } from 'services/types';
-import { Divider } from 'ui';
+import { ExhibitPhoto, Photo } from '~/services/types';
+import { Divider } from '~/ui';
 
 type PhotoInfoProps = {
   photoInfo: Photo | ExhibitPhoto;

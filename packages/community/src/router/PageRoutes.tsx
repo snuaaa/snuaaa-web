@@ -1,32 +1,32 @@
 import { lazy } from 'react';
 import { Route, Switch, useLocation } from 'react-router-dom';
 
-import Header from 'components/Header';
+import Header from '~/components/Header';
 import Footer from '../components/Footer';
 import SideBar from '../components/Home/SideBar';
 import RiseSet from '../components/Home/RiseSet';
 import TopUpButton from '../components/Common/TopUpButton';
 
 // Don't load lazy. scroll is reset when initial loading.
-import PhotoPage from 'pages/Photo';
-import ExhibitPhoto from 'pages/ExhibitPhoto';
+import PhotoPage from '~/pages/Photo';
+import ExhibitPhoto from '~/pages/ExhibitPhoto';
 import { Location } from 'history';
 
-const Home = lazy(() => import('pages/Home'));
-const About = lazy(() => import('pages/About'));
-const Board = lazy(() => import('pages/Board'));
-const Post = lazy(() => import('pages/Post'));
-const Album = lazy(() => import('pages/Album'));
-const Docu = lazy(() => import('pages/Document'));
-const Exhibition = lazy(() => import('pages/Exhibition'));
+const Home = lazy(() => import('~/pages/Home'));
+const About = lazy(() => import('~/pages/About'));
+const Board = lazy(() => import('~/pages/Board'));
+const Post = lazy(() => import('~/pages/Post'));
+const Album = lazy(() => import('~/pages/Album'));
+const Docu = lazy(() => import('~/pages/Document'));
+const Exhibition = lazy(() => import('~/pages/Exhibition'));
 
-const MyPage = lazy(() => import('pages/MyPage'));
-const UserPage = lazy(() => import('pages/UserPage'));
-const AllPosts = lazy(() => import('pages/AllPosts'));
-const AllComments = lazy(() => import('pages/AllComments'));
-const MightyCalculator = lazy(() => import('pages/MightyCalculator'));
-const UserManagement = lazy(() => import('pages/UserManagement'));
-const Equipment = lazy(() => import('pages/Equipment'));
+const MyPage = lazy(() => import('~/pages/MyPage'));
+const UserPage = lazy(() => import('~/pages/UserPage'));
+const AllPosts = lazy(() => import('~/pages/AllPosts'));
+const AllComments = lazy(() => import('~/pages/AllComments'));
+const MightyCalculator = lazy(() => import('~/pages/MightyCalculator'));
+const UserManagement = lazy(() => import('~/pages/UserManagement'));
+const Equipment = lazy(() => import('~/pages/Equipment'));
 
 type LocationState = {
   background: Location;

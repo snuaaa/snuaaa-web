@@ -1,3 +1,5 @@
+@use "../common/color";
+
 .home-wrapper {
   display: flex;
   justify-content: center;
@@ -36,18 +38,18 @@
 .rise-set-wrapper {
   position: sticky;
   top: 70px;
-  background: $color_blue3;
+  background: color.$color_blue3;
   width: 170px;
   padding: 30px 0px 25px 0px;
   border-radius: 20px;
-  color: $color-white;
+  color: color.$color-white;
   text-align: center;
   .moon-phase-wrapper {
     height: 70px;
     width: 70px;
     border-radius: 50%;
     margin: auto;
-    background-color: $color-white;
+    background-color: color.$color-white;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -55,7 +57,7 @@
       height: 64px;
       width: 64px;
       border-radius: 50%;
-      box-shadow: inset -8px 0px 3px 0px $color-white;
+      box-shadow: inset -8px 0px 3px 0px color.$color-white;
       background-color: #ffda0a;
     }
     .moon-container {
@@ -81,7 +83,7 @@
   height: 285px;
   border-radius: 20px;
   padding: 20px 0px;
-  background-color: $color-white;
+  background-color: color.$color-white;
   display: flex;
   flex-direction: column;
   // justify-content: center;
@@ -103,15 +105,15 @@
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  border: 1px solid $color-aqua;
+  border: 1px solid color.$color-aqua;
   border-radius: 50%;
-  color: $color-gray2;
+  color: color.$color-gray2;
   font-size: 15px;
   font-weight: bold;
   transition: all 0.2s ease-out;
 
   &:hover {
-    color: $color-aqua;
+    color: color.$color-aqua;
   }
 }
 
@@ -138,7 +140,7 @@
   .soundbox-title {
     // width: 160px;
     position: relative;
-    background-color: $color-aqua;
+    background-color: color.$color-aqua;
     color: white;
     font-size: 25px;
     text-align: center;
@@ -149,7 +151,7 @@
   }
   .soundbox-contents-wrapper {
     position: relative;
-    background-color: $color_gray5;
+    background-color: color.$color_gray5;
     border-bottom-left-radius: 15px;
     border-bottom-right-radius: 15px;
     display: flex;
@@ -165,7 +167,7 @@
       width: 90%;
       height: 25px;
       margin: 0 auto;
-      background: linear-gradient(rgba(232, 232, 232, 0.01), $color_gray5);
+      background: linear-gradient(rgba(232, 232, 232, 0.01), color.$color_gray5);
       // background: red;
     }
     .soundbox-contents {
@@ -177,7 +179,7 @@
       color: #08253e;
       font-weight: 60;
       .ck-content {
-        background-color: $color-gray5;
+        background-color: color.$color-gray5;
       }
       a {
         color: #08253e;
@@ -209,7 +211,7 @@
     width: 25%;
     flex-shrink: 0;
     a {
-      color: $color-gray2;
+      color: color.$color-gray2;
     }
   }
   .new-comment-contents {
@@ -223,7 +225,7 @@
       text-overflow: ellipsis;
       overflow: hidden;
       white-space: nowrap;
-      color: $color-gray2;
+      color: color.$color-gray2;
     }
   }
   .new-comment-contents-bot {
@@ -245,7 +247,7 @@
   .new-comment-date {
     flex-shrink: 0;
     // width: 20%;
-    color: $color-gray2;
+    color: color.$color-gray2;
   }
 }
 
@@ -257,7 +259,7 @@
   h4 {
     font-size: 20px;
     font-weight: bold;
-    color: $color_blue3;
+    color: color.$color_blue3;
     padding: 10px 5px;
   }
   .new-exhibition-flex {
@@ -325,14 +327,14 @@
   }
 
   .rise-set-mobile-wrapper {
-    background: $color_blue3;
+    background: color.$color_blue3;
     // width: 50%;
     flex-basis: 50%;
     flex-grow: 1;
     padding: 0 0.3rem;
     margin-right: 1.5%;
     border-radius: 1rem;
-    color: $color-white;
+    color: color.$color-white;
     display: flex;
     align-items: center;
     // height: 3.5rem;
@@ -342,7 +344,7 @@
       width: 3rem;
       border-radius: 50%;
       // margin: auto;
-      background-color: $color-white;
+      background-color: color.$color-white;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -350,7 +352,7 @@
         height: 2.5rem;
         width: 2.5rem;
         border-radius: 50%;
-        box-shadow: inset -8px 0px 3px 0px $color-white;
+        box-shadow: inset -8px 0px 3px 0px color.$color-white;
         background-color: #ffda0a;
       }
       .moon-container {

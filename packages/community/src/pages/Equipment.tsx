@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
-import EquipmentMain from 'components/Equipment/Main';
-import EquipmentRent from 'components/Equipment/Rent';
-import EquipmentAdmin from 'components/Equipment/Admin';
+import EquipmentMain from '~/components/Equipment/Main';
+import EquipmentRent from '~/components/Equipment/Rent';
+import EquipmentAdmin from '~/components/Equipment/Admin';
 import { FC } from 'react';
 import { Route, Switch } from 'react-router-dom';
-import { EquipmentCategoryContext } from 'contexts/EquipmentCategoryContext';
-import { useAuth } from 'contexts/auth';
-import EquipmentService from 'services/EquipmentService';
-import { EquipmentCategory } from 'services/types';
+import { EquipmentCategoryContext } from '~/contexts/EquipmentCategoryContext';
+import { useAuth } from '~/contexts/auth';
+import EquipmentService from '~/services/EquipmentService';
+import { EquipmentCategory } from '~/services/types';
 
 const EquipmentPage: FC = () => {
   const [equipmentCategories, setEquipmentCategories] = useState<

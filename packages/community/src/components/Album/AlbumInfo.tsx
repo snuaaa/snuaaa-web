@@ -1,7 +1,7 @@
 import { breakLine } from '../../utils/breakLine';
 import ActionDrawer from '../Common/ActionDrawer';
 import history from '../../common/history';
-import { Album } from 'services/types';
+import { Album } from '~/services/types';
 
 type AlbumInfoProps = {
   albumInfo: Album;

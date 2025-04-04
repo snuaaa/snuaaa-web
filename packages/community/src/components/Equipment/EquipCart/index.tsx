@@ -10,8 +10,12 @@ const EquipCart: FC<Props> = ({ columns }) => {
   const { cart, rentAllEquipment, removeFromCart } = useEquipment();
 
   const handleClickRentAll = () => {
-    window.confirm(`총 ${cart.length}개의 장비를 대여하시겠습니까?`) &&
+    const isConfirmed = window.confirm(
+      `총 ${cart.length}개의 장비를 대여하시겠습니까?`,
+    );
+    if (isConfirmed) {
       rentAllEquipment();
+    }
   };
 
   return (

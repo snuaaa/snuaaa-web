@@ -1,17 +1,17 @@
 import { useState, useCallback, FC } from 'react';
 import { useParams } from 'react-router';
 
-import Comment from 'components/Comment';
-import Loading from 'components/Common/Loading';
-import PostView from 'components/Post/PostView';
-import EditPost from 'components/Post/EditPost';
-import history from 'common/history';
-import BoardName from 'components/Board/BoardName';
-import PostService from 'services/PostService';
+import Comment from '~/components/Comment';
+import Loading from '~/components/Common/Loading';
+import PostView from '~/components/Post/PostView';
+import EditPost from '~/components/Post/EditPost';
+import history from '~/common/history';
+import BoardName from '~/components/Board/BoardName';
+import PostService from '~/services/PostService';
 
 import axios from 'axios';
-import { useFetch } from 'hooks/useFetch';
-import { useAuth } from 'contexts/auth';
+import { useFetch } from '~/hooks/useFetch';
+import { useAuth } from '~/contexts/auth';
 
 const Post: FC = () => {
   const [isEditing, setIsEditing] = useState(false);
