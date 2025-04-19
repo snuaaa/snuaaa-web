@@ -1,8 +1,8 @@
 import { NavLink } from 'react-router-dom';
-import { Board } from 'services/types';
+import { Board } from '~/services/types';
 import Menu from './Menu';
 import { MenuLink } from './types';
-import { useAuth } from 'contexts/auth';
+import { useAuth } from '~/contexts/auth';
 
 type NavigationProps = {
   boards: Board[];

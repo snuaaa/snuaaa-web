@@ -1,9 +1,11 @@
+@use "color";
+
 .color-pink {
-  color: $color-pink;
+  color: color.$color-pink;
 }
 
 .color-gray1 {
-  color: $color-gray2;
+  color: color.$color-gray2;
 }
 
 .break-line {
@@ -40,13 +42,13 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      background-color: $color-gray5;
+      background-color: color.$color-gray5;
       color: #646464;
       transition: background-color 0.2s;
       cursor: pointer;
       &:hover {
-        background-color: $color-gray1;
-        color: $color-white;
+        background-color: color.$color-gray1;
+        color: color.$color-white;
       }
       &:last-child {
         .action-unit {
@@ -60,7 +62,7 @@
         padding: 7px 4px;
         margin: 0px 8px;
         width: 100%;
-        border-bottom: 1px solid $color-gray4;
+        border-bottom: 1px solid color.$color-gray4;
         white-space: nowrap;
       }
     }
@@ -76,15 +78,15 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  background-color: $color-white;
-  border: 1px solid $color-black;
+  background-color: color.$color-white;
+  border: 1px solid color.$color-black;
   z-index: 1;
   .mini-user-unit {
     display: flex;
     align-items: center;
     padding: 5px;
     &:hover {
-      background: $color-gray5;
+      background: color.$color-gray5;
     }
   }
   .mini-user-profile {
@@ -97,8 +99,8 @@
 .mini-user-selected {
   display: flex;
   align-items: center;
-  background-color: $color-gray3;
-  border: 1px solid $color-gray1;
+  background-color: color.$color-gray3;
+  border: 1px solid color.$color-gray1;
   border-radius: 5px;
   padding: 2px;
   // background-color: $color-white;
@@ -140,12 +142,12 @@
   overflow: hidden;
   transition: max-height 0.2s;
   font-size: 17px;
-  box-shadow: 1px 1px 1px 2px $color-gray4;
+  box-shadow: 1px 1px 1px 2px color.$color-gray4;
   .action-unit-wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: $color-gray5;
+    background-color: color.$color-gray5;
     color: #646464;
     transition: background-color 0.2s;
     cursor: pointer;
@@ -153,10 +155,10 @@
       color: #646464;
     }
     &:hover {
-      background-color: $color-gray1;
-      color: $color-white;
+      background-color: color.$color-gray1;
+      color: color.$color-white;
       a {
-        color: $color-white;
+        color: color.$color-white;
       }
     }
     &:last-child {
@@ -169,7 +171,7 @@
       justify-content: center;
       align-items: center;
       padding: 7px 4px;
-      border-bottom: 1px solid $color-gray4;
+      border-bottom: 1px solid color.$color-gray4;
     }
   }
   &.opened {
@@ -188,7 +190,7 @@
     justify-content: center;
     align-items: center;
     margin-right: auto;
-    color: $color-gray2;
+    color: color.$color-gray2;
   }
   .like-num-wrapper {
     display: flex;
@@ -202,7 +204,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    color: $color-gray2;
+    color: color.$color-gray2;
   }
 }
 
@@ -260,14 +262,14 @@
   // margin-top: auto;
   justify-content: center;
   i {
-    color: $color-gray4;
+    color: color.$color-gray4;
     &:hover {
-      color: $color-gray2;
+      color: color.$color-gray2;
     }
   }
   ul {
     display: flex;
-    color: $color-gray1;
+    color: color.$color-gray1;
   }
   li {
     padding: 5px;
@@ -289,8 +291,8 @@
   &:hover {
     .file-name {
       font-size: 13px;
-      color: $color-gray1;
-      background-color: $color-gray5;
+      color: color.$color-gray1;
+      background-color: color.$color-gray5;
       border: 1px solid black;
       padding: 5px;
       position: absolute;
@@ -347,7 +349,7 @@
 
 .aaa-img-loading {
   opacity: 0;
-  background-color: $color-gray3;
+  background-color: color.$color-gray3;
   width: 100%;
   height: auto;
 }

@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import AaaImage from '../Common/AaaImage';
-import imgDefaultProfile from 'assets/img/common/profile.png';
+import imgDefaultProfile from '~/assets/img/common/profile.png';
 import { breakLine } from '../../utils/breakLine';
 
 import { gradeAssigner } from '../../utils/gradeAssigner';
-import defaultProfile from 'assets/img/common/profile.png';
-import { User } from 'services/types';
+import defaultProfile from '~/assets/img/common/profile.png';
+import { User } from '~/services/types';
 
 type MyProfileProps = {
   userInfo: User;

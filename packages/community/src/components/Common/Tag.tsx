@@ -1,5 +1,5 @@
 import { useState, useEffect, ChangeEvent, FC } from 'react';
-import { type Tag as TagType } from 'services/types';
+import { type Tag as TagType } from '~/services/types';
 
 type Props = {
   clickAll: () => void;

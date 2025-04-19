@@ -9,9 +9,9 @@ import BoardName from '../../components/Board/BoardName';
 import DocuService from '../../services/DocuService';
 
 import { useLocation, useHistory } from 'react-router-dom'; // Fix import path
-import { Board } from 'services/types';
-import { useFetch } from 'hooks/useFetch';
-import { useAuth } from 'contexts/auth';
+import { Board } from '~/services/types';
+import { useFetch } from '~/hooks/useFetch';
+import { useAuth } from '~/contexts/auth';
 
 const DOCROWNUM = 10;
 

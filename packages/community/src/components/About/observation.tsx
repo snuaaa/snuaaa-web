@@ -1,5 +1,5 @@
 import React from 'react';
-import domImg from 'assets/img/dome.jpg';
+import domImg from '~/assets/img/dome.jpg';
 
 function Ovservation() {
   return (

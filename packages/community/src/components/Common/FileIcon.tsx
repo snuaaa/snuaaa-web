@@ -1,5 +1,5 @@
 import React from 'react';
-import { File } from 'services/types';
+import { File } from '~/services/types';
 
 type FileIconProps = {
   fileInfo: File;

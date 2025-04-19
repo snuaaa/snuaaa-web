@@ -1,9 +1,9 @@
 import { FC } from 'react';
-import { Tag } from 'services/types';
-import useBlockBackgroundScroll from 'hooks/useBlockBackgroundScroll';
+import { Tag } from '~/services/types';
+import useBlockBackgroundScroll from '~/hooks/useBlockBackgroundScroll';
 import useCreatePhoto from './useCreatePhoto';
-import ThumbnailList from 'components/Album/ThumbnailList';
-import PreviewImage from 'components/Album/PreviewImage';
+import ThumbnailList from '~/components/Album/ThumbnailList';
+import PreviewImage from '~/components/Album/PreviewImage';
 import PhotoInfoForm from './PhotoInfoForm';
 import { TagSelector } from './TagSelector';
 

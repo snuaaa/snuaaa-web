@@ -21,7 +21,7 @@ const EditCategoryEntry: FC<Props> = ({ defaultValue, onFinish, onCancel }) => {
         autoFocus
         onChange={onChange}
         onKeyDown={(e) => {
-          e.key === 'Enter' && onFinish(name);
+          if (e.key === 'Enter') onFinish(name);
         }}
         value={name}
       />

@@ -1,9 +1,9 @@
 import { ChangeEvent } from 'react';
 import CreateExhibitPhotoInfo from './CreateExhibitPhotoInfo';
-import ThumbnailList from 'components/Album/ThumbnailList';
-import PreviewImage from 'components/Album/PreviewImage';
-import { User } from 'services/types';
-import { ExhibitPhotoInfo } from 'services/ExhibitPhotoService';
+import ThumbnailList from '~/components/Album/ThumbnailList';
+import PreviewImage from '~/components/Album/PreviewImage';
+import { User } from '~/services/types';
+import { ExhibitPhotoInfo } from '~/services/ExhibitPhotoService';
 
 type CreateExhibitPhotoComponentProps = {
   handleChange: (

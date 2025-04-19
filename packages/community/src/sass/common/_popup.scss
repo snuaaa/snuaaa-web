@@ -1,3 +1,5 @@
+@use "color";
+
 /******* POPUP ******/
 
 .popup-wrapper {
@@ -14,7 +16,7 @@
         position: relative;
         top: 30%;
         width: 400px;
-        background-color: $color-white;
+        background-color: color.$color-white;
         margin: 0 auto;
         text-align: center;
 
@@ -33,16 +35,16 @@
             justify-content: center;
         }
         .popup-selector {
-            border: 1px solid $color-gray2;
+            border: 1px solid color.$color-gray2;
             border-radius: 10px;
             width: 130px;
             padding: 8px 0;
             margin: 0 15px;
             cursor: pointer;
             &.selected {
-                background-color: $color-aqua;
-                border-color: $color-aqua;
-                color: $color-white;
+                background-color: color.$color-aqua;
+                border-color: color.$color-aqua;
+                color: color.$color-white;
             }
         }
         .popup-contents {
@@ -60,7 +62,7 @@
                 width: 50px;
             }
             input {
-                border: 1px solid $color-gray2;
+                border: 1px solid color.$color-gray2;
                 height: 30px;
             }
         }
@@ -72,15 +74,15 @@
                 width: 100px;
                 padding: 10px;
                 font-size: 17px;
-                background-color: $color-white;
+                background-color: color.$color-white;
                 cursor: pointer;
                 color: #b4b4b4;
                 border: none;
             }
             .btn-ok {
-                color: $color-aqua;
+                color: color.$color-aqua;
                 &:disabled {
-                    color: $color-gray1;
+                    color: color.$color-gray1;
                     cursor: not-allowed;
                 }
             }
@@ -93,9 +95,9 @@
                 width: 100%;
                 padding: 10px;
                 font-size: 17px;
-                background-color: $color-aqua;
+                background-color: color.$color-aqua;
                 cursor: pointer;
-                color: $color-white;
+                color: color.$color-white;
                 border: none;
             }
         }

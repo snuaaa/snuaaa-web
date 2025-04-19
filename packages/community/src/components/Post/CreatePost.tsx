@@ -2,9 +2,9 @@ import { useState, ChangeEvent, FC } from 'react';
 import PostService, { CreatePostRequest } from '../../services/PostService';
 import ContentService from '../../services/ContentService';
 import { Prompt } from 'react-router-dom';
-import Editor from 'components/Common/Editor';
+import Editor from '~/components/Common/Editor';
 import AttachFile from './AttachFile';
-import ProgressBar from 'components/Common/ProgressBar';
+import ProgressBar from '~/components/Common/ProgressBar';
 
 const MAX_SIZE = 20 * 1024 * 1024;
 
@@ -56,7 +56,9 @@ const CreatePost: FC<Props> = (props) => {
           const newFiles: File[] = [];
           for (let i = 0; i < e.target.files.length; i++) {
             const tmpFile = e.target.files.item(i);
-            tmpFile && newFiles.push(tmpFile);
+            if (tmpFile) {
+              newFiles.push(tmpFile);
+            }
           }
           if (newFiles && newFiles.length > 0) {
             setAttachedFiles(attachedFiles.concat(...newFiles));

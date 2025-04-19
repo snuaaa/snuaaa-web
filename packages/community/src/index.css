@@ -1,6 +1,4 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 body {
   margin: 0;
@@ -40,6 +38,10 @@ body {
   font-size: 100%;
   line-height: 1;
   font-family:  'NanumSquareNeo', Arial, Tahoma, Verdana, sans-serif;
+}
+
+button {
+  cursor: pointer;
 }
 
 input, select, textarea { outline: none; }

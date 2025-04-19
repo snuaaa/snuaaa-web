@@ -1,8 +1,8 @@
 import { FC } from 'react';
-import { Equipment, EquipmentRentStatus } from 'services/types';
-import { convertDateMMDD } from 'utils/convertDate';
+import { Equipment, EquipmentRentStatus } from '~/services/types';
+import { convertDateMMDD } from '~/utils/convertDate';
 import { useEquipment } from '../../contexts';
-import { useModal } from 'contexts/modal';
+import { useModal } from '~/contexts/modal';
 import EquipDescription from '../../Modal/EquipDescription';
 
 const mapEquipmentRentButtonText = (equip: Equipment) => {
@@ -23,8 +23,10 @@ const RentButton: FC<Props> = ({ equipment }) => {
   const { openModal } = useModal();
 
   const handleClickEquipmentRent = (equipment: Equipment) => {
-    window.confirm('이 장비를 대여하시겠습니까?') &&
+    const isConfirmed = window.confirm('이 장비를 대여하시겠습니까?');
+    if (isConfirmed) {
       rentSingleEquipment(equipment);
+    }
   };
 
   const handleClickEquipmentCart = (equipment: Equipment) => {

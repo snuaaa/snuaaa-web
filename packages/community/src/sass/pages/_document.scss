@@ -1,3 +1,5 @@
+@use "../common/color";
+
 
 .documenu-wrapper {
     display: flex;
@@ -63,13 +65,13 @@
                 cursor: pointer;
                 margin: 0px 5px;
                 padding: 5px 10px;
-                border: 1px solid $color_gray2;
+                border: 1px solid color.$color_gray2;
                 border-radius: 8px;
             }
             input:checked + label {
                 // font-weight: bold;
                 color: #eeeeee;
-                background-color: $color_gray2;
+                background-color: color.$color_gray2;
             }
         }
     }
@@ -126,7 +128,7 @@
         display: flex;
         justify-content: space-around;
         flex-wrap: nowrap;
-        color: $color-white;
+        color: color.$color-white;
         background-color: #bcbdbc;
         padding: 15px 15px;
     }
@@ -164,10 +166,10 @@
         flex-shrink: 0;
         justify-content: center;
         a {
-            color: $color_gray2;
+            color: color.$color_gray2;
             transition: all 0.2s;
             &:hover {
-                color: $color_gray1;
+                color: color.$color_gray1;
             }
         }
     }
@@ -178,7 +180,7 @@
         width: 100%;
     }
     thead {
-        color: $color-white;
+        color: color.$color-white;
         background-color: #bcbdbc;
     }
     th {
@@ -196,12 +198,12 @@
         padding-top: 10px;
         padding-bottom: 4px;
         background-color: #008f94;
-        color: $color-white;
+        color: color.$color-white;
         display: flex;
         a {
             float: left;
             margin-left: 5px;
-            color: $color-white;
+            color: color.$color-white;
         }
         h5 {
             flex-grow: 1;
@@ -220,7 +222,7 @@
 }
 
 .custom-hwp {
-    background-image: url('../../assets/img/board/file_hwp.svg');
+    background-image: url('~/assets/img/board/file_hwp.svg');
     // background-size:
     background-repeat: no-repeat;
     background-size: cover;

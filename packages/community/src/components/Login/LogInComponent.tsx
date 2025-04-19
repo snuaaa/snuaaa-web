@@ -2,7 +2,7 @@ import React, { ChangeEvent } from 'react';
 import { Link } from 'react-router-dom';
 import InputText from '../Common/InputText';
 import Footer from '../Footer';
-import logo from 'assets/img/login_logo.gif';
+import logo from '~/assets/img/login_logo.gif';
 
 type Props = {
   autoLogin: boolean;
@@ -40,7 +40,7 @@ const LogInComponent: React.FC<Props> = ({
         <div className="flex mt-4 justify-between gap-6">
           <div className="grow">
             <InputText
-              className="text-sm h-10 block w-full mb-4 pl-1 rounded-md"
+              className="text-sm h-10 block w-full mb-4 pl-1 rounded-md bg-white"
               name="id"
               handleChange={handleChange}
               placeholder=" ID"
@@ -48,7 +48,7 @@ const LogInComponent: React.FC<Props> = ({
             />
             <input
               type="password"
-              className="text-sm h-10 block w-full mb-4 pl-1 rounded-md"
+              className="text-sm h-10 block w-full mb-4 pl-1 rounded-md bg-white"
               placeholder=" PASSWORD"
               name="password"
               onChange={handleChange}

@@ -1,9 +1,9 @@
 import { FC } from 'react';
-import { Album } from 'services/types';
+import { Album } from '~/services/types';
 import { Link } from 'react-router-dom';
 import Image from '../../Common/AaaImage';
-import defaultAlbumCover from 'assets/img/default_photo_img.png';
-import { getThumbnailPath } from 'utils/getThumbnailPath';
+import defaultAlbumCover from '~/assets/img/default_photo_img.png';
+import { getThumbnailPath } from '~/utils/getThumbnailPath';
 
 type Props = {
   album: Album;

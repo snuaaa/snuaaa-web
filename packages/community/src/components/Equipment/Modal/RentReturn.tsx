@@ -1,8 +1,8 @@
-import { useModal } from 'contexts/modal';
+import { useModal } from '~/contexts/modal';
 import { ChangeEvent, FC, useState } from 'react';
-import EquipmentService from 'services/EquipmentService';
-import { MyRent } from 'services/types';
-import UploadService from 'services/UploadService';
+import EquipmentService from '~/services/EquipmentService';
+import { MyRent } from '~/services/types';
+import UploadService from '~/services/UploadService';
 
 type Props = {
   rent: MyRent;
@@ -23,6 +23,7 @@ const RentReturn: FC<Props> = ({ rent, onSubmit }) => {
       alert('반납이 완료되었습니다.');
     } catch (e) {
       alert('반납에 실패했습니다!');
+      console.error(e);
     }
     onSubmit();
     closeModal();

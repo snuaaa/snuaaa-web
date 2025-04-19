@@ -1,7 +1,7 @@
 import BoardName from '../../components/Board/BoardName';
 
 import { useLocation, useHistory } from 'react-router';
-import { Board } from 'services/types';
+import { Board } from '~/services/types';
 import { PhotoSection } from './sections/PhotoSection';
 import { AlbumSection } from './sections/AlbumSection';
 

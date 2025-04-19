@@ -1,7 +1,7 @@
-import { EquipmentCategoryContext } from 'contexts/EquipmentCategoryContext';
-import { useModal } from 'contexts/modal';
+import { EquipmentCategoryContext } from '~/contexts/EquipmentCategoryContext';
+import { useModal } from '~/contexts/modal';
 import { useContext } from 'react';
-import { Equipment } from 'services/types';
+import { Equipment } from '~/services/types';
 import { equipmentStatusTextMap } from '../common';
 
 type Props = {

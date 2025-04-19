@@ -8,9 +8,9 @@ import history from '../../common/history';
 import FileIcon from '../../components/Common/FileIcon';
 
 import Editor from '../Common/Editor';
-import { Content, File } from 'services/types';
-import PostService from 'services/PostService';
-import ContentService from 'services/ContentService';
+import { Content, File } from '~/services/types';
+import PostService from '~/services/PostService';
+import ContentService from '~/services/ContentService';
 
 type PostComponentProps = {
   postInfo: Content;

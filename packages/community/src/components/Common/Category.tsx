@@ -1,5 +1,5 @@
 import React from 'react';
-import { Category } from 'services/types';
+import { Category } from '~/services/types';
 
 type CategoryProps = {
   categories: Category[];

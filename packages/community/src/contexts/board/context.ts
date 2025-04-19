@@ -1,5 +1,5 @@
 import React from 'react';
-import { Board } from 'services/types';
+import { Board } from '~/services/types';
 
 type BoardContextType = {
   boardsInfo: Board[];

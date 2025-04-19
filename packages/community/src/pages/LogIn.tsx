@@ -1,13 +1,13 @@
 import { ChangeEvent, useState, useEffect } from 'react';
 
 import { useHistory, Redirect, useLocation } from 'react-router';
-import LogInComponent from 'components/Login/LogInComponent';
-import Loading from 'components/Common/Loading';
-import PopUp from 'components/Common/PopUp';
-import FullScreenPortal from 'router/FullScreenPortal';
-import FindIdPw from 'components/Login/FindIdPw';
-import AuthService from 'services/AuthService';
-import { useAuth } from 'contexts/auth';
+import LogInComponent from '~/components/Login/LogInComponent';
+import Loading from '~/components/Common/Loading';
+import PopUp from '~/components/Common/PopUp';
+import FullScreenPortal from '~/router/FullScreenPortal';
+import FindIdPw from '~/components/Login/FindIdPw';
+import AuthService from '~/services/AuthService';
+import { useAuth } from '~/contexts/auth';
 
 type LocationState = {
   accessLocation: string;

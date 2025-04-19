@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import { User } from 'services/types';
+import { User } from '~/services/types';
 
 export type Auth = {
   authInfo: {

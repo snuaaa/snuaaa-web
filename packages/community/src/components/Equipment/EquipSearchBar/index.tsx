@@ -1,11 +1,11 @@
 import { ChangeEvent, FC, useContext, useEffect, useState } from 'react';
-import { EquipmentRentStatus, EquipmentStatus } from 'services/types';
+import { EquipmentRentStatus, EquipmentStatus } from '~/services/types';
 import { useHistory, useLocation } from 'react-router';
-import { EquipmentCategoryContext } from 'contexts/EquipmentCategoryContext';
+import { EquipmentCategoryContext } from '~/contexts/EquipmentCategoryContext';
 import SearchString from './SearchString';
 import SearchSelect from './SearchSelect';
 import { equipmentRentStatusOptions, equipmentStatusOptions } from '../common';
-import { ViewportSize, useViewportSize } from 'contexts/viewportSize';
+import { ViewportSize, useViewportSize } from '~/contexts/viewportSize';
 
 export enum SortBy {
   NAME = 'name', // 장비명

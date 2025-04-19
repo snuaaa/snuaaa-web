@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { Equipment } from 'services/types';
+import { Equipment } from '~/services/types';
 import Image from '../../Common/AaaImage';
 
 type Props = {
@@ -16,7 +16,7 @@ const CartItem: FC<Props> = ({ equip, onClickCancel, columns }) => {
       }
       key={equip.id}
     >
-      <div className="relative flex-grow border-2 border-gray-250 mx-1 my-1">
+      <div className="relative flex-grow border-2 border-gray-300 mx-1 my-1">
         <div className="equip-picture">
           <Image
             imgSrc={equip.img_path}

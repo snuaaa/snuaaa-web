@@ -1,11 +1,12 @@
 import { useEffect } from 'react';
 
 import './App.scss';
+import './index.css';
 
 import Router from './router';
 import { AuthProvider } from './contexts/auth';
-import { BoardProvider } from 'contexts/board';
-import { ViewportSizeProvider } from 'contexts/viewportSize';
+import { BoardProvider } from './contexts/board';
+import { ViewportSizeProvider } from './contexts/viewportSize';
 
 function App() {
   useEffect(() => {

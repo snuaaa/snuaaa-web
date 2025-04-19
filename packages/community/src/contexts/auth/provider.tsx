@@ -1,11 +1,11 @@
-import { setToken, removeToken, getToken } from 'utils/token';
+import { setToken, removeToken, getToken } from '~/utils/token';
 import { AuthContext } from './context';
-import AuthType from 'types/AuthType';
-import { User } from 'services/types';
+import AuthType from '~/types/AuthType';
+import { User } from '~/services/types';
 import { useCallback, useEffect, useState, PropsWithChildren } from 'react';
 import { Redirect, useHistory, useLocation } from 'react-router-dom';
-import AuthService from 'services/AuthService';
-import Loading from 'components/Common/Loading';
+import AuthService from '~/services/AuthService';
+import Loading from '~/components/Common/Loading';
 
 const initialAuth: AuthType = {
   isLoggedIn: false,

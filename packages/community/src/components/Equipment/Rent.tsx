@@ -1,13 +1,13 @@
 import { FC } from 'react';
 import EquipSearchBar from './EquipSearchBar';
 import EquipList from './EquipList';
-import Loading from 'components/Common/Loading';
-import { withModal } from 'contexts/modal';
-import BoardName from 'components/Board/BoardName';
+import Loading from '~/components/Common/Loading';
+import { withModal } from '~/contexts/modal';
+import BoardName from '~/components/Board/BoardName';
 import EquipCart from './EquipCart';
 import { Link } from 'react-router-dom';
 import { useEquipment, withEquipment } from './contexts';
-import { ViewportSize, useViewportSize } from 'contexts/viewportSize';
+import { ViewportSize, useViewportSize } from '~/contexts/viewportSize';
 
 const Rent: FC = () => {
   const { data } = useEquipment();

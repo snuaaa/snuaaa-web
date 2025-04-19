@@ -1,6 +1,6 @@
 import { ChangeEvent, FC } from 'react';
 
-import { Category } from 'services/types';
+import { Category } from '~/services/types';
 
 type Props = {
   caption: string;

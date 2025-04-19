@@ -1,16 +1,16 @@
 import { useCallback } from 'react';
-import SoundBox from 'components/Home/SoundBox';
-import Loading from 'components/Common/Loading';
-import NewPosts from 'components/Home/NewPosts';
-import NewComments from 'components/Home/NewComments';
-import NewPhotos from 'components/Home/NewPhotos';
-import NewExhibitions from 'components/Home/NewExhibitions';
-import RiseSetMobile from 'components/Home/RiseSetMobile';
-import ExtLinkMobile from 'components/Home/ExtLinkMobile';
-import HomeService from 'services/HomeService';
-import NewAlbums from 'components/Home/NewAlbums';
-import ExhibitionService from 'services/ExhibitionService';
-import { useFetch } from 'hooks/useFetch';
+import SoundBox from '~/components/Home/SoundBox';
+import Loading from '~/components/Common/Loading';
+import NewPosts from '~/components/Home/NewPosts';
+import NewComments from '~/components/Home/NewComments';
+import NewPhotos from '~/components/Home/NewPhotos';
+import NewExhibitions from '~/components/Home/NewExhibitions';
+import RiseSetMobile from '~/components/Home/RiseSetMobile';
+import ExtLinkMobile from '~/components/Home/ExtLinkMobile';
+import HomeService from '~/services/HomeService';
+import NewAlbums from '~/components/Home/NewAlbums';
+import ExhibitionService from '~/services/ExhibitionService';
+import { useFetch } from '~/hooks/useFetch';
 
 function Home() {
   const fetchFunction = useCallback(async () => {

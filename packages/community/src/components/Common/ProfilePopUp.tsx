@@ -1,14 +1,12 @@
-import React, { useState } from 'react';
 import Image from './AaaImage';
-import defaultProfile from 'assets/img/common/profile.png';
-import { User } from 'services/types';
+import defaultProfile from '~/assets/img/common/profile.png';
+import { User } from '~/services/types';
 
 type ProfilePopUpProps = {
   userInfo: User;
-  cancel: () => void;
 };
 
-function ProfilePopUp({ userInfo, cancel }: ProfilePopUpProps) {
+function ProfilePopUp({ userInfo }: ProfilePopUpProps) {
   return (
     <div className="profile-mini-wrapper">
       <div className="profile-img">

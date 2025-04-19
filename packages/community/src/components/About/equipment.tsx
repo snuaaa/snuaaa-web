@@ -1,10 +1,10 @@
 import React from 'react';
-import mt200 from 'assets/img/about/mt200.jpg';
-import sanghui from 'assets/img/about/sanghui.jpg';
-import fourteenpointfiveinch from 'assets/img/about/14.5inch.jpg';
-import gwak from 'assets/img/about/gwak.jpg';
-import fs102 from 'assets/img/about/fs102.jpg';
-import c925 from 'assets/img/about/c9.25.jpg';
+import mt200 from '~/assets/img/about/mt200.jpg';
+import sanghui from '~/assets/img/about/sanghui.jpg';
+import fourteenpointfiveinch from '~/assets/img/about/14.5inch.jpg';
+import gwak from '~/assets/img/about/gwak.jpg';
+import fs102 from '~/assets/img/about/fs102.jpg';
+import c925 from '~/assets/img/about/c9.25.jpg';
 
 function Equipment() {
   return (

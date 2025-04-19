@@ -1,12 +1,12 @@
 import { useState, ChangeEvent } from 'react';
-import UserService from 'services/UserService';
+import UserService from '~/services/UserService';
 import CreateExhibitPhotoComponent from './ExhibitPhoto/CreateExhibitPhotoComponent';
-import useBlockBackgroundScroll from 'hooks/useBlockBackgroundScroll';
+import useBlockBackgroundScroll from '~/hooks/useBlockBackgroundScroll';
 import { List } from 'immutable';
-import { User } from 'services/types';
+import { User } from '~/services/types';
 import ExhibitPhotoService, {
   ExhibitPhotoInfo,
-} from 'services/ExhibitPhotoService';
+} from '~/services/ExhibitPhotoService';
 
 const MAX_SIZE = 100 * 1024 * 1024;
 
@@ -214,6 +214,7 @@ function CreateExhibitPhoto({
       } catch (err) {
         alert('사진 생성 실패');
         setBtnDisabled(false);
+        console.error(err);
       }
     }
   };

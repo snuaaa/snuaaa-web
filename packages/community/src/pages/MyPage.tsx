@@ -1,5 +1,5 @@
-import EditMyInfo from 'components/MyPage/EditMyInfo';
-import UserInfo from 'components/MyPage/UserInfo';
+import EditMyInfo from '~/components/MyPage/EditMyInfo';
+import UserInfo from '~/components/MyPage/UserInfo';
 import { useParams } from 'react-router';
 
 function MyPage() {

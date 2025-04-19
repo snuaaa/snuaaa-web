@@ -1,9 +1,9 @@
 import { ChangeEvent, FC, useCallback, useState } from 'react';
 
-import AlbumService from 'services/AlbumService';
+import AlbumService from '~/services/AlbumService';
 import { Record } from 'immutable';
 
-import { Album, Category } from 'services/types';
+import { Album, Category } from '~/services/types';
 import AlbumForm from './AlbumForm';
 
 type EditAlbumProps = {

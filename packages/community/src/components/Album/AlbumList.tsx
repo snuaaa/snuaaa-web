@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom';
-import defaultAlbumCover from 'assets/img/default_photo_img.png';
-import defaultStarAlbumCover from 'assets/img/default_photo_img_star.png';
+import defaultAlbumCover from '~/assets/img/default_photo_img.png';
+import defaultStarAlbumCover from '~/assets/img/default_photo_img_star.png';
 import Image from '../Common/AaaImage';
-import { Album } from 'services/types';
-import { getThumbnailPath } from 'utils/getThumbnailPath';
+import { Album } from '~/services/types';
+import { getThumbnailPath } from '~/utils/getThumbnailPath';
 
 type AlbumListProps = {
   board_id: string;

@@ -2,12 +2,12 @@ import { ChangeEvent, FC, useState, useRef, useEffect } from 'react';
 import Image from '../Common/AaaImage';
 import { breakLine } from '../../utils/breakLine';
 import { convertDynamicTime } from '../../utils/convertDate';
-import defaultProfile from 'assets/img/common/profile.png';
+import defaultProfile from '~/assets/img/common/profile.png';
 import UserActionDrawer from '../../components/Common/UserActionDrawer';
-import { Comment as CommentType } from 'services/types';
-import { User } from 'services/types';
-import CommentService from 'services/CommentService';
-import { useAuth } from 'contexts/auth';
+import { Comment as CommentType } from '~/services/types';
+import { User } from '~/services/types';
+import CommentService from '~/services/CommentService';
+import { useAuth } from '~/contexts/auth';
 
 type Props = {
   comment: CommentType;

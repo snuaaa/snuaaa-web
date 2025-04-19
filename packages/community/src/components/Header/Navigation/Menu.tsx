@@ -1,4 +1,4 @@
-import { Board } from 'services/types';
+import { Board } from '~/services/types';
 import { MenuLink } from './types';
 import MenuItem from './MenuItem';
 import { ReactElement } from 'react';

@@ -2,8 +2,8 @@ import React, { ChangeEvent } from 'react';
 import AttachFile from '../Post/AttachFile';
 
 import ProgressBar from '../Common/ProgressBar';
-import { Board } from 'services/types';
-import { CreateDocuRequest } from 'services/DocuService';
+import { Board } from '~/services/types';
+import { CreateDocuRequest } from '~/services/DocuService';
 
 type CreateDocuComponentProps = {
   docuInfo: CreateDocuRequest;
