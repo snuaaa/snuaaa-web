@@ -32,7 +32,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy ./build --project-name=your-project-name --branch=develop
+          command: pages deploy ./build --project-name=snuaaa-web --branch=develop
           workingDirectory: packages/community
 
 
