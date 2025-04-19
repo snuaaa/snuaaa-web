@@ -1,38 +1,64 @@
-name: Deploy
+name: Deploy React App to Cloudflare Pages
 
 on:
   push:
     branches:
       - main
-      - develop
+  release:
+    types: [published]
 
 jobs:
-  deploy:
+  deploy-preview:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    name: Deploy
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: 18.x
+          node-version: 20.x
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
 
       - name: Set environment
         run: |
-          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            echo "REACT_APP_SERVER_URL=${{ secrets.SERVER_URL_PROD }}" >> packages/community/.env
-          else
-            echo "REACT_APP_SERVER_URL=${{ secrets.SERVER_URL_DEV }}" >> packages/community/.env
-          fi
+          echo "REACT_APP_SERVER_URL=${{ secrets.SERVER_URL_DEV }}" >> packages/community/.env
 
-      - name: Install packages and build
-        run: |
-          yarn install --frozen-lockfile
-          yarn build
+      - name: Build project
+        run: yarn build
 
-      - name: Deploy
+      - name: Deploy to Cloudflare Pages (Preview)
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy build --project-name=snuaaa-web
+          command: pages deploy ./build --project-name=your-project-name --branch=develop
+          workingDirectory: packages/community
+
+
+  deploy-production:
+    if: github.event_name == 'release' && github.event.action == 'published'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20.x
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Set environment
+        run: |
+          echo "REACT_APP_SERVER_URL=${{ secrets.SERVER_URL_PROD }}" >> packages/community/.env
+
+      - name: Build project
+        run: yarn build
+
+      - name: Deploy to Cloudflare Pages (Production)
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy build --project-name=snuaaa-web --branch=main
           workingDirectory: packages/community
