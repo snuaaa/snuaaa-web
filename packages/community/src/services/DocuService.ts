@@ -14,6 +14,12 @@ type UpdateDocuRequest = {
   category_id?: string;
 };
 
+export type RetrieveDocumentParams = {
+  pageIdx?: number;
+  ctg_id?: string;
+  generation?: number;
+};
+
 const DocuService = {
   retrieveDocument: function (doc_id: number) {
     return API.get<{
@@ -22,20 +28,12 @@ const DocuService = {
     }>(`document/${doc_id}`);
   },
 
-  retrieveDocuments: function (
-    pageIdx: number,
-    ctg_id: string,
-    generation: number,
-  ) {
+  retrieveDocuments: function (params: RetrieveDocumentParams) {
     return API.get<{
       docInfo: Content[];
       docCount: number;
     }>('document', {
-      params: {
-        page: pageIdx,
-        category: ctg_id,
-        generation,
-      },
+      params,
     });
   },
 
