@@ -39,7 +39,7 @@ function DocuBoard({ boardInfo }: DocuBoardProps) {
   const fetchFunction = useCallback(() => {
     return DocuService.retrieveDocuments({
       pageIdx,
-      ctg_id: category,
+      category,
       generation,
     });
   }, [category, generation, pageIdx]);
