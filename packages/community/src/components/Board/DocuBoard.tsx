@@ -50,7 +50,7 @@ function DocuBoard({ boardInfo }: DocuBoardProps) {
   const handleChangeCategory = (e: ChangeEvent<HTMLInputElement>) => {
     history.push({
       state: {
-        ...location.state,
+        ...(location.state ?? {}),
         category: e.target.value,
         page: 1,
       },
@@ -60,7 +60,7 @@ function DocuBoard({ boardInfo }: DocuBoardProps) {
   const handleChangeGeneration = (e: ChangeEvent<HTMLInputElement>) => {
     history.push({
       state: {
-        ...location.state,
+        ...(location.state ?? {}),
         generation: e.target.value,
         page: 1,
       },
@@ -70,7 +70,7 @@ function DocuBoard({ boardInfo }: DocuBoardProps) {
   const handleClickPage = (idx: number) => {
     history.push({
       state: {
-        ...location.state,
+        ...(location.state ?? {}),
         page: idx,
       },
     });
