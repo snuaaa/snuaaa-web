@@ -8,7 +8,7 @@ import CreateDocu from './CreateDocu';
 import BoardName from '../../components/Board/BoardName';
 import DocuService from '../../services/DocuService';
 
-import { useLocation, useHistory } from 'react-router-dom'; // Fix import path
+import { useLocation, useHistory } from 'react-router-dom';
 import { Board } from '~/services/types';
 import { useFetch } from '~/hooks/useFetch';
 import { useAuth } from '~/contexts/auth';
@@ -20,9 +20,9 @@ type DocuBoardProps = {
 };
 
 type LocationState = {
-  category: string;
-  generation: number;
-  page: number;
+  category?: string;
+  generation?: number;
+  page?: number;
 };
 
 function DocuBoard({ boardInfo }: DocuBoardProps) {
@@ -32,63 +32,45 @@ function DocuBoard({ boardInfo }: DocuBoardProps) {
 
   const [isCreating, setIsCreating] = useState(false);
 
-  const category = location.state?.category;
-  const generation = location.state?.generation;
-  const pageIdx = location.state?.page ?? 1;
+  const { category, generation, page = 1 } = location.state ?? {};
 
   const fetchFunction = useCallback(() => {
     return DocuService.retrieveDocuments({
-      pageIdx,
+      pageIdx: page,
       category,
       generation,
     });
-  }, [category, generation, pageIdx]);
+  }, [category, generation, page]);
 
   const { data, refresh } = useFetch({ fetch: fetchFunction });
 
   const docCount = data?.docCount ?? 0;
   const documents = data?.docInfo ?? [];
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const category =
-      location.state && location.state.category ? location.state.category : '';
-    const generation =
-      location.state && location.state.generation
-        ? location.state.generation
-        : 0;
-
-    if (e.target.name === 'category') {
-      history.push({
-        state: {
-          category: e.target.value,
-          generation: generation,
-          page: 1,
-        },
-      });
-    }
-    if (e.target.name === 'generation') {
-      history.push({
-        state: {
-          category: category,
-          generation: e.target.value,
-          page: 1,
-        },
-      });
-    }
-  };
-
-  const clickPage = (idx: number) => {
-    const category =
-      location.state && location.state.category ? location.state.category : '';
-    const generation =
-      location.state && location.state.generation
-        ? location.state.generation
-        : 0;
-
+  const handleChangeCategory = (e: ChangeEvent<HTMLInputElement>) => {
     history.push({
       state: {
-        category: category,
-        generation: generation,
+        ...(location.state ?? {}),
+        category: e.target.value,
+        page: 1,
+      },
+    });
+  };
+
+  const handleChangeGeneration = (e: ChangeEvent<HTMLInputElement>) => {
+    history.push({
+      state: {
+        ...(location.state ?? {}),
+        generation: e.target.value,
+        page: 1,
+      },
+    });
+  };
+
+  const handleClickPage = (idx: number) => {
+    history.push({
+      state: {
+        ...(location.state ?? {}),
         page: idx,
       },
     });
@@ -129,13 +111,13 @@ function DocuBoard({ boardInfo }: DocuBoardProps) {
           <SelectBox
             selectName="category"
             optionList={categoryOptions}
-            onSelect={handleChange}
+            onSelect={handleChangeCategory}
             selectedOption={category}
           />
           <SelectBox
             selectName="generation"
             optionList={generationOptions}
-            onSelect={handleChange}
+            onSelect={handleChangeGeneration}
             selectedOption={generation}
           />
         </div>
@@ -153,9 +135,9 @@ function DocuBoard({ boardInfo }: DocuBoardProps) {
         <DocuList documents={documents} />
         {docCount > 0 && (
           <Paginator
-            pageIdx={pageIdx}
+            pageIdx={page}
             pageNum={Math.ceil(docCount / DOCROWNUM)}
-            clickPage={clickPage}
+            clickPage={handleClickPage}
           />
         )}
         {isCreating && (
