@@ -32,12 +32,16 @@ function DocuBoard({ boardInfo }: DocuBoardProps) {
 
   const [isCreating, setIsCreating] = useState(false);
 
-  const category = location.state?.category ?? '';
-  const generation = location.state?.generation ?? 0;
+  const category = location.state?.category;
+  const generation = location.state?.generation;
   const pageIdx = location.state?.page ?? 1;
 
   const fetchFunction = useCallback(() => {
-    return DocuService.retrieveDocuments(pageIdx, category, generation);
+    return DocuService.retrieveDocuments({
+      pageIdx,
+      category,
+      generation,
+    });
   }, [category, generation, pageIdx]);
 
   const { data, refresh } = useFetch({ fetch: fetchFunction });

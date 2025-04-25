@@ -1,4 +1,5 @@
 import { PropsWithChildren } from 'react';
+import { SERVER_URL } from '~/constants/env';
 
 type Props = {
   content_id: number;
@@ -10,9 +11,7 @@ const DownloadFile = ({
   file_id,
   children,
 }: PropsWithChildren<Props>) => {
-  const url =
-    process.env.REACT_APP_SERVER_URL +
-    `api/content/${content_id}/file/${file_id}`;
+  const url = SERVER_URL + `api/content/${content_id}/file/${file_id}`;
   return <a href={url}>{children}</a>;
 };
 
