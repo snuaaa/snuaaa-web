@@ -15,7 +15,7 @@ type UpdateDocuRequest = {
 };
 
 export type RetrieveDocumentParams = {
-  pageIdx?: number;
+  page?: number;
   category?: string; // categoryId
   generation?: number;
 };
