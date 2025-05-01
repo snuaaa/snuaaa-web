@@ -1,13 +1,13 @@
 import { useState } from 'react';
-import logo from '../assets/img/logo_white.png';
-import imgProfile from '../assets/img/common/profile.png';
+import logo from '~/assets/img/logo_white.png';
+import imgProfile from '~/assets/img/common/profile.png';
 import Navigation from '~/components/Header/Navigation';
 import PopupUser from '~/components/Header/PopupUser';
 import Image from '~/components/Common/AaaImage';
 import { useHistory } from 'react-router';
 import { useAuth } from '~/contexts/auth';
 import { useBoards } from '~/contexts/board';
-import backgroundImg from '../assets/img/header.gif';
+import backgroundImg from '~/assets/img/header.gif';
 
 function Header() {
   const [isShowPopupUser, setIsShowPopupUser] = useState(false);
