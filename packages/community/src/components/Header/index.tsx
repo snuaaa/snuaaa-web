@@ -6,13 +6,13 @@ import PopupUser from '~/components/Header/PopupUser';
 import Image from '~/components/Common/AaaImage';
 import { useHistory } from 'react-router';
 import { useAuth } from '~/contexts/auth';
-import { useBoards } from '~/contexts/board';
 import backgroundImg from '~/assets/img/header.gif';
+import { useViewportSize } from '~/contexts/viewportSize';
+import Drawer from './Drawer';
 
 function Header() {
   const [isShowPopupUser, setIsShowPopupUser] = useState(false);
   const history = useHistory();
-  const boardContext = useBoards();
   const authContext = useAuth();
 
   const togglePopup = () => {
@@ -29,7 +29,16 @@ function Header() {
 
   const isNotGuest = authContext.authInfo.user.grade < 10;
 
+  const viewportSize = useViewportSize();
+  const isMobile = viewportSize === 'Mobile';
+
   const { profile_path } = authContext.authInfo.user;
+
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  const openDrawer = () => {
+    setIsDrawerOpen(true);
+  };
 
   return (
     <>
@@ -41,6 +50,12 @@ function Header() {
             className="hidden md:block md:h-[250px] md:object-cover"
           ></img>
           <div className="md:absolute w-full flex md:py-2 md:px-6">
+            <button
+              className="text-white flex items-center px-2 md:hidden"
+              onClick={openDrawer}
+            >
+              <i className="ri-menu-line"></i>
+            </button>
             <button
               className="text-white flex items-center gap-1 pl-1"
               onClick={handleClickLogo}
@@ -79,7 +94,11 @@ function Header() {
           </div>
         </div>
       </div>
-      <Navigation boards={boardContext.boardsInfo} />
+      {isMobile ? (
+        <Drawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />
+      ) : (
+        <Navigation />
+      )}
     </>
   );
 }
