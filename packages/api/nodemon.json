@@ -1,0 +1,16 @@
+{
+    "verbose": true,
+    "ignore": [
+        "build",
+        "build/*",
+        "log/*",
+        "riseset/*",
+        "upload",
+        "upload/*"
+    ],
+    "watch": [
+        "src"
+    ],
+    "exec": "node -r ts-node/register ./src/main.ts",
+    "ext": "ts"
+}

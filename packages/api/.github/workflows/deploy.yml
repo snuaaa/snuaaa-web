@@ -1,0 +1,88 @@
+name: Deploy API Server
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  release:
+    types: [published]
+
+jobs:
+  deploy-staging:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        run: docker build -t snuaaa-api:${{ github.sha }} .
+
+      - name: Save Docker image to file
+        run: |
+          docker save snuaaa-api:${{ github.sha }} | gzip > snuaaa-api.tar.gz
+
+      - name: Copy Docker image to staging server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.LIGHTSAIL_STAGING_HOST }}
+          username: ubuntu
+          port: 22
+          key: ${{ secrets.LIGHTSAIL_STAGING_SSH_KEY }}
+          source: "snuaaa-api.tar.gz"
+          target: /home/ubuntu/app/
+          overwrite: true
+
+      - name: Run deploy script on staging server
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.LIGHTSAIL_STAGING_HOST }}
+          username: ubuntu
+          key: ${{ secrets.LIGHTSAIL_STAGING_SSH_KEY }}
+          script: |
+            cd /home/ubuntu/app
+            source deploy.sh ${{ github.sha }}
+
+  deploy-production:
+    if: github.event_name == 'release' && github.event.action == 'published'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image with release tag
+        run: docker build -t snuaaa-api:${{ github.event.release.tag_name }} .
+        
+      - name: Save Docker image to file
+        run: |
+          docker save snuaaa-api:${{ github.event.release.tag_name }} | gzip > snuaaa-api.tar.gz
+
+      - name: Copy Docker image to production server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.LIGHTSAIL_PROD_HOST }}
+          username: ubuntu
+          port: 22
+          key: ${{ secrets.LIGHTSAIL_PROD_SSH_KEY }}
+          source: "snuaaa-api.tar.gz"
+          target: /home/ubuntu/app/
+          overwrite: true
+
+      - name: Run deploy script on production server
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.LIGHTSAIL_PROD_HOST }}
+          username: ubuntu
+          key: ${{ secrets.LIGHTSAIL_PROD_SSH_KEY }}
+          script: |
+            cd /home/ubuntu/app
+            source deploy.sh ${{ github.event.release.tag_name }}
