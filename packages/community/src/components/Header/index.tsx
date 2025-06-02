@@ -43,15 +43,15 @@ function Header() {
   return (
     <>
       <div id="aaa-top" className="w-full bg-[#040c22]">
-        <div className="w-full flex md:max-w-[1920px] relative m-auto justify-center">
+        <div className="w-full flex md:max-w-[1920px] relative m-auto justify-around">
           <img
             src={backgroundImg}
             alt="background-header"
             className="hidden md:block md:h-[250px] md:object-cover"
           ></img>
-          <div className="md:absolute w-full flex md:py-2 md:px-6">
+          <div className="md:absolute w-full flex justify-center md:py-2 md:px-6">
             <button
-              className="text-white flex items-center px-2 md:hidden"
+              className="text-white flex items-center px-2 text-xl md:hidden"
               onClick={openDrawer}
             >
               <i className="ri-menu-line"></i>
@@ -68,7 +68,7 @@ function Header() {
               <p className="text-lg">서울대학교 아마추어 천문회</p>
             </button>
             {isNotGuest ? (
-              <div className="flex ml-auto my-1 mr-3 md:my-0 md:mr-10 md:justify-center">
+              <div className="flex my-1 mr-3 md:my-0 md:mr-10 md:justify-center">
                 <Image
                   className="w-10 h-10 md:w-[50px] md:h-[50px] rounded-full cursor-pointer object-cover"
                   onClick={togglePopup}
