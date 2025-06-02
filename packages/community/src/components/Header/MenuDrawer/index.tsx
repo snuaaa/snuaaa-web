@@ -15,7 +15,7 @@ const MenuDrawer = ({ isOpen, onClose }: Props) => {
   return (
     <Drawer isOpen={isOpen} onClose={onClose}>
       {/* NOTE: transition이 끊기는 이슈로 pl, pr은 자식에서 적용 */}
-      <ul className="flex flex-col gap-6 py-4 pl-2 pr-10 text-white">
+      <ul className="flex flex-col gap-6 py-4 pl-2 pr-10 text-white select-none">
         <Menu
           menuName="A.A.A."
           menuItems={ABOUT_AAA_LINKS}

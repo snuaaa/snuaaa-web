@@ -30,7 +30,7 @@ function Menu({ menuName, menuItems, icon }: Props) {
   });
 
   const [isOpen, setIsOpen] = useState(false);
-  const [isSubMenuVisible, setIsSubMenuVisible] = useState(true);
+  const [isSubMenuVisible, setIsSubMenuVisible] = useState(false);
 
   const handleChangeChecked = (e: ChangeEvent<HTMLInputElement>) => {
     const isChecked = e.target.checked;

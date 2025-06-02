@@ -29,7 +29,7 @@ const Drawer = ({
         ></div>
 
         <div
-          className={`absolute top-0 left-0 ${isOpen ? 'max-w-full' : 'max-w-0'} h-full bg-slate-700 transition-all duration-300 ease-out z-10 overflow-hidden`}
+          className={`absolute top-0 left-0 ${isOpen ? 'max-w-full' : 'max-w-0'} h-full bg-slate-700 transition-all duration-300 ease-out z-10 overflow-auto`}
         >
           {children}
         </div>
