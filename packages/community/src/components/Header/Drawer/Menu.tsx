@@ -2,7 +2,7 @@ import { Board } from '~/services/types';
 import { MenuLink } from '../Navigation/types';
 import { useAuth } from '~/contexts/auth';
 import MenuItem from './MenuItem';
-import { ReactElement } from 'react';
+import { ChangeEvent, ReactElement, useCallback, useState } from 'react';
 
 type Props = {
   menuName: string;
@@ -29,9 +29,44 @@ function Menu({ menuName, menuItems, icon }: Props) {
     return true;
   });
 
+  // const subMenuRef = useRef<HTMLDivElement>(null);
+
+  const [isOpen, setIsOpen] = useState(false);
+  const [isSubMenuVisible, setIsSubMenuVisible] = useState(true);
+
+  const handleChangeChecked = (e: ChangeEvent<HTMLInputElement>) => {
+    const isChecked = e.target.checked;
+    setIsOpen(isChecked);
+    if (isChecked) {
+      setIsSubMenuVisible(true);
+    }
+  };
+
+  const subMenuRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      console.log('subMenuRef', node);
+      if (node !== null) {
+        node.style.maxHeight = isOpen ? `${node.scrollHeight}px` : '0';
+      }
+    },
+    [isOpen],
+  );
+
+  const handleTransitionEnd = () => {
+    if (!isOpen) {
+      setIsSubMenuVisible(false);
+    }
+  };
+
   return (
     <li className="px-2 bg-slate-700">
-      <input type="checkbox" id={menuName} className="hidden peer" />
+      <input
+        type="checkbox"
+        id={menuName}
+        className="hidden peer"
+        onChange={handleChangeChecked}
+        checked={isOpen}
+      />
       <label
         htmlFor={menuName}
         className="cursor-pointer font-extrabold flex items-center gap-2"
@@ -39,8 +74,16 @@ function Menu({ menuName, menuItems, icon }: Props) {
         {icon}
         {menuName}
       </label>
-      <div className="text-sm max-h-0 overflow-hidden peer-checked:max-h-[1000px] transition-all duration-300 ease-in-out">
-        <ul className="flex flex-col gap-3 pt-4">
+      <div
+        ref={subMenuRef}
+        className="text-sm max-h-0 overflow-hidden transition-[max-height] duration-200 ease-in"
+        onTransitionEnd={() => {
+          handleTransitionEnd();
+        }}
+      >
+        <ul
+          className={`flex flex-col gap-3 pt-4 ${isSubMenuVisible ? 'visible' : 'invisible'}`}
+        >
           {accessibleMenuItems.map((item) => (
             <MenuItem
               item={item}
