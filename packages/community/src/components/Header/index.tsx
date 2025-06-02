@@ -43,13 +43,13 @@ function Header() {
   return (
     <>
       <div id="aaa-top" className="w-full bg-[#040c22]">
-        <div className="w-full flex md:max-w-[1920px] relative m-auto justify-between">
+        <div className="w-full flex md:max-w-[1920px] relative m-auto">
           <img
             src={backgroundImg}
             alt="background-header"
             className="hidden md:block md:h-[250px] md:object-cover"
           ></img>
-          <div className="md:absolute w-full flex justify-center md:py-2 md:px-6">
+          <div className="md:absolute w-full flex justify-between md:py-2 md:px-6">
             <button
               className="text-white flex items-center px-2 text-xl md:hidden"
               onClick={openDrawer}
