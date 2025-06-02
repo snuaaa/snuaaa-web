@@ -30,7 +30,7 @@ function Header() {
   const isNotGuest = authContext.authInfo.user.grade < 10;
 
   const viewportSize = useViewportSize();
-  const isMobile = viewportSize === 'Mobile';
+  const isMobile = ['Tablet', 'Mobile'].includes(viewportSize);
 
   const { profile_path } = authContext.authInfo.user;
 
@@ -43,7 +43,7 @@ function Header() {
   return (
     <>
       <div id="aaa-top" className="w-full bg-[#040c22]">
-        <div className="w-full flex md:max-w-[1920px] relative m-auto justify-around">
+        <div className="w-full flex md:max-w-[1920px] relative m-auto justify-between">
           <img
             src={backgroundImg}
             alt="background-header"
