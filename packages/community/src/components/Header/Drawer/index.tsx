@@ -27,7 +27,7 @@ const Drawer = ({ isOpen, onClose }: Props) => {
       className={`fixed inset-0 h-full w-full z-30 ${isOpen ? 'visible' : 'invisible'} transition-all duration-300 ease-out`}
     >
       <div
-        className="bg-slate-800 opacity-50 absolute inset-0 transition-all duration-300 ease-out"
+        className={`bg-slate-800 absolute inset-0 ${isOpen ? 'opacity-50' : 'opacity-0'} transition-all duration-300 ease-out`}
         onClick={onClose}
       ></div>
 
