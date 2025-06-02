@@ -8,7 +8,7 @@ import { useHistory } from 'react-router';
 import { useAuth } from '~/contexts/auth';
 import backgroundImg from '~/assets/img/header.gif';
 import { useViewportSize } from '~/contexts/viewportSize';
-import Drawer from './Drawer';
+import Drawer from './MenuDrawer';
 
 function Header() {
   const [isShowPopupUser, setIsShowPopupUser] = useState(false);

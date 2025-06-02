@@ -1,6 +1,7 @@
 import { Board } from '~/services/types';
 import { MenuLink } from '../Navigation/types';
 import { Link } from 'react-router-dom';
+import { useDrawer } from '~/components/Common/Drawer/useDrawer';
 
 type Props = {
   item: Board | MenuLink;
@@ -11,10 +12,16 @@ const baseItemStyle = 'w-full pl-8 whitespace-nowrap';
 function MenuItem(props: Props) {
   const { item } = props;
 
+  const { onClose } = useDrawer();
+
   return (
     <li>
       {'board_id' in item ? (
-        <Link to={`/board/${item.board_id}`} className={baseItemStyle}>
+        <Link
+          to={`/board/${item.board_id}`}
+          className={baseItemStyle}
+          onClick={onClose}
+        >
           {item.board_name}
         </Link>
       ) : item.isExternal ? (
@@ -28,7 +35,7 @@ function MenuItem(props: Props) {
           <i className="ri-external-link-line"></i>
         </a>
       ) : (
-        <Link to={item.url} className={baseItemStyle}>
+        <Link to={item.url} className={baseItemStyle} onClick={onClose}>
           {item.name}
         </Link>
       )}
