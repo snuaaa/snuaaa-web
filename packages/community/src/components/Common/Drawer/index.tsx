@@ -27,9 +27,8 @@ const Drawer = ({
           className={`bg-slate-800 absolute inset-0 ${isOpen ? 'opacity-50' : 'opacity-0'} transition-all duration-300 ease-out`}
           onClick={onClose}
         ></div>
-
         <div
-          className={`absolute top-0 left-0 ${isOpen ? 'max-w-full' : 'max-w-0'} h-full bg-slate-700 transition-all duration-300 ease-out z-10 overflow-auto`}
+          className={`absolute top-0 left-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'} h-full bg-slate-700 transition-all duration-300 ease-out z-10 overflow-auto`}
         >
           {children}
         </div>
