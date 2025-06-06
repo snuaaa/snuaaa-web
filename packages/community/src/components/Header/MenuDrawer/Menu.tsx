@@ -56,7 +56,7 @@ function Menu({ menuName, menuItems, icon }: Props) {
   };
 
   return (
-    <li className="px-2 bg-slate-700">
+    <li className={'bg-slate-700'}>
       <input
         type="checkbox"
         id={menuName}
@@ -66,7 +66,7 @@ function Menu({ menuName, menuItems, icon }: Props) {
       />
       <label
         htmlFor={menuName}
-        className="cursor-pointer font-extrabold flex items-center gap-2"
+        className={`cursor-pointer font-extrabold flex items-center pl-4 pr-12 py-3 gap-2 hover:bg-slate-800`}
       >
         {icon}
         {menuName}
@@ -79,7 +79,7 @@ function Menu({ menuName, menuItems, icon }: Props) {
         }}
       >
         <ul
-          className={`flex flex-col gap-3 pt-4 ${isSubMenuVisible ? 'visible' : 'invisible'}`}
+          className={`flex flex-col ${isSubMenuVisible ? 'visible' : 'invisible'}`}
         >
           {accessibleMenuItems.map((item) => (
             <MenuItem

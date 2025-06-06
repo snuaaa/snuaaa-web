@@ -7,7 +7,8 @@ type Props = {
   item: Board | MenuLink;
 };
 
-const baseItemStyle = 'w-full pl-8 whitespace-nowrap';
+const baseItemStyle =
+  'block w-full pl-4 py-2 pr-4 whitespace-nowrap border-l border-slate-500 hover:bg-slate-500 transition-colors duration-200';
 
 function MenuItem(props: Props) {
   const { item } = props;
@@ -15,7 +16,7 @@ function MenuItem(props: Props) {
   const { onClose } = useDrawer();
 
   return (
-    <li>
+    <li className="pl-6 bg-slate-700">
       {'board_id' in item ? (
         <Link
           to={`/board/${item.board_id}`}
