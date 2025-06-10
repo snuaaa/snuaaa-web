@@ -41,6 +41,10 @@ const useCreatePhoto = ({ boardId, albumId, onCreatePhoto }: Props) => {
     ...formOpts,
     onSubmit: async ({ value }) => {
       const { list, board_id, album_id } = value;
+      if (list.some((info) => !info.img_url)) {
+        alert('사진 업로드를 기다려주세요.');
+        return;
+      }
       try {
         await PhotoService.createPhoto({
           list,
