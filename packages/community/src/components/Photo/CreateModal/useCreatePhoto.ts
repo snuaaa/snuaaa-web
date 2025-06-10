@@ -28,7 +28,6 @@ const DEFAULT_PHOTO_INFO = {
 
 const useCreatePhoto = ({ boardId, albumId, onCreatePhoto }: Props) => {
   const [editingIdx, setEditingIdx] = useState(-1);
-  const [isCreating, setIsCreating] = useState(false);
 
   const formOpts = formOptions({
     defaultValues: {
@@ -52,8 +51,6 @@ const useCreatePhoto = ({ boardId, albumId, onCreatePhoto }: Props) => {
       } catch (err) {
         console.error(err);
         alert('사진 생성 실패');
-      } finally {
-        setIsCreating(false);
       }
     },
   });
@@ -135,26 +132,13 @@ const useCreatePhoto = ({ boardId, albumId, onCreatePhoto }: Props) => {
     [editingIdx, form],
   );
 
-  // const createPhotos = useCallback(async () => {
-  //   setIsCreating(true);
-  //   try {
-  //     form.handleSubmit();
-  //   } catch (err) {
-  //     console.error(err);
-  //     alert('사진 생성 실패');
-  //     setIsCreating(false);
-  //   }
-  // }, [albumId, boardId, onCreatePhoto, photoInfo]);
-
   return {
     editingIdx,
     form,
-    isCreating,
     setEditingIdx,
     handleChangeFile,
     removeImg,
     handleChangeTag,
-    // createPhotos,
   };
 };
 
