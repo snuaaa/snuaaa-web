@@ -3,4 +3,5 @@ export type MenuLink = {
   url: string;
   shortName?: string;
   isExternal?: boolean;
+  accessGrade?: number;
 };

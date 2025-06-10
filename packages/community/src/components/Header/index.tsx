@@ -1,18 +1,18 @@
 import { useState } from 'react';
-import logo from '../assets/img/logo_white.png';
-import imgProfile from '../assets/img/common/profile.png';
-import Navigation from '../components/Header/Navigation';
-import PopupUser from '../components/Header/PopupUser';
-import Image from '../components/Common/AaaImage';
+import logo from '~/assets/img/logo_white.png';
+import imgProfile from '~/assets/img/common/profile.png';
+import Navigation from '~/components/Header/Navigation';
+import PopupUser from '~/components/Header/PopupUser';
+import Image from '~/components/Common/AaaImage';
 import { useHistory } from 'react-router';
 import { useAuth } from '~/contexts/auth';
-import { useBoards } from '~/contexts/board';
-import backgroundImg from '../assets/img/header.gif';
+import backgroundImg from '~/assets/img/header.gif';
+import { useViewportSize } from '~/contexts/viewportSize';
+import Drawer from './MenuDrawer';
 
 function Header() {
   const [isShowPopupUser, setIsShowPopupUser] = useState(false);
   const history = useHistory();
-  const boardContext = useBoards();
   const authContext = useAuth();
 
   const togglePopup = () => {
@@ -29,18 +29,33 @@ function Header() {
 
   const isNotGuest = authContext.authInfo.user.grade < 10;
 
+  const viewportSize = useViewportSize();
+  const isMobile = ['Tablet', 'Mobile'].includes(viewportSize);
+
   const { profile_path } = authContext.authInfo.user;
+
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  const openDrawer = () => {
+    setIsDrawerOpen(true);
+  };
 
   return (
     <>
       <div id="aaa-top" className="w-full bg-[#040c22]">
-        <div className="w-full flex md:max-w-[1920px] relative m-auto justify-center">
+        <div className="w-full flex md:max-w-[1920px] relative m-auto">
           <img
             src={backgroundImg}
             alt="background-header"
             className="hidden md:block md:h-[250px] md:object-cover"
           ></img>
-          <div className="md:absolute w-full flex md:py-2 md:px-6">
+          <div className="md:absolute w-full flex justify-between md:py-2 md:px-6">
+            <button
+              className="text-white flex items-center px-2 text-xl md:hidden"
+              onClick={openDrawer}
+            >
+              <i className="ri-menu-line"></i>
+            </button>
             <button
               className="text-white flex items-center gap-1 pl-1"
               onClick={handleClickLogo}
@@ -53,7 +68,7 @@ function Header() {
               <p className="text-lg">서울대학교 아마추어 천문회</p>
             </button>
             {isNotGuest ? (
-              <div className="flex ml-auto my-1 mr-3 md:my-0 md:mr-10 md:justify-center">
+              <div className="flex my-1 mr-3 md:my-0 md:mr-10 md:justify-center">
                 <Image
                   className="w-10 h-10 md:w-[50px] md:h-[50px] rounded-full cursor-pointer object-cover"
                   onClick={togglePopup}
@@ -79,7 +94,11 @@ function Header() {
           </div>
         </div>
       </div>
-      <Navigation boards={boardContext.boardsInfo} />
+      {isMobile ? (
+        <Drawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />
+      ) : (
+        <Navigation />
+      )}
     </>
   );
 }

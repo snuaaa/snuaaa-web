@@ -2,6 +2,7 @@ import { Board } from '~/services/types';
 import { MenuLink } from './types';
 import MenuItem from './MenuItem';
 import { ReactElement } from 'react';
+import { useAuth } from '~/contexts/auth';
 
 type Props = {
   menuName: string | ReactElement;
@@ -9,6 +10,24 @@ type Props = {
 };
 
 function Menu({ menuName, menuItems }: Props) {
+  const {
+    authInfo: {
+      user: { grade: userGrade },
+    },
+  } = useAuth();
+
+  const accessibleMenuItems = menuItems?.filter((item) => {
+    if ('board_id' in item) {
+      return userGrade <= item.lv_read;
+    }
+
+    if (item.accessGrade) {
+      return userGrade <= item.accessGrade;
+    }
+
+    return true;
+  });
+
   return (
     <li className="group text-white h-full md:h-auto" tabIndex={0}>
       <div
@@ -18,10 +37,10 @@ function Menu({ menuName, menuItems }: Props) {
       >
         {menuName}
       </div>
-      {menuItems && (
-        <div className="absolute left-0 md:left-auto w-full md:w-auto top-full max-h-0 group-hover:max-h-[400px] group-focus:max-h-[400px] bg-[#fDEED5] md:bg-[#FAD55F] z-10 text-[#05070E] md:text-white overflow-hidden transition-all duration-300 ease-in-out shadow-[0_1px_5px_0_rgba(0,0,0,0.15)]">
+      {accessibleMenuItems && (
+        <div className="absolute left-0 md:left-auto w-full md:w-auto top-full max-h-0 group-focus:max-h-[400px] group-hover:max-h-[400px] bg-[#fDEED5] md:bg-[#FAD55F] z-10 text-[#05070E] md:text-white overflow-hidden transition-all duration-300 ease-in-out shadow-[0_1px_5px_0_rgba(0,0,0,0.15)]">
           <ul className="w-full md:w-[200px] z-10 flex md:block flex-wrap">
-            {menuItems.map((item) => (
+            {accessibleMenuItems.map((item) => (
               <MenuItem
                 key={'board_id' in item ? item.board_id : item.name}
                 item={item}
