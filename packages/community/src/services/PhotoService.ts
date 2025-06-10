@@ -1,25 +1,28 @@
 import { API } from './index';
 
-import { Photo, Tag } from './types';
+import { Content, Photo, Tag } from './types';
+
+export type CreatePhotoInfo = Pick<Content, 'title' | 'text'> &
+  Pick<
+    Photo['photo'],
+    | 'location'
+    | 'camera'
+    | 'lens'
+    | 'exposure_time'
+    | 'focal_length'
+    | 'f_stop'
+    | 'iso'
+    | 'date'
+    | 'img_url'
+    | 'thumbnail_url'
+  > & {
+    tags: Tag['tag_id'][];
+  };
 
 export interface CreatePhotoRequest {
-  board_id?: string;
+  board_id: string;
   album_id?: number;
-  title?: string;
-  text?: string;
-  file_path?: string;
-  thumbnail_path?: string;
-  location?: string;
-  camera?: string;
-  lens?: string;
-  exposure_time?: string;
-  focal_length?: string;
-  f_stop?: string;
-  iso?: string;
-  date?: Date;
-  tags?: string[];
-  img_url: string;
-  thumbnail_url: string;
+  list: CreatePhotoInfo[];
 }
 
 const PhotoService = {
@@ -43,11 +46,7 @@ const PhotoService = {
     return API.delete(`photo/${photo_id}`);
   },
 
-  createPhoto: function (data: {
-    list: CreatePhotoRequest[];
-    board_id: string;
-    album_id?: number;
-  }) {
+  createPhoto: function (data: CreatePhotoRequest) {
     return API.post('photo', data);
   },
 };
