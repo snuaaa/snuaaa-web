@@ -112,30 +112,28 @@ const useCreatePhoto = ({ boardId, albumId, onCreatePhoto }: Props) => {
     [editingIdx, form],
   );
 
-  // const handleChangeTag = useCallback(
-  //   (tagId: string) => {
-  //     const info = photoInfo.get(editingIdx);
+  const handleChangeTag = useCallback(
+    (tagId: string) => {
+      const photoInfo = form.getFieldValue(`list[${editingIdx}]`);
 
-  //     if (info && info.tags) {
-  //       if (info.tags.includes(tagId)) {
-  //         setPhotoInfo(
-  //           photoInfo.set(editingIdx, {
-  //             ...photoInfo.get(editingIdx),
-  //             tags: info.tags.filter((tag) => tagId !== tag),
-  //           }),
-  //         );
-  //       } else {
-  //         setPhotoInfo(
-  //           photoInfo.set(editingIdx, {
-  //             ...photoInfo.get(editingIdx),
-  //             tags: info.tags.concat(tagId),
-  //           }),
-  //         );
-  //       }
-  //     }
-  //   },
-  //   [editingIdx, photoInfo],
-  // );
+      if (!photoInfo) {
+        return;
+      }
+
+      if (photoInfo.tags.includes(tagId)) {
+        form.setFieldValue(`list[${editingIdx}]`, {
+          ...photoInfo,
+          tags: photoInfo.tags.filter((tag) => tag !== tagId),
+        });
+      } else {
+        form.setFieldValue(`list[${editingIdx}]`, {
+          ...photoInfo,
+          tags: [...photoInfo.tags, tagId],
+        });
+      }
+    },
+    [editingIdx, form],
+  );
 
   // const createPhotos = useCallback(async () => {
   //   setIsCreating(true);
@@ -155,7 +153,7 @@ const useCreatePhoto = ({ boardId, albumId, onCreatePhoto }: Props) => {
     setEditingIdx,
     handleChangeFile,
     removeImg,
-    // handleChangeTag,
+    handleChangeTag,
     // createPhotos,
   };
 };

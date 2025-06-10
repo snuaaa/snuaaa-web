@@ -26,7 +26,7 @@ const CreatePhoto: FC<Props> = ({
   useBlockBackgroundScroll();
 
   const {
-    // handleChangeTag,
+    handleChangeTag,
     form,
     // createPhotos,
     editingIdx,
@@ -102,8 +102,7 @@ const CreatePhoto: FC<Props> = ({
                             isSelected={
                               photoInfo?.tags?.includes(tag.tag_id) ?? false
                             }
-                            onChange={() => {}}
-                            // onChange={() => handleChangeTag(tag.tag_id)}
+                            onChange={() => handleChangeTag(tag.tag_id)}
                           />
                         ))}
                       </div>
