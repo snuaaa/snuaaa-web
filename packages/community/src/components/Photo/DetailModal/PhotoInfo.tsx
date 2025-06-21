@@ -1,9 +1,7 @@
-import ProfileMini from '../Common/ProfileMini';
-
-import { breakLine } from '../../utils/breakLine';
-import { convertDate, convertFullDate } from '../../utils/convertDate';
-import ActionDrawer from '../Common/ActionDrawer';
-import 'react-datepicker/dist/react-datepicker.css';
+import ProfileMini from '~/components/Common/ProfileMini';
+import { breakLine } from '~/utils/breakLine';
+import { convertDate, convertFullDate } from '~/utils/convertDate';
+import ActionDrawer from '~/components/Common/ActionDrawer';
 
 import { ExhibitPhoto, Photo } from '~/services/types';
 import { Divider } from '~/ui';
