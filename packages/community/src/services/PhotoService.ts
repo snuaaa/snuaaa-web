@@ -25,6 +25,22 @@ export interface CreatePhotoRequest {
   list: CreatePhotoInfo[];
 }
 
+export type UpdatePhotoRequest = Pick<Content, 'title' | 'text'> & {
+  tags: Tag['tag_id'][];
+} & {
+  photo: Pick<
+    Photo['photo'],
+    | 'date'
+    | 'camera'
+    | 'lens'
+    | 'focal_length'
+    | 'f_stop'
+    | 'exposure_time'
+    | 'iso'
+    | 'location'
+  >;
+};
+
 const PhotoService = {
   retrievePhoto: function (photo_id: number) {
     return API.get<{
@@ -38,7 +54,7 @@ const PhotoService = {
     }>(`photo/${photo_id}`);
   },
 
-  updatePhoto: function (photo_id: number, data: Photo) {
+  updatePhoto: function (photo_id: number, data: UpdatePhotoRequest) {
     return API.patch(`photo/${photo_id}`, data);
   },
 

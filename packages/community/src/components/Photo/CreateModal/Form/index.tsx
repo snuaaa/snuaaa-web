@@ -1,4 +1,5 @@
-import { formOptionsCreatePhoto, withForm } from '../formContext';
+import { withForm } from '~/components/Form';
+import { formOptionsCreatePhoto } from '../formContext';
 
 const PhotoInfoForm = withForm({
   ...formOptionsCreatePhoto,
