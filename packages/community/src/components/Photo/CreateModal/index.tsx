@@ -76,7 +76,7 @@ const CreatePhoto: FC<Props> = ({
                 <div className="block-constant">
                   <label htmlFor="photos">
                     <div className="add-photo">
-                      <i className="ri-add-fill enif-f-2x"></i>
+                      <i className="ri-add-fill text-[2rem]"></i>
                     </div>
                   </label>
                   <input

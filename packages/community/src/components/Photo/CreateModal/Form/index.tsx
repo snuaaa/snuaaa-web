@@ -1,5 +1,3 @@
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
 import { formOptionsCreatePhoto, withForm } from '../formContext';
 
 const PhotoInfoForm = withForm({
@@ -12,19 +10,13 @@ const PhotoInfoForm = withForm({
       return <></>;
     }
 
-    const photoInfo = form.getFieldValue(`list[${editingIdx}]`);
     return (
-      <div className="photo-input-area-wrapper">
+      <div className="flex flex-col gap-1 p-2">
         <form.AppField
           key={`list[${editingIdx}].title`}
           name={`list[${editingIdx}].title`}
           children={(field) => (
-            <field.Input
-              className="input-title"
-              type="text"
-              name="title"
-              placeholder="제목"
-            />
+            <field.Input type="text" name="title" placeholder="제목" />
           )}
         />
         <form.AppField
@@ -32,7 +24,7 @@ const PhotoInfoForm = withForm({
           name={`list[${editingIdx}].text`}
           children={(field) => (
             <textarea
-              className="input-desc"
+              className="w-full h-24 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
               placeholder="설명"
               name="text"
               onChange={(e) => field.handleChange(e.target.value)}
@@ -40,120 +32,94 @@ const PhotoInfoForm = withForm({
             />
           )}
         />
-        {photoInfo && (
-          <div className="photo-infos">
-            <div className="photo-info">
-              <div className="label-wrapper">
-                <label>Date</label>
-              </div>
-              <form.AppField
-                key={`list[${editingIdx}].date`}
-                name={`list[${editingIdx}].date`}
-                children={(field) => (
-                  <DatePicker
-                    selected={field.state.value}
-                    onChange={(date) => field.handleChange(date as Date)}
-                    dateFormat="yyyy/MM/dd"
-                  />
-                )}
-              />
-            </div>
-            <div className="photo-info">
-              <div className="label-wrapper">
-                <label>Location</label>
-              </div>
-              <form.AppField
-                key={`list[${editingIdx}].location`}
-                name={`list[${editingIdx}].location`}
-                children={(field) => (
-                  <field.Input className="w-1/2" type="text" name="location" />
-                )}
-              />
-            </div>
-            <div className="photo-info">
-              <div className="label-wrapper">
-                <label>Camera</label>
-              </div>
-              <form.AppField
-                key={`list[${editingIdx}].camera`}
-                name={`list[${editingIdx}].camera`}
-                children={(field) => (
-                  <field.Input className="w-1/2" type="text" name="camera" />
-                )}
-              />
-            </div>
-            <div className="photo-info">
-              <div className="label-wrapper">
-                <label>Lens</label>
-              </div>
-              <div>
-                <form.AppField
-                  key={`list[${editingIdx}].lens`}
-                  name={`list[${editingIdx}].lens`}
-                  children={(field) => <field.Input type="text" name="lens" />}
-                />
-                <div className="flex flex-row items-center">
-                  <label>@</label>
-                  <form.AppField
-                    key={`list[${editingIdx}].focal_length`}
-                    name={`list[${editingIdx}].focal_length`}
-                    children={(field) => (
-                      <field.Input
-                        className="w-1/2"
-                        type="text"
-                        name="focal_length"
-                      />
-                    )}
-                  />
-                  mm
-                </div>
-              </div>
-            </div>
-            <div className="photo-info">
-              <div className="label-wrapper">Exposure</div>
-              <div className="input-wrapper">
-                <div>
-                  <label>F/</label>
-                  <form.AppField
-                    key={`list[${editingIdx}].f_stop`}
-                    name={`list[${editingIdx}].f_stop`}
-                    children={(field) => (
-                      <field.Input
-                        className="w-1/4"
-                        type="text"
-                        name="f_stop"
-                      />
-                    )}
-                  />
-                </div>
-                <div>
-                  <label>time</label>
-                  <form.AppField
-                    key={`list[${editingIdx}].exposure_time`}
-                    name={`list[${editingIdx}].exposure_time`}
-                    children={(field) => (
-                      <field.Input
-                        className="w-1/4"
-                        type="text"
-                        name="exposure_time"
-                      />
-                    )}
-                  />
-                </div>
-                <div>
-                  <label>ISO</label>
-                  <form.AppField
-                    key={`list[${editingIdx}].iso`}
-                    name={`list[${editingIdx}].iso`}
-                    children={(field) => (
-                      <field.Input className="w-1/4" type="text" name="iso" />
-                    )}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+        <form.AppField
+          key={`list[${editingIdx}].date`}
+          name={`list[${editingIdx}].date`}
+          children={(field) => (
+            <field.Input
+              placeholder="촬영 날짜"
+              iconClassName="ri-calendar-2-line"
+              type="date"
+              name="date"
+            />
+          )}
+        />
+        <form.AppField
+          key={`list[${editingIdx}].location`}
+          name={`list[${editingIdx}].location`}
+          children={(field) => (
+            <field.Input
+              placeholder="장소"
+              iconClassName="ri-map-pin-line"
+              type="text"
+              name="location"
+            />
+          )}
+        />
+        <form.AppField
+          key={`list[${editingIdx}].camera`}
+          name={`list[${editingIdx}].camera`}
+          children={(field) => (
+            <field.Input
+              placeholder="카메라"
+              iconClassName="ri-camera-line"
+              type="text"
+              name="camera"
+            />
+          )}
+        />
+        <form.AppField
+          key={`list[${editingIdx}].lens`}
+          name={`list[${editingIdx}].lens`}
+          children={(field) => (
+            <field.Input
+              placeholder="렌즈"
+              iconClassName="ri-camera-lens-line"
+              type="text"
+              name="lens"
+            />
+          )}
+        />
+
+        <form.AppField
+          key={`list[${editingIdx}].focal_length`}
+          name={`list[${editingIdx}].focal_length`}
+          children={(field) => (
+            <field.Input
+              placeholder="초점거리"
+              type="text"
+              name="focal_length"
+              Adornment={<span className="flex items-center">mm</span>}
+            />
+          )}
+        />
+
+        <form.AppField
+          key={`list[${editingIdx}].f_stop`}
+          name={`list[${editingIdx}].f_stop`}
+          children={(field) => (
+            <field.Input placeholder="F값" type="text" name="f_stop" />
+          )}
+        />
+
+        <form.AppField
+          key={`list[${editingIdx}].exposure_time`}
+          name={`list[${editingIdx}].exposure_time`}
+          children={(field) => (
+            <field.Input
+              placeholder="노출 시간"
+              type="text"
+              name="exposure_time"
+            />
+          )}
+        />
+        <form.AppField
+          key={`list[${editingIdx}].iso`}
+          name={`list[${editingIdx}].iso`}
+          children={(field) => (
+            <field.Input placeholder="ISO" type="text" name="iso" />
+          )}
+        />
       </div>
     );
   },
