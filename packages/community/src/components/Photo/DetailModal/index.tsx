@@ -93,13 +93,13 @@ const PhotoDetailModal = ({ photoId, onClose, onMovePhoto }: Props) => {
   );
 
   const moveToPhoto = useCallback(
-    (direction: number) => {
+    (direction: 'prev' | 'next') => {
       const prevPhoto = data?.prevPhoto;
       const nextPhoto = data?.nextPhoto;
 
-      if (direction === 1 && prevPhoto) {
+      if (direction === 'prev' && prevPhoto) {
         onMovePhoto(prevPhoto.content_id);
-      } else if (direction === -1 && nextPhoto) {
+      } else if (direction === 'next' && nextPhoto) {
         onMovePhoto(nextPhoto.content_id);
       } else {
         console.error('Cannot Move');
@@ -199,8 +199,8 @@ const PhotoDetailModal = ({ photoId, onClose, onMovePhoto }: Props) => {
               </div>
               <div className="photo-section-bottom">
                 <PhotoViewer
-                  onClickPrev={() => moveToPhoto(1)}
-                  onClickNext={() => moveToPhoto(-1)}
+                  onClickPrev={() => moveToPhoto('prev')}
+                  onClickNext={() => moveToPhoto('next')}
                   imgUrl={photoInfo.img_url ?? photoInfo.file_path}
                 />
                 <div className="photo-section-right">

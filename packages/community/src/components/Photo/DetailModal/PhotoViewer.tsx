@@ -7,7 +7,7 @@ type Props = {
   imgUrl?: string;
 };
 
-const VISIBLE_TIME = 3;
+const VISIBLE_TIME = 3; // seconds
 
 const PhotoViewer = ({ onClickPrev, onClickNext, imgUrl }: Props) => {
   const fullscreenRef = useRef<HTMLDivElement>(null);
@@ -48,7 +48,7 @@ const PhotoViewer = ({ onClickPrev, onClickNext, imgUrl }: Props) => {
   useEffect(() => {
     timer.current = window.setInterval(() => {
       if (remainedTime.current > 0) {
-        remainedTime.current = -1;
+        remainedTime.current = remainedTime.current - 1;
       } else {
         setIsArrowVisible(false);
       }
@@ -70,7 +70,7 @@ const PhotoViewer = ({ onClickPrev, onClickNext, imgUrl }: Props) => {
       >
         {isArrowVisible && (
           <div className="photo-move-action prev">
-            <button className="photo-move-btn" onClick={onClickPrev}>
+            <button className="photo-move-btn" onClick={onClickNext}>
               <i className="ri-arrow-left-s-line ri-icons cursor-pointer"></i>
             </button>
           </div>
@@ -80,7 +80,7 @@ const PhotoViewer = ({ onClickPrev, onClickNext, imgUrl }: Props) => {
           <div className="photo-move-action next">
             <button
               className="photo-move-btn flex items-center center"
-              onClick={onClickNext}
+              onClick={onClickPrev}
             >
               <i className="ri-arrow-right-s-line ri-icons cursor-pointer"></i>
             </button>
