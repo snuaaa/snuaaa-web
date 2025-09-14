@@ -76,7 +76,7 @@ function ExhibitPhotoComponent({
                 </div>
               </div>
             </div>
-            <div className="photo-section-right">
+            <div className="photo-section-right overflow-auto">
               {isEditing ? (
                 <EditExhibitPhotoInfo
                   exhibitPhotoInfo={contentInfo}

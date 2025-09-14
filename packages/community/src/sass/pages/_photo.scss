@@ -91,7 +91,7 @@
         flex-direction: column;
         flex-basis: 400px;
         background-color: color2.$color-white;
-        overflow: auto;
+        // overflow: auto;
         // max-height: 100%;
         // overflow: hidden;
         .comment-area-wrapper {
@@ -570,10 +570,10 @@
                 display: inline-block;
                 width: 50%;
             }
-            input {
-                height: 1.3rem;
-                border: 1px solid #C9C9C9;
-            }
+            // input {
+            //     height: 1.3rem;
+            //     border: 1px solid #C9C9C9;
+            // }
         }
     }    
 }
