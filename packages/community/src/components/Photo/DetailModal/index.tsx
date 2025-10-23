@@ -203,7 +203,7 @@ const PhotoDetailModal = ({ photoId, onClose, onMovePhoto }: Props) => {
                   onClickNext={() => moveToPhoto('next')}
                   imgUrl={photoInfo.img_url ?? photoInfo.file_path}
                 />
-                <div className="photo-section-right">
+                <div className="grow flex flex-col basis-[400px] bg-[#FFFFFF] overflow-auto">
                   {isEditing ? (
                     <EditPhotoInfo
                       photoInfo={contentInfo}
