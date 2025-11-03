@@ -60,7 +60,7 @@ const CreatePhoto: FC<Props> = ({
   return (
     <div className="crt-photo-popup">
       <form.AppForm>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="h-full md:h-auto">
           <div className="crt-photo-wrp">
             <div className="crt-photo-header">
               <h3>사진 업로드</h3>
@@ -93,7 +93,7 @@ const CreatePhoto: FC<Props> = ({
                 <PreviewImage imgUrl={previewImgUrl} />
               </div>
 
-              <div className="crt-photo-right">
+              <div className="crt-photo-right grow">
                 <div className="crt-photo-right-top">
                   {editingIdx >= 0 ? (
                     <>
