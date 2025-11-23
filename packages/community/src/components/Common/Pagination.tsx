@@ -79,6 +79,7 @@ const Pagination = ({ currentPage, totalPageCount, routeGenerator }: Props) => {
             history.push(routeGenerator(currentPage - 1));
           }}
           disabled={currentPage === 1}
+          aria-label="Previous page"
           className="disabled:text-gray-500"
         >
           <i className="ri-arrow-left-s-line text-2xl cursor-pointer"></i>
@@ -104,6 +105,8 @@ const Pagination = ({ currentPage, totalPageCount, routeGenerator }: Props) => {
             history.push(routeGenerator(currentPage + 1));
           }}
           disabled={currentPage === totalPageCount}
+          aria-label="Next page"
+          className="disabled:text-gray-500"
         >
           <i className="ri-arrow-right-s-line text-2xl cursor-pointer"></i>
         </button>
