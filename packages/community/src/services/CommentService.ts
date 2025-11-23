@@ -17,7 +17,7 @@ type RetrievePhotoListParams = {
 
 const CommentService = {
   /**
-   * @deprecated Use RetrieveCommentsInContent instead.
+   * @deprecated Use retrieveCommentList instead.
    */
   retrieveComments: function (parent_id: number) {
     return API.get<Comment[]>(`content/${parent_id}/comments`);
