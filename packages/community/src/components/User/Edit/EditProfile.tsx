@@ -1,8 +1,8 @@
 import { useState, useEffect, ChangeEvent, useCallback } from 'react';
 
-import UserService, { UpdateUserInfoRequest } from '../../services/UserService';
-import Loading from '../Common/Loading';
-import ProfileComponent from './ProfileComponent';
+import UserService, { UpdateUserInfoRequest } from '~/services/UserService';
+import Loading from '~/components/Common/Loading';
+import ProfileComponent from './ProfileComponent.jsx';
 import { useAuth } from '~/contexts/auth';
 
 type InputFormat = {

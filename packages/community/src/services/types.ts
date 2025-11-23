@@ -1,6 +1,6 @@
 export interface User {
   user_id: number;
-  user_uuid?: string;
+  user_uuid: string;
   id?: string;
   username?: string;
   aaa_no?: string;
@@ -215,3 +215,8 @@ export interface MyRent {
   equipment: Equipment;
   rentReturn?: RentReturn;
 }
+
+export type ListResponse<T = unknown> = {
+  count: number;
+  rows: T[];
+};

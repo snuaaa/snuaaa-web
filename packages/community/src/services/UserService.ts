@@ -2,7 +2,7 @@ import { API } from './index';
 
 import { UsersSearchType } from '../types/SearchTypes';
 
-import { Comment, Content, Photo, User } from './types';
+import { User } from './types';
 
 export interface UpdateUserInfoRequest {
   username: string;
@@ -52,42 +52,6 @@ const UserService = {
     }>('userinfo/all', {
       params: sortOption,
     });
-  },
-
-  retrieveUserPosts: function (user_uuid?: string) {
-    if (user_uuid) {
-      return API.get<{
-        postList: Content[];
-      }>(`userinfo/${user_uuid}/posts`);
-    } else {
-      return API.get<{
-        postList: Content[];
-      }>('userinfo/posts');
-    }
-  },
-
-  retrieveUserPhotos: function (user_uuid?: string) {
-    if (user_uuid) {
-      return API.get<{
-        photoList: Photo[];
-      }>(`userinfo/${user_uuid}/photos`);
-    } else {
-      return API.get<{
-        photoList: Photo[];
-      }>('userinfo/photos');
-    }
-  },
-
-  retrieveUserComments: function (user_uuid?: string) {
-    if (user_uuid) {
-      return API.get<{
-        commentList: Comment[];
-      }>(`userinfo/${user_uuid}/comments`);
-    } else {
-      return API.get<{
-        commentList: Comment[];
-      }>('userinfo/comments');
-    }
   },
 
   updatePassword: function (data: UpdatePasswordRequest) {

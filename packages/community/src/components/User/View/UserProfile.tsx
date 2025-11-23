@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import AaaImage from '../Common/AaaImage';
+import AaaImage from '~/components/Common/AaaImage';
 import imgDefaultProfile from '~/assets/img/common/profile.png';
-import { breakLine } from '../../utils/breakLine';
-
-import { gradeAssigner } from '../../utils/gradeAssigner';
+import { breakLine } from '~/utils/breakLine';
+import { gradeAssigner } from '~/utils/gradeAssigner';
 import defaultProfile from '~/assets/img/common/profile.png';
 import { User } from '~/services/types';
 
-type MyProfileProps = {
+type Props = {
   userInfo: User;
   isCanEdit: boolean;
 };
@@ -66,7 +65,7 @@ function makeGradeList() {
   });
 }
 
-function MyProfile({ userInfo, isCanEdit }: MyProfileProps) {
+function UserProfile({ userInfo, isCanEdit }: Props) {
   const [isExpand, setIsExpand] = useState(false);
 
   const descClass = isExpand ? 'userdesc expanded' : 'userdesc';
@@ -157,4 +156,4 @@ function MyProfile({ userInfo, isCanEdit }: MyProfileProps) {
   );
 }
 
-export default MyProfile;
+export default UserProfile;

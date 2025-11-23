@@ -1,12 +1,12 @@
 import { useParams } from 'react-router';
-import UserInfo from '~/components/MyPage/UserInfo';
+import UserView from '~/components/User/View';
 
 function UserPage() {
   const params = useParams<{ uuid: string }>();
 
   return (
     <div className="my-page-wrapper">
-      <UserInfo user_uuid={params.uuid} isMyinfo={false} />
+      <UserView userUuid={params.uuid} isMyInfo={false} />
     </div>
   );
 }
