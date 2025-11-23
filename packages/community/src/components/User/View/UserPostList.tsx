@@ -17,7 +17,6 @@ const PostList = ({ userUuid, isMyInfo }: Props) => {
   const queryString = useQueryString();
   const page = Number(queryString.get('page') ?? 1);
 
-  // pagination 적용 필요
   const fetchFunction = useCallback(() => {
     return PostService.retrievePostList({
       user_uuid: userUuid,
