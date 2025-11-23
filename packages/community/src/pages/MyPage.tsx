@@ -1,17 +1,20 @@
-import EditMyInfo from '~/components/MyPage/EditMyInfo';
-import UserInfo from '~/components/MyPage/UserInfo';
-import { useParams } from 'react-router';
+import EditMyInfo from '~/components/User/Edit';
+import UserView from '~/components/User/View';
+import { useParams } from 'react-router-dom';
 
 function MyPage() {
-  const params = useParams<{ index: string }>();
+  const { view = 'info' } = useParams<{ view: 'info' | 'profile' }>();
 
-  const renderComponent = function () {
-    if (params.index === 'profile') return <EditMyInfo />;
-    else if (params.index === 'info') return <UserInfo isMyinfo={true} />;
-    else return <UserInfo isMyinfo={true} />;
-  };
-
-  return <div className="my-page-wrapper">{renderComponent()}</div>;
+  return (
+    <div className="my-page-wrapper">
+      {
+        {
+          info: <UserView isMyInfo />,
+          profile: <EditMyInfo />,
+        }[view]
+      }
+    </div>
+  );
 }
 
 export default MyPage;

@@ -1,6 +1,5 @@
-import React from 'react';
-import Image from '../Common/AaaImage.tsx';
-import InputField from '../Common/InputField';
+import Image from '~/components/Common/AaaImage.tsx';
+import InputField from '~/components/Common/InputField';
 import imgDefaultProfile from '~/assets/img/common/profile.png';
 
 const ProfileComponent = ({

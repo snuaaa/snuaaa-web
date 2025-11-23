@@ -1,4 +1,4 @@
-import { Content, File } from './types';
+import { Content, File, ListResponse } from './types';
 import { API } from './index';
 
 export interface CreatePostRequest {
@@ -17,6 +17,13 @@ type RetrievePostResponse = {
   fileInfo?: File[];
 };
 
+type RetrievePostListParams = {
+  offset?: number;
+  limit?: number;
+  board_id?: string;
+  user_uuid?: string;
+};
+
 const PostService = {
   retrievePostsInBoard: function (board_id: string, pageIdx: number) {
     return API.get<RetrievePostListResponse>(
@@ -33,6 +40,12 @@ const PostService = {
     return API.get<RetrievePostListResponse>(
       `board/${board_id}/posts/search?type=${searchType}&keyword=${keyword}&page=${pageIdx}`,
     );
+  },
+
+  retrievePostList: (params: RetrievePostListParams) => {
+    return API.get<ListResponse<Content>>(`post/list`, {
+      params,
+    });
   },
 
   retrievePost: function (post_id: number) {

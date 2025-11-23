@@ -73,7 +73,7 @@ function PageRoutes() {
             <Route path="/album/:album_id" component={Album} />
             <Route path="/document/:doc_id" component={Docu} />
             <Route path="/exhibition/:exhibition_id" component={Exhibition} />
-            <Route path="/mypage/:index" component={MyPage} />
+            <Route path="/mypage/:view" component={MyPage} />
             <Route path="/userpage/:uuid" component={UserPage} />
             <Route path="/posts/all" component={AllPosts} />
             <Route path="/comments/all" component={AllComments} />

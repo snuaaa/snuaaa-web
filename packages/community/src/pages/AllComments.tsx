@@ -2,12 +2,12 @@ import { useCallback } from 'react';
 
 import HomeService from '~/services/HomeService';
 import Loading from '~/components/Common/Loading';
-import MyCommentList from '~/components/MyPage/MyCommentList';
 import Paginator from '~/components/Common/Paginator';
 import BoardName from '~/components/Board/BoardName';
 
 import { useLocation, useHistory } from 'react-router';
 import { useFetch } from '~/hooks/useFetch';
+import CommentList from '~/components/Comment/CommentList';
 
 const COMMENTROWNUM = 10;
 
@@ -46,7 +46,7 @@ function AllComments() {
   return (
     <div className="board-wrapper postboard-wrapper">
       <BoardName board_name="전체 댓글" />
-      <MyCommentList comments={comments} />
+      <CommentList comments={comments} />
       {commentCount > 0 && (
         <Paginator
           pageIdx={pageIdx}

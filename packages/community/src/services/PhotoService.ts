@@ -1,6 +1,6 @@
 import { API } from './index';
 
-import { Content, Photo, Tag } from './types';
+import { Content, ListResponse, Photo, Tag } from './types';
 
 export type CreatePhotoInfo = Pick<Content, 'title' | 'text'> &
   Pick<
@@ -41,6 +41,13 @@ export type UpdatePhotoRequest = Pick<Content, 'title' | 'text'> & {
   >;
 };
 
+type RetrievePhotoListParams = {
+  offset?: number;
+  limit?: number;
+  board_id?: string;
+  user_uuid?: string;
+};
+
 const PhotoService = {
   retrievePhoto: function (photo_id: number) {
     return API.get<{
@@ -52,6 +59,12 @@ const PhotoService = {
       prevAlbumPhoto: Photo;
       nextAlbumPhoto: Photo;
     }>(`photo/${photo_id}`);
+  },
+
+  retrievePhotoList: (params: RetrievePhotoListParams) => {
+    return API.get<ListResponse<Photo>>(`photo/list`, {
+      params,
+    });
   },
 
   updatePhoto: function (photo_id: number, data: UpdatePhotoRequest) {

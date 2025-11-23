@@ -1,5 +1,5 @@
 import { API } from './index';
-import { Comment } from './types';
+import { Comment, ListResponse } from './types';
 
 export interface CreateCommentRequest {
   parent_comment_id?: number;
@@ -8,9 +8,25 @@ export interface CreateCommentRequest {
 
 export type UpdateCommentRequest = Pick<CreateCommentRequest, 'text'>;
 
+type RetrievePhotoListParams = {
+  offset?: number;
+  limit?: number;
+  content_id?: number;
+  user_uuid?: string;
+};
+
 const CommentService = {
+  /**
+   * @deprecated Use retrieveCommentList instead.
+   */
   retrieveComments: function (parent_id: number) {
     return API.get<Comment[]>(`content/${parent_id}/comments`);
+  },
+
+  retrieveCommentList: (params: RetrievePhotoListParams) => {
+    return API.get<ListResponse<Comment>>(`comment/list`, {
+      params,
+    });
   },
 
   createComment: function (parent_id: number, data: CreateCommentRequest) {
