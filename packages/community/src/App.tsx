@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import './App.scss';
 import './index.css';
@@ -7,6 +8,16 @@ import Router from './router';
 import { AuthProvider } from './contexts/auth';
 import { BoardProvider } from './contexts/board';
 import { ViewportSizeProvider } from './contexts/viewportSize';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+    },
+  },
+});
 
 function App() {
   useEffect(() => {
@@ -25,15 +36,17 @@ function App() {
   }, []);
 
   return (
-    <div className="min-h-full flex flex-col">
-      <ViewportSizeProvider>
-        <AuthProvider>
-          <BoardProvider>
-            <Router />
-          </BoardProvider>
-        </AuthProvider>
-      </ViewportSizeProvider>
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <div className="min-h-full flex flex-col">
+        <ViewportSizeProvider>
+          <AuthProvider>
+            <BoardProvider>
+              <Router />
+            </BoardProvider>
+          </AuthProvider>
+        </ViewportSizeProvider>
+      </div>
+    </QueryClientProvider>
   );
 }
 

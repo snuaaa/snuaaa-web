@@ -4,8 +4,10 @@ import Pagination from '~/components/Common/Pagination';
 import SelectBox from '~/components/Common/SelectBox';
 import PostList from '~/components/Post/PostList';
 import { useAuth } from '~/contexts/auth';
+import { usePostList } from '~/hooks/queries/usePostQueries';
 import useQueryString from '~/hooks/useQueryString';
-import { Board, Content } from '~/services/types';
+import { Board } from '~/services/types';
+import Loading from '~/components/Common/Loading';
 
 const searchOptions = [
   {
@@ -30,16 +32,22 @@ const PAGE_SIZE = 10;
 
 type Props = {
   boardInfo: Board;
-  rows: Content[];
-  count: number;
   onClickCreate: () => void;
 };
 
-const ListPost = ({ boardInfo, rows, count, onClickCreate }: Props) => {
+const ListPost = ({ boardInfo, onClickCreate }: Props) => {
   const location = useLocation();
   const history = useHistory();
   const queryString = useQueryString();
   const page = Number(queryString.get('page') ?? 1);
+
+  const { data, isLoading } = usePostList({
+    board_id: boardInfo.board_id,
+    search_type: queryString.get('type') || undefined,
+    search_keyword: queryString.get('keyword') || undefined,
+    offset: (page - 1) * PAGE_SIZE,
+    limit: PAGE_SIZE,
+  });
 
   const [searchKeyword, setSearchKeyword] = useState(
     queryString.get('search_keyword') || '',
@@ -81,6 +89,10 @@ const ListPost = ({ boardInfo, rows, count, onClickCreate }: Props) => {
     setSearchKeyword(e.target.value);
   };
 
+  if (isLoading || !data) {
+    return <Loading />;
+  }
+
   return (
     <>
       <>
@@ -120,11 +132,11 @@ const ListPost = ({ boardInfo, rows, count, onClickCreate }: Props) => {
           </div>
         </div>
 
-        <PostList posts={rows} />
-        {count > 0 && (
+        <PostList posts={data.rows} />
+        {data.count > 0 && (
           <Pagination
             currentPage={page}
-            totalPageCount={Math.ceil(count / PAGE_SIZE)}
+            totalPageCount={Math.ceil(data.count / PAGE_SIZE)}
             routeGenerator={(page) => {
               const nextSearchParam = new URLSearchParams(queryString);
               nextSearchParam.set('page', page.toString());
