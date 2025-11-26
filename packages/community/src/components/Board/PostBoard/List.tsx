@@ -62,7 +62,7 @@ const ListPost = ({ boardInfo, onClickCreate }: Props) => {
     setSearchType(e.target.value);
   };
 
-  const search = async () => {
+  const search = () => {
     if (!searchType) {
       const nextSearchParam = new URLSearchParams();
       history.push({ search: nextSearchParam.toString() });
@@ -96,64 +96,62 @@ const ListPost = ({ boardInfo, onClickCreate }: Props) => {
 
   return (
     <>
-      <>
-        {boardInfo.categories && boardInfo.categories.length > 0 && (
-          <select>
-            {boardInfo.categories.map((cate) => (
-              <option key={cate.category_id}>{cate.category_name}</option>
-            ))}
-          </select>
-        )}
-        <div className="board-search-wrapper">
-          <div className="board-select-wrapper ">
-            <SelectBox
-              selectName={'searchOption'}
-              optionList={searchOptions}
-              onSelect={handleSearchOption}
-              selectedOption={searchType}
-            />
-          </div>
-          <div className="board-search-input">
-            <input
-              type="text"
-              onChange={handleSearchKeyword}
-              value={searchKeyword}
-              onKeyDown={handleSearchKeyDown}
-            />
-            <button className="board-search-btn" onClick={search}>
-              <i className="ri-search-line text-base"></i>
-            </button>
-          </div>
-          <div className="board-btn-write-wrapper">
-            {authContext.authInfo.user.grade <= boardInfo.lv_write && (
-              <button className="board-btn-write" onClick={onClickCreate}>
-                <i className="ri-pencil-line enif-f-1p2x"></i>글쓰기
-              </button>
-            )}
-          </div>
+      {boardInfo.categories && boardInfo.categories.length > 0 && (
+        <select>
+          {boardInfo.categories.map((cate) => (
+            <option key={cate.category_id}>{cate.category_name}</option>
+          ))}
+        </select>
+      )}
+      <div className="board-search-wrapper">
+        <div className="board-select-wrapper ">
+          <SelectBox
+            selectName={'searchOption'}
+            optionList={searchOptions}
+            onSelect={handleSearchOption}
+            selectedOption={searchType}
+          />
         </div>
+        <div className="board-search-input">
+          <input
+            type="text"
+            onChange={handleSearchKeyword}
+            value={searchKeyword}
+            onKeyDown={handleSearchKeyDown}
+          />
+          <button className="board-search-btn" onClick={search}>
+            <i className="ri-search-line text-base"></i>
+          </button>
+        </div>
+        <div className="board-btn-write-wrapper">
+          {authContext.authInfo.user.grade <= boardInfo.lv_write && (
+            <button className="board-btn-write" onClick={onClickCreate}>
+              <i className="ri-pencil-line enif-f-1p2x"></i>글쓰기
+            </button>
+          )}
+        </div>
+      </div>
 
-        {isLoading || !data ? (
-          <div className="mt-4">
-            {Array.from({ length: PAGE_SIZE }).map((_, index) => (
-              <PostSkeletonItem key={index} />
-            ))}
-          </div>
-        ) : (
-          <>
-            <PostList posts={data.rows} />
-            <Pagination
-              currentPage={page}
-              totalPageCount={Math.ceil(data.count / PAGE_SIZE)}
-              routeGenerator={(page) => {
-                const nextSearchParam = new URLSearchParams(queryString);
-                nextSearchParam.set('page', page.toString());
-                return `${location.pathname}?${nextSearchParam.toString()}`;
-              }}
-            />
-          </>
-        )}
-      </>
+      {isLoading || !data ? (
+        <div className="mt-4">
+          {Array.from({ length: PAGE_SIZE }).map((_, index) => (
+            <PostSkeletonItem key={index} />
+          ))}
+        </div>
+      ) : (
+        <>
+          <PostList posts={data.rows} />
+          <Pagination
+            currentPage={page}
+            totalPageCount={Math.ceil(data.count / PAGE_SIZE)}
+            routeGenerator={(page) => {
+              const nextSearchParam = new URLSearchParams(queryString);
+              nextSearchParam.set('page', page.toString());
+              return `${location.pathname}?${nextSearchParam.toString()}`;
+            }}
+          />
+        </>
+      )}
     </>
   );
 };
