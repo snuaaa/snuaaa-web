@@ -7,7 +7,7 @@ import { useAuth } from '~/contexts/auth';
 import { usePostList } from '~/hooks/queries/usePostQueries';
 import useQueryString from '~/hooks/useQueryString';
 import { Board } from '~/services/types';
-import Loading from '~/components/Common/Loading';
+import Skeleton from '~/components/Common/Skeleton';
 
 const searchOptions = [
   {
@@ -89,8 +89,9 @@ const ListPost = ({ boardInfo, onClickCreate }: Props) => {
     setSearchKeyword(e.target.value);
   };
 
-  if (isLoading || !data) {
-    return <Loading />;
+  if (!data && !isLoading) {
+    // Handle error case where data is undefined after loading is complete
+    return <div>게시글을 불러오는데 실패했습니다.</div>;
   }
 
   return (
@@ -132,21 +133,36 @@ const ListPost = ({ boardInfo, onClickCreate }: Props) => {
           </div>
         </div>
 
-        <PostList posts={data.rows} />
-        {data.count > 0 && (
-          <Pagination
-            currentPage={page}
-            totalPageCount={Math.ceil(data.count / PAGE_SIZE)}
-            routeGenerator={(page) => {
-              const nextSearchParam = new URLSearchParams(queryString);
-              nextSearchParam.set('page', page.toString());
-              return `${location.pathname}?${nextSearchParam.toString()}`;
-            }}
-          />
+        {isLoading || !data ? (
+          <div className="mt-4">
+            {Array.from({ length: PAGE_SIZE }).map((_, index) => (
+              <PostSkeletonItem key={index} />
+            ))}
+          </div>
+        ) : (
+          <>
+            <PostList posts={data.rows} />
+            <Pagination
+              currentPage={page}
+              totalPageCount={Math.ceil(data.count / PAGE_SIZE)}
+              routeGenerator={(page) => {
+                const nextSearchParam = new URLSearchParams(queryString);
+                nextSearchParam.set('page', page.toString());
+                return `${location.pathname}?${nextSearchParam.toString()}`;
+              }}
+            />
+          </>
         )}
       </>
     </>
   );
 };
+
+const PostSkeletonItem = () => (
+  <div className="flex items-center justify-between space-x-4 p-4 border-b border-gray-200">
+    <Skeleton className="h-4 w-3/4" />
+    <Skeleton className="h-4 w-15" />
+  </div>
+);
 
 export default ListPost;
