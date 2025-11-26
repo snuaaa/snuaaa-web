@@ -4,15 +4,17 @@ import { useFetch } from '~/hooks/useFetch';
 import Pagination from '~/components/Common/Pagination';
 import CommentService from '~/services/CommentService';
 import CommentList from '~/components/Comment/CommentList';
+import { useLocation } from 'react-router-dom';
 
 type Props = {
-  isMyInfo: boolean;
   userUuid: string;
 };
 
 const PAGE_SIZE = 10;
 
-function UserCommentList({ userUuid, isMyInfo }: Props) {
+function UserCommentList({ userUuid }: Props) {
+  const location = useLocation();
+
   const queryString = useQueryString();
   const page = Number(queryString.get('page') ?? 1);
 
@@ -43,11 +45,11 @@ function UserCommentList({ userUuid, isMyInfo }: Props) {
       <Pagination
         currentPage={page}
         totalPageCount={Math.ceil(data.count / PAGE_SIZE)}
-        routeGenerator={(page) =>
-          isMyInfo
-            ? `/mypage/info?tab=comments&page=${page}`
-            : `/userpage/${userUuid}?tab=comments&page=${page}`
-        }
+        routeGenerator={(page) => {
+          const nextSearchParam = new URLSearchParams(queryString);
+          nextSearchParam.set('page', page.toString());
+          return `${location.pathname}?${nextSearchParam.toString()}`;
+        }}
       />
     </div>
   );

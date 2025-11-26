@@ -55,19 +55,16 @@ function UserView({ userUuid, isMyInfo }: Props) {
                 posts: (
                   <UserPostList
                     userUuid={userUuid ?? data.userInfo.user_uuid} // myInfo일 때는 userUuid가 없으므로 api에서 가져옴
-                    isMyInfo={isMyInfo}
                   />
                 ),
                 photos: (
                   <UserPhotoList
                     userUuid={userUuid ?? data.userInfo.user_uuid}
-                    isMyInfo={isMyInfo}
                   />
                 ),
                 comments: (
                   <UserCommentList
                     userUuid={userUuid ?? data.userInfo.user_uuid}
-                    isMyInfo={isMyInfo}
                   />
                 ),
               }[tab]
