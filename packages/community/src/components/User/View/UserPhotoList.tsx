@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import Image from '~/components/Common/AaaImage';
 import history from '~/common/history';
 import defaultPhotoCover from '~/assets/img/default_photo_img.png';
@@ -10,12 +10,13 @@ import PhotoService from '~/services/PhotoService';
 
 type Props = {
   userUuid: string;
-  isMyInfo: boolean;
 };
 
 const PAGE_SIZE = 12;
 
-const PhotoList = ({ userUuid, isMyInfo }: Props) => {
+const PhotoList = ({ userUuid }: Props) => {
+  const location = useLocation();
+
   const queryString = useQueryString();
   const page = Number(queryString.get('page') ?? 1);
 
@@ -77,11 +78,11 @@ const PhotoList = ({ userUuid, isMyInfo }: Props) => {
       <Pagination
         currentPage={page}
         totalPageCount={Math.ceil(data.count / PAGE_SIZE)}
-        routeGenerator={(page) =>
-          isMyInfo
-            ? `/mypage/info?tab=photos&page=${page}`
-            : `/userpage/${userUuid}?tab=photos&page=${page}`
-        }
+        routeGenerator={(page) => {
+          const nextSearchParam = new URLSearchParams(queryString);
+          nextSearchParam.set('page', page.toString());
+          return `${location.pathname}?${nextSearchParam.toString()}`;
+        }}
       />
     </div>
   );

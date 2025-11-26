@@ -6,11 +6,6 @@ export interface CreatePostRequest {
   text: string;
 }
 
-type RetrievePostListResponse = {
-  postCount: number;
-  postInfo: Content[];
-};
-
 type RetrievePostResponse = {
   postInfo: Content;
   likeInfo: boolean;
@@ -22,26 +17,11 @@ type RetrievePostListParams = {
   limit?: number;
   board_id?: string;
   user_uuid?: string;
+  search_type?: string;
+  search_keyword?: string;
 };
 
 const PostService = {
-  retrievePostsInBoard: function (board_id: string, pageIdx: number) {
-    return API.get<RetrievePostListResponse>(
-      `board/${board_id}/posts?page=${pageIdx}`,
-    );
-  },
-
-  searchPostsInBoard: function (
-    board_id: string,
-    searchType: string,
-    keyword: string,
-    pageIdx: number,
-  ) {
-    return API.get<RetrievePostListResponse>(
-      `board/${board_id}/posts/search?type=${searchType}&keyword=${keyword}&page=${pageIdx}`,
-    );
-  },
-
   retrievePostList: (params: RetrievePostListParams) => {
     return API.get<ListResponse<Content>>(`post/list`, {
       params,
