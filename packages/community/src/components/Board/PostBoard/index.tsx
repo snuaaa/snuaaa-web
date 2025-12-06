@@ -1,21 +1,19 @@
-import { useState, useEffect } from 'react';
-
 import BoardName from '~/components/Board/BoardName';
 import { Board } from '~/services/types';
 import CreatePost from './Create';
 import ListPost from './List';
+import useQueryString from '~/hooks/useQueryString';
+import { useHistory, useLocation } from 'react-router-dom';
 
 type PostBoardProps = {
   boardInfo: Board;
 };
 
 function PostBoard({ boardInfo }: PostBoardProps) {
-  const [isCreating, setIsCreating] = useState(false);
-
-  // TODO: 게시글 작성시 route 변경하여 불필요한 useEffect 제거
-  useEffect(() => {
-    setIsCreating(false);
-  }, [boardInfo.board_id]);
+  const queryString = useQueryString();
+  const status = queryString.get('status');
+  const history = useHistory();
+  const location = useLocation();
 
   return (
     <div className="board-wrapper postboard-wrapper">
@@ -24,17 +22,20 @@ function PostBoard({ boardInfo }: PostBoardProps) {
         board_name={boardInfo.board_name}
       />
       <div className="board-desc">{boardInfo.board_desc}</div>
-      {!isCreating ? (
+      {status !== 'create' ? (
         <ListPost
           boardInfo={boardInfo}
-          onClickCreate={() => setIsCreating(true)}
+          onClickCreate={() => {
+            const searchParams = new URLSearchParams([['status', 'create']]);
+            history.push(`?${searchParams.toString()}`);
+          }}
         />
       ) : (
         <CreatePost
           board_id={boardInfo.board_id}
-          onClose={() => setIsCreating(false)}
+          onClose={() => history.goBack()}
           onCreate={() => {
-            setIsCreating(false);
+            history.replace(location.pathname);
           }}
         />
       )}

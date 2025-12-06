@@ -1,12 +1,13 @@
-import { useState, ChangeEvent, FC } from 'react';
-import PostService, { CreatePostRequest } from '~/services/PostService';
+import { useState, ChangeEvent, useEffect } from 'react';
+import { CreatePostRequest } from '~/services/PostService';
 import ContentService from '~/services/ContentService';
-import { Prompt } from 'react-router-dom';
 import Editor from '~/components/Common/Editor';
 import AttachFile from '~/components/Post/AttachFile';
 import ProgressBar from '~/components/Common/ProgressBar';
+import { useCreatePost } from '~/hooks/queries/usePostQueries';
 
 const MAX_SIZE = 20 * 1024 * 1024;
+const BASE_STORAGE_KEY = 'CREATE_POST_DRAFT';
 
 type Props = {
   board_id: string;
@@ -14,28 +15,53 @@ type Props = {
   onClose: () => void;
 };
 
-const CreatePost: FC<Props> = (props) => {
+const CreatePost = ({ board_id, onCreate, onClose }: Props) => {
   let currentSize = 0;
-  const [postInfo, setPostInfo] = useState<CreatePostRequest>({
-    title: '',
-    text: '',
+  const STORAGE_KEY = `${BASE_STORAGE_KEY}_${board_id}`;
+
+  const [postInfo, setPostInfo] = useState<CreatePostRequest>(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        return parsed;
+      } catch (e) {
+        console.error('Failed to load draft', e);
+      }
+    }
+    return {
+      title: '',
+      text: '',
+    };
   });
   const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
   const [progress, setProgress] = useState<number>(0);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [uploadIdx, setUploadIdx] = useState<number>(0);
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setPostInfo({
-      ...postInfo,
-      [e.target.name]: e.target.value,
+  const { mutate: mutateCreatePost } = useCreatePost();
+
+  useEffect(() => {
+    if (postInfo.title || postInfo.text) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(postInfo));
+    }
+  }, [STORAGE_KEY, postInfo]);
+
+  const handleChangeTitle = (e: ChangeEvent<HTMLInputElement>) => {
+    setPostInfo((prevPostInfo) => {
+      return {
+        ...prevPostInfo,
+        [e.target.name]: e.target.value,
+      };
     });
   };
 
   const handleEditor = (value: string) => {
-    setPostInfo({
-      ...postInfo,
-      text: value,
+    setPostInfo((prevPostInfo) => {
+      return {
+        ...prevPostInfo,
+        text: value,
+      };
     });
   };
 
@@ -84,8 +110,6 @@ const CreatePost: FC<Props> = (props) => {
   };
 
   const createPost = async () => {
-    const { board_id, onCreate } = props;
-
     if (!postInfo.title) {
       alert('제목을 입력해 주세요.');
     } else {
@@ -94,21 +118,29 @@ const CreatePost: FC<Props> = (props) => {
       formData.append('text', postInfo.text);
       setIsUploading(true);
       try {
-        const res = await PostService.createPost(board_id, postInfo);
-        if (attachedFiles.length > 0) {
-          for (let i = 0, max = attachedFiles.length; i < max; i++) {
-            const fileFormData = new FormData();
-            fileFormData.append('attachedFile', attachedFiles[i]);
-            await ContentService.createFile(
-              res.data.content_id,
-              fileFormData,
-              uploadProgress,
-            );
-            setUploadIdx(uploadIdx + 1);
-          }
-        }
-        setIsUploading(false);
-        onCreate();
+        mutateCreatePost(
+          { board_id, data: postInfo },
+          {
+            onSuccess: async (res) => {
+              // TODO: 파일먼저 업로드하게 변경
+              if (attachedFiles.length > 0) {
+                for (let i = 0, max = attachedFiles.length; i < max; i++) {
+                  const fileFormData = new FormData();
+                  fileFormData.append('attachedFile', attachedFiles[i]);
+                  await ContentService.createFile(
+                    res.data.content_id,
+                    fileFormData,
+                    uploadProgress,
+                  );
+                  setUploadIdx(uploadIdx + 1);
+                }
+              }
+              localStorage.removeItem(STORAGE_KEY);
+              setIsUploading(false);
+              onCreate();
+            },
+          },
+        );
       } catch (err) {
         console.error(err);
         setIsUploading(false);
@@ -117,17 +149,20 @@ const CreatePost: FC<Props> = (props) => {
     }
   };
 
+  const handleClose = () => {
+    if (window.confirm('작성 중인 내용을 삭제하고 취소하시겠습니까?')) {
+      localStorage.removeItem(STORAGE_KEY);
+      onClose();
+    }
+  };
+
   return (
     <>
-      <Prompt
-        when={true}
-        message="작성 중인 내용은 저장되지 않습니다. 작성을 취소하시겠습니까? 작성을 취소하시겠습니까?"
-      ></Prompt>
       <div className="writepost-wrapper">
         <div className="writepost-header">
           <i
             className="ri-arrow-left-line cursor-pointer"
-            onClick={props.onClose}
+            onClick={handleClose}
           ></i>
           <h5>글쓰기</h5>
         </div>
@@ -136,7 +171,7 @@ const CreatePost: FC<Props> = (props) => {
             name="title"
             value={postInfo.title}
             maxLength={50}
-            onChange={handleChange}
+            onChange={handleChangeTitle}
             placeholder="제목을 입력하세요."
           />
         </div>
@@ -157,7 +192,7 @@ const CreatePost: FC<Props> = (props) => {
         <div className="btn-wrapper">
           <button
             className="enif-btn-common enif-btn-cancel"
-            onClick={props.onClose}
+            onClick={handleClose}
           >
             취소
           </button>
