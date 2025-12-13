@@ -16,15 +16,15 @@ const Post: FC = () => {
   const authContext = useAuth();
   const { post_id: postId } = useParams<{ post_id: string }>();
 
-  const { data, isFetching } = usePost(Number(postId));
+  const { data, isError } = usePost(Number(postId));
 
   const { postInfo, likeInfo } = data ?? {};
 
   useEffect(() => {
-    if (!isFetching && !data) {
+    if (isError) {
       history.goBack();
     }
-  }, [isFetching, data]);
+  }, [isError]);
 
   if (!postInfo) {
     return <Loading />;
