@@ -44,6 +44,8 @@ const CreatePost = ({ board_id, onCreate, onClose }: Props) => {
   useEffect(() => {
     if (postInfo.title || postInfo.text) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(postInfo));
+    } else {
+      localStorage.removeItem(STORAGE_KEY);
     }
   }, [STORAGE_KEY, postInfo]);
 
@@ -132,7 +134,7 @@ const CreatePost = ({ board_id, onCreate, onClose }: Props) => {
                     fileFormData,
                     uploadProgress,
                   );
-                  setUploadIdx(uploadIdx + 1);
+                  setUploadIdx((uploadIdx) => uploadIdx + 1);
                 }
               }
               localStorage.removeItem(STORAGE_KEY);
@@ -150,7 +152,11 @@ const CreatePost = ({ board_id, onCreate, onClose }: Props) => {
   };
 
   const handleClose = () => {
-    if (window.confirm('작성 중인 내용을 삭제하고 취소하시겠습니까?')) {
+    if (
+      window.confirm(
+        '작성 중인 내용과 저장된 임시 내용이 모두 삭제됩니다. 계속하시겠습니까?',
+      )
+    ) {
       localStorage.removeItem(STORAGE_KEY);
       onClose();
     }

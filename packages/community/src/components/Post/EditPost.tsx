@@ -1,14 +1,14 @@
-import React, { ChangeEvent, FC, useRef, useState } from 'react';
+import { ChangeEvent, FC, useRef, useState } from 'react';
 import Editor from '../Common/Editor';
 
 import AttachFile from './AttachFile';
 
 import FileIcon from '../Common/FileIcon';
 import { Content, File as FileType } from '~/services/types';
-import PostService from '~/services/PostService';
 import ContentService from '~/services/ContentService';
 import FileService from '~/services/FileService';
 import ProgressBar from '~/components/Common/ProgressBar';
+import { useUpdatePost } from '~/hooks/queries/usePostQueries';
 
 type Props = {
   postInfo: Content;
@@ -24,9 +24,11 @@ const EditPost: FC<Props> = ({ postInfo, onCancel, onUpdate }) => {
   const [progress, setProgress] = useState<number>(0);
 
   const [editingPostData, setEditingPostData] = useState<Content>(postInfo);
-  const [isUpdating, setIsUpdating] = useState(false);
 
   const currentSize = useRef(0);
+
+  const { mutateAsync: mutateUpdatePost, isPending: isPendingUpdate } =
+    useUpdatePost();
 
   const handleEditing = (e: ChangeEvent<HTMLInputElement>) => {
     if (editingPostData) {
@@ -60,9 +62,8 @@ const EditPost: FC<Props> = ({ postInfo, onCancel, onUpdate }) => {
   const updatePost = async () => {
     if (!editingPostData) return;
     const post_id = Number(postInfo.content_id);
-    setIsUpdating(true);
     try {
-      await PostService.updatePost(post_id, editingPostData);
+      await mutateUpdatePost({ post_id, data: editingPostData });
       if (attachedFiles.length > 0) {
         for (let i = 0; i < attachedFiles.length; i++) {
           const formData = new FormData();
@@ -78,7 +79,6 @@ const EditPost: FC<Props> = ({ postInfo, onCancel, onUpdate }) => {
       onUpdate();
     } catch (err) {
       console.error(err);
-      setIsUpdating(false);
       alert('업데이트 오류');
     }
   };
@@ -210,14 +210,14 @@ const EditPost: FC<Props> = ({ postInfo, onCancel, onUpdate }) => {
           </button>
           <button
             className="enif-btn-common enif-btn-ok"
-            disabled={isUpdating}
+            disabled={isPendingUpdate}
             onClick={updatePost}
           >
             확인
           </button>
         </div>
       </div>
-      {isUpdating && (
+      {isPendingUpdate && (
         <ProgressBar
           loadedPercentage={progress}
           currentIdx={0}
