@@ -2,9 +2,8 @@ import { useState, useCallback } from 'react';
 
 import CreateAlbum from '../Album/modals/CreateAlbum';
 import AlbumList from '../../components/Album/AlbumList';
-import Category from '../../components/Common/Category';
+import AlbumCategorySelector from '~/components/Common/AlbumCategorySelector';
 import Loading from '../../components/Common/Loading';
-import Paginator from '../../components/Common/Paginator';
 import PhotoBoardService from '../../services/PhotoBoardService';
 
 import BoardName from '../../components/Board/BoardName';
@@ -14,8 +13,8 @@ import { Board } from '~/services/types';
 import { useFetch } from '~/hooks/useFetch';
 import { useAuth } from '~/contexts/auth';
 import { Divider } from '~/ui';
-
-const ALBUMROWNUM = 12;
+import useQueryString from '~/hooks/useQueryString';
+import Pagination from '../Common/Pagination';
 
 type MemoryProps = {
   boardInfo: Board;
@@ -26,52 +25,43 @@ type LocationState = {
   category: string;
 };
 
+const PAGE_SIZE = 12;
+
 function Memory({ boardInfo }: MemoryProps) {
   const [isCreating, setIsCreating] = useState<boolean>(false);
   const history = useHistory();
   const location = useLocation<LocationState>();
 
-  const pageIdx = location.state?.page ?? 1;
-  const category = location.state?.category;
+  const queryString = useQueryString();
+
+  const page = Number(queryString.get('page') ?? 1);
+  const category = queryString.get('category') || '';
 
   const fetchFunction = useCallback(() => {
     return PhotoBoardService.retrieveAlbumsInPhotoBoard(
       boardInfo.board_id,
-      pageIdx,
+      page,
       category,
     );
-  }, [boardInfo.board_id, category, pageIdx]);
+  }, [boardInfo.board_id, category, page]);
 
   const { data, refresh } = useFetch({ fetch: fetchFunction });
 
   const clickCategory = (ctg_id: string) => {
+    const nextSearchParam = new URLSearchParams(queryString);
+    nextSearchParam.set('page', '1');
+    nextSearchParam.set('category', ctg_id);
     history.push({
-      state: {
-        category: ctg_id,
-        page: 1,
-      },
+      search: nextSearchParam.toString(),
     });
   };
 
   const clickAll = () => {
+    const nextSearchParam = new URLSearchParams(queryString);
+    nextSearchParam.set('page', '1');
+    nextSearchParam.delete('category');
     history.push({
-      state: {
-        category: null,
-        page: 1,
-      },
-    });
-  };
-
-  const clickPage = (idx: number) => {
-    const category =
-      location.state && location.state.category
-        ? location.state.category
-        : null;
-    history.push({
-      state: {
-        category: category,
-        page: idx,
-      },
+      search: nextSearchParam.toString(),
     });
   };
 
@@ -84,11 +74,11 @@ function Memory({ boardInfo }: MemoryProps) {
         board_name={boardInfo.board_name}
       />
       <div className="board-desc">{boardInfo.board_desc}</div>
-      <Category
+      <AlbumCategorySelector
         categories={boardInfo.categories}
         selected={category}
-        clickAll={clickAll}
-        clickCategory={clickCategory}
+        onClickAll={clickAll}
+        onClickCategory={clickCategory}
       />
       <div className="board-search-wrapper">
         <div className="board-search-input">
@@ -126,10 +116,14 @@ function Memory({ boardInfo }: MemoryProps) {
             />
           )}
           {data.albumCount > 0 && (
-            <Paginator
-              pageIdx={pageIdx}
-              pageNum={Math.ceil(data.albumCount / ALBUMROWNUM)}
-              clickPage={clickPage}
+            <Pagination
+              currentPage={page}
+              totalPageCount={Math.ceil(data.albumCount / PAGE_SIZE)}
+              routeGenerator={(page) => {
+                const nextSearchParam = new URLSearchParams(queryString);
+                nextSearchParam.set('page', page.toString());
+                return `${location.pathname}?${nextSearchParam.toString()}`;
+              }}
             />
           )}
         </>
