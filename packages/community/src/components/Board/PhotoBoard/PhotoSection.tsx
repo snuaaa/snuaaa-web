@@ -8,7 +8,7 @@ import { useFetch } from '~/hooks/useFetch';
 import useQueryString from '~/hooks/useQueryString';
 import { ChangeEvent, FC, useCallback, useMemo, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import PhotoBoardService from '~/services/PhotoBoardService';
+import PhotoService from '~/services/PhotoService';
 import { Board } from '~/services/types';
 import { Divider } from '~/ui';
 
@@ -33,11 +33,12 @@ export const PhotoSection: FC<Props> = ({ boardInfo }) => {
   );
 
   const fetchFunction = useCallback(() => {
-    return PhotoBoardService.retrievePhotosInPhotoBoard(
-      boardInfo.board_id,
-      pageIdx,
-      selectedTags,
-    );
+    return PhotoService.retrievePhotoList({
+      board_id: boardInfo.board_id,
+      offset: (pageIdx - 1) * PHOTO_ROW_NUM,
+      limit: PHOTO_ROW_NUM,
+      tags: selectedTags,
+    });
   }, [boardInfo.board_id, pageIdx, selectedTags]);
 
   const { data, refresh } = useFetch({ fetch: fetchFunction });
@@ -111,7 +112,7 @@ export const PhotoSection: FC<Props> = ({ boardInfo }) => {
             clickTag={clickTag}
           />
           <Divider />
-          <PhotoList photos={data.photoInfo ?? []} />
+          <PhotoList photos={data.rows ?? []} />
           {isCreating && (
             <CreatePhotoModal
               boardId={boardInfo.board_id}
@@ -122,10 +123,10 @@ export const PhotoSection: FC<Props> = ({ boardInfo }) => {
           )}
         </>
       )}
-      {data.photoCount > 0 && (
+      {data.count > 0 && (
         <Pagination
           currentPage={pageIdx}
-          totalPageCount={Math.ceil(data.photoCount / PHOTO_ROW_NUM)}
+          totalPageCount={Math.ceil(data.count / PHOTO_ROW_NUM)}
           routeGenerator={(page) => {
             const nextSearchParam = new URLSearchParams(queryString);
             nextSearchParam.set('page', page.toString());

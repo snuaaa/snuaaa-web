@@ -33,6 +33,9 @@ const PhotoBoardService = {
     return API.post(`photoboard/${board_id}/album`, data);
   },
 
+  /**
+   * @deprecated Use Photoservice.retrievePhotoList instead
+   */
   retrievePhotosInPhotoBoard: function (
     board_id: string,
     pageIdx: number,

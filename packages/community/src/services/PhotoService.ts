@@ -46,6 +46,7 @@ type RetrievePhotoListParams = {
   limit?: number;
   board_id?: string;
   user_uuid?: string;
+  tags?: Tag['tag_id'][];
 };
 
 const PhotoService = {
