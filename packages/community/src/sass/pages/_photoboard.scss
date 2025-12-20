@@ -1,35 +1,5 @@
 @use "../common/color";
 
-.photoboard-wrapper {
-
-    .view-type-selector-wrapper {
-        display: flex;
-        width: 100%;
-        font-size: 20px;
-        // margin-bottom: 12px;
-        .view-type-selector {
-            width: 50%;
-            text-align: center;
-            padding: 10px 0px 10px 0px;
-            // border: 2px solid #686868;
-            background-color: color.$color-gray5;
-            color: color.$color-gray2;
-            cursor: pointer;
-            transition: all 0.5s;
-            &:hover {
-                color: color.$color-gray1;
-            }
-        }
-        .selected {
-            background-color: color.$color-aqua;
-            color: color.$color-white;
-            &:hover {
-                color: color.$color-white;
-            }
-        }
-    }
-}
-
 .memory-title {
     display: inline-block;
     background-image: url("~/assets/img/board/title_memory.png");
