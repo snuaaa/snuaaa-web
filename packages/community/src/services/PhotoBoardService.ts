@@ -1,4 +1,4 @@
-import { Album, Photo } from './types';
+import { Album } from './types';
 import { API } from './index';
 
 export interface CreateAlbumRequest {
@@ -31,42 +31,6 @@ const PhotoBoardService = {
 
   createAlbum: function (board_id: string, data: CreateAlbumRequest) {
     return API.post(`photoboard/${board_id}/album`, data);
-  },
-
-  /**
-   * @deprecated Use Photoservice.retrievePhotoList instead
-   */
-  retrievePhotosInPhotoBoard: function (
-    board_id: string,
-    pageIdx: number,
-    tags?: string[],
-  ) {
-    if (tags && tags.length > 0) {
-      let tagUrl = '';
-      tags.forEach((tag: string) => {
-        if (!tagUrl) {
-          tagUrl += `tags[]=${tag}`;
-        } else {
-          tagUrl += `&tags[]=${tag}`;
-        }
-      });
-      return API.get<{
-        photoInfo: Photo[];
-        photoCount: number;
-      }>(`photoboard/${board_id}/photos?${tagUrl}&page=${pageIdx}`);
-    } else {
-      return API.get<{
-        photoInfo: Photo[];
-        photoCount: number;
-      }>(`photoboard/${board_id}/photos?page=${pageIdx}`);
-    }
-  },
-
-  /**
-   * @deprecated
-   */
-  createPhotosInPhotoBoard: function (board_id: string, data: FormData) {
-    return API.post(`photoboard/${board_id}/photos`, data);
   },
 };
 

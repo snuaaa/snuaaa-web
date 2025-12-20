@@ -13,17 +13,6 @@ type RetrieveAlbumResponse = {
 };
 
 const AlbumService = {
-  /**
-   * @deprecated
-   */
-  createPhotosInAlbum: function (
-    album_id: number,
-    data: FormData,
-    cb: (pg: ProgressEvent) => void,
-  ): AxiosPromise<void> {
-    return API.postWithProgress(`album/${album_id}/photos`, data, cb);
-  },
-
   retrieveAlbum: function (album_id: number) {
     return API.get<RetrieveAlbumResponse>(`album/${album_id}`);
   },
