@@ -20,17 +20,12 @@ type MemoryProps = {
   boardInfo: Board;
 };
 
-type LocationState = {
-  page: number;
-  category: string;
-};
-
 const PAGE_SIZE = 12;
 
 function Memory({ boardInfo }: MemoryProps) {
   const [isCreating, setIsCreating] = useState<boolean>(false);
   const history = useHistory();
-  const location = useLocation<LocationState>();
+  const location = useLocation();
 
   const queryString = useQueryString();
 

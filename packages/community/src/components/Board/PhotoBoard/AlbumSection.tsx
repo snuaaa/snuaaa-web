@@ -1,53 +1,41 @@
 import CreateAlbum from '~/components/Album/modals/CreateAlbum';
 import Loading from '~/components/Common/Loading';
-import Paginator from '~/components/Common/Paginator';
 import AlbumList from '~/components/Album/AlbumList';
 import { useFetch } from '~/hooks/useFetch';
 import { FC, useCallback, useState } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import PhotoBoardService from '~/services/PhotoBoardService';
 import { Board } from '~/services/types';
 import { useAuth } from '~/contexts/auth';
 import { Divider } from '~/ui';
-
-const ALBUM_ROW_NUM = 12;
+import Pagination from '~/components/Common/Pagination';
+import useQueryString from '~/hooks/useQueryString';
 
 type Props = {
   boardInfo: Board;
 };
 
-type LocationState = {
-  page: number;
-};
+const PAGE_SIZE = 12;
 
 export const AlbumSection: FC<Props> = ({ boardInfo }) => {
   const authContext = useAuth();
 
   const [isCreating, setIsCreating] = useState(false);
 
-  const location = useLocation<LocationState>();
+  // const history = useHistory();
+  const location = useLocation();
+  const queryString = useQueryString();
 
-  const pageIdx = location.state?.page ?? 1;
+  const page = Number(queryString.get('page') ?? 1);
 
   const fetchFunction = useCallback(() => {
     return PhotoBoardService.retrieveAlbumsInPhotoBoard(
       boardInfo.board_id,
-      pageIdx,
+      page,
     );
-  }, [boardInfo.board_id, pageIdx]);
+  }, [boardInfo.board_id, page]);
 
   const { data, refresh } = useFetch({ fetch: fetchFunction });
-
-  const history = useHistory();
-
-  const clickPage = (idx: number) => {
-    history.push({
-      state: {
-        ...location.state,
-        page: idx,
-      },
-    });
-  };
 
   if (!data) {
     return <Loading />;
@@ -84,10 +72,14 @@ export const AlbumSection: FC<Props> = ({ boardInfo }) => {
         />
       )}
       {data.albumCount > 0 && (
-        <Paginator
-          pageIdx={pageIdx}
-          pageNum={Math.ceil(data.albumCount / ALBUM_ROW_NUM)}
-          clickPage={clickPage}
+        <Pagination
+          currentPage={page}
+          totalPageCount={Math.ceil(data.albumCount / PAGE_SIZE)}
+          routeGenerator={(page) => {
+            const nextSearchParam = new URLSearchParams(queryString);
+            nextSearchParam.set('page', page.toString());
+            return `${location.pathname}?${nextSearchParam.toString()}`;
+          }}
         />
       )}
     </>

@@ -2,8 +2,8 @@ import BoardName from '../../components/Board/BoardName';
 
 import { useLocation, useHistory } from 'react-router';
 import { Board } from '~/services/types';
-import { PhotoSection } from './sections/PhotoSection';
-import { AlbumSection } from './sections/AlbumSection';
+import { PhotoSection } from './PhotoBoard/PhotoSection';
+import { AlbumSection } from './PhotoBoard/AlbumSection';
 
 type AstroPhotoProps = {
   boardInfo: Board;
