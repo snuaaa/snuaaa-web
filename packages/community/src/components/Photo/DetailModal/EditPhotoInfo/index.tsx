@@ -1,10 +1,11 @@
 import { Prompt } from 'react-router';
 import { Photo, Tag } from '~/services/types';
-import PhotoService, { UpdatePhotoRequest } from '~/services/PhotoService';
+import { UpdatePhotoRequest } from '~/services/PhotoService';
 import { formOptions, useStore } from '@tanstack/react-form';
 import { useAppForm } from '~/components/Form';
 import EditTagList from './EditTagList';
 import { FormEvent, useCallback } from 'react';
+import { useUpdatePhoto } from '~/hooks/queries/usePhotoQueries';
 
 type PhotoInfoProps = {
   photoInfo: Photo;
@@ -31,6 +32,8 @@ const EditPhotoInfo = ({
     iso,
   } = photo;
 
+  const { mutateAsync: mutateAsyncUpdatePhoto } = useUpdatePhoto(content_id);
+
   const formOpts = formOptions({
     defaultValues: {
       content_id,
@@ -54,7 +57,7 @@ const EditPhotoInfo = ({
     ...formOpts,
     onSubmit: async ({ value }) => {
       try {
-        await PhotoService.updatePhoto(content_id, value);
+        await mutateAsyncUpdatePhoto(value);
         onUpdate();
       } catch (err) {
         console.error(err);

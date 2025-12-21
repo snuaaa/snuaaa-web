@@ -1,12 +1,10 @@
-import { useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import Image from '~/components/Common/AaaImage';
 import history from '~/common/history';
 import defaultPhotoCover from '~/assets/img/default_photo_img.png';
-import { useFetch } from '~/hooks/useFetch';
 import useQueryString from '~/hooks/useQueryString';
 import Pagination from '~/components/Common/Pagination';
-import PhotoService from '~/services/PhotoService';
+import { usePhotoList } from '~/hooks/queries/usePhotoQueries';
 
 type Props = {
   userUuid: string;
@@ -20,16 +18,10 @@ const PhotoList = ({ userUuid }: Props) => {
   const queryString = useQueryString();
   const page = Number(queryString.get('page') ?? 1);
 
-  const fetchFunction = useCallback(() => {
-    return PhotoService.retrievePhotoList({
-      user_uuid: userUuid,
-      offset: (page - 1) * PAGE_SIZE,
-      limit: PAGE_SIZE,
-    });
-  }, [userUuid, page]);
-
-  const { data } = useFetch({
-    fetch: fetchFunction,
+  const { data } = usePhotoList({
+    user_uuid: userUuid,
+    offset: (page - 1) * PAGE_SIZE,
+    limit: PAGE_SIZE,
   });
 
   if (!data) {
