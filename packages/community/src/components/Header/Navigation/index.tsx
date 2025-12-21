@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import Menu from './Menu';
-import { useBoards } from '~/contexts/board';
+import { useBoards } from '~/hooks/queries/useBoardQueries';
 import { ABOUT_AAA_LINKS, TOOLS_LINKS } from '../constants';
 
 function Navigation() {

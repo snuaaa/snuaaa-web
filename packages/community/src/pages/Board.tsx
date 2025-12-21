@@ -7,18 +7,18 @@ import ExhibitBoard from '~/components/Board/ExhibitBoard';
 import Loading from '~/components/Common/Loading';
 import Memory from '~/components/Board/Memory';
 import AstroPhoto from '~/components/Board/AstroPhoto';
-import { useBoards } from '~/contexts/board';
+import { useBoards } from '~/hooks/queries/useBoardQueries';
 
 const BoardPage: FC = () => {
-  const boardContext = useBoards();
+  const { boardsInfo } = useBoards();
   const match = useRouteMatch<{ board_id: string }>();
 
-  const boardInfo = boardContext.boardsInfo.find(
+  const boardInfo = boardsInfo.find(
     (board) => board.board_id === match.params.board_id,
   );
 
   if (!boardInfo) {
-    return <Loading />;
+    return <Loading />; // TODO: redirect to 404
   }
 
   switch (boardInfo.board_type) {

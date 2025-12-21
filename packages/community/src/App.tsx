@@ -6,7 +6,7 @@ import './index.css';
 
 import Router from './router';
 import { AuthProvider } from './contexts/auth';
-import { BoardProvider } from './contexts/board';
+
 import { ViewportSizeProvider } from './contexts/viewportSize';
 
 const queryClient = new QueryClient({
@@ -40,9 +40,7 @@ function App() {
       <div className="min-h-full flex flex-col">
         <ViewportSizeProvider>
           <AuthProvider>
-            <BoardProvider>
-              <Router />
-            </BoardProvider>
+            <Router />
           </AuthProvider>
         </ViewportSizeProvider>
       </div>
