@@ -3,9 +3,7 @@ import { Link, useHistory } from 'react-router-dom';
 
 import { useAuth } from '~/contexts/auth';
 import useBlockBackgroundScroll from '~/hooks/useBlockBackgroundScroll';
-import { useFetch } from '~/hooks/useFetch';
 import AlbumService from '~/services/AlbumService';
-import PhotoService from '~/services/PhotoService';
 import { Photo } from '~/services/types';
 import ContentService from '~/services/ContentService';
 import Loading from '~/components/Common/Loading';
@@ -14,6 +12,7 @@ import Comment from '~/components/Comment';
 import EditPhotoInfo from './EditPhotoInfo';
 import PhotoInfo from './PhotoInfo';
 import PhotoViewer from './PhotoViewer';
+import { useDeletePhoto, usePhotoDetail } from '~/hooks/queries/usePhotoQueries';
 
 type Props = {
   photoId: number;
@@ -26,12 +25,7 @@ const PhotoDetailModal = ({ photoId, onClose, onMovePhoto }: Props) => {
 
   const history = useHistory();
 
-  const fetchFunction = useCallback(
-    () => PhotoService.retrievePhoto(photoId),
-    [photoId],
-  );
-
-  const { data, refresh } = useFetch({ fetch: fetchFunction });
+  const { data } = usePhotoDetail(photoId);
 
   useBlockBackgroundScroll();
 
@@ -45,6 +39,8 @@ const PhotoDetailModal = ({ photoId, onClose, onMovePhoto }: Props) => {
       setIsLiked(data.likeInfo);
     }
   }, [data]);
+
+  const { mutateAsync: mutateAsyncDeletePhoto } = useDeletePhoto(photoId);
 
   const setAlbumThumbnail = useCallback(async () => {
     const albumInfo = contentInfo?.parent;
@@ -152,7 +148,7 @@ const PhotoDetailModal = ({ photoId, onClose, onMovePhoto }: Props) => {
     );
     if (goDrop) {
       try {
-        await PhotoService.deletePhoto(Number(photoId));
+        await mutateAsyncDeletePhoto();
 
         history.replace(backLink);
       } catch (err) {
@@ -163,9 +159,8 @@ const PhotoDetailModal = ({ photoId, onClose, onMovePhoto }: Props) => {
   }, [backLink, contentInfo, history, photoId]);
 
   const onUpdate = useCallback(() => {
-    refresh();
     setIsEditing(false);
-  }, [refresh]);
+  }, []);
 
   const photoInfo = contentInfo && contentInfo.photo;
 

@@ -1,7 +1,8 @@
 import { formOptions } from '@tanstack/react-form';
 import { ChangeEvent, useCallback, useState } from 'react';
 import { useAppForm } from '~/components/Form';
-import PhotoService, { CreatePhotoRequest } from '~/services/PhotoService';
+import { useCreatePhoto as useCreatePhotoMutation } from '~/hooks/queries/usePhotoQueries';
+import { CreatePhotoRequest } from '~/services/PhotoService';
 import UploadService from '~/services/UploadService';
 
 type Props = {
@@ -37,6 +38,8 @@ const useCreatePhoto = ({ boardId, albumId, onCreatePhoto }: Props) => {
     } as CreatePhotoRequest,
   });
 
+  const { mutateAsync: mutateAsyncCreatePhoto } = useCreatePhotoMutation();
+
   const form = useAppForm({
     ...formOpts,
     onSubmit: async ({ value }) => {
@@ -46,7 +49,7 @@ const useCreatePhoto = ({ boardId, albumId, onCreatePhoto }: Props) => {
         return;
       }
       try {
-        await PhotoService.createPhoto({
+        await mutateAsyncCreatePhoto({
           list,
           board_id,
           album_id,

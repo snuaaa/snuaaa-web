@@ -89,7 +89,7 @@ export interface Photo extends Content {
     focal_length?: string;
     f_stop?: string;
     iso?: string;
-    date?: Date;
+    date?: string;
   };
 }
 

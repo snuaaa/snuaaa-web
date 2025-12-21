@@ -11,6 +11,7 @@ type Props = {
 
 export function Input({ iconClassName, Adornment, ...inputProps }: Props) {
   const field = useFieldContext<string>();
+
   return (
     <label className="flex relative mt-2 gap-2 w-full h-10 shrink-0 p-2 align-center bg-white border border-gray-300 rounded-md focus-within:ring-2 focus-within:ring-blue-400">
       {iconClassName && (

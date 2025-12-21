@@ -4,11 +4,10 @@ import Pagination from '~/components/Common/Pagination';
 import Tag from '~/components/Common/Tag';
 import CreatePhotoModal from '~/components/Photo/CreateModal';
 import { useAuth } from '~/contexts/auth';
-import { useFetch } from '~/hooks/useFetch';
+import { usePhotoList } from '~/hooks/queries/usePhotoQueries';
 import useQueryString from '~/hooks/useQueryString';
 import { ChangeEvent, FC, useCallback, useMemo, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import PhotoService from '~/services/PhotoService';
 import { Board } from '~/services/types';
 import { Divider } from '~/ui';
 
@@ -32,16 +31,12 @@ export const PhotoSection: FC<Props> = ({ boardInfo }) => {
     [queryString],
   );
 
-  const fetchFunction = useCallback(() => {
-    return PhotoService.retrievePhotoList({
-      board_id: boardInfo.board_id,
-      offset: (pageIdx - 1) * PHOTO_ROW_NUM,
-      limit: PHOTO_ROW_NUM,
-      tags: selectedTags,
-    });
-  }, [boardInfo.board_id, pageIdx, selectedTags]);
-
-  const { data, refresh } = useFetch({ fetch: fetchFunction });
+  const { data, isPending } = usePhotoList({
+    board_id: boardInfo.board_id,
+    offset: (pageIdx - 1) * PHOTO_ROW_NUM,
+    limit: PHOTO_ROW_NUM,
+    tags: selectedTags,
+  });
 
   const clickAll = () => {
     history.push({
@@ -77,11 +72,10 @@ export const PhotoSection: FC<Props> = ({ boardInfo }) => {
   };
 
   const handleCreatePhoto = useCallback(() => {
-    refresh();
     setIsCreating(false);
-  }, [refresh]);
+  }, []);
 
-  if (!data) {
+  if (isPending || !data) {
     return <Loading />;
   }
 
