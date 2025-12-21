@@ -23,7 +23,7 @@ const PhotoList = ({ userUuid }: Props) => {
     offset: (page - 1) * PAGE_SIZE,
     limit: PAGE_SIZE,
   });
-  
+
   if (!data) {
     return <div>Loading...</div>;
   }

@@ -62,7 +62,7 @@ export const PhotoSection: FC<Props> = ({ boardInfo }) => {
         nextSearchParams.append('tags', tag),
       );
     }
-    
+
     // Reset page when filtering
     nextSearchParams.set('page', '1');
 

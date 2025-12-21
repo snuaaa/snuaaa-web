@@ -12,7 +12,10 @@ import Comment from '~/components/Comment';
 import EditPhotoInfo from './EditPhotoInfo';
 import PhotoInfo from './PhotoInfo';
 import PhotoViewer from './PhotoViewer';
-import { useDeletePhoto, usePhotoDetail } from '~/hooks/queries/usePhotoQueries';
+import {
+  useDeletePhoto,
+  usePhotoDetail,
+} from '~/hooks/queries/usePhotoQueries';
 
 type Props = {
   photoId: number;
@@ -156,7 +159,7 @@ const PhotoDetailModal = ({ photoId, onClose, onMovePhoto }: Props) => {
         alert('삭제 실패');
       }
     }
-  }, [backLink, contentInfo, history, photoId]);
+  }, [backLink, contentInfo, history, mutateAsyncDeletePhoto]);
 
   const onUpdate = useCallback(() => {
     setIsEditing(false);

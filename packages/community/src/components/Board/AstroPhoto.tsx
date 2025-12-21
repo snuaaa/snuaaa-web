@@ -15,8 +15,7 @@ type ViewMode = 'photo' | 'album';
 const baseViewModeClassName =
   'w-1/2 text-center py-[10px] transition-all duration-500';
 
-const selectedViewModeClassName =
-  'bg-[#49A0AE] text-white';
+const selectedViewModeClassName = 'bg-[#49A0AE] text-white';
 
 const unselectedViewModeClassName =
   'bg-[#F1F1F1] text-[#A3A3A3] hover:text-[#646464]';
@@ -39,8 +38,6 @@ function AstroPhoto({ boardInfo }: AstroPhotoProps) {
       search: nextSearchParams.toString(),
     });
   };
-
-
 
   return (
     <div className="board-wrapper photoboard-wrapper">

@@ -1,5 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import PhotoService, { CreatePhotoRequest, UpdatePhotoRequest } from '~/services/PhotoService';
+import PhotoService, {
+  CreatePhotoRequest,
+  UpdatePhotoRequest,
+} from '~/services/PhotoService';
 import { Photo, Tag } from '~/services/types';
 
 type RetrievePhotoListParams = {
@@ -13,7 +16,8 @@ type RetrievePhotoListParams = {
 // Query keys
 export const photoKeys = {
   all: ['photos'] as const,
-  list: (params?: RetrievePhotoListParams) => [...photoKeys.all, 'list', ...(params ? [params] : [])] as const,
+  list: (params?: RetrievePhotoListParams) =>
+    [...photoKeys.all, 'list', ...(params ? [params] : [])] as const,
   detail: (id: number) => [...photoKeys.all, 'detail', id] as const,
 };
 
@@ -49,7 +53,8 @@ export function useUpdatePhoto(photoId: Photo['content_id']) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: UpdatePhotoRequest) => PhotoService.updatePhoto(photoId, data),
+    mutationFn: (data: UpdatePhotoRequest) =>
+      PhotoService.updatePhoto(photoId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: photoKeys.detail(photoId) });
     },
