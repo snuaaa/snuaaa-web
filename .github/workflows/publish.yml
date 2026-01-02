@@ -39,6 +39,7 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy ./build --project-name=snuaaa-web --branch=develop
           workingDirectory: packages/community
+          packageManager: pnpm
 
 
   deploy-production:
@@ -72,3 +73,4 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy build --project-name=snuaaa-web --branch=main
           workingDirectory: packages/community
+          packageManager: pnpm
