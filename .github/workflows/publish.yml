@@ -13,19 +13,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
       - uses: actions/setup-node@v3
         with:
           node-version: 20.x
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: pnpm install
 
       - name: Set environment
         run: |
           echo "REACT_APP_SERVER_URL=${{ secrets.SERVER_URL_DEV }}" >> packages/community/.env
 
       - name: Build project
-        run: yarn build
+        run: pnpm build
 
       - name: Deploy to Cloudflare Pages (Preview)
         uses: cloudflare/wrangler-action@v3
@@ -34,6 +39,7 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy ./build --project-name=snuaaa-web --branch=develop
           workingDirectory: packages/community
+          packageManager: pnpm
 
 
   deploy-production:
@@ -41,19 +47,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
       - uses: actions/setup-node@v3
         with:
           node-version: 20.x
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: pnpm install
 
       - name: Set environment
         run: |
           echo "REACT_APP_SERVER_URL=${{ secrets.SERVER_URL_PROD }}" >> packages/community/.env
 
       - name: Build project
-        run: yarn build
+        run: pnpm build
 
       - name: Deploy to Cloudflare Pages (Production)
         uses: cloudflare/wrangler-action@v3
@@ -62,3 +73,4 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy build --project-name=snuaaa-web --branch=main
           workingDirectory: packages/community
+          packageManager: pnpm
