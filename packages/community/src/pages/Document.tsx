@@ -1,4 +1,5 @@
 import { useState, useEffect, ChangeEvent, useCallback } from 'react';
+import { AxiosProgressEvent } from 'axios';
 import { Redirect, useRouteMatch } from 'react-router';
 
 import ContentStateEnum from '~/common/ContentStateEnum';
@@ -177,10 +178,9 @@ function DocumentPage() {
     setRemovedFiles(removedFiles.filter((file) => file !== file_id));
   };
 
-  const uploadProgress = (e: ProgressEvent) => {
-    const totalLength = e.lengthComputable && e.total;
-    if (totalLength) {
-      setProgress(Math.round((e.loaded / totalLength) * 100));
+  const uploadProgress = (e: AxiosProgressEvent) => {
+    if (e.total) {
+      setProgress(Math.round((e.loaded / e.total) * 100));
     }
   };
 

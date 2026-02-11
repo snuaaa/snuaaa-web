@@ -1,4 +1,5 @@
 import React, { useState, ChangeEvent } from 'react';
+import { AxiosProgressEvent } from 'axios';
 import DocuService, { CreateDocuRequest } from '../../services/DocuService';
 import CreateDocuComponent from '../../components/Document/CreateDocuComponent';
 
@@ -79,10 +80,9 @@ function CreateDocu(props: CreateDocuProps) {
     );
   };
 
-  const uploadProgress = (e: ProgressEvent) => {
-    const totalLength = e.lengthComputable && e.total;
-    if (totalLength) {
-      setProgress(Math.round((e.loaded / totalLength) * 100));
+  const uploadProgress = (e: AxiosProgressEvent) => {
+    if (e.total) {
+      setProgress(Math.round((e.loaded / e.total) * 100));
     }
   };
 
