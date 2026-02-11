@@ -1,4 +1,5 @@
 import { useState, ChangeEvent, useEffect } from 'react';
+import { AxiosProgressEvent } from 'axios';
 import { CreatePostRequest } from '~/services/PostService';
 import ContentService from '~/services/ContentService';
 import Editor from '~/components/Common/Editor';
@@ -104,10 +105,9 @@ const CreatePost = ({ board_id, onCreate, onClose }: Props) => {
     );
   };
 
-  const uploadProgress = (e: ProgressEvent) => {
-    const totalLength = e.lengthComputable && e.total;
-    if (totalLength) {
-      setProgress(Math.round((e.loaded / totalLength) * 100));
+  const uploadProgress = (e: AxiosProgressEvent) => {
+    if (e.total) {
+      setProgress(Math.round((e.loaded / e.total) * 100));
     }
   };
 

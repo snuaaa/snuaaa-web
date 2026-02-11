@@ -1,4 +1,5 @@
 import { ChangeEvent, FC, useRef, useState } from 'react';
+import { AxiosProgressEvent } from 'axios';
 import Editor from '../Common/Editor';
 
 import AttachFile from './AttachFile';
@@ -52,10 +53,9 @@ const EditPost: FC<Props> = ({ postInfo, onCancel, onUpdate }) => {
     setRemovedFiles(removedFiles.concat(file_id));
   };
 
-  const uploadProgress = (e: ProgressEvent) => {
-    const totalLength = e.lengthComputable && e.total;
-    if (totalLength) {
-      setProgress(Math.round((e.loaded / totalLength) * 100));
+  const uploadProgress = (e: AxiosProgressEvent) => {
+    if (e.total) {
+      setProgress(Math.round((e.loaded / e.total) * 100));
     }
   };
 

@@ -1,5 +1,4 @@
 import Cookies from 'universal-cookie';
-import { setApiAuth } from '~/services';
 
 const cookies = new Cookies();
 
@@ -20,7 +19,6 @@ export function setToken(token: string, isAutoLogin: boolean) {
     };
   }
   cookies.set('token', token, cookieOption);
-  setApiAuth(token);
 }
 
 export function removeToken() {

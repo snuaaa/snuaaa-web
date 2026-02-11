@@ -1,6 +1,5 @@
 import { Album, Category, Content, Photo, Tag } from './types';
 import { API } from './index';
-import { AxiosPromise } from 'axios';
 
 export interface UpdateAlbumThumbnailRequest {
   tn_photo_id: Photo['content_id'];

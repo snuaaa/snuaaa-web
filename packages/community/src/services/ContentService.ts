@@ -1,12 +1,12 @@
 import { API } from './index';
-import { AxiosPromise } from 'axios';
+import { AxiosProgressEvent } from 'axios';
 
 const ContentService = {
   createFile: function (
     content_id: number,
     data: FormData,
-    cb: (pg: ProgressEvent) => void,
-  ): AxiosPromise<void> {
+    cb: (pg: AxiosProgressEvent) => void,
+  ) {
     return API.postWithProgress(`content/${content_id}/file`, data, cb);
   },
 
