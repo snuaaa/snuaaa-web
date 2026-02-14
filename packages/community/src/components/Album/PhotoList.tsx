@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Link } from '@tanstack/react-router';
+import { Link, useRouter } from '@tanstack/react-router';
 import Image from '../../components/Common/AaaImage';
 
 import SpinningLoader from '../Common/SpinningLoader';
@@ -17,6 +17,7 @@ function PhotoList({ photos }: PhotoListProps) {
   const target = useRef<HTMLDivElement>(null);
   const [limit, setLimit] = useState<number>(LIMIT_UNIT);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const router = useRouter();
 
   const onIntersect = useCallback(
     async (
@@ -59,10 +60,10 @@ function PhotoList({ photos }: PhotoListProps) {
                 <Link
                   to={`/photo/$photo_id`}
                   params={{ photo_id: contentInfo.content_id.toString() }}
-                  // state={{
-                  //   modal: true,
-                  //   backgroundLocation: router.state.location,
-                  // }}
+                  state={{
+                    modal: true,
+                    backgroundLocation: router.state.location,
+                  }}
                 >
                   <div className="photo-cover">
                     <div className="photo-cover-unit">
