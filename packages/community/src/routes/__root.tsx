@@ -47,21 +47,23 @@ function RootComponent() {
         <ViewportSizeProvider>
           <AuthProvider>
             <BoardProvider>
-              {!isAuthPage && <Header />}
               {isAuthPage ? (
                 <Outlet />
               ) : (
-                <div className="section-wrapper">
-                  <section>
-                    <div className="side-left">
-                      <RiseSet />
-                    </div>
-                    <SideBar />
-                    <Outlet />
-                  </section>
-                </div>
+                <>
+                  <Header />
+                  <div className="section-wrapper">
+                    <section>
+                      <div className="side-left">
+                        <RiseSet />
+                      </div>
+                      <SideBar />
+                      <Outlet />
+                    </section>
+                  </div>
+                  <Footer />
+                </>
               )}
-              {!isAuthPage && <Footer />}
             </BoardProvider>
           </AuthProvider>
         </ViewportSizeProvider>
