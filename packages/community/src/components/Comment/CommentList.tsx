@@ -1,4 +1,4 @@
-import { Link, useRouter, HistoryState } from '@tanstack/react-router';
+import { Link } from '@tanstack/react-router';
 import { convertDate } from '~/utils/convertDate';
 import ContentTypeEnum from '~/common/ContentTypeEnum';
 import { Comment, Content } from '~/services/types';
@@ -9,8 +9,11 @@ type Props = {
 
 const getLinkProps = (
   content: Content,
-  router: ReturnType<typeof useRouter>,
-): { to: string; params?: Record<string, string>; state?: HistoryState } => {
+): {
+  to: string;
+  params?: Record<string, string>;
+  search?: (prev: Record<string, unknown>) => Record<string, unknown>;
+} => {
   if (content.type === ContentTypeEnum.POST) {
     return {
       to: '/post/$post_id',
@@ -19,12 +22,8 @@ const getLinkProps = (
   }
   if (content.type === ContentTypeEnum.PHOTO) {
     return {
-      to: '/photo/$photo_id',
-      params: { photo_id: String(content.content_id) },
-      state: {
-        modal: true,
-        backgroundLocation: router.state.location,
-      },
+      to: '.',
+      search: (prev) => ({ ...prev, photo: content.content_id }),
     };
   }
   if (content.type === ContentTypeEnum.DOCUMENT) {
@@ -37,14 +36,12 @@ const getLinkProps = (
 };
 
 function CommentList({ comments }: Props) {
-  const router = useRouter();
-
   return (
     <div className="my-list-wrapper">
       {comments.map((comment) => {
         const contentInfo = comment.content;
         const boardInfo = comment.content.board;
-        const linkProps = getLinkProps(contentInfo, router);
+        const linkProps = getLinkProps(contentInfo);
 
         return (
           <div className="my-cmt-wrapper" key={comment.comment_id}>
@@ -60,7 +57,7 @@ function CommentList({ comments }: Props) {
             <Link
               to={linkProps.to as '/'}
               params={linkProps.params}
-              state={linkProps.state}
+              search={linkProps.search}
               className="my-cmt-contents-link"
             >
               <div className="my-cmt-contents">

@@ -1,10 +1,5 @@
 import { useState, useEffect, createRef, useCallback } from 'react';
-import {
-  useLocation,
-  useRouter,
-  useParams,
-  useNavigate,
-} from '@tanstack/react-router';
+import { useRouter, useNavigate } from '@tanstack/react-router';
 import ExhibitPhotoService from '~/services/ExhibitPhotoService';
 import FullScreenPortal from '~/components/Common/FullScreenPortal';
 import { RecordOf, Record } from 'immutable';
@@ -15,17 +10,14 @@ import ExhibitPhotoComponent from '~/components/Exhibition/ExhibitPhoto/ExhibitP
 import { useFetch } from '~/hooks/useFetch';
 import Loading from '~/components/Common/Loading';
 
-// type LocationState = {
-//   backgroundLocation: string;
-// };
+type ExhibitPhotoPageProps = {
+  exhibitPhotoId: number;
+};
 
-function ExhibitPhotoPage() {
-  // const location = useLocation<LocationState>();
+function ExhibitPhotoPage({ exhibitPhotoId }: ExhibitPhotoPageProps) {
   const router = useRouter();
   const navigate = useNavigate();
-  const { exhibitPhoto_id } = useParams({
-    from: '/exhibitPhoto/$exhibitPhoto_id',
-  });
+  const exhibitPhoto_id = String(exhibitPhotoId);
   const fullscreenRef = createRef<HTMLDivElement>();
 
   const [exhibitPhotosInfo, setExhibitPhotosInfo] = useState<ExhibitPhoto[]>(
@@ -76,15 +68,22 @@ function ExhibitPhotoPage() {
       if (direction === 1) {
         if (index < exhibitPhotosInfo.length - 1 && index > -1) {
           navigate({
-            to: `/exhibitPhoto/${exhibitPhotosInfo[index + 1].content_id}`,
+            to: '.',
+            search: (prev: { [key: string]: unknown }) => ({
+              ...prev,
+              exhibitPhoto: exhibitPhotosInfo[index + 1].content_id,
+            }),
             replace: true,
-            // state preservation logic needed?
           });
         }
       } else if (direction === -1) {
         if (index < exhibitPhotosInfo.length && index > 0) {
           navigate({
-            to: `/exhibitPhoto/${exhibitPhotosInfo[index - 1].content_id}`,
+            to: '.',
+            search: (prev: { [key: string]: unknown }) => ({
+              ...prev,
+              exhibitPhoto: exhibitPhotosInfo[index - 1].content_id,
+            }),
             replace: true,
           });
         }
@@ -128,7 +127,7 @@ function ExhibitPhotoPage() {
         const backLink = contentInfo?.parent
           ? `/exhibition/${contentInfo.parent.content_id}`
           : '/board/brd41';
-        navigate({ to: backLink, replace: true });
+        navigate({ to: backLink as '/', replace: true });
       } catch (err) {
         console.error(err);
         alert('삭제 실패');

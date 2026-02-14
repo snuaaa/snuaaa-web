@@ -1,6 +1,10 @@
-import { createFileRoute } from '@tanstack/react-router';
-import Photo from '../../pages/Photo';
+import { createFileRoute, redirect } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/photo/$photo_id')({
-  component: Photo,
+  beforeLoad: ({ params }) => {
+    throw redirect({
+      to: '/',
+      search: { photo: Number(params.photo_id) },
+    });
+  },
 });

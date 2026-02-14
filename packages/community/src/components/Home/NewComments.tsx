@@ -1,9 +1,8 @@
 import React from 'react';
-import { Link, useRouter, HistoryState } from '@tanstack/react-router';
+import { Link } from '@tanstack/react-router';
 import { convertDate } from '../../utils/convertDate';
 
 import { Comment } from '~/services/types';
-// import { LocationDescriptorObject } from 'history';
 import ContentTypeEnum from '../../common/ContentTypeEnum';
 
 type NewCommentsProps = {
@@ -11,7 +10,6 @@ type NewCommentsProps = {
 };
 
 function NewComments({ comments }: NewCommentsProps) {
-  const router = useRouter();
   const makeCommentList = () => {
     return comments.map((comment) => {
       const contentInfo = comment.content;
@@ -19,17 +17,13 @@ function NewComments({ comments }: NewCommentsProps) {
 
       let linkTo: string;
       let linkParams: Record<string, string> = {};
-      let linkState: HistoryState | undefined;
+      let linkSearch: Record<string, unknown> | undefined;
       if (contentInfo.type === ContentTypeEnum.POST) {
         linkTo = '/post/$post_id';
         linkParams = { post_id: String(comment.parent_id) };
       } else if (contentInfo.type === ContentTypeEnum.PHOTO) {
-        linkTo = '/photo/$photo_id';
-        linkParams = { photo_id: String(comment.parent_id) };
-        linkState = {
-          modal: true,
-          backgroundLocation: router.state.location,
-        };
+        linkTo = '.';
+        linkSearch = { photo: comment.parent_id };
       } else if (contentInfo.type === ContentTypeEnum.DOCUMENT) {
         linkTo = '/document/$doc_id';
         linkParams = { doc_id: String(comment.parent_id) };
@@ -48,7 +42,13 @@ function NewComments({ comments }: NewCommentsProps) {
             </Link>
           </div>
           <div className="new-comment-contents">
-            <Link to={linkTo as '/'} params={linkParams} state={linkState}>
+            <Link
+              to={linkTo as '/'}
+              params={linkParams}
+              search={
+                linkSearch ? (prev) => ({ ...prev, ...linkSearch }) : undefined
+              }
+            >
               <div className="new-comment-contents-top">
                 <p className="new-comment-contents-title">
                   {contentInfo.title ? contentInfo.title : '제목없음'}

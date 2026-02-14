@@ -1,4 +1,4 @@
-import { createRouter, ParsedLocation } from '@tanstack/react-router';
+import { createRouter } from '@tanstack/react-router';
 import { routeTree } from './routeTree.gen';
 
 export const router = createRouter({
@@ -8,10 +8,5 @@ export const router = createRouter({
 declare module '@tanstack/react-router' {
   interface Register {
     router: typeof router;
-  }
-  interface HistoryState {
-    modal?: boolean;
-    exhibitPhotoModal?: boolean;
-    backgroundLocation?: ParsedLocation;
   }
 }

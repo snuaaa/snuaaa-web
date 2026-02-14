@@ -1,4 +1,4 @@
-import { Link, useRouter } from '@tanstack/react-router';
+import { Link } from '@tanstack/react-router';
 import Image from '../Common/AaaImage';
 import { Photo } from '~/services/types';
 
@@ -9,8 +9,6 @@ type NewPhotosProps = {
 };
 
 function NewPhotos({ title, board_id, photos }: NewPhotosProps) {
-  const router = useRouter();
-
   return (
     <div className="w-full md:w-1/2 p-2 md:p-[5px]">
       <Link to="/board/$board_id" params={{ board_id }}>
@@ -21,12 +19,11 @@ function NewPhotos({ title, board_id, photos }: NewPhotosProps) {
           return (
             <div key={content.content_id} className="relative pb-full">
               <Link
-                to="/photo/$photo_id"
-                params={{ photo_id: String(content.content_id) }}
-                state={{
-                  modal: true,
-                  backgroundLocation: router.state.location,
-                }}
+                to="."
+                search={(prev) => ({
+                  ...prev,
+                  photo: content.content_id,
+                })}
               >
                 {content.photo && (
                   <Image

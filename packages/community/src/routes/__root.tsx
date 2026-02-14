@@ -1,6 +1,12 @@
-import { createRootRoute, Outlet, useLocation } from '@tanstack/react-router';
+import {
+  createRootRoute,
+  Outlet,
+  useLocation,
+  useNavigate,
+  useRouter,
+} from '@tanstack/react-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import React, { Suspense } from 'react';
+import React, { Suspense, useCallback } from 'react';
 
 import '../App.scss';
 import '../index.css';
@@ -12,6 +18,10 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import RiseSet from '~/components/Home/RiseSet';
 import SideBar from '~/components/Home/SideBar';
+import FullScreenPortal from '~/components/Common/FullScreenPortal';
+import PhotoDetailModal from '~/components/Photo/DetailModal';
+
+const ExhibitPhotoPage = React.lazy(() => import('~/pages/ExhibitPhoto'));
 
 const TanStackRouterDevtools =
   process.env.NODE_ENV === 'production'
@@ -32,12 +42,68 @@ const queryClient = new QueryClient({
   },
 });
 
+type SearchParams = {
+  photo?: number;
+  exhibitPhoto?: number;
+};
+
 export const Route = createRootRoute({
+  validateSearch: (search: Record<string, unknown>): SearchParams => ({
+    photo: search.photo ? Number(search.photo) : undefined,
+    exhibitPhoto: search.exhibitPhoto ? Number(search.exhibitPhoto) : undefined,
+  }),
   component: RootComponent,
 });
 
+function PhotoModal({ photoId }: { photoId: number }) {
+  const router = useRouter();
+  const navigate = useNavigate();
+
+  const handleMovePhoto = useCallback(
+    (newPhotoId: number) => {
+      navigate({
+        to: '.',
+        search: (prev: Record<string, unknown>) => ({
+          ...prev,
+          photo: newPhotoId,
+        }),
+        replace: true,
+      });
+    },
+    [navigate],
+  );
+
+  const handleClosePhoto = useCallback(() => {
+    if (window.history.length > 2) {
+      router.history.back();
+    } else {
+      navigate({ to: '/' });
+    }
+  }, [router, navigate]);
+
+  return (
+    <FullScreenPortal>
+      <PhotoDetailModal
+        photoId={photoId}
+        onClose={handleClosePhoto}
+        onMovePhoto={handleMovePhoto}
+      />
+    </FullScreenPortal>
+  );
+}
+
+function ExhibitPhotoModal({ exhibitPhotoId }: { exhibitPhotoId: number }) {
+  return (
+    <Suspense fallback={null}>
+      <ExhibitPhotoPage exhibitPhotoId={exhibitPhotoId} />
+    </Suspense>
+  );
+}
+
 function RootComponent() {
   const location = useLocation();
+  const { photo, exhibitPhoto } = Route.useSearch();
+
   // Check if the current path is an auth path (login or signup)
   const isAuthPage = location.pathname.startsWith('/auth');
 
@@ -63,6 +129,10 @@ function RootComponent() {
                   </div>
                   <Footer />
                 </>
+              )}
+              {photo && <PhotoModal photoId={photo} />}
+              {exhibitPhoto && (
+                <ExhibitPhotoModal exhibitPhotoId={exhibitPhoto} />
               )}
             </BoardProvider>
           </AuthProvider>

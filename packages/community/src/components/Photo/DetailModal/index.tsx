@@ -26,7 +26,7 @@ type Props = {
 const PhotoDetailModal = ({ photoId, onClose, onMovePhoto }: Props) => {
   const authContext = useAuth();
 
-  const navigate = useNavigate({ from: '/photo/$photo_id' });
+  const navigate = useNavigate();
 
   const { data } = usePhotoDetail(photoId);
 
@@ -69,28 +69,14 @@ const PhotoDetailModal = ({ photoId, onClose, onMovePhoto }: Props) => {
       const prevAlbumPhoto = data?.prevAlbumPhoto;
       const nextAlbumPhoto = data?.nextAlbumPhoto;
       if (direction === 1 && prevAlbumPhoto) {
-        navigate({
-          to: `/photo/$photo_id`,
-          params: { photo_id: prevAlbumPhoto.content_id.toString() },
-          state: {
-            modal: true,
-            // backgroundLocation: location.state.backgroundLocation
-          },
-        });
+        onMovePhoto(prevAlbumPhoto.content_id);
       } else if (direction === -1 && nextAlbumPhoto) {
-        navigate({
-          to: `/photo/$photo_id`,
-          params: { photo_id: nextAlbumPhoto.content_id.toString() },
-          state: {
-            modal: true,
-            // backgroundLocation: location.state.backgroundLocation
-          },
-        });
+        onMovePhoto(nextAlbumPhoto.content_id);
       } else {
         console.error('Cannot Move');
       }
     },
-    [data, navigate],
+    [data, onMovePhoto],
   );
 
   const moveToPhoto = useCallback(
