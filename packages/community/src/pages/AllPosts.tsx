@@ -6,26 +6,22 @@ import AllPostList from '~/components/Post/AllPostList';
 import Paginator from '~/components/Common/Paginator';
 import BoardName from '~/components/Board/BoardName';
 
-import { useHistory, useLocation } from 'react-router';
+import { useNavigate, useSearch } from '@tanstack/react-router';
 import { useFetch } from '~/hooks/useFetch';
 
 const POSTROWNUM = 10;
 
-type LocationState = {
-  page: number;
-};
-
 function AllPosts() {
-  const history = useHistory();
-  const location = useLocation<LocationState>();
-  const pageIdx =
-    location.state && location.state.page ? location.state.page : 1;
+  const navigate = useNavigate();
+  const searchParams = useSearch({ from: '/posts/all' });
+  const pageIdx = searchParams.page || 1;
 
   const clickPage = (idx: number) => {
-    history.push({
-      state: {
+    navigate({
+      search: (prev) => ({
+        ...prev,
         page: idx,
-      },
+      }),
     });
   };
 

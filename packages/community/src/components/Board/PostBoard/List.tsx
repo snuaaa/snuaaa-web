@@ -1,11 +1,10 @@
 import { ChangeEvent, KeyboardEvent, useState } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useSearch, useLocation } from '@tanstack/react-router';
 import Pagination from '~/components/Common/Pagination';
 import SelectBox from '~/components/Common/SelectBox';
 import PostList from '~/components/Post/PostList';
 import { useAuth } from '~/contexts/auth';
 import { usePostList } from '~/hooks/queries/usePostQueries';
-import useQueryString from '~/hooks/useQueryString';
 import { Board } from '~/services/types';
 import Skeleton from '~/components/Common/Skeleton';
 
@@ -36,25 +35,23 @@ type Props = {
 };
 
 const ListPost = ({ boardInfo, onClickCreate }: Props) => {
+  const navigate = useNavigate({ from: '/board/$board_id' });
   const location = useLocation();
-  const history = useHistory();
-  const queryString = useQueryString();
-  const page = Number(queryString.get('page') ?? 1);
+  const searchParams = useSearch({ from: '/board/$board_id' });
+  const page = Number(searchParams.page ?? 1);
 
   const { data, isLoading } = usePostList({
     board_id: boardInfo.board_id,
-    search_type: queryString.get('type') || undefined,
-    search_keyword: queryString.get('keyword') || undefined,
+    search_type: searchParams.type || undefined,
+    search_keyword: searchParams.keyword || undefined,
     offset: (page - 1) * PAGE_SIZE,
     limit: PAGE_SIZE,
   });
 
   const [searchKeyword, setSearchKeyword] = useState(
-    queryString.get('search_keyword') || '',
+    searchParams.keyword || '',
   );
-  const [searchType, setSearchType] = useState(
-    queryString.get('search_type') || '',
-  );
+  const [searchType, setSearchType] = useState(searchParams.type || '');
 
   const authContext = useAuth();
 
@@ -64,19 +61,26 @@ const ListPost = ({ boardInfo, onClickCreate }: Props) => {
 
   const search = () => {
     if (!searchType) {
-      const nextSearchParam = new URLSearchParams();
-      history.push({ search: nextSearchParam.toString() });
+      navigate({
+        search: (prev) => {
+          const { type, keyword, page, ...rest } = prev;
+          return rest;
+        },
+      });
       return;
     }
     if (searchKeyword.trim().length < 2) {
       alert('2글자 이상 입력해주세요.');
       return;
     }
-    const nextSearchParam = new URLSearchParams(queryString);
-    nextSearchParam.set('keyword', searchKeyword.trim());
-    nextSearchParam.set('type', searchType);
-    nextSearchParam.set('page', '1');
-    history.push({ search: nextSearchParam.toString() });
+    navigate({
+      search: (prev) => ({
+        ...prev,
+        keyword: searchKeyword.trim(),
+        type: searchType,
+        page: 1,
+      }),
+    });
   };
 
   const handleSearchKeyDown = (e: KeyboardEvent) => {
@@ -145,9 +149,13 @@ const ListPost = ({ boardInfo, onClickCreate }: Props) => {
             currentPage={page}
             totalPageCount={Math.ceil(data.count / PAGE_SIZE)}
             routeGenerator={(page) => {
-              const nextSearchParam = new URLSearchParams(queryString);
-              nextSearchParam.set('page', page.toString());
-              return `${location.pathname}?${nextSearchParam.toString()}`;
+              const nextSearchParams = new URLSearchParams();
+              if (searchParams.type)
+                nextSearchParams.set('type', searchParams.type);
+              if (searchParams.keyword)
+                nextSearchParams.set('keyword', searchParams.keyword);
+              nextSearchParams.set('page', page.toString());
+              return `${location.pathname}?${nextSearchParams.toString()}`;
             }}
           />
         </>

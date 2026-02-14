@@ -1,7 +1,12 @@
 import { useState, useEffect, createRef, useCallback } from 'react';
-import { useLocation, useHistory, useParams } from 'react-router';
+import {
+  useLocation,
+  useRouter,
+  useParams,
+  useNavigate,
+} from '@tanstack/react-router';
 import ExhibitPhotoService from '~/services/ExhibitPhotoService';
-import FullScreenPortal from '~/router/FullScreenPortal';
+import FullScreenPortal from '~/components/Common/FullScreenPortal';
 import { RecordOf, Record } from 'immutable';
 
 import useBlockBackgroundScroll from '~/hooks/useBlockBackgroundScroll';
@@ -10,14 +15,17 @@ import ExhibitPhotoComponent from '~/components/Exhibition/ExhibitPhoto/ExhibitP
 import { useFetch } from '~/hooks/useFetch';
 import Loading from '~/components/Common/Loading';
 
-type LocationState = {
-  backgroundLocation: string;
-};
+// type LocationState = {
+//   backgroundLocation: string;
+// };
 
 function ExhibitPhotoPage() {
-  const location = useLocation<LocationState>();
-  const history = useHistory();
-  const { exhibitPhoto_id } = useParams<{ exhibitPhoto_id: string }>();
+  // const location = useLocation<LocationState>();
+  const router = useRouter();
+  const navigate = useNavigate();
+  const { exhibitPhoto_id } = useParams({
+    from: '/exhibitPhoto/$exhibitPhoto_id',
+  });
   const fullscreenRef = createRef<HTMLDivElement>();
 
   const [exhibitPhotosInfo, setExhibitPhotosInfo] = useState<ExhibitPhoto[]>(
@@ -67,22 +75,17 @@ function ExhibitPhotoPage() {
       }
       if (direction === 1) {
         if (index < exhibitPhotosInfo.length - 1 && index > -1) {
-          history.replace({
-            pathname: `/exhibitPhoto/${exhibitPhotosInfo[index + 1].content_id}`,
-            state: {
-              exhibitPhotoModal: true,
-              backgroundLocation: location.state.backgroundLocation,
-            },
+          navigate({
+            to: `/exhibitPhoto/${exhibitPhotosInfo[index + 1].content_id}`,
+            replace: true,
+            // state preservation logic needed?
           });
         }
       } else if (direction === -1) {
         if (index < exhibitPhotosInfo.length && index > 0) {
-          history.replace({
-            pathname: `/exhibitPhoto/${exhibitPhotosInfo[index - 1].content_id}`,
-            state: {
-              exhibitPhotoModal: true,
-              backgroundLocation: location.state.backgroundLocation,
-            },
+          navigate({
+            to: `/exhibitPhoto/${exhibitPhotosInfo[index - 1].content_id}`,
+            replace: true,
           });
         }
       }
@@ -90,10 +93,10 @@ function ExhibitPhotoPage() {
   };
 
   const closePhoto = () => {
-    if (history.action === 'POP' && !history.location.state) {
-      history.push('/');
+    if (window.history.length > 2) {
+      router.history.back();
     } else {
-      history.goBack();
+      navigate({ to: '/' });
     }
   };
 
@@ -125,7 +128,7 @@ function ExhibitPhotoPage() {
         const backLink = contentInfo?.parent
           ? `/exhibition/${contentInfo.parent.content_id}`
           : '/board/brd41';
-        history.replace(backLink);
+        navigate({ to: backLink, replace: true });
       } catch (err) {
         console.error(err);
         alert('삭제 실패');

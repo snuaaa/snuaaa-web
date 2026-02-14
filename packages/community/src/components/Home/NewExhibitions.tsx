@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { Link } from '@tanstack/react-router';
 import Image from '../Common/AaaImage';
 import { Exhibition } from '~/services/types';
 
@@ -37,9 +37,8 @@ function NewExhibitions({ board_id, exhibitions }: NewExhibitionsProps) {
           return (
             <div className="new-exhibition-list" key={content.content_id}>
               <Link
-                to={{
-                  pathname: `/exhibition/${content.content_id}`,
-                }}
+                to="/exhibition/$exhibition_id"
+                params={{ exhibition_id: String(content.content_id) }}
               >
                 <Image imgSrc={content.exhibition.poster_thumbnail_path} />
               </Link>
@@ -53,7 +52,7 @@ function NewExhibitions({ board_id, exhibitions }: NewExhibitionsProps) {
 
   return (
     <div className="new-exhibitions-wrapper">
-      <Link to={`/board/${board_id}`}>
+      <Link to="/board/$board_id" params={{ board_id }}>
         <h4>역대 사진전</h4>
       </Link>
       <div className="new-exhibition-flex">

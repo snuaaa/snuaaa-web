@@ -8,7 +8,7 @@ import ActionDrawer from '../Common/ActionDrawer';
 
 import FileIcon from '../../components/Common/FileIcon';
 
-import { useHistory } from 'react-router';
+import { useRouter } from '@tanstack/react-router';
 import { Content } from '~/services/types';
 
 type DocuComponentProps = {
@@ -28,7 +28,7 @@ const DocuComponent = ({
   likeDoc,
   isLiked,
 }: DocuComponentProps) => {
-  const history = useHistory();
+  const router = useRouter();
   const contentInfo = docData;
   const userInfo = docData.user;
   const filesInfo = docData.attachedFiles;
@@ -56,7 +56,7 @@ const DocuComponent = ({
   return (
     <div className="post-wrapper">
       <div className="post-title">
-        <div className="post-title-back" onClick={() => history.goBack()}>
+        <div className="post-title-back" onClick={() => router.history.back()}>
           <i className="ri-arrow-left-line cursor-pointer"></i>
         </div>
         <h5>{contentInfo.title}</h5>

@@ -4,15 +4,16 @@ import imgProfile from '~/assets/img/common/profile.png';
 import Navigation from '~/components/Header/Navigation';
 import PopupUser from '~/components/Header/PopupUser';
 import Image from '~/components/Common/AaaImage';
-import { useHistory } from 'react-router';
+import { useNavigate, useLocation } from '@tanstack/react-router';
 import { useAuth } from '~/contexts/auth';
-import backgroundImg from '~/assets/img/header.gif';
 import { useViewportSize } from '~/contexts/viewportSize';
-import Drawer from './MenuDrawer';
+import Drawer from '~/components/Common/Drawer';
+import backgroundImg from '~/assets/img/header.gif';
 
 function Header() {
   const [isShowPopupUser, setIsShowPopupUser] = useState(false);
-  const history = useHistory();
+  const navigate = useNavigate();
+  const location = useLocation();
   const authContext = useAuth();
 
   const togglePopup = () => {
@@ -20,10 +21,10 @@ function Header() {
   };
 
   const handleClickLogo = () => {
-    if (history.location.pathname === '/') {
+    if (location.pathname === '/') {
       window.location.reload();
     } else {
-      history.push('/');
+      navigate({ to: '/' });
     }
   };
 

@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 import { convertDate } from '../../utils/convertDate';
 import ContentTypeEnum from '../../common/ContentTypeEnum';
 import { Content } from '~/services/types';
@@ -20,16 +20,25 @@ const NewPosts = ({ posts }: { posts: Content[] }) => {
             key={content_id}
           >
             <div className="shrink-0 w-1/5 grow-0 text-[#A3A3A3] truncate">
-              <Link to={`/board/${board_id}`}>{board_name}</Link>
+              <Link to="/board/$board_id" params={{ board_id }}>
+                {board_name}
+              </Link>
             </div>
             <div className="w-[45%] pr-1">
               <Link
                 to={
                   type === ContentTypeEnum.POST
-                    ? `/post/${content_id}`
+                    ? '/post/$post_id'
                     : type === ContentTypeEnum.DOCUMENT
-                      ? `/document/${content_id}`
+                      ? '/document/$doc_id'
                       : '/'
+                }
+                params={
+                  type === ContentTypeEnum.POST
+                    ? { post_id: String(content_id) }
+                    : type === ContentTypeEnum.DOCUMENT
+                      ? { doc_id: String(content_id) }
+                      : {}
                 }
               >
                 <h5 className="truncate">{`${title} `}</h5>

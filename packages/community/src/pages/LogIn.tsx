@@ -1,17 +1,13 @@
 import { ChangeEvent, useState, useEffect } from 'react';
 
-import { useHistory, Redirect, useLocation } from 'react-router';
+import { useNavigate, useSearch, Navigate } from '@tanstack/react-router';
 import LogInComponent from '~/components/Login/LogInComponent';
 import Loading from '~/components/Common/Loading';
 import PopUp from '~/components/Common/PopUp';
-import FullScreenPortal from '~/router/FullScreenPortal';
+import FullScreenPortal from '~/components/Common/FullScreenPortal';
 import FindIdPw from '~/components/Login/FindIdPw';
 import AuthService from '~/services/AuthService';
 import { useAuth } from '~/contexts/auth';
-
-type LocationState = {
-  accessLocation: string;
-};
 
 const popUpTitle = '자동 로그인 기능을 사용하시겠습니까?';
 const popUpText = `자동 로그인 사용시 다음 접속부터는 로그인을 하실 필요가 없습니다.\n
@@ -28,8 +24,8 @@ function LogIn() {
   const [popUp, setPopUp] = useState(false);
   const [errPopUp, setErrPopUp] = useState(false);
   const [findPopUp, setFindPopUp] = useState(false);
-  const history = useHistory();
-  const location = useLocation<LocationState>();
+  const navigate = useNavigate();
+  const search = useSearch({ from: '/auth/login' });
   const authContext = useAuth();
 
   useEffect(() => {
@@ -77,10 +73,10 @@ function LogIn() {
       const { token, userInfo, autoLogin } = res.data;
       setIsLoading(false);
       authContext.authLogin(token, autoLogin, userInfo);
-      if (location.state && location.state.accessLocation) {
-        history.push(location.state.accessLocation);
+      if (search.redirect) {
+        navigate({ to: search.redirect });
       } else {
-        history.push('/');
+        navigate({ to: '/' });
       }
     } catch (err) {
       console.error(err);
@@ -107,7 +103,7 @@ function LogIn() {
   };
 
   if (authContext.authInfo.isLoggedIn) {
-    return <Redirect to="/" />;
+    return <Navigate to="/" />;
   }
 
   return (

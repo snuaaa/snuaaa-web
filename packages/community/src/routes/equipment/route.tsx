@@ -1,15 +1,15 @@
+import { createFileRoute, Outlet } from '@tanstack/react-router';
 import { useState, useEffect } from 'react';
-import EquipmentMain from '~/components/Equipment/Main';
-import EquipmentRent from '~/components/Equipment/Rent';
-import EquipmentAdmin from '~/components/Equipment/Admin';
-import { FC } from 'react';
-import { Route, Switch } from 'react-router-dom';
 import { EquipmentCategoryContext } from '~/contexts/EquipmentCategoryContext';
 import { useAuth } from '~/contexts/auth';
 import EquipmentService from '~/services/EquipmentService';
 import { EquipmentCategory } from '~/services/types';
 
-const EquipmentPage: FC = () => {
+export const Route = createFileRoute('/equipment')({
+  component: EquipmentLayout,
+});
+
+function EquipmentLayout() {
   const [equipmentCategories, setEquipmentCategories] = useState<
     EquipmentCategory[]
   >([]);
@@ -31,18 +31,10 @@ const EquipmentPage: FC = () => {
   };
 
   return (
-    <div>
-      <EquipmentCategoryContext.Provider
-        value={{ categories: equipmentCategories, refreshCategories: fetch }}
-      >
-        <Switch>
-          <Route path="/equipment/rent/" component={EquipmentRent} />
-          <Route path="/equipment/admin/" component={EquipmentAdmin} />
-          <Route path="/equipment/" component={EquipmentMain} />
-        </Switch>
-      </EquipmentCategoryContext.Provider>
-    </div>
+    <EquipmentCategoryContext.Provider
+      value={{ categories: equipmentCategories, refreshCategories: fetch }}
+    >
+      <Outlet />
+    </EquipmentCategoryContext.Provider>
   );
-};
-
-export default EquipmentPage;
+}

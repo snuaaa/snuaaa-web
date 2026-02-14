@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation } from '@tanstack/react-router';
 import { convertDate } from '~/utils/convertDate';
 import Pagination from '~/components/Common/Pagination';
 import { useFetch } from '~/hooks/useFetch';
@@ -47,7 +47,10 @@ const PostList = ({ userUuid }: Props) => {
           <div className="my-post-wrapper" key={contentInfo.content_id}>
             <div className="my-post-boardname">{boardInfo.board_name}</div>
             <div className="my-post-title">
-              <Link to={`/post/${contentInfo.content_id}`}>
+              <Link
+                to="/post/$post_id"
+                params={{ post_id: String(contentInfo.content_id) }}
+              >
                 <h5>{contentInfo.title}</h5>
               </Link>
             </div>

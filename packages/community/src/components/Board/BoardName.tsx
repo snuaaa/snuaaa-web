@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 
 type BoardNameProps = {
   board_id?: string;
@@ -17,13 +17,13 @@ function BoardName({ board_id, board_name }: BoardNameProps) {
     );
   } else if (board_id === 'brd31') {
     return (
-      <Link to={`/board/${board_id}`}>
+      <Link to="/board/$board_id" params={{ board_id }}>
         <h2 className="memory-title">{board_name}</h2>
       </Link>
     );
   } else if (board_id === 'brd32') {
     return (
-      <Link to={`/board/${board_id}`}>
+      <Link to="/board/$board_id" params={{ board_id }}>
         <h2 className="astrophoto-title">{board_name}</h2>
       </Link>
     );
@@ -31,7 +31,7 @@ function BoardName({ board_id, board_name }: BoardNameProps) {
     return (
       <div className="postboard-title-wrapper">
         <div className="background-star solo">★</div>
-        <Link to={`/board/${board_id}`}>
+        <Link to="/board/$board_id" params={{ board_id }}>
           <h2>{board_name}</h2>
         </Link>
         <div className="background-star">★★★★★★★★★★★★★★★★★★★★★★</div>

@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { useRouteMatch } from 'react-router';
+import { useParams } from '@tanstack/react-router';
 
 import PostBoard from '~/components/Board/PostBoard';
 import DocuBoard from '~/components/Board/DocuBoard';
@@ -11,10 +11,10 @@ import { useBoards } from '~/contexts/board';
 
 const BoardPage: FC = () => {
   const boardContext = useBoards();
-  const match = useRouteMatch<{ board_id: string }>();
+  const { board_id } = useParams({ from: '/board/$board_id' });
 
   const boardInfo = boardContext.boardsInfo.find(
-    (board) => board.board_id === match.params.board_id,
+    (board) => board.board_id === board_id,
   );
 
   if (!boardInfo) {

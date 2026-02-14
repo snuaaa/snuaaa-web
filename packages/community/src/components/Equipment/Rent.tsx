@@ -5,7 +5,7 @@ import Loading from '~/components/Common/Loading';
 import { withModal } from '~/contexts/modal';
 import BoardName from '~/components/Board/BoardName';
 import EquipCart from './EquipCart';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 import { useEquipment, withEquipment } from './contexts';
 import { ViewportSize, useViewportSize } from '~/contexts/viewportSize';
 
@@ -22,7 +22,7 @@ const Rent: FC = () => {
       <BoardName board_name={'장비 대여'} />
       <Link
         className="text-gray-400 text-md font-bold mb-4 w-fit"
-        to="/equipment/"
+        to="/equipment"
       >
         &lt; BACK
       </Link>

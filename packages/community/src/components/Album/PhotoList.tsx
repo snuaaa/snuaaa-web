@@ -1,7 +1,6 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Link } from '@tanstack/react-router';
 import Image from '../../components/Common/AaaImage';
-import history from '../../common/history';
 
 import SpinningLoader from '../Common/SpinningLoader';
 import { Photo } from '~/services/types';
@@ -48,46 +47,41 @@ function PhotoList({ photos }: PhotoListProps) {
     setLimit((prevLimit) => prevLimit + LIMIT_UNIT);
   };
 
-  const makePhotoList = (photos: Photo[]) => {
-    if (photos.length > 0) {
-      return photos.map((content, index) => {
-        const contentInfo = content;
-        const photo = content.photo;
-        if (index < limit) {
-          return (
-            <div className="photo-wrapper" key={contentInfo.content_id}>
-              <Link
-                to={{
-                  pathname: `/photo/${contentInfo.content_id}`,
-                  state: {
-                    modal: true,
-                    backgroundLocation: history.location,
-                  },
-                }}
-              >
-                <div className="photo-cover">
-                  <div className="photo-cover-unit">
-                    <i className="ri-heart-fill"></i>
-                    <p>{contentInfo.like_num}</p>
-                  </div>
-                  <div className="photo-cover-unit">
-                    <i className="ri-message-2-fill"></i>
-                    <p>{contentInfo.comment_num}</p>
-                  </div>
-                </div>
-                <Image imgSrc={photo.thumbnail_url ?? photo.thumbnail_path} />
-              </Link>
-            </div>
-          );
-        }
-        return null;
-      });
-    }
-  };
-
   return (
     <>
-      <div className="photo-list-wrapper">{makePhotoList(photos)}</div>
+      <div className="photo-list-wrapper">
+        {photos.map((content, index) => {
+          const contentInfo = content;
+          const photo = content.photo;
+          if (index < limit) {
+            return (
+              <div className="photo-wrapper" key={contentInfo.content_id}>
+                <Link
+                  to={`/photo/$photo_id`}
+                  params={{ photo_id: contentInfo.content_id.toString() }}
+                  // state={{
+                  //   modal: true,
+                  //   backgroundLocation: router.state.location,
+                  // }}
+                >
+                  <div className="photo-cover">
+                    <div className="photo-cover-unit">
+                      <i className="ri-heart-fill"></i>
+                      <p>{contentInfo.like_num}</p>
+                    </div>
+                    <div className="photo-cover-unit">
+                      <i className="ri-message-2-fill"></i>
+                      <p>{contentInfo.comment_num}</p>
+                    </div>
+                  </div>
+                  <Image imgSrc={photo.thumbnail_url ?? photo.thumbnail_path} />
+                </Link>
+              </div>
+            );
+          }
+          return null;
+        })}
+      </div>
       <div className="photo-list-loader-wrapper" ref={target}>
         {isLoading && limit < photos.length && <SpinningLoader size={40} />}
       </div>

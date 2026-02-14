@@ -1,10 +1,18 @@
+import { useLocation } from '@tanstack/react-router';
 import { useMemo } from 'react';
-import { useLocation } from 'react-router-dom';
 
 function useQueryString() {
   const { search } = useLocation();
 
-  return useMemo(() => new URLSearchParams(search), [search]);
+  return useMemo(() => {
+    const params = new URLSearchParams();
+    Object.entries(search).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        params.append(key, String(value));
+      }
+    });
+    return params;
+  }, [search]);
 }
 
 export default useQueryString;

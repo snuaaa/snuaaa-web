@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 
 const SignUpSuccess: React.FC = () => (
   <div className="popup-wrapper">

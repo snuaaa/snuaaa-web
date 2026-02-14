@@ -1,7 +1,5 @@
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useRouter, HistoryState } from '@tanstack/react-router';
 import { convertDate } from '~/utils/convertDate';
-
-import { LocationDescriptorObject } from 'history';
 import ContentTypeEnum from '~/common/ContentTypeEnum';
 import { Comment, Content } from '~/services/types';
 
@@ -9,47 +7,62 @@ type Props = {
   comments: Comment[];
 };
 
-const getLinkTo = (
+const getLinkProps = (
   content: Content,
-  history: ReturnType<typeof useHistory>,
-): string | LocationDescriptorObject => {
+  router: ReturnType<typeof useRouter>,
+): { to: string; params?: Record<string, string>; state?: HistoryState } => {
   if (content.type === ContentTypeEnum.POST) {
-    return `/post/${content.content_id}`;
+    return {
+      to: '/post/$post_id',
+      params: { post_id: String(content.content_id) },
+    };
   }
   if (content.type === ContentTypeEnum.PHOTO) {
     return {
-      pathname: `/photo/${content.content_id}`,
+      to: '/photo/$photo_id',
+      params: { photo_id: String(content.content_id) },
       state: {
         modal: true,
-        backgroundLocation: history.location,
+        backgroundLocation: router.state.location,
       },
     };
   }
   if (content.type === ContentTypeEnum.DOCUMENT) {
-    return `/document/${content.content_id}`;
+    return {
+      to: '/document/$doc_id',
+      params: { doc_id: String(content.content_id) },
+    };
   }
-  return '/';
+  return { to: '/' };
 };
 
 function CommentList({ comments }: Props) {
-  const history = useHistory();
+  const router = useRouter();
 
   return (
     <div className="my-list-wrapper">
       {comments.map((comment) => {
         const contentInfo = comment.content;
         const boardInfo = comment.content.board;
-        const linkTo = getLinkTo(contentInfo, history);
+        const linkProps = getLinkProps(contentInfo, router);
 
         return (
           <div className="my-cmt-wrapper" key={comment.comment_id}>
             <div className="my-cmt-boardname">
-              <Link to={`/board/${boardInfo.board_id}`}>
+              <Link
+                to="/board/$board_id"
+                params={{ board_id: boardInfo.board_id }}
+              >
                 {boardInfo.board_name}
               </Link>
             </div>
 
-            <Link to={linkTo} className="my-cmt-contents-link">
+            <Link
+              to={linkProps.to as '/'}
+              params={linkProps.params}
+              state={linkProps.state}
+              className="my-cmt-contents-link"
+            >
               <div className="my-cmt-contents">
                 <p className="my-cmt-title">{contentInfo.title}</p>
                 <p className="my-cmt-cmt">{comment.text}</p>

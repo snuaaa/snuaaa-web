@@ -1,6 +1,6 @@
 import { Board } from '~/services/types';
 import { MenuLink } from '../Navigation/types';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 import { useDrawer } from '~/components/Common/Drawer/useDrawer';
 
 type Props = {
@@ -19,7 +19,8 @@ function MenuItem(props: Props) {
     <li className="pl-6 bg-slate-700">
       {'board_id' in item ? (
         <Link
-          to={`/board/${item.board_id}`}
+          to="/board/$board_id"
+          params={{ board_id: item.board_id }}
           className={baseItemStyle}
           onClick={onClose}
         >

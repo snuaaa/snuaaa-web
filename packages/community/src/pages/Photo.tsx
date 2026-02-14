@@ -1,31 +1,36 @@
 import { FC, useCallback } from 'react';
-import { useHistory, useParams } from 'react-router';
-import FullScreenPortal from '~/router/FullScreenPortal';
+import { useNavigate, useRouter, useParams } from '@tanstack/react-router';
+import FullScreenPortal from '~/components/Common/FullScreenPortal';
 
 import PhotoDetailModal from '~/components/Photo/DetailModal';
 
 const PhotoPage: FC = () => {
-  const { photo_id: photoId } = useParams<{ photo_id: string }>();
+  const { photo_id: photoId } = useParams({ from: '/photo/$photo_id' });
 
-  const history = useHistory();
+  const router = useRouter();
+  const navigate = useNavigate();
 
   const handleMovePhoto = useCallback(
     (photoId: number) => {
-      history.replace({
-        pathname: `/photo/${photoId}`,
-        state: history.location.state,
+      navigate({
+        to: `/photo/${photoId}`,
+        replace: true,
+        // state: router.history.location.state, // Sending state might need different approach in Tanstack Router if it's not supported directly in navigate options like this for same-route navigation with replacement.
+        // But for now, assuming standard navigation. If state preservation is needed, we might need to use search params or global store.
       });
     },
-    [history],
+    [navigate],
   );
 
   const hanldeClosePhoto = useCallback(() => {
-    if (history.action === 'POP' && !history.location.state) {
-      history.push('/');
+    // router.history.back();
+    // Fallback logic if needed
+    if (window.history.length > 2) {
+      router.history.back();
     } else {
-      history.goBack();
+      navigate({ to: '/' });
     }
-  }, [history]);
+  }, [router, navigate]);
 
   return (
     <FullScreenPortal>

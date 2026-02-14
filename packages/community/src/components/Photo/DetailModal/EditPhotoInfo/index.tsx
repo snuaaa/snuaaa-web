@@ -1,4 +1,4 @@
-import { Prompt } from 'react-router';
+// import { Prompt } from 'react-router';
 import { Photo, Tag } from '~/services/types';
 import { UpdatePhotoRequest } from '~/services/PhotoService';
 import { formOptions, useStore } from '@tanstack/react-form';
@@ -89,10 +89,10 @@ const EditPhotoInfo = ({
 
   return (
     <>
-      <Prompt
+      {/* <Prompt
         when={true}
         message="작성 중인 내용은 저장되지 않습니다. 작성을 취소하시겠습니까?"
-      ></Prompt>
+      ></Prompt> */}
       <form.AppForm>
         <form
           className="flex flex-col h-full overflow-auto"

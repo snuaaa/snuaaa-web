@@ -1,17 +1,11 @@
 import { ChangeEvent, FC, useContext, useEffect, useState } from 'react';
-import { EquipmentRentStatus, EquipmentStatus } from '~/services/types';
-import { useHistory, useLocation } from 'react-router';
+import { useNavigate, useSearch } from '@tanstack/react-router';
 import { EquipmentCategoryContext } from '~/contexts/EquipmentCategoryContext';
 import SearchString from './SearchString';
 import SearchSelect from './SearchSelect';
 import { equipmentRentStatusOptions, equipmentStatusOptions } from '../common';
 import { ViewportSize, useViewportSize } from '~/contexts/viewportSize';
-
-export enum SortBy {
-  NAME = 'name', // 장비명
-  CREATED_AT = 'createdAt', // 등록일자
-  CATEGORY = 'category_id', // 분류
-}
+import { SortBy, SortOrder } from '~/routes/equipment/admin';
 
 const sortByOptions = [
   { value: SortBy.NAME, name: '정렬 기준: 장비명' },
@@ -19,42 +13,29 @@ const sortByOptions = [
   { value: SortBy.CATEGORY, name: '정렬 기준: 분류' },
 ];
 
-enum SortOrder {
-  ASC = 'ASC', // 오름차순
-  DESC = 'DESC', // 내림차순
-}
-
 const sortOrderOptions = [
   { value: SortOrder.ASC, name: '오름차순' },
   { value: SortOrder.DESC, name: '내림차순' },
 ];
 
-export type EquipSearchLocationState = {
-  category_id: number;
-  keyword: string;
-  maker: string;
-  status: EquipmentStatus | '';
-  rent_status: EquipmentRentStatus | '';
-  sort_by: SortBy;
-  sort_order: SortOrder;
-};
-
 const EquipSearchBar: FC = () => {
-  const history = useHistory();
-  const location = useLocation<EquipSearchLocationState>();
+  const search = useSearch({ from: '/equipment/admin' });
+  const navigate = useNavigate({ from: '/equipment/admin' });
   const equipmentCategories = useContext(EquipmentCategoryContext);
 
   const [searchStrings, setSearchStrings] = useState({
-    keyword: location.state?.keyword ?? '',
-    maker: location.state?.maker ?? '',
+    keyword: search.keyword ?? '',
+    maker: search.maker ?? '',
   });
 
   const viewportSize = useViewportSize();
 
   useEffect(() => {
-    if (!location.state) {
-      history.replace({
-        state: {
+    if (!search.sort_by) {
+      // Check if initialization is needed
+      navigate({
+        search: (prev) => ({
+          ...prev,
           category_id: 0,
           keyword: '',
           maker: '',
@@ -62,52 +43,21 @@ const EquipSearchBar: FC = () => {
           rent_status: '',
           sort_by: SortBy.CREATED_AT,
           sort_order: SortOrder.DESC,
-        },
+        }),
+        replace: true,
       });
     }
-  }, [history, location.state]);
+  }, [navigate, search]);
 
   const handleSelectChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    if (e.target.name === 'category') {
-      history.push({
-        state: {
-          ...location.state,
-          category_id: +e.target.value,
-        },
-      });
-    }
-    if (e.target.name === 'status') {
-      history.push({
-        state: {
-          ...location.state,
-          status: e.target.value,
-        },
-      });
-    }
-    if (e.target.name === 'rent_status') {
-      history.push({
-        state: {
-          ...location.state,
-          rent_status: e.target.value,
-        },
-      });
-    }
-    if (e.target.name === 'sort_by') {
-      history.push({
-        state: {
-          ...location.state,
-          sort_by: e.target.value as SortBy,
-        },
-      });
-    }
-    if (e.target.name === 'sort_order') {
-      history.push({
-        state: {
-          ...location.state,
-          sort_order: e.target.value as SortOrder,
-        },
-      });
-    }
+    const { name, value } = e.target;
+    navigate({
+      search: (prev) => ({
+        ...prev,
+        [name === 'category' ? 'category_id' : name]:
+          name === 'category' ? +value : value,
+      }),
+    });
   };
 
   const handleTextChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -120,12 +70,12 @@ const EquipSearchBar: FC = () => {
   };
 
   const handleSearch = () => {
-    history.push({
-      state: {
-        ...location.state,
+    navigate({
+      search: (prev) => ({
+        ...prev,
         keyword: searchStrings.keyword,
         maker: searchStrings.maker,
-      },
+      }),
     });
   };
 
@@ -142,7 +92,7 @@ const EquipSearchBar: FC = () => {
             })) ?? []
           }
           onChange={handleSelectChange}
-          value={location.state?.category_id ?? 0}
+          value={search.category_id ?? 0}
           defaultOption="분류"
         />
 
@@ -150,14 +100,14 @@ const EquipSearchBar: FC = () => {
           name="status"
           options={equipmentStatusOptions}
           onChange={handleSelectChange}
-          value={location.state?.status ?? ''}
+          value={search.status ?? ''}
           defaultOption="상태"
         />
         <SearchSelect
           name="rent_status"
           options={equipmentRentStatusOptions}
           onChange={handleSelectChange}
-          value={location.state?.rent_status ?? ''}
+          value={search.rent_status ?? ''}
           defaultOption="대여 상태"
         />
 
@@ -193,13 +143,13 @@ const EquipSearchBar: FC = () => {
           name="sort_by"
           options={sortByOptions}
           onChange={handleSelectChange}
-          value={location.state?.sort_by ?? SortBy.CREATED_AT}
+          value={search.sort_by ?? SortBy.CREATED_AT}
         />
         <SearchSelect
           name="sort_order"
           options={sortOrderOptions}
           onChange={handleSelectChange}
-          value={location.state?.sort_order ?? SortOrder.DESC}
+          value={search.sort_order ?? SortOrder.DESC}
         />
       </div>
     </div>

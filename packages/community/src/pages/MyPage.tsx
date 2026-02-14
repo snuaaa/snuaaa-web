@@ -1,9 +1,9 @@
 import EditMyInfo from '~/components/User/Edit';
 import UserView from '~/components/User/View';
-import { useParams } from 'react-router-dom';
+import { useParams } from '@tanstack/react-router';
 
 function MyPage() {
-  const { view = 'info' } = useParams<{ view: 'info' | 'profile' }>();
+  const { view } = useParams({ from: '/mypage/$view' });
 
   return (
     <div className="my-page-wrapper">
@@ -11,7 +11,7 @@ function MyPage() {
         {
           info: <UserView isMyInfo />,
           profile: <EditMyInfo />,
-        }[view]
+        }[view as 'info' | 'profile']
       }
     </div>
   );

@@ -5,14 +5,14 @@ import Equipment from '~/components/About/equipment';
 import Observation from '~/components/About/observation';
 import Officers from '~/components/About/officers';
 import Regulation from '~/components/About/regulation';
-import { match } from 'react-router';
+import { useParams } from '@tanstack/react-router';
 
-type AboutProps = {
-  match: match<{ aaa: string }>;
-};
+// type AboutProps = {
+//   match: match<{ aaa: string }>;
+// };
 
-function About(props: AboutProps) {
-  const aboutIdx = props.match.params.aaa;
+function About() {
+  const { aaa: aboutIdx } = useParams({ from: '/about/$aaa' });
 
   if (aboutIdx === 'aboutAAA') return <AboutAAA />;
   else if (aboutIdx === 'contact') return <Contact />;

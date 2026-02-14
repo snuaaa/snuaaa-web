@@ -8,12 +8,12 @@ import PhotoBoardService from '../../services/PhotoBoardService';
 
 import BoardName from '../../components/Board/BoardName';
 
-import { useHistory, useLocation } from 'react-router';
+import { useNavigate, useSearch, useLocation } from '@tanstack/react-router';
+
 import { Board } from '~/services/types';
 import { useFetch } from '~/hooks/useFetch';
 import { useAuth } from '~/contexts/auth';
 import { Divider } from '~/ui';
-import useQueryString from '~/hooks/useQueryString';
 import Pagination from '../Common/Pagination';
 
 type MemoryProps = {
@@ -24,13 +24,13 @@ const PAGE_SIZE = 12;
 
 function Memory({ boardInfo }: MemoryProps) {
   const [isCreating, setIsCreating] = useState<boolean>(false);
-  const history = useHistory();
+  const navigate = useNavigate({ from: '/board/$board_id' });
   const location = useLocation();
 
-  const queryString = useQueryString();
+  const searchParams = useSearch({ from: '/board/$board_id' });
 
-  const page = Number(queryString.get('page') ?? 1);
-  const category = queryString.get('category') || '';
+  const page = Number(searchParams.page ?? 1);
+  const category = searchParams.category || '';
 
   const fetchFunction = useCallback(() => {
     return PhotoBoardService.retrieveAlbumsInPhotoBoard(
@@ -43,20 +43,22 @@ function Memory({ boardInfo }: MemoryProps) {
   const { data, refresh } = useFetch({ fetch: fetchFunction });
 
   const clickCategory = (ctg_id: string) => {
-    const nextSearchParam = new URLSearchParams(queryString);
-    nextSearchParam.set('page', '1');
-    nextSearchParam.set('category', ctg_id);
-    history.push({
-      search: nextSearchParam.toString(),
+    navigate({
+      search: (prev) => ({
+        ...prev,
+        page: 1,
+        category: ctg_id,
+      }),
     });
   };
 
   const clickAll = () => {
-    const nextSearchParam = new URLSearchParams(queryString);
-    nextSearchParam.set('page', '1');
-    nextSearchParam.delete('category');
-    history.push({
-      search: nextSearchParam.toString(),
+    navigate({
+      search: (prev) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { category: _category, ...rest } = prev;
+        return { ...rest, page: 1 };
+      },
     });
   };
 
@@ -115,9 +117,11 @@ function Memory({ boardInfo }: MemoryProps) {
               currentPage={page}
               totalPageCount={Math.ceil(data.albumCount / PAGE_SIZE)}
               routeGenerator={(page) => {
-                const nextSearchParam = new URLSearchParams(queryString);
-                nextSearchParam.set('page', page.toString());
-                return `${location.pathname}?${nextSearchParam.toString()}`;
+                const nextSearchParams = new URLSearchParams();
+                if (searchParams.category)
+                  nextSearchParams.set('category', searchParams.category);
+                nextSearchParams.set('page', page.toString());
+                return `${location.pathname}?${nextSearchParams.toString()}`;
               }}
             />
           )}

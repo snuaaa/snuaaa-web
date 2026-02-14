@@ -1,9 +1,9 @@
 import React from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useRouter, HistoryState } from '@tanstack/react-router';
 import { convertDate } from '../../utils/convertDate';
 
 import { Comment } from '~/services/types';
-import { LocationDescriptorObject } from 'history';
+// import { LocationDescriptorObject } from 'history';
 import ContentTypeEnum from '../../common/ContentTypeEnum';
 
 type NewCommentsProps = {
@@ -11,25 +11,28 @@ type NewCommentsProps = {
 };
 
 function NewComments({ comments }: NewCommentsProps) {
-  const history = useHistory();
+  const router = useRouter();
   const makeCommentList = () => {
     return comments.map((comment) => {
       const contentInfo = comment.content;
       const boardInfo = comment.content.board;
 
-      let linkTo: string | LocationDescriptorObject;
+      let linkTo: string;
+      let linkParams: Record<string, string> = {};
+      let linkState: HistoryState | undefined;
       if (contentInfo.type === ContentTypeEnum.POST) {
-        linkTo = `/post/${comment.parent_id}`;
+        linkTo = '/post/$post_id';
+        linkParams = { post_id: String(comment.parent_id) };
       } else if (contentInfo.type === ContentTypeEnum.PHOTO) {
-        linkTo = {
-          pathname: `/photo/${comment.parent_id}`,
-          state: {
-            modal: true,
-            backgroundLocation: history.location,
-          },
+        linkTo = '/photo/$photo_id';
+        linkParams = { photo_id: String(comment.parent_id) };
+        linkState = {
+          modal: true,
+          backgroundLocation: router.state.location,
         };
       } else if (contentInfo.type === ContentTypeEnum.DOCUMENT) {
-        linkTo = `/document/${comment.parent_id}`;
+        linkTo = '/document/$doc_id';
+        linkParams = { doc_id: String(comment.parent_id) };
       } else {
         linkTo = '/';
       }
@@ -37,12 +40,15 @@ function NewComments({ comments }: NewCommentsProps) {
       return (
         <div className="new-comment-list" key={comment.comment_id}>
           <div className="new-comment-boardname">
-            <Link to={`/board/${boardInfo.board_id}`}>
+            <Link
+              to="/board/$board_id"
+              params={{ board_id: boardInfo.board_id }}
+            >
               {boardInfo.board_name}
             </Link>
           </div>
           <div className="new-comment-contents">
-            <Link to={linkTo}>
+            <Link to={linkTo as '/'} params={linkParams} state={linkState}>
               <div className="new-comment-contents-top">
                 <p className="new-comment-contents-title">
                   {contentInfo.title ? contentInfo.title : '제목없음'}

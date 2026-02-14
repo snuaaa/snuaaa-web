@@ -4,7 +4,7 @@ import { useFetch } from '~/hooks/useFetch';
 import Pagination from '~/components/Common/Pagination';
 import CommentService from '~/services/CommentService';
 import CommentList from '~/components/Comment/CommentList';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from '@tanstack/react-router';
 
 type Props = {
   userUuid: string;

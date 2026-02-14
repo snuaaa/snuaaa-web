@@ -1,7 +1,6 @@
 import BoardName from '../../components/Board/BoardName';
 
-import { useLocation, useHistory } from 'react-router';
-import useQueryString from '~/hooks/useQueryString';
+import { useNavigate, useSearch } from '@tanstack/react-router';
 import { Board } from '~/services/types';
 import { PhotoSection } from './PhotoBoard/PhotoSection';
 import { AlbumSection } from './PhotoBoard/AlbumSection';
@@ -21,21 +20,18 @@ const unselectedViewModeClassName =
   'bg-[#F1F1F1] text-[#A3A3A3] hover:text-[#646464]';
 
 function AstroPhoto({ boardInfo }: AstroPhotoProps) {
-  const history = useHistory();
-  const queryString = useQueryString();
-  const location = useLocation();
+  const navigate = useNavigate({ from: '/board/$board_id' });
+  const searchParams = useSearch({ from: '/board/$board_id' });
 
-  const viewMode: ViewMode =
-    queryString.get('view') === 'album' ? 'album' : 'photo';
+  const viewMode: ViewMode = searchParams.view === 'album' ? 'album' : 'photo';
 
   const setViewMode = (mode: ViewMode) => {
-    const nextSearchParams = new URLSearchParams(queryString);
-    nextSearchParams.set('view', mode);
-    nextSearchParams.set('page', '1'); // Reset page when switching views
-
-    history.push({
-      pathname: location.pathname,
-      search: nextSearchParams.toString(),
+    navigate({
+      search: (prev) => ({
+        ...prev,
+        view: mode,
+        page: 1,
+      }),
     });
   };
 

@@ -1,20 +1,20 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { useCallback, useMemo, useState, useEffect } from 'react';
+import { Link, useNavigate } from '@tanstack/react-router';
 
 import { useAuth } from '~/contexts/auth';
 import useBlockBackgroundScroll from '~/hooks/useBlockBackgroundScroll';
-import AlbumService from '~/services/AlbumService';
-import { Photo } from '~/services/types';
 import ContentService from '~/services/ContentService';
+import AlbumService from '~/services/AlbumService';
 import Loading from '~/components/Common/Loading';
 import Comment from '~/components/Comment';
+import { Photo } from '~/services/types';
 
 import EditPhotoInfo from './EditPhotoInfo';
 import PhotoInfo from './PhotoInfo';
 import PhotoViewer from './PhotoViewer';
 import {
-  useDeletePhoto,
   usePhotoDetail,
+  useDeletePhoto,
 } from '~/hooks/queries/usePhotoQueries';
 
 type Props = {
@@ -26,7 +26,7 @@ type Props = {
 const PhotoDetailModal = ({ photoId, onClose, onMovePhoto }: Props) => {
   const authContext = useAuth();
 
-  const history = useHistory();
+  const navigate = useNavigate({ from: '/photo/$photo_id' });
 
   const { data } = usePhotoDetail(photoId);
 
@@ -69,16 +69,18 @@ const PhotoDetailModal = ({ photoId, onClose, onMovePhoto }: Props) => {
       const prevAlbumPhoto = data?.prevAlbumPhoto;
       const nextAlbumPhoto = data?.nextAlbumPhoto;
       if (direction === 1 && prevAlbumPhoto) {
-        history.replace({
-          pathname: `/photo/${prevAlbumPhoto.content_id}`,
+        navigate({
+          to: `/photo/$photo_id`,
+          params: { photo_id: prevAlbumPhoto.content_id.toString() },
           state: {
             modal: true,
             // backgroundLocation: location.state.backgroundLocation
           },
         });
       } else if (direction === -1 && nextAlbumPhoto) {
-        history.replace({
-          pathname: `/photo/${nextAlbumPhoto.content_id}`,
+        navigate({
+          to: `/photo/$photo_id`,
+          params: { photo_id: nextAlbumPhoto.content_id.toString() },
           state: {
             modal: true,
             // backgroundLocation: location.state.backgroundLocation
@@ -88,7 +90,7 @@ const PhotoDetailModal = ({ photoId, onClose, onMovePhoto }: Props) => {
         console.error('Cannot Move');
       }
     },
-    [data?.nextAlbumPhoto, data?.prevAlbumPhoto, history],
+    [data, navigate],
   );
 
   const moveToPhoto = useCallback(
@@ -104,7 +106,7 @@ const PhotoDetailModal = ({ photoId, onClose, onMovePhoto }: Props) => {
         console.error('Cannot Move');
       }
     },
-    [data?.nextPhoto, data?.prevPhoto, onMovePhoto],
+    [data, onMovePhoto],
   );
 
   const likePhoto = useCallback(async () => {
@@ -114,16 +116,24 @@ const PhotoDetailModal = ({ photoId, onClose, onMovePhoto }: Props) => {
     try {
       await ContentService.likeContent(Number(photoId));
       if (isLiked) {
-        setContentInfo({
-          ...contentInfo,
-          like_num: contentInfo.like_num - 1,
-        });
+        setContentInfo((prev) =>
+          prev
+            ? ({
+                ...prev,
+                like_num: prev.like_num - 1,
+              } as Photo)
+            : prev,
+        );
         setIsLiked(false);
       } else {
-        setContentInfo({
-          ...contentInfo,
-          like_num: contentInfo.like_num + 1,
-        });
+        setContentInfo((prev) =>
+          prev
+            ? ({
+                ...prev,
+                like_num: prev.like_num + 1,
+              } as Photo)
+            : prev,
+        );
         setIsLiked(true);
       }
     } catch (err) {
@@ -153,13 +163,13 @@ const PhotoDetailModal = ({ photoId, onClose, onMovePhoto }: Props) => {
       try {
         await mutateAsyncDeletePhoto();
 
-        history.replace(backLink);
+        navigate({ to: backLink });
       } catch (err) {
         console.error(err);
         alert('삭제 실패');
       }
     }
-  }, [backLink, contentInfo, history, mutateAsyncDeletePhoto]);
+  }, [backLink, contentInfo, navigate, mutateAsyncDeletePhoto]);
 
   const onUpdate = useCallback(() => {
     setIsEditing(false);

@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 import defaultAlbumCover from '~/assets/img/default_photo_img.png';
 import defaultStarAlbumCover from '~/assets/img/default_photo_img_star.png';
 import Image from '../Common/AaaImage';
@@ -30,7 +30,10 @@ function AlbumList({ board_id, albums }: AlbumListProps) {
 
       return (
         <div className="album-list" key={album.content_id}>
-          <Link to={`/album/${album.content_id}`}>
+          <Link
+            to={`/album/$album_id`}
+            params={{ album_id: album.content_id.toString() }}
+          >
             <Image imgSrc={thumbnailPath} defaultImgSrc={albumCover} />
             <div className="album-cover">
               <div className="album-category-marker" style={color}></div>

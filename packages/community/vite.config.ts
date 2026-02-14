@@ -1,4 +1,6 @@
 import { defineConfig } from 'vite';
+import { tanstackRouter } from '@tanstack/router-plugin/vite';
+
 import path from 'path';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
@@ -8,6 +10,11 @@ const require = createRequire(import.meta.url);
 
 export default defineConfig({
   plugins: [
+    // Please make sure that '@tanstack/router-plugin' is passed before '@vitejs/plugin-react'
+    tanstackRouter({
+      target: 'react',
+      autoCodeSplitting: true,
+    }),
     react(),
     tailwindcss(),
     ckeditor5({ theme: require.resolve('@ckeditor/ckeditor5-theme-lark') }),
