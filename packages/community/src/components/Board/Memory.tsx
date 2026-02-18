@@ -115,10 +115,6 @@ function Memory({ boardInfo }: MemoryProps) {
             <Pagination
               currentPage={page}
               totalPageCount={Math.ceil(data.albumCount / PAGE_SIZE)}
-              searchGenerator={(page) => ({
-                ...searchParams,
-                page,
-              })}
             />
           )}
         </>

@@ -21,8 +21,6 @@ export const AlbumSection: FC<Props> = ({ boardInfo }) => {
 
   const [isCreating, setIsCreating] = useState(false);
 
-  // const history = useHistory();
-
   const searchParams = useSearch({ from: '/board/$board_id' });
 
   const page = Number(searchParams.page ?? 1);
@@ -74,10 +72,6 @@ export const AlbumSection: FC<Props> = ({ boardInfo }) => {
         <Pagination
           currentPage={page}
           totalPageCount={Math.ceil(data.albumCount / PAGE_SIZE)}
-          searchGenerator={(page) => ({
-            ...searchParams,
-            page,
-          })}
         />
       )}
     </>

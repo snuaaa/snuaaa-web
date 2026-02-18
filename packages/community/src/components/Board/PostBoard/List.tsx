@@ -147,10 +147,6 @@ const ListPost = ({ boardInfo, onClickCreate }: Props) => {
           <Pagination
             currentPage={page}
             totalPageCount={Math.ceil(data.count / PAGE_SIZE)}
-            searchGenerator={(page) => ({
-              ...searchParams,
-              page,
-            })}
           />
         </>
       )}

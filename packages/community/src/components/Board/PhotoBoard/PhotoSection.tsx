@@ -116,10 +116,6 @@ export const PhotoSection: FC<Props> = ({ boardInfo }) => {
         <Pagination
           currentPage={pageIdx}
           totalPageCount={Math.ceil(data.count / PHOTO_ROW_NUM)}
-          searchGenerator={(page) => ({
-            ...searchParams,
-            page,
-          })}
         />
       )}
     </>

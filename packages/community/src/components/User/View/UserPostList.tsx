@@ -3,19 +3,16 @@ import { Link } from '@tanstack/react-router';
 import { convertDate } from '~/utils/convertDate';
 import Pagination from '~/components/Common/Pagination';
 import { useFetch } from '~/hooks/useFetch';
-import useQueryString from '~/hooks/useQueryString';
 import PostService from '~/services/PostService';
 
 type Props = {
   userUuid: string;
+  page: number;
 };
 
 const PAGE_SIZE = 10;
 
-const PostList = ({ userUuid }: Props) => {
-  const queryString = useQueryString();
-  const page = Number(queryString.get('page') ?? 1);
-
+const PostList = ({ userUuid, page }: Props) => {
   const fetchFunction = useCallback(() => {
     return PostService.retrievePostList({
       user_uuid: userUuid,
@@ -62,10 +59,6 @@ const PostList = ({ userUuid }: Props) => {
       <Pagination
         currentPage={page}
         totalPageCount={Math.ceil(data.count / PAGE_SIZE)}
-        searchGenerator={(page) => ({
-          ...Object.fromEntries(queryString.entries()),
-          page,
-        })}
       />
     </div>
   );

@@ -6,19 +6,17 @@ import UserCommentList from './UserCommentList';
 import Tab from './Tab';
 import UserService from '~/services/UserService';
 import { useFetch } from '~/hooks/useFetch';
-import useQueryString from '~/hooks/useQueryString';
+
+type View = 'posts' | 'photos' | 'comments';
 
 type Props = {
   userUuid?: string;
   isMyInfo: boolean;
+  tab: View;
+  page: number;
 };
 
-type View = 'posts' | 'photos' | 'comments';
-
-function UserView({ userUuid, isMyInfo }: Props) {
-  const queryString = useQueryString();
-  const tab = (queryString.get('tab') ?? 'posts') as View;
-
+function UserView({ userUuid, isMyInfo, tab, page }: Props) {
   const fetchFunction = useCallback(async () => {
     return UserService.retrieveUserInfo(userUuid);
   }, [userUuid]);
@@ -54,17 +52,20 @@ function UserView({ userUuid, isMyInfo }: Props) {
               {
                 posts: (
                   <UserPostList
-                    userUuid={userUuid ?? data.userInfo.user_uuid} // myInfo일 때는 userUuid가 없으므로 api에서 가져옴
+                    userUuid={userUuid ?? data.userInfo.user_uuid}
+                    page={page}
                   />
                 ),
                 photos: (
                   <UserPhotoList
                     userUuid={userUuid ?? data.userInfo.user_uuid}
+                    page={page}
                   />
                 ),
                 comments: (
                   <UserCommentList
                     userUuid={userUuid ?? data.userInfo.user_uuid}
+                    page={page}
                   />
                 ),
               }[tab]
