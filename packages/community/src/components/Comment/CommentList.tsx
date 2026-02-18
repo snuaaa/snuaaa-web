@@ -14,25 +14,25 @@ const getLinkProps = (
   params?: Record<string, string>;
   search?: (prev: Record<string, unknown>) => Record<string, unknown>;
 } => {
-  if (content.type === ContentTypeEnum.POST) {
-    return {
-      to: '/post/$post_id',
-      params: { post_id: String(content.content_id) },
-    };
+  switch (content.type) {
+    case ContentTypeEnum.POST:
+      return {
+        to: '/post/$post_id',
+        params: { post_id: String(content.content_id) },
+      };
+    case ContentTypeEnum.PHOTO:
+      return {
+        to: '.',
+        search: (prev) => ({ ...prev, photo: content.content_id }),
+      };
+    case ContentTypeEnum.DOCUMENT:
+      return {
+        to: '/document/$doc_id',
+        params: { doc_id: String(content.content_id) },
+      };
+    default:
+      return { to: '/' };
   }
-  if (content.type === ContentTypeEnum.PHOTO) {
-    return {
-      to: '.',
-      search: (prev) => ({ ...prev, photo: content.content_id }),
-    };
-  }
-  if (content.type === ContentTypeEnum.DOCUMENT) {
-    return {
-      to: '/document/$doc_id',
-      params: { doc_id: String(content.content_id) },
-    };
-  }
-  return { to: '/' };
 };
 
 function CommentList({ comments }: Props) {
@@ -55,7 +55,7 @@ function CommentList({ comments }: Props) {
             </div>
 
             <Link
-              to={linkProps.to as '/'}
+              to={linkProps.to}
               params={linkProps.params}
               search={linkProps.search}
               className="my-cmt-contents-link"
