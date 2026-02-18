@@ -7,9 +7,11 @@ import React, {
   useState,
 } from 'react';
 import SpinningLoader from '~/components/Common/SpinningLoader';
-import { SortBy } from '~/routes/equipment/admin';
+import {
+  EquipSearchLocationState,
+  SortBy,
+} from '~/components/Equipment/common';
 import { RetrieveEquipmentListResponse } from '~/services/EquipmentService';
-import { useSearch } from '@tanstack/react-router';
 import { Equipment } from '~/services/types';
 import EquipmentItem from './EquipmentItem';
 
@@ -17,6 +19,7 @@ type Props = {
   type: 'rent' | 'admin';
   data: RetrieveEquipmentListResponse;
   columns: 1 | 2 | 3;
+  search: EquipSearchLocationState;
 };
 
 const gridColumnsStyles = {
@@ -29,8 +32,7 @@ const fakeFetch = (delay = 500) => new Promise((res) => setTimeout(res, delay));
 
 const LIMIT_UNIT = 12;
 
-const EquipList: React.FC<Props> = ({ data, columns, type }) => {
-  const search = useSearch({ from: '/equipment/admin' });
+const EquipList: React.FC<Props> = ({ data, columns, type, search }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   // ...

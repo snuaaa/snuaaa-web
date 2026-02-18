@@ -1,11 +1,14 @@
 import { ChangeEvent, FC, useContext, useEffect, useState } from 'react';
-import { useNavigate, useSearch } from '@tanstack/react-router';
 import { EquipmentCategoryContext } from '~/contexts/EquipmentCategoryContext';
 import SearchString from './SearchString';
 import SearchSelect from './SearchSelect';
 import { equipmentRentStatusOptions, equipmentStatusOptions } from '../common';
 import { ViewportSize, useViewportSize } from '~/contexts/viewportSize';
-import { SortBy, SortOrder } from '~/routes/equipment/admin';
+import {
+  EquipSearchLocationState,
+  SortBy,
+  SortOrder,
+} from '~/components/Equipment/common';
 
 const sortByOptions = [
   { value: SortBy.NAME, name: '정렬 기준: 장비명' },
@@ -18,9 +21,14 @@ const sortOrderOptions = [
   { value: SortOrder.DESC, name: '내림차순' },
 ];
 
-const EquipSearchBar: FC = () => {
-  const search = useSearch({ from: '/equipment/admin' });
-  const navigate = useNavigate({ from: '/equipment/admin' });
+type Props = {
+  search: EquipSearchLocationState;
+  onSearchChange: (
+    updater: (prev: EquipSearchLocationState) => EquipSearchLocationState,
+  ) => void;
+};
+
+const EquipSearchBar: FC<Props> = ({ search, onSearchChange }) => {
   const equipmentCategories = useContext(EquipmentCategoryContext);
 
   const [searchStrings, setSearchStrings] = useState({
@@ -33,31 +41,26 @@ const EquipSearchBar: FC = () => {
   useEffect(() => {
     if (!search.sort_by) {
       // Check if initialization is needed
-      navigate({
-        search: (prev) => ({
-          ...prev,
-          category_id: 0,
-          keyword: '',
-          maker: '',
-          status: '',
-          rent_status: '',
-          sort_by: SortBy.CREATED_AT,
-          sort_order: SortOrder.DESC,
-        }),
-        replace: true,
-      });
+      onSearchChange((prev) => ({
+        ...prev,
+        category_id: 0,
+        keyword: '',
+        maker: '',
+        status: '',
+        rent_status: '',
+        sort_by: SortBy.CREATED_AT,
+        sort_order: SortOrder.DESC,
+      }));
     }
-  }, [navigate, search]);
+  }, [onSearchChange, search]);
 
   const handleSelectChange = (e: ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
-    navigate({
-      search: (prev) => ({
-        ...prev,
-        [name === 'category' ? 'category_id' : name]:
-          name === 'category' ? +value : value,
-      }),
-    });
+    onSearchChange((prev) => ({
+      ...prev,
+      [name === 'category' ? 'category_id' : name]:
+        name === 'category' ? +value : value,
+    }));
   };
 
   const handleTextChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -70,13 +73,11 @@ const EquipSearchBar: FC = () => {
   };
 
   const handleSearch = () => {
-    navigate({
-      search: (prev) => ({
-        ...prev,
-        keyword: searchStrings.keyword,
-        maker: searchStrings.maker,
-      }),
-    });
+    onSearchChange((prev) => ({
+      ...prev,
+      keyword: searchStrings.keyword,
+      maker: searchStrings.maker,
+    }));
   };
 
   return (

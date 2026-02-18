@@ -1,5 +1,26 @@
 import { EquipmentRentStatus, EquipmentStatus } from '~/services/types';
 
+export type EquipSearchLocationState = {
+  category_id?: number;
+  keyword?: string;
+  maker?: string;
+  status?: EquipmentStatus | '';
+  rent_status?: EquipmentRentStatus | '';
+  sort_by?: SortBy;
+  sort_order?: SortOrder;
+};
+
+export enum SortOrder {
+  ASC = 'ASC',
+  DESC = 'DESC',
+}
+
+export enum SortBy {
+  NAME = 'name',
+  CREATED_AT = 'createdAt',
+  CATEGORY = 'category_id',
+}
+
 export const equipmentStatusOptions = [
   {
     value: EquipmentStatus.OK,

@@ -1,27 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router';
 import EquipmentAdmin from '~/components/Equipment/Admin';
+import {
+  EquipSearchLocationState,
+  SortBy,
+  SortOrder,
+} from '~/components/Equipment/common';
 import { EquipmentRentStatus, EquipmentStatus } from '~/services/types';
-
-export type EquipSearchLocationState = {
-  category_id?: number; // Make properties optional as search params can be undefined
-  keyword?: string;
-  maker?: string;
-  status?: EquipmentStatus | '';
-  rent_status?: EquipmentRentStatus | '';
-  sort_by?: SortBy;
-  sort_order?: SortOrder;
-};
-
-export enum SortOrder {
-  ASC = 'ASC', // 오름차순
-  DESC = 'DESC', // 내림차순
-}
-
-export enum SortBy {
-  NAME = 'name', // 장비명
-  CREATED_AT = 'createdAt', // 등록일자
-  CATEGORY = 'category_id', // 분류
-}
 
 export const Route = createFileRoute('/equipment/admin')({
   component: EquipmentAdmin,

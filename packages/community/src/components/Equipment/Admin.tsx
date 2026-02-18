@@ -8,6 +8,9 @@ import EquipSearchBar from './EquipSearchBar';
 import { useEquipment, withEquipment } from './contexts';
 import EditCategoriesModal from './Modal/EditCategories';
 import { ViewportSize, useViewportSize } from '~/contexts/viewportSize';
+import { useNavigate, useSearch } from '@tanstack/react-router';
+import { EquipSearchLocationState } from './common';
+import { useCallback } from 'react';
 
 const Admin = () => {
   const authContext = useAuth();
@@ -16,6 +19,19 @@ const Admin = () => {
   const { openModal } = useModal();
 
   const viewportSize = useViewportSize();
+
+  const search = useSearch({ from: '/equipment/admin' });
+  const navigate = useNavigate({ from: '/equipment/admin' });
+
+  const handleSearchChange = useCallback(
+    (updater: (prev: EquipSearchLocationState) => EquipSearchLocationState) => {
+      navigate({
+        search: updater,
+        replace: true,
+      });
+    },
+    [navigate],
+  );
 
   if (!data) {
     return <Loading />;
@@ -52,11 +68,12 @@ const Admin = () => {
           </>
         )}
       </div>
-      <EquipSearchBar />
+      <EquipSearchBar search={search} onSearchChange={handleSearchChange} />
       <EquipList
         data={data}
         columns={viewportSize === ViewportSize.Mobile ? 1 : 3}
         type="admin"
+        search={search}
       />
     </div>
   );
