@@ -8,7 +8,10 @@ import FileIcon from '../Common/FileIcon';
 import { Content, File as FileType } from '~/services/types';
 import ProgressBar from '~/components/Common/ProgressBar';
 import { useUpdatePost } from '~/hooks/queries/usePostQueries';
-import { useCreateFile, useDeleteFile } from '~/hooks/queries/useDocuQueries';
+import {
+  useCreateFile,
+  useDeleteFile,
+} from '~/hooks/queries/useContentQueries';
 
 type Props = {
   postInfo: Content;

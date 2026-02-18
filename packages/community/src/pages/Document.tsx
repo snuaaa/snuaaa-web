@@ -13,12 +13,14 @@ import {
   useDocument,
   useUpdateDocument,
   useDeleteDocument,
+  docuKeys,
+} from '~/hooks/queries/useDocuQueries';
+import {
   useLikeContent,
   useCreateFile,
   useDeleteFile,
-} from '~/hooks/queries/useDocuQueries';
+} from '~/hooks/queries/useContentQueries';
 import { useQueryClient } from '@tanstack/react-query';
-import { docuKeys } from '~/hooks/queries/useDocuQueries';
 
 const MAX_SIZE = 20 * 1024 * 1024;
 

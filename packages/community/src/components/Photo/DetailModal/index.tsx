@@ -14,7 +14,7 @@ import {
   usePhotoDetail,
   useDeletePhoto,
 } from '~/hooks/queries/usePhotoQueries';
-import { useLikeContent } from '~/hooks/queries/useDocuQueries';
+import { useLikeContent } from '~/hooks/queries/useContentQueries';
 import { useUpdateAlbumThumbnail } from '~/hooks/queries/useAlbumQueries';
 
 type Props = {

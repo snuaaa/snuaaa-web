@@ -10,7 +10,7 @@ import FileIcon from '../../components/Common/FileIcon';
 import Editor from '../Common/Editor';
 import { Content, File } from '~/services/types';
 import { useDeletePost } from '~/hooks/queries/usePostQueries';
-import { useLikeContent } from '~/hooks/queries/useDocuQueries';
+import { useLikeContent } from '~/hooks/queries/useContentQueries';
 
 type PostComponentProps = {
   postInfo: Content;

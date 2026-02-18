@@ -8,8 +8,6 @@ import DocuService, {
   CreateDocuRequest,
   RetrieveDocumentParams,
 } from '~/services/DocuService';
-import ContentService from '~/services/ContentService';
-import FileService from '~/services/FileService';
 
 // Query keys
 export const docuKeys = {
@@ -84,38 +82,5 @@ export function useDeleteDocument() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: docuKeys.list() });
     },
-  });
-}
-
-export function useLikeContent() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (content_id: number) => ContentService.likeContent(content_id),
-    onSuccess: (_, content_id) => {
-      queryClient.invalidateQueries({
-        queryKey: docuKeys.detail(content_id),
-      });
-    },
-  });
-}
-
-export function useDeleteFile() {
-  return useMutation({
-    mutationFn: (file_id: number) => FileService.deleteFile(file_id),
-  });
-}
-
-export function useCreateFile() {
-  return useMutation({
-    mutationFn: ({
-      content_id,
-      formData,
-      onUploadProgress,
-    }: {
-      content_id: number;
-      formData: FormData;
-      onUploadProgress: Parameters<typeof ContentService.createFile>[2];
-    }) => ContentService.createFile(content_id, formData, onUploadProgress),
   });
 }

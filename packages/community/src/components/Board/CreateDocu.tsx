@@ -5,10 +5,8 @@ import CreateDocuComponent from '../../components/Document/CreateDocuComponent';
 
 import useBlockBackgroundScroll from '../../hooks/useBlockBackgroundScroll';
 import { Board } from '~/services/types';
-import {
-  useCreateDocument,
-  useCreateFile,
-} from '~/hooks/queries/useDocuQueries';
+import { useCreateDocument } from '~/hooks/queries/useDocuQueries';
+import { useCreateFile } from '~/hooks/queries/useContentQueries';
 
 const MAX_SIZE = 20 * 1024 * 1024;
 

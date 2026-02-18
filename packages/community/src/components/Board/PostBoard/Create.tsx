@@ -5,7 +5,7 @@ import Editor from '~/components/Common/Editor';
 import AttachFile from '~/components/Post/AttachFile';
 import ProgressBar from '~/components/Common/ProgressBar';
 import { useCreatePost } from '~/hooks/queries/usePostQueries';
-import { useCreateFile } from '~/hooks/queries/useDocuQueries';
+import { useCreateFile } from '~/hooks/queries/useContentQueries';
 
 const MAX_SIZE = 20 * 1024 * 1024;
 const BASE_STORAGE_KEY = 'CREATE_POST_DRAFT';
