@@ -12,7 +12,7 @@ import { useFetch } from '~/hooks/useFetch';
 const POSTROWNUM = 10;
 
 function AllPosts() {
-  const navigate = useNavigate();
+  const navigate = useNavigate({ from: '/posts/all' });
   const searchParams = useSearch({ from: '/posts/all' });
   const pageIdx = searchParams.page || 1;
 

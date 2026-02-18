@@ -214,7 +214,12 @@ function DocumentPage() {
             />
           );
         } else if (docState === ContentStateEnum.DELETED && docuInfo)
-          return <Navigate to={`/board/${docuInfo.board_id}`} />;
+          return (
+            <Navigate
+              to="/board/$board_id"
+              params={{ board_id: docuInfo.board_id }}
+            />
+          );
         else {
           return <div>ERROR</div>;
         }

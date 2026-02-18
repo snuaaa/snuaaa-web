@@ -12,7 +12,7 @@ import CommentList from '~/components/Comment/CommentList';
 const COMMENTROWNUM = 10;
 
 function AllComments() {
-  const navigate = useNavigate();
+  const navigate = useNavigate({ from: '/comments/all' });
   const searchParams = useSearch({ from: '/comments/all' });
   const pageIdx = searchParams.page || 1;
 

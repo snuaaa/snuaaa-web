@@ -32,7 +32,7 @@ export interface Auth {
 
 type GuestUser = Pick<
   User,
-  'user_id' | 'grade' | 'level' | 'profile_path' | 'nickname'
+  'user_id' | 'user_uuid' | 'grade' | 'level' | 'profile_path' | 'nickname'
 >;
 
 type CheckTokenResponse = Auth;

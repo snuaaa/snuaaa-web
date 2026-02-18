@@ -14,7 +14,7 @@ function UserManagement() {
   const [userCount, setUserCount] = useState<number>(0);
 
   const searchParams = useSearch({ from: '/admin/user' });
-  const navigate = useNavigate();
+  const navigate = useNavigate({ from: '/admin/user' });
   const router = useRouter();
 
   const pageIdx = searchParams.page || 1;
