@@ -1,4 +1,4 @@
-import { Link, useLocation } from '@tanstack/react-router';
+import { Link } from '@tanstack/react-router';
 import Image from '~/components/Common/AaaImage';
 import defaultPhotoCover from '~/assets/img/default_photo_img.png';
 import useQueryString from '~/hooks/useQueryString';
@@ -12,8 +12,6 @@ type Props = {
 const PAGE_SIZE = 12;
 
 const PhotoList = ({ userUuid }: Props) => {
-  const location = useLocation();
-
   const queryString = useQueryString();
   const page = Number(queryString.get('page') ?? 1);
 
@@ -67,11 +65,10 @@ const PhotoList = ({ userUuid }: Props) => {
       <Pagination
         currentPage={page}
         totalPageCount={Math.ceil(data.count / PAGE_SIZE)}
-        routeGenerator={(page) => {
-          const nextSearchParam = new URLSearchParams(queryString);
-          nextSearchParam.set('page', page.toString());
-          return `${location.pathname}?${nextSearchParam.toString()}`;
-        }}
+        searchGenerator={(page) => ({
+          ...Object.fromEntries(queryString.entries()),
+          page,
+        })}
       />
     </div>
   );

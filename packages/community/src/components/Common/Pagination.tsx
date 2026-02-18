@@ -10,12 +10,11 @@ type Props = {
    */
   totalPageCount: number;
   /**
-   * page route 생성 함수
+   * page 에 따른 search params 생성 함수
    */
-  routeGenerator: (page: number) => string;
+  searchGenerator: (page: number) => { page: number };
 };
 
-// ... (range, UsePaginationProps, MAX_BUTTONS, ELLIPSIS, usePagination logic remains same)
 // 유틸리티: start부터 end까지의 숫자 배열 생성 (lodash _.range와 유사)
 const range = (start: number, end: number) => {
   const length = end - start + 1;
@@ -67,7 +66,11 @@ const usePagination = ({ currentPage, totalPages }: UsePaginationProps) => {
   ];
 };
 
-const Pagination = ({ currentPage, totalPageCount, routeGenerator }: Props) => {
+const Pagination = ({
+  currentPage,
+  totalPageCount,
+  searchGenerator,
+}: Props) => {
   const pages = usePagination({ currentPage, totalPages: totalPageCount });
   const navigate = useNavigate();
   const buttonClassName = 'w-6 h-6 flex justify-center items-center font-bold ';
@@ -77,7 +80,7 @@ const Pagination = ({ currentPage, totalPageCount, routeGenerator }: Props) => {
       <li>
         <button
           onClick={() => {
-            navigate({ to: routeGenerator(currentPage - 1) });
+            navigate({ to: '.', search: searchGenerator(currentPage - 1) });
           }}
           disabled={currentPage === 1}
           aria-label="Previous page"
@@ -93,7 +96,8 @@ const Pagination = ({ currentPage, totalPageCount, routeGenerator }: Props) => {
           ) : (
             <Link
               className={`${buttonClassName} ${page === currentPage ? 'text-white bg-[#7193C4] rounded-full' : ''}`}
-              to={routeGenerator(page as number)}
+              to="."
+              search={searchGenerator(page)}
             >
               {page}
             </Link>
@@ -103,7 +107,7 @@ const Pagination = ({ currentPage, totalPageCount, routeGenerator }: Props) => {
       <li>
         <button
           onClick={() => {
-            navigate({ to: routeGenerator(currentPage + 1) });
+            navigate({ to: '.', search: searchGenerator(currentPage + 1) });
           }}
           disabled={currentPage === totalPageCount}
           aria-label="Next page"

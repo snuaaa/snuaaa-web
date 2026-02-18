@@ -3,7 +3,7 @@ import Loading from '~/components/Common/Loading';
 import AlbumList from '~/components/Album/AlbumList';
 import { useFetch } from '~/hooks/useFetch';
 import { FC, useCallback, useState } from 'react';
-import { useLocation, useSearch } from '@tanstack/react-router';
+import { useSearch } from '@tanstack/react-router';
 import PhotoBoardService from '~/services/PhotoBoardService';
 import { Board } from '~/services/types';
 import { useAuth } from '~/contexts/auth';
@@ -22,7 +22,7 @@ export const AlbumSection: FC<Props> = ({ boardInfo }) => {
   const [isCreating, setIsCreating] = useState(false);
 
   // const history = useHistory();
-  const location = useLocation();
+
   const searchParams = useSearch({ from: '/board/$board_id' });
 
   const page = Number(searchParams.page ?? 1);
@@ -74,13 +74,10 @@ export const AlbumSection: FC<Props> = ({ boardInfo }) => {
         <Pagination
           currentPage={page}
           totalPageCount={Math.ceil(data.albumCount / PAGE_SIZE)}
-          routeGenerator={(page) => {
-            const nextSearchParams = new URLSearchParams();
-            if (searchParams.view)
-              nextSearchParams.set('view', searchParams.view);
-            nextSearchParams.set('page', page.toString());
-            return `${location.pathname}?${nextSearchParams.toString()}`;
-          }}
+          searchGenerator={(page) => ({
+            ...searchParams,
+            page,
+          })}
         />
       )}
     </>

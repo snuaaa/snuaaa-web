@@ -8,7 +8,7 @@ import PhotoBoardService from '../../services/PhotoBoardService';
 
 import BoardName from '../../components/Board/BoardName';
 
-import { useNavigate, useSearch, useLocation } from '@tanstack/react-router';
+import { useNavigate, useSearch } from '@tanstack/react-router';
 
 import { Board } from '~/services/types';
 import { useFetch } from '~/hooks/useFetch';
@@ -25,7 +25,6 @@ const PAGE_SIZE = 12;
 function Memory({ boardInfo }: MemoryProps) {
   const [isCreating, setIsCreating] = useState<boolean>(false);
   const navigate = useNavigate({ from: '/board/$board_id' });
-  const location = useLocation();
 
   const searchParams = useSearch({ from: '/board/$board_id' });
 
@@ -116,13 +115,10 @@ function Memory({ boardInfo }: MemoryProps) {
             <Pagination
               currentPage={page}
               totalPageCount={Math.ceil(data.albumCount / PAGE_SIZE)}
-              routeGenerator={(page) => {
-                const nextSearchParams = new URLSearchParams();
-                if (searchParams.category)
-                  nextSearchParams.set('category', searchParams.category);
-                nextSearchParams.set('page', page.toString());
-                return `${location.pathname}?${nextSearchParams.toString()}`;
-              }}
+              searchGenerator={(page) => ({
+                ...searchParams,
+                page,
+              })}
             />
           )}
         </>

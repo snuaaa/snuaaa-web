@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { Link, useLocation } from '@tanstack/react-router';
+import { Link } from '@tanstack/react-router';
 import { convertDate } from '~/utils/convertDate';
 import Pagination from '~/components/Common/Pagination';
 import { useFetch } from '~/hooks/useFetch';
@@ -13,8 +13,6 @@ type Props = {
 const PAGE_SIZE = 10;
 
 const PostList = ({ userUuid }: Props) => {
-  const location = useLocation();
-
   const queryString = useQueryString();
   const page = Number(queryString.get('page') ?? 1);
 
@@ -64,11 +62,10 @@ const PostList = ({ userUuid }: Props) => {
       <Pagination
         currentPage={page}
         totalPageCount={Math.ceil(data.count / PAGE_SIZE)}
-        routeGenerator={(page) => {
-          const nextSearchParam = new URLSearchParams(queryString);
-          nextSearchParam.set('page', page.toString());
-          return `${location.pathname}?${nextSearchParam.toString()}`;
-        }}
+        searchGenerator={(page) => ({
+          ...Object.fromEntries(queryString.entries()),
+          page,
+        })}
       />
     </div>
   );

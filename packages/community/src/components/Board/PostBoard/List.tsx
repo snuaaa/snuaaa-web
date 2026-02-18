@@ -1,5 +1,5 @@
 import { ChangeEvent, KeyboardEvent, useState } from 'react';
-import { useNavigate, useSearch, useLocation } from '@tanstack/react-router';
+import { useNavigate, useSearch } from '@tanstack/react-router';
 import Pagination from '~/components/Common/Pagination';
 import SelectBox from '~/components/Common/SelectBox';
 import PostList from '~/components/Post/PostList';
@@ -36,7 +36,6 @@ type Props = {
 
 const ListPost = ({ boardInfo, onClickCreate }: Props) => {
   const navigate = useNavigate({ from: '/board/$board_id' });
-  const location = useLocation();
   const searchParams = useSearch({ from: '/board/$board_id' });
   const page = Number(searchParams.page ?? 1);
 
@@ -148,15 +147,10 @@ const ListPost = ({ boardInfo, onClickCreate }: Props) => {
           <Pagination
             currentPage={page}
             totalPageCount={Math.ceil(data.count / PAGE_SIZE)}
-            routeGenerator={(page) => {
-              const nextSearchParams = new URLSearchParams();
-              if (searchParams.type)
-                nextSearchParams.set('type', searchParams.type);
-              if (searchParams.keyword)
-                nextSearchParams.set('keyword', searchParams.keyword);
-              nextSearchParams.set('page', page.toString());
-              return `${location.pathname}?${nextSearchParams.toString()}`;
-            }}
+            searchGenerator={(page) => ({
+              ...searchParams,
+              page,
+            })}
           />
         </>
       )}
