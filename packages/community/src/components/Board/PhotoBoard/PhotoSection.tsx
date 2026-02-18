@@ -1,4 +1,4 @@
-import { useNavigate, useSearch, useLocation } from '@tanstack/react-router';
+import { useNavigate, useSearch } from '@tanstack/react-router';
 import PhotoList from '~/components/Album/PhotoList';
 import Loading from '~/components/Common/Loading';
 import Pagination from '~/components/Common/Pagination';
@@ -19,7 +19,6 @@ type Props = {
 export const PhotoSection: FC<Props> = ({ boardInfo }) => {
   const authContext = useAuth();
   const navigate = useNavigate({ from: '/board/$board_id' });
-  const location = useLocation();
   const searchParams = useSearch({ from: '/board/$board_id' });
 
   const [isCreating, setIsCreating] = useState(false);
@@ -117,19 +116,10 @@ export const PhotoSection: FC<Props> = ({ boardInfo }) => {
         <Pagination
           currentPage={pageIdx}
           totalPageCount={Math.ceil(data.count / PHOTO_ROW_NUM)}
-          routeGenerator={(page) => {
-            const nextSearchParams = new URLSearchParams();
-            // We need to manually construct search params for string output
-            if (searchParams.view)
-              nextSearchParams.set('view', searchParams.view);
-            if (searchParams.tags) {
-              searchParams.tags.forEach((t) =>
-                nextSearchParams.append('tags', t),
-              );
-            }
-            nextSearchParams.set('page', page.toString());
-            return `${location.pathname}?${nextSearchParams.toString()}`;
-          }}
+          searchGenerator={(page) => ({
+            ...searchParams,
+            page,
+          })}
         />
       )}
     </>
