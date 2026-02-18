@@ -4,7 +4,6 @@ import { useFetch } from '~/hooks/useFetch';
 import Pagination from '~/components/Common/Pagination';
 import CommentService from '~/services/CommentService';
 import CommentList from '~/components/Comment/CommentList';
-import { useLocation } from '@tanstack/react-router';
 
 type Props = {
   userUuid: string;
@@ -13,8 +12,6 @@ type Props = {
 const PAGE_SIZE = 10;
 
 function UserCommentList({ userUuid }: Props) {
-  const location = useLocation();
-
   const queryString = useQueryString();
   const page = Number(queryString.get('page') ?? 1);
 
@@ -45,11 +42,10 @@ function UserCommentList({ userUuid }: Props) {
       <Pagination
         currentPage={page}
         totalPageCount={Math.ceil(data.count / PAGE_SIZE)}
-        routeGenerator={(page) => {
-          const nextSearchParam = new URLSearchParams(queryString);
-          nextSearchParam.set('page', page.toString());
-          return `${location.pathname}?${nextSearchParam.toString()}`;
-        }}
+        searchGenerator={(page) => ({
+          ...Object.fromEntries(queryString.entries()),
+          page,
+        })}
       />
     </div>
   );
