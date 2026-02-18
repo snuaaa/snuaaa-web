@@ -11,6 +11,7 @@ const initialAuth: AuthType = {
   isLoggedIn: false,
   user: {
     user_id: 0,
+    user_uuid: '',
     nickname: '',
     grade: 10,
     level: 0,
