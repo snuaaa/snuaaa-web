@@ -6,10 +6,9 @@ import AttachFile from './AttachFile';
 
 import FileIcon from '../Common/FileIcon';
 import { Content, File as FileType } from '~/services/types';
-import ContentService from '~/services/ContentService';
-import FileService from '~/services/FileService';
 import ProgressBar from '~/components/Common/ProgressBar';
 import { useUpdatePost } from '~/hooks/queries/usePostQueries';
+import { useCreateFile, useDeleteFile } from '~/hooks/queries/useDocuQueries';
 
 type Props = {
   postInfo: Content;
@@ -30,6 +29,8 @@ const EditPost: FC<Props> = ({ postInfo, onCancel, onUpdate }) => {
 
   const { mutateAsync: mutateUpdatePost, isPending: isPendingUpdate } =
     useUpdatePost();
+  const { mutateAsync: mutateCreateFile } = useCreateFile();
+  const { mutateAsync: mutateDeleteFile } = useDeleteFile();
 
   const handleEditing = (e: ChangeEvent<HTMLInputElement>) => {
     if (editingPostData) {
@@ -68,12 +69,16 @@ const EditPost: FC<Props> = ({ postInfo, onCancel, onUpdate }) => {
         for (let i = 0; i < attachedFiles.length; i++) {
           const formData = new FormData();
           formData.append('attachedFile', attachedFiles[i]);
-          await ContentService.createFile(post_id, formData, uploadProgress);
+          await mutateCreateFile({
+            content_id: post_id,
+            formData,
+            onUploadProgress: uploadProgress,
+          });
         }
       }
       if (removedFiles.length > 0) {
         for (let i = 0; i < removedFiles.length; i++) {
-          await FileService.deleteFile(removedFiles[i]);
+          await mutateDeleteFile(removedFiles[i]);
         }
       }
       onUpdate();

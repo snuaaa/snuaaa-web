@@ -1,10 +1,10 @@
 import { ChangeEvent, FC, useCallback, useState } from 'react';
 
-import AlbumService from '~/services/AlbumService';
 import { Record } from 'immutable';
 
 import { Album, Category } from '~/services/types';
 import AlbumForm from './AlbumForm';
+import { useUpdateAlbum } from '~/hooks/queries/useAlbumQueries';
 
 type EditAlbumProps = {
   albumInfo: Album;
@@ -46,6 +46,8 @@ export const EditAlbum: FC<EditAlbumProps> = ({
     [albumInfo],
   );
 
+  const { mutateAsync: mutateUpdateAlbum } = useUpdateAlbum();
+
   const updateAlbum = useCallback(async () => {
     if (!albumInfo.album) {
       alert('앨범 정보 오류');
@@ -59,17 +61,17 @@ export const EditAlbum: FC<EditAlbumProps> = ({
       alert('카테고리를 선택해 주세요');
     } else {
       try {
-        await AlbumService.updateAlbum(
-          albumInfo.content_id,
-          albumInfo.toJSON(),
-        );
+        await mutateUpdateAlbum({
+          album_id: albumInfo.content_id,
+          data: albumInfo.toJSON(),
+        });
         onUpdateAlbum();
       } catch (err) {
         console.error(err);
         alert('업데이트 실패');
       }
     }
-  }, [albumInfo, categoryInfo, onUpdateAlbum]);
+  }, [albumInfo, categoryInfo, onUpdateAlbum, mutateUpdateAlbum]);
 
   return (
     <AlbumForm

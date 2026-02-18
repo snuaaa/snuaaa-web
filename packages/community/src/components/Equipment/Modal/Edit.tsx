@@ -1,10 +1,12 @@
 import { FC, useState } from 'react';
 import EquipmentForm from '../Form';
-import EquipmentService, {
-  UpdateEquipmentRequest,
-} from '~/services/EquipmentService';
+import { UpdateEquipmentRequest } from '~/services/EquipmentService';
 import { Equipment } from '~/services/types';
 import { useModal } from '~/contexts/modal';
+import {
+  useUpdateEquipment,
+  useDeleteEquipment,
+} from '~/hooks/queries/useEquipmentQueries';
 
 type Props = {
   editingEquipment: Equipment;
@@ -17,10 +19,12 @@ const EditModal: FC<Props> = ({ editingEquipment, onEdit }) => {
   });
 
   const { closeModal } = useModal();
+  const { mutateAsync: mutateUpdateEquipment } = useUpdateEquipment();
+  const { mutateAsync: mutateDeleteEquipment } = useDeleteEquipment();
 
   const handleSubmit = async () => {
     // TODO: Implement Edit Equipment
-    await EquipmentService.updateEquipment(equipment);
+    await mutateUpdateEquipment(equipment);
     closeModal();
     onEdit();
   };
@@ -28,7 +32,7 @@ const EditModal: FC<Props> = ({ editingEquipment, onEdit }) => {
   const handleDelete = async () => {
     const goDrop = window.confirm('정말로 삭제하시겠습니까?');
     if (!goDrop) return;
-    await EquipmentService.deleteEquipment(equipment.id);
+    await mutateDeleteEquipment(equipment.id);
     closeModal();
     onEdit();
   };

@@ -1,11 +1,9 @@
-import { useCallback } from 'react';
 import UserProfile from './UserProfile';
 import UserPostList from './UserPostList';
 import UserPhotoList from './UserPhotoList';
 import UserCommentList from './UserCommentList';
 import Tab from './Tab';
-import UserService from '~/services/UserService';
-import { useFetch } from '~/hooks/useFetch';
+import { useUserInfo } from '~/hooks/queries/useUserQueries';
 
 type View = 'posts' | 'photos' | 'comments';
 
@@ -17,13 +15,7 @@ type Props = {
 };
 
 function UserView({ userUuid, isMyInfo, tab, page }: Props) {
-  const fetchFunction = useCallback(async () => {
-    return UserService.retrieveUserInfo(userUuid);
-  }, [userUuid]);
-
-  const { data } = useFetch({
-    fetch: fetchFunction,
-  });
+  const { data } = useUserInfo(userUuid ?? '');
 
   return (
     <>

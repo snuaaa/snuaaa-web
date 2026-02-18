@@ -1,11 +1,11 @@
 import { useState, ChangeEvent, useEffect } from 'react';
 import { AxiosProgressEvent } from 'axios';
 import { CreatePostRequest } from '~/services/PostService';
-import ContentService from '~/services/ContentService';
 import Editor from '~/components/Common/Editor';
 import AttachFile from '~/components/Post/AttachFile';
 import ProgressBar from '~/components/Common/ProgressBar';
 import { useCreatePost } from '~/hooks/queries/usePostQueries';
+import { useCreateFile } from '~/hooks/queries/useDocuQueries';
 
 const MAX_SIZE = 20 * 1024 * 1024;
 const BASE_STORAGE_KEY = 'CREATE_POST_DRAFT';
@@ -41,6 +41,7 @@ const CreatePost = ({ board_id, onCreate, onClose }: Props) => {
   const [uploadIdx, setUploadIdx] = useState<number>(0);
 
   const { mutate: mutateCreatePost } = useCreatePost();
+  const { mutateAsync: mutateCreateFile } = useCreateFile();
 
   useEffect(() => {
     if (postInfo.title || postInfo.text) {
@@ -129,11 +130,11 @@ const CreatePost = ({ board_id, onCreate, onClose }: Props) => {
                 for (let i = 0, max = attachedFiles.length; i < max; i++) {
                   const fileFormData = new FormData();
                   fileFormData.append('attachedFile', attachedFiles[i]);
-                  await ContentService.createFile(
-                    res.data.content_id,
-                    fileFormData,
-                    uploadProgress,
-                  );
+                  await mutateCreateFile({
+                    content_id: res.data.content_id,
+                    formData: fileFormData,
+                    onUploadProgress: uploadProgress,
+                  });
                   setUploadIdx((uploadIdx) => uploadIdx + 1);
                 }
               }

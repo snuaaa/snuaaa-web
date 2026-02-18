@@ -9,8 +9,8 @@ import FileIcon from '../../components/Common/FileIcon';
 
 import Editor from '../Common/Editor';
 import { Content, File } from '~/services/types';
-import PostService from '~/services/PostService';
-import ContentService from '~/services/ContentService';
+import { useDeletePost } from '~/hooks/queries/usePostQueries';
+import { useLikeContent } from '~/hooks/queries/useDocuQueries';
 
 type PostComponentProps = {
   postInfo: Content;
@@ -32,6 +32,9 @@ const PostView: React.FC<PostComponentProps> = ({
   const [likeNum, setLikeNum] = useState(postInfo.like_num);
   const [isLiked, setIsLiked] = useState(isLikedProp);
 
+  const { mutateAsync: mutateDeletePost } = useDeletePost();
+  const { mutateAsync: mutateLikeContent } = useLikeContent();
+
   const deletePost = async () => {
     if (!postInfo) {
       return;
@@ -41,7 +44,7 @@ const PostView: React.FC<PostComponentProps> = ({
     );
     if (goDrop) {
       try {
-        await PostService.deletePost(postInfo.content_id);
+        await mutateDeletePost(postInfo.content_id);
         navigate({ to: `/board/${postInfo.board_id}`, replace: true });
       } catch (err) {
         console.error(err);
@@ -55,7 +58,7 @@ const PostView: React.FC<PostComponentProps> = ({
       return;
     }
     try {
-      await ContentService.likeContent(postInfo.content_id);
+      await mutateLikeContent(postInfo.content_id);
       setLikeNum((prevLikeNum) =>
         isLiked ? prevLikeNum - 1 : prevLikeNum + 1,
       );

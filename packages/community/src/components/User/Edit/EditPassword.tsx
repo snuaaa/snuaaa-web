@@ -1,7 +1,7 @@
 import React, { useState, ChangeEvent } from 'react';
-import UserService from '~/services/UserService';
 import InputField from '~/components/Common/InputField';
 import axios from 'axios';
+import { useUpdatePassword } from '~/hooks/queries/useUserQueries';
 
 type InputFormat = {
   value: string;
@@ -77,6 +77,8 @@ function EditPassword() {
     return pwInfo.valid && nPwInfo.valid && nPwCfInfo.valid;
   };
 
+  const { mutateAsync: mutateUpdatePassword } = useUpdatePassword();
+
   const submit = async () => {
     const data = {
       password: pwInfo.value,
@@ -84,29 +86,28 @@ function EditPassword() {
       newPasswordCf: nPwCfInfo.value,
     };
 
-    await UserService.updatePassword(data)
-      .then(() => {
-        alert('비밀번호가 변경되었습니다.');
-        window.location.reload();
-      })
-      .catch((err) => {
-        if (axios.isAxiosError(err) && err.response && err.response.data) {
-          if (err.response.data.code === 1011) {
-            alert('현재 비밀번호가 일치하지 않습니다.');
-          } else if (err.response.data.code === 1012) {
-            alert('새 비밀번호를 입력해주세요.');
-          } else if (err.response.data.code === 1013) {
-            alert('비밀번호 확인이 일치하지 않습니다.');
-          } else if (err.response.data.code === 1014) {
-            alert('비밀번호 양식이 일치하지 않습니다.');
-          } else {
-            alert('비밀번호 변경 실패.');
-          }
+    try {
+      await mutateUpdatePassword(data);
+      alert('비밀번호가 변경되었습니다.');
+      window.location.reload();
+    } catch (err) {
+      if (axios.isAxiosError(err) && err.response && err.response.data) {
+        if (err.response.data.code === 1011) {
+          alert('현재 비밀번호가 일치하지 않습니다.');
+        } else if (err.response.data.code === 1012) {
+          alert('새 비밀번호를 입력해주세요.');
+        } else if (err.response.data.code === 1013) {
+          alert('비밀번호 확인이 일치하지 않습니다.');
+        } else if (err.response.data.code === 1014) {
+          alert('비밀번호 양식이 일치하지 않습니다.');
         } else {
           alert('비밀번호 변경 실패.');
         }
-        console.error(err);
-      });
+      } else {
+        alert('비밀번호 변경 실패.');
+      }
+      console.error(err);
+    }
   };
 
   return (

@@ -1,21 +1,23 @@
-import { useCallback, FC } from 'react';
+import { FC } from 'react';
 
 import { Comment } from './Comment';
-import CommentService from '../../services/CommentService';
-import { useFetch } from '~/hooks/useFetch';
 import { CreateComment } from './CreateComment';
+import { useComments, commentKeys } from '~/hooks/queries/useCommentQueries';
+import { useQueryClient } from '@tanstack/react-query';
 
 type Props = {
   parent_id: number;
 };
 
 const CommentSection: FC<Props> = ({ parent_id }) => {
-  const fetchFunction = useCallback(
-    () => CommentService.retrieveComments(parent_id),
-    [parent_id],
-  );
+  const { data: comments } = useComments(parent_id);
+  const queryClient = useQueryClient();
 
-  const { data: comments, refresh } = useFetch({ fetch: fetchFunction });
+  const refresh = () => {
+    queryClient.invalidateQueries({
+      queryKey: commentKeys.byParent(parent_id),
+    });
+  };
 
   // TODO: Add Loading UI
   return (

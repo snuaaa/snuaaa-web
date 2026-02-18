@@ -1,8 +1,8 @@
 import { useModal } from '~/contexts/modal';
 import { ChangeEvent, FC, useState } from 'react';
-import EquipmentService from '~/services/EquipmentService';
 import { MyRent } from '~/services/types';
 import UploadService from '~/services/UploadService';
+import { useReturnEquipment } from '~/hooks/queries/useEquipmentQueries';
 
 type Props = {
   rent: MyRent;
@@ -12,6 +12,7 @@ type Props = {
 const RentReturn: FC<Props> = ({ rent, onSubmit }) => {
   const { closeModal } = useModal();
   const [imgPath, setImgPath] = useState<string | undefined>();
+  const { mutateAsync: mutateReturnEquipment } = useReturnEquipment();
 
   const handleClickSubmit = async () => {
     if (!imgPath) {
@@ -19,7 +20,7 @@ const RentReturn: FC<Props> = ({ rent, onSubmit }) => {
       return;
     }
     try {
-      await EquipmentService.returnEquipment(rent.id, imgPath);
+      await mutateReturnEquipment({ rentId: rent.id, photo_path: imgPath });
       alert('반납이 완료되었습니다.');
     } catch (e) {
       alert('반납에 실패했습니다!');

@@ -1,12 +1,15 @@
 import BoardName from '~/components/Board/BoardName';
-import { useFetch } from '~/hooks/useFetch';
-import { FC, useCallback } from 'react';
+import { FC } from 'react';
 import Image from '../Common/AaaImage';
 import { Link } from '@tanstack/react-router';
-import EquipmentService from '~/services/EquipmentService';
 import { useModal, withModal } from '~/contexts/modal';
 import RentReturn from './Modal/RentReturn';
 import { useAuth } from '~/contexts/auth';
+import {
+  useMyRentList,
+  equipmentKeys,
+} from '~/hooks/queries/useEquipmentQueries';
+import { useQueryClient } from '@tanstack/react-query';
 
 //const EQUIP_RENT_GRADE = 7;
 const EQUIP_ADMIN_GRADE = 6;
@@ -26,11 +29,12 @@ const getTimeLeft = (endDate: string) => {
 };
 
 const Main: FC = () => {
-  const fetchFunction = useCallback(() => {
-    return EquipmentService.retrieveMyRentList();
-  }, []);
+  const { data } = useMyRentList();
+  const queryClient = useQueryClient();
 
-  const { data, refresh } = useFetch({ fetch: fetchFunction });
+  const refresh = () => {
+    queryClient.invalidateQueries({ queryKey: equipmentKeys.myRentList() });
+  };
 
   const { openModal } = useModal();
 

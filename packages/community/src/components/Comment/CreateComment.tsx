@@ -1,5 +1,5 @@
 import { ChangeEvent, FC, useState } from 'react';
-import CommentService from '~/services/CommentService';
+import { useCreateComment } from '~/hooks/queries/useCommentQueries';
 
 type Props = {
   contentId: number;
@@ -8,6 +8,7 @@ type Props = {
 
 export const CreateComment: FC<Props> = ({ contentId, onCreate }) => {
   const [text, setText] = useState<string>('');
+  const { mutateAsync: mutateCreateComment } = useCreateComment();
 
   const createComment = async () => {
     if (!text) {
@@ -18,7 +19,7 @@ export const CreateComment: FC<Props> = ({ contentId, onCreate }) => {
         text: text,
       };
       try {
-        await CommentService.createComment(contentId, commentInfo);
+        await mutateCreateComment({ parentId: contentId, data: commentInfo });
         setText('');
         onCreate();
       } catch (err) {

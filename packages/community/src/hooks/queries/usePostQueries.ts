@@ -53,8 +53,8 @@ export function useCreatePost() {
       data: CreatePostRequest;
     }) => PostService.createPost(board_id, data),
     onSuccess: () => {
-      // Invalidate all post lists to refetch them
-      queryClient.invalidateQueries({ queryKey: postKeys.list() });
+      // Invalidate all post lists
+      queryClient.invalidateQueries({ queryKey: postKeys.all });
     },
   });
 }
@@ -71,10 +71,9 @@ export function useUpdatePost() {
       post_id: number;
       data: CreatePostRequest;
     }) => PostService.updatePost(post_id, data),
-    onSuccess: (_, { post_id }) => {
-      // Invalidate the specific post and all post lists
-      queryClient.invalidateQueries({ queryKey: postKeys.detail(post_id) });
-      queryClient.invalidateQueries({ queryKey: postKeys.list() });
+    onSuccess: () => {
+      // Invalidate all post lists
+      queryClient.invalidateQueries({ queryKey: postKeys.all });
     },
   });
 }
@@ -86,8 +85,8 @@ export function useDeletePost() {
   return useMutation({
     mutationFn: (post_id: number) => PostService.deletePost(post_id),
     onSuccess: () => {
-      // Invalidate all post lists to refetch them
-      queryClient.invalidateQueries({ queryKey: postKeys.list() });
+      // Invalidate all post lists
+      queryClient.invalidateQueries({ queryKey: postKeys.all });
     },
   });
 }

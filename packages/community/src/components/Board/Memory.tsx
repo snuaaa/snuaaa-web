@@ -1,20 +1,23 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 
 import CreateAlbum from '../Album/modals/CreateAlbum';
 import AlbumList from '../../components/Album/AlbumList';
 import AlbumCategorySelector from '~/components/Common/AlbumCategorySelector';
 import Loading from '../../components/Common/Loading';
-import PhotoBoardService from '../../services/PhotoBoardService';
 
 import BoardName from '../../components/Board/BoardName';
 
 import { useNavigate, useSearch } from '@tanstack/react-router';
 
 import { Board } from '~/services/types';
-import { useFetch } from '~/hooks/useFetch';
+import {
+  useAlbumsInPhotoBoard,
+  albumKeys,
+} from '~/hooks/queries/useAlbumQueries';
 import { useAuth } from '~/contexts/auth';
 import { Divider } from '~/ui';
 import Pagination from '../Common/Pagination';
+import { useQueryClient } from '@tanstack/react-query';
 
 type MemoryProps = {
   boardInfo: Board;
@@ -25,21 +28,14 @@ const PAGE_SIZE = 12;
 function Memory({ boardInfo }: MemoryProps) {
   const [isCreating, setIsCreating] = useState<boolean>(false);
   const navigate = useNavigate({ from: '/board/$board_id' });
+  const queryClient = useQueryClient();
 
   const searchParams = useSearch({ from: '/board/$board_id' });
 
   const page = Number(searchParams.page ?? 1);
   const category = searchParams.category || '';
 
-  const fetchFunction = useCallback(() => {
-    return PhotoBoardService.retrieveAlbumsInPhotoBoard(
-      boardInfo.board_id,
-      page,
-      category,
-    );
-  }, [boardInfo.board_id, category, page]);
-
-  const { data, refresh } = useFetch({ fetch: fetchFunction });
+  const { data } = useAlbumsInPhotoBoard(boardInfo.board_id, page, category);
 
   const clickCategory = (ctg_id: string) => {
     navigate({
@@ -104,7 +100,13 @@ function Memory({ boardInfo }: MemoryProps) {
               categories={boardInfo.categories}
               onCreate={() => {
                 setIsCreating(false);
-                refresh();
+                queryClient.invalidateQueries({
+                  queryKey: albumKeys.inBoard(
+                    boardInfo.board_id,
+                    page,
+                    category,
+                  ),
+                });
               }}
               onCancel={() => {
                 setIsCreating(false);

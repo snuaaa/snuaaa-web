@@ -2,12 +2,11 @@ import { ChangeEvent, useState } from 'react';
 
 import 'react-datepicker/dist/react-datepicker.css';
 // import { Prompt } from 'react-router';
-import UserService from '~/services/UserService';
-import ExhibitPhotoService, {
-  ExhibitPhotoInfo,
-} from '~/services/ExhibitPhotoService';
+import { ExhibitPhotoInfo } from '~/services/ExhibitPhotoService';
 import { ExhibitPhoto, User } from '~/services/types';
 import CreateExhibitPhotoInfo from './CreateExhibitPhotoInfo';
+import { useSearchMini } from '~/hooks/queries/useUserQueries';
+import { useUpdateExhibitPhoto } from '~/hooks/queries/useExhibitionQueries';
 
 type EditExhibitPhotoInfoProps = {
   exhibitPhotoInfo: ExhibitPhoto;
@@ -40,12 +39,15 @@ function EditExhibitPhotoInfo({
       iso: exhibitPhotoInfo.exhibitPhoto.iso,
     });
 
+  const { mutateAsync: mutateSearchMini } = useSearchMini();
+  const { mutateAsync: mutateUpdateExhibitPhoto } = useUpdateExhibitPhoto();
+
   const submit = async () => {
     try {
-      await ExhibitPhotoService.updateExhibitPhoto(
-        exhibitPhotoInfo.content_id,
-        editingContentInfo,
-      );
+      await mutateUpdateExhibitPhoto({
+        exhibitPhoto_id: exhibitPhotoInfo.content_id,
+        data: editingContentInfo,
+      });
       onUpdate();
     } catch (err) {
       console.error(err);
@@ -82,8 +84,8 @@ function EditExhibitPhotoInfo({
 
   const fetchUsers = async (name: string) => {
     try {
-      const { userList } = await UserService.searchMini(name);
-      setSearchUsers(userList);
+      const res = await mutateSearchMini(name);
+      setSearchUsers(res.userList);
     } catch (err) {
       console.error(err);
     }

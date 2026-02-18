@@ -1,9 +1,7 @@
-import { useCallback } from 'react';
 import { Link } from '@tanstack/react-router';
 import { convertDate } from '~/utils/convertDate';
 import Pagination from '~/components/Common/Pagination';
-import { useFetch } from '~/hooks/useFetch';
-import PostService from '~/services/PostService';
+import { usePostList } from '~/hooks/queries/usePostQueries';
 
 type Props = {
   userUuid: string;
@@ -13,16 +11,10 @@ type Props = {
 const PAGE_SIZE = 10;
 
 const PostList = ({ userUuid, page }: Props) => {
-  const fetchFunction = useCallback(() => {
-    return PostService.retrievePostList({
-      user_uuid: userUuid,
-      offset: (page - 1) * PAGE_SIZE,
-      limit: PAGE_SIZE,
-    });
-  }, [userUuid, page]);
-
-  const { data } = useFetch({
-    fetch: fetchFunction,
+  const { data } = usePostList({
+    user_uuid: userUuid,
+    offset: (page - 1) * PAGE_SIZE,
+    limit: PAGE_SIZE,
   });
 
   if (!data) {

@@ -1,8 +1,6 @@
-import { useCallback } from 'react';
-import { useFetch } from '~/hooks/useFetch';
 import Pagination from '~/components/Common/Pagination';
-import CommentService from '~/services/CommentService';
 import CommentList from '~/components/Comment/CommentList';
+import { useCommentList } from '~/hooks/queries/useCommentQueries';
 
 type Props = {
   userUuid: string;
@@ -12,16 +10,10 @@ type Props = {
 const PAGE_SIZE = 10;
 
 function UserCommentList({ userUuid, page }: Props) {
-  const fetchFunction = useCallback(() => {
-    return CommentService.retrieveCommentList({
-      user_uuid: userUuid,
-      offset: (page - 1) * PAGE_SIZE,
-      limit: PAGE_SIZE,
-    });
-  }, [userUuid, page]);
-
-  const { data } = useFetch({
-    fetch: fetchFunction,
+  const { data } = useCommentList({
+    user_uuid: userUuid,
+    offset: (page - 1) * PAGE_SIZE,
+    limit: PAGE_SIZE,
   });
 
   if (!data) {

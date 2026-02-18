@@ -6,8 +6,13 @@ import defaultProfile from '~/assets/img/common/profile.png';
 import UserActionDrawer from '../../components/Common/UserActionDrawer';
 import { Comment as CommentType } from '~/services/types';
 import { User } from '~/services/types';
-import CommentService from '~/services/CommentService';
 import { useAuth } from '~/contexts/auth';
+import {
+  useCreateComment,
+  useUpdateComment,
+  useDeleteComment,
+  useLikeComment,
+} from '~/hooks/queries/useCommentQueries';
 
 type Props = {
   comment: CommentType;
@@ -26,6 +31,11 @@ export const Comment: FC<Props> = ({ comment, parent_id, onUpdate }) => {
   const [parentCommentId, setParentCommentId] = useState<number>(0);
   const textareaTarget = useRef<HTMLTextAreaElement>(null);
 
+  const { mutateAsync: mutateCreateComment } = useCreateComment();
+  const { mutateAsync: mutateUpdateComment } = useUpdateComment();
+  const { mutateAsync: mutateDeleteComment } = useDeleteComment();
+  const { mutateAsync: mutateLikeComment } = useLikeComment();
+
   const checkLike = (users: User[]) => {
     return users
       .map((user) => user.user_id)
@@ -36,7 +46,7 @@ export const Comment: FC<Props> = ({ comment, parent_id, onUpdate }) => {
     const goDrop = window.confirm('정말로 삭제하시겠습니까?');
     if (goDrop) {
       try {
-        await CommentService.deleteComment(comment_id);
+        await mutateDeleteComment(comment_id);
         onUpdate();
       } catch (err) {
         console.error(err);
@@ -46,7 +56,7 @@ export const Comment: FC<Props> = ({ comment, parent_id, onUpdate }) => {
   };
 
   const likeComment = async (comment_id: number) => {
-    await CommentService.likeComment(comment_id);
+    await mutateLikeComment(comment_id);
     onUpdate();
   };
 
@@ -66,7 +76,7 @@ export const Comment: FC<Props> = ({ comment, parent_id, onUpdate }) => {
         text: text,
       };
       try {
-        await CommentService.createComment(parent_id, commentInfo);
+        await mutateCreateComment({ parentId: parent_id, data: commentInfo });
         setText('');
         onUpdate();
       } catch (err) {
@@ -87,7 +97,7 @@ export const Comment: FC<Props> = ({ comment, parent_id, onUpdate }) => {
     };
 
     try {
-      await CommentService.updateComment(comment_id, commentInfo);
+      await mutateUpdateComment({ commentId: comment_id, data: commentInfo });
       setEditingCommentId(0);
       setEditingCommentText('');
       onUpdate();

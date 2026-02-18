@@ -1,6 +1,6 @@
 import React, { useState, ChangeEvent } from 'react';
-import UserService from '../../services/UserService';
 import { FindStateEnum } from '../../common/FindStateEnum';
+import { useFindId, useFindPassword } from '~/hooks/queries/useUserQueries';
 
 type FindIdPwProps = {
   cancel: () => void;
@@ -94,6 +94,9 @@ function FindIdPw({ cancel }: FindIdPwProps) {
     }
   };
 
+  const { mutateAsync: mutateFindId } = useFindId();
+  const { mutateAsync: mutateFindPassword } = useFindPassword();
+
   const submit = async () => {
     const { idName, idEmail, pwId, pwName, pwEmail } = findInfo;
 
@@ -105,7 +108,7 @@ function FindIdPw({ cancel }: FindIdPwProps) {
         email: idEmail,
       };
       try {
-        await UserService.findId(data);
+        await mutateFindId(data);
         setFindState(FindStateEnum.IDFOUND);
       } catch (err) {
         console.error(err);
@@ -118,7 +121,7 @@ function FindIdPw({ cancel }: FindIdPwProps) {
         email: pwEmail,
       };
       try {
-        await UserService.findPassword(data);
+        await mutateFindPassword(data);
         setFindState(FindStateEnum.PWFOUND);
       } catch (err) {
         console.error(err);

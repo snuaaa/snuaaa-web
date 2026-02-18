@@ -6,31 +6,30 @@ import AlbumInfo from '~/components/Album/AlbumInfo';
 import { EditAlbum } from '~/components/Album/modals/EditAlbum';
 import CreatePhotoModal from '~/components/Photo/CreateModal';
 import BoardName from '~/components/Board/BoardName';
-import AlbumService from '~/services/AlbumService';
 
-import { useFetch } from '~/hooks/useFetch';
+import {
+  useAlbum,
+  useDeleteAlbum,
+  albumKeys,
+} from '~/hooks/queries/useAlbumQueries';
 import { useAuth } from '~/contexts/auth';
 import { Divider } from '~/ui';
+import { useQueryClient } from '@tanstack/react-query';
 
 const AlbumPage: FC = () => {
   const { album_id: albumId } = useParams({ from: '/album/$album_id' });
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const authContext = useAuth();
 
-  const fetchFunction = useCallback(async () => {
-    return await Promise.all([
-      AlbumService.retrieveAlbum(Number(albumId)),
-      AlbumService.retrievePhotosInAlbum(Number(albumId)),
-    ]);
-  }, [albumId]);
-
-  const { data, refresh } = useFetch({ fetch: fetchFunction });
+  const { data } = useAlbum(Number(albumId));
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
-  const [albumData, photos] = data ?? [];
+  const albumData = data?.albumData;
+  const photos = data?.photos;
 
   const albumInfo = useMemo(() => albumData?.albumInfo, [albumData?.albumInfo]);
 
@@ -41,6 +40,8 @@ const AlbumPage: FC = () => {
 
   const tagInfo = useMemo(() => albumData?.tagInfo, [albumData?.tagInfo]);
 
+  const deleteAlbumMutation = useDeleteAlbum();
+
   const deleteAlbum = useCallback(async () => {
     if (!albumInfo) {
       return;
@@ -50,24 +51,30 @@ const AlbumPage: FC = () => {
     );
     if (goDrop) {
       try {
-        await AlbumService.deleteAlbum(Number(albumId));
+        await deleteAlbumMutation.mutateAsync(Number(albumId));
         navigate({ to: `/board/${albumInfo.board_id}`, replace: true });
       } catch (err) {
         console.error(err);
         alert('삭제 실패');
       }
     }
-  }, [albumId, albumInfo, navigate]);
+  }, [albumId, albumInfo, navigate, deleteAlbumMutation]);
+
+  const invalidateAlbum = useCallback(() => {
+    queryClient.invalidateQueries({
+      queryKey: albumKeys.detail(Number(albumId)),
+    });
+  }, [queryClient, albumId]);
 
   const handleUpdateAlbum = useCallback(() => {
     setIsEditing(false);
-    refresh();
-  }, [refresh]);
+    invalidateAlbum();
+  }, [invalidateAlbum]);
 
   const handleCreatePhoto = useCallback(() => {
-    refresh();
+    invalidateAlbum();
     setIsModalOpen(false);
-  }, [refresh]);
+  }, [invalidateAlbum]);
 
   if (!albumInfo || !photos) {
     return <Loading />;

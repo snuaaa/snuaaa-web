@@ -1,11 +1,10 @@
 import { ChangeEvent, FC, useState } from 'react';
-import UserService from '~/services/UserService';
-import ExhibitPhotoService, {
-  UpdateExhibitPhotoRequest,
-} from '~/services/ExhibitPhotoService';
+import { UpdateExhibitPhotoRequest } from '~/services/ExhibitPhotoService';
 import Image from '~/components/Common/AaaImage';
 import CreateExhibitPhotoInfo from './CreateExhibitPhotoInfo';
 import { ExhibitPhoto, User } from '~/services/types';
+import { useSearchMini } from '~/hooks/queries/useUserQueries';
+import { useUpdateExhibitPhoto } from '~/hooks/queries/useExhibitionQueries';
 
 type Props = {
   onCancel: () => void;
@@ -32,6 +31,8 @@ const EditExhibitPhoto: FC<Props> = ({ contentInfo, onCancel, onUpdate }) => {
   });
 
   const [searchUsers, setSearchUsers] = useState<User[]>([]);
+  const { mutateAsync: mutateSearchMini } = useSearchMini();
+  const { mutateAsync: mutateUpdateExhibitPhoto } = useUpdateExhibitPhoto();
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -62,8 +63,8 @@ const EditExhibitPhoto: FC<Props> = ({ contentInfo, onCancel, onUpdate }) => {
 
   const fetchUsers = async (name: string) => {
     try {
-      const { userList } = await UserService.searchMini(name);
-      setSearchUsers(userList);
+      const res = await mutateSearchMini(name);
+      setSearchUsers(res.userList);
     } catch (err) {
       console.error(err);
     }
@@ -91,10 +92,10 @@ const EditExhibitPhoto: FC<Props> = ({ contentInfo, onCancel, onUpdate }) => {
 
   const submit = async () => {
     try {
-      await ExhibitPhotoService.updateExhibitPhoto(
-        contentInfo.content_id,
-        photoInfo,
-      );
+      await mutateUpdateExhibitPhoto({
+        exhibitPhoto_id: contentInfo.content_id,
+        data: photoInfo,
+      });
       onUpdate();
     } catch (err) {
       console.error(err);

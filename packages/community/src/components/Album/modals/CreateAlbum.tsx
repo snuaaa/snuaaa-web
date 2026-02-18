@@ -1,11 +1,10 @@
 import { useState, ChangeEvent } from 'react';
-import PhotoBoardService, {
-  CreateAlbumRequest,
-} from '~/services/PhotoBoardService';
+import { CreateAlbumRequest } from '~/services/PhotoBoardService';
 
 import useBlockBackgroundScroll from '~/hooks/useBlockBackgroundScroll';
 import { Category } from '~/services/types';
 import AlbumForm from './AlbumForm';
+import { useCreateAlbum } from '~/hooks/queries/useAlbumQueries';
 
 type CreateAlbumProps = {
   board_id: string;
@@ -49,6 +48,8 @@ function CreateAlbum({
     });
   };
 
+  const { mutateAsync: mutateCreateAlbum } = useCreateAlbum();
+
   const createAlbum = async () => {
     if (!albumInfo.title) {
       alert('제목을 입력해 주세요');
@@ -56,7 +57,7 @@ function CreateAlbum({
       alert('카테고리를 선택해 주세요');
     } else {
       try {
-        await PhotoBoardService.createAlbum(board_id, albumInfo);
+        await mutateCreateAlbum({ board_id, data: albumInfo });
         onCreate();
       } catch (err) {
         console.error(err);

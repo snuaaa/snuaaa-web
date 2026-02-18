@@ -6,10 +6,11 @@ import BoardName from '../../components/Board/BoardName';
 import Image from '../../components/Common/AaaImage';
 
 import { Board } from '~/services/types';
-import ExhibitionService from '~/services/ExhibitionService';
-import { useFetch } from '~/hooks/useFetch';
+import { useExhibitionsInBoard } from '~/hooks/queries/useExhibitionQueries';
 import CreateExhibition from '~/components/Exhibition/CreateExhibition';
 import { useAuth } from '~/contexts/auth';
+import { useQueryClient } from '@tanstack/react-query';
+import { exhibitionKeys } from '~/hooks/queries/useExhibitionQueries';
 
 type ExhibitBoardProps = {
   boardInfo: Board;
@@ -17,14 +18,9 @@ type ExhibitBoardProps = {
 
 const ExhibitBoard: FC<ExhibitBoardProps> = ({ boardInfo }) => {
   const [isCreating, setIsCreating] = useState(false);
+  const queryClient = useQueryClient();
 
-  const fetchFunction = useCallback(() => {
-    return ExhibitionService.retrieveExhibitionsInBoard(boardInfo.board_id);
-  }, [boardInfo.board_id]);
-
-  const { data: exhibitions = [], refresh } = useFetch({
-    fetch: fetchFunction,
-  });
+  const { data: exhibitions = [] } = useExhibitionsInBoard(boardInfo.board_id);
 
   const authContext = useAuth();
 
@@ -91,7 +87,9 @@ const ExhibitBoard: FC<ExhibitBoardProps> = ({ boardInfo }) => {
           onClose={() => setIsCreating(false)}
           onCreate={() => {
             setIsCreating(false);
-            refresh();
+            queryClient.invalidateQueries({
+              queryKey: exhibitionKeys.inBoard(boardInfo.board_id),
+            });
           }}
         />
       )}

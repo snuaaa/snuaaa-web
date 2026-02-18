@@ -5,14 +5,14 @@ import {
   useNavigate,
   useRouter,
 } from '@tanstack/react-router';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClientProvider } from '@tanstack/react-query';
 import React, { Suspense, useCallback } from 'react';
 
 import '../App.scss';
 import '../index.css';
 
 import { AuthProvider } from '../contexts/auth';
-import { BoardProvider } from '../contexts/board';
+
 import { ViewportSizeProvider } from '../contexts/viewportSize';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -20,6 +20,7 @@ import RiseSet from '~/components/Home/RiseSet';
 import SideBar from '~/components/Home/SideBar';
 import FullScreenPortal from '~/components/Common/FullScreenPortal';
 import PhotoDetailModal from '~/components/Photo/DetailModal';
+import { queryClient } from '~/lib/queryClient';
 
 const ExhibitPhotoPage = React.lazy(() => import('~/pages/ExhibitPhoto'));
 
@@ -31,16 +32,6 @@ const TanStackRouterDevtools =
           default: res.TanStackRouterDevtools,
         })),
       );
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 1,
-      refetchOnWindowFocus: false,
-      staleTime: 5 * 60 * 1000, // 5 minutes
-    },
-  },
-});
 
 type SearchParams = {
   photo?: number;
@@ -112,29 +103,27 @@ function RootComponent() {
       <div className="min-h-full flex flex-col">
         <ViewportSizeProvider>
           <AuthProvider>
-            <BoardProvider>
-              {isAuthPage ? (
-                <Outlet />
-              ) : (
-                <>
-                  <Header />
-                  <div className="section-wrapper">
-                    <section>
-                      <div className="side-left">
-                        <RiseSet />
-                      </div>
-                      <SideBar />
-                      <Outlet />
-                    </section>
-                  </div>
-                  <Footer />
-                </>
-              )}
-              {photo && <PhotoModal photoId={photo} />}
-              {exhibitPhoto && (
-                <ExhibitPhotoModal exhibitPhotoId={exhibitPhoto} />
-              )}
-            </BoardProvider>
+            {isAuthPage ? (
+              <Outlet />
+            ) : (
+              <>
+                <Header />
+                <div className="section-wrapper">
+                  <section>
+                    <div className="side-left">
+                      <RiseSet />
+                    </div>
+                    <SideBar />
+                    <Outlet />
+                  </section>
+                </div>
+                <Footer />
+              </>
+            )}
+            {photo && <PhotoModal photoId={photo} />}
+            {exhibitPhoto && (
+              <ExhibitPhotoModal exhibitPhotoId={exhibitPhoto} />
+            )}
           </AuthProvider>
         </ViewportSizeProvider>
       </div>
