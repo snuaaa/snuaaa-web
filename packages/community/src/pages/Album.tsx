@@ -1,5 +1,5 @@
 import { FC, useCallback, useMemo, useState } from 'react';
-import { useHistory, useParams } from 'react-router';
+import { useNavigate, useParams } from '@tanstack/react-router';
 import Loading from '~/components/Common/Loading';
 import PhotoList from '~/components/Album/PhotoList';
 import AlbumInfo from '~/components/Album/AlbumInfo';
@@ -13,8 +13,8 @@ import { useAuth } from '~/contexts/auth';
 import { Divider } from '~/ui';
 
 const AlbumPage: FC = () => {
-  const { album_id: albumId } = useParams<{ album_id: string }>();
-  const history = useHistory();
+  const { album_id: albumId } = useParams({ from: '/album/$album_id' });
+  const navigate = useNavigate();
 
   const authContext = useAuth();
 
@@ -51,13 +51,13 @@ const AlbumPage: FC = () => {
     if (goDrop) {
       try {
         await AlbumService.deleteAlbum(Number(albumId));
-        history.replace(`/board/${albumInfo.board_id}`);
+        navigate({ to: `/board/${albumInfo.board_id}`, replace: true });
       } catch (err) {
         console.error(err);
         alert('삭제 실패');
       }
     }
-  }, [albumId, albumInfo, history]);
+  }, [albumId, albumInfo, navigate]);
 
   const handleUpdateAlbum = useCallback(() => {
     setIsEditing(false);
@@ -81,7 +81,7 @@ const AlbumPage: FC = () => {
       />
       <div className="album-wrapper">
         <AlbumInfo
-          albumInfo={albumInfo}
+          albumContent={albumInfo}
           my_id={authContext.authInfo.user.user_id}
           onClickEdit={() => setIsEditing(true)}
           onClickDelete={deleteAlbum}

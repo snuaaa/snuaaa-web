@@ -1,23 +1,17 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 import Image from '~/components/Common/AaaImage';
-import history from '~/common/history';
 import defaultPhotoCover from '~/assets/img/default_photo_img.png';
-import useQueryString from '~/hooks/useQueryString';
 import Pagination from '~/components/Common/Pagination';
 import { usePhotoList } from '~/hooks/queries/usePhotoQueries';
 
 type Props = {
   userUuid: string;
+  page: number;
 };
 
 const PAGE_SIZE = 12;
 
-const PhotoList = ({ userUuid }: Props) => {
-  const location = useLocation();
-
-  const queryString = useQueryString();
-  const page = Number(queryString.get('page') ?? 1);
-
+const PhotoList = ({ userUuid, page }: Props) => {
   const { data } = usePhotoList({
     user_uuid: userUuid,
     offset: (page - 1) * PAGE_SIZE,
@@ -41,13 +35,11 @@ const PhotoList = ({ userUuid }: Props) => {
           return (
             <div className="photo-wrapper" key={contentInfo.content_id}>
               <Link
-                to={{
-                  pathname: `/photo/${contentInfo.content_id}`,
-                  state: {
-                    modal: true,
-                    backgroundLocation: history.location,
-                  },
-                }}
+                to="."
+                search={(prev) => ({
+                  ...prev,
+                  photo: contentInfo.content_id,
+                })}
               >
                 <div className="photo-cover">
                   <i className="ri-heart-fill"></i> {contentInfo.like_num}&nbsp;
@@ -70,11 +62,6 @@ const PhotoList = ({ userUuid }: Props) => {
       <Pagination
         currentPage={page}
         totalPageCount={Math.ceil(data.count / PAGE_SIZE)}
-        routeGenerator={(page) => {
-          const nextSearchParam = new URLSearchParams(queryString);
-          nextSearchParam.set('page', page.toString());
-          return `${location.pathname}?${nextSearchParam.toString()}`;
-        }}
       />
     </div>
   );

@@ -1,11 +1,9 @@
 import { createRoot } from 'react-dom/client';
-import { Router } from 'react-router-dom';
-import history from '~/common/history';
-// import { CookiesProvider } from 'react-cookie';
+import { RouterProvider } from '@tanstack/react-router';
+import { router } from './router';
 
 import './index.css';
 import 'remixicon/fonts/remixicon.css';
-import App from './App';
 import { IS_PROD } from './constants/env';
 
 if (IS_PROD) {
@@ -19,11 +17,6 @@ if (IS_PROD) {
   gtag('config', 'UA-154430849-1');
 }
 
-// After
 const container = document.getElementById('root');
 const root = createRoot(container); // createRoot(container!) if you use TypeScript
-root.render(
-  <Router basename="/page" history={history}>
-    <App />
-  </Router>,
-);
+root.render(<RouterProvider router={router} />);

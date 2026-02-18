@@ -1,6 +1,6 @@
 import { useState, useEffect, ChangeEvent, useCallback } from 'react';
 import { AxiosProgressEvent } from 'axios';
-import { Redirect, useRouteMatch } from 'react-router';
+import { Navigate, useParams } from '@tanstack/react-router';
 
 import ContentStateEnum from '~/common/ContentStateEnum';
 import Loading from '~/components/Common/Loading';
@@ -16,7 +16,7 @@ import { useAuth } from '~/contexts/auth';
 const MAX_SIZE = 20 * 1024 * 1024;
 
 function DocumentPage() {
-  const match = useRouteMatch<{ doc_id: string }>();
+  const { doc_id } = useParams({ from: '/document/$doc_id' });
   const [docuInfo, setDocuInfo] = useState<Content>();
   const [likeInfo, setLikeInfo] = useState<boolean>(false);
   const [docState, setDocState] = useState<number>(ContentStateEnum.LOADING);
@@ -28,8 +28,7 @@ function DocumentPage() {
   let currentSize = 0;
 
   const fetch = useCallback(async () => {
-    const doc_id = Number(match.params.doc_id);
-    await DocuService.retrieveDocument(doc_id)
+    await DocuService.retrieveDocument(Number(doc_id))
       .then((res) => {
         setDocuInfo(res.docuInfo);
         setLikeInfo(res.likeInfo);
@@ -40,7 +39,7 @@ function DocumentPage() {
         console.error(err);
         setDocState(ContentStateEnum.ERROR);
       });
-  }, [match.params.doc_id]);
+  }, [doc_id]);
 
   useEffect(() => {
     fetch();
@@ -61,17 +60,18 @@ function DocumentPage() {
   };
 
   const updateDoc = async () => {
-    const doc_id = Number(match.params.doc_id);
+    // const doc_id = Number(match.params.doc_id);
+    const docIdNum = Number(doc_id);
 
     try {
       if (editingDocData) {
-        await DocuService.updateDocument(doc_id, editingDocData);
+        await DocuService.updateDocument(docIdNum, editingDocData);
       }
       if (attachedFiles.length > 0) {
         for (let i = 0; i < attachedFiles.length; i++) {
           const formData = new FormData();
           formData.append('attachedFile', attachedFiles[i]);
-          await ContentService.createFile(doc_id, formData, uploadProgress);
+          await ContentService.createFile(docIdNum, formData, uploadProgress);
         }
       }
       if (removedFiles.length > 0) {
@@ -87,12 +87,11 @@ function DocumentPage() {
   };
 
   const deleteDoc = async () => {
-    const doc_id = Number(match.params.doc_id);
     const goDrop = window.confirm(
       '정말로 삭제하시겠습니까? 삭제한 게시글은 다시 복원할 수 없습니다.',
     );
     if (goDrop) {
-      await DocuService.deleteDocument(doc_id)
+      await DocuService.deleteDocument(Number(doc_id))
         .then(() => {
           setDocState(ContentStateEnum.DELETED);
         })
@@ -104,8 +103,7 @@ function DocumentPage() {
   };
 
   const likeDoc = async () => {
-    const doc_id = Number(match.params.doc_id);
-    await ContentService.likeContent(doc_id)
+    await ContentService.likeContent(Number(doc_id))
       .then(() => {
         if (docuInfo) {
           if (likeInfo) {
@@ -216,7 +214,7 @@ function DocumentPage() {
             />
           );
         } else if (docState === ContentStateEnum.DELETED && docuInfo)
-          return <Redirect to={`/board/${docuInfo.board_id}`} />;
+          return <Navigate to={`/board/${docuInfo.board_id}`} />;
         else {
           return <div>ERROR</div>;
         }

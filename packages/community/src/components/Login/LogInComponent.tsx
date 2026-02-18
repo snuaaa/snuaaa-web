@@ -1,5 +1,5 @@
 import React, { ChangeEvent } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 import InputText from '../Common/InputText';
 import Footer from '../Footer';
 import logo from '~/assets/img/login_logo.gif';

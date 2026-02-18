@@ -1,3 +1,4 @@
+import { useNavigate, useSearch } from '@tanstack/react-router';
 import PhotoList from '~/components/Album/PhotoList';
 import Loading from '~/components/Common/Loading';
 import Pagination from '~/components/Common/Pagination';
@@ -5,9 +6,7 @@ import Tag from '~/components/Common/Tag';
 import CreatePhotoModal from '~/components/Photo/CreateModal';
 import { useAuth } from '~/contexts/auth';
 import { usePhotoList } from '~/hooks/queries/usePhotoQueries';
-import useQueryString from '~/hooks/useQueryString';
 import { ChangeEvent, FC, useCallback, useMemo, useState } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
 import { Board } from '~/services/types';
 import { Divider } from '~/ui';
 
@@ -19,16 +18,15 @@ type Props = {
 
 export const PhotoSection: FC<Props> = ({ boardInfo }) => {
   const authContext = useAuth();
-  const history = useHistory();
-  const location = useLocation();
-  const queryString = useQueryString();
+  const navigate = useNavigate({ from: '/board/$board_id' });
+  const searchParams = useSearch({ from: '/board/$board_id' });
 
   const [isCreating, setIsCreating] = useState(false);
 
-  const pageIdx = Number(queryString.get('page') || 1);
+  const pageIdx = Number(searchParams.page || 1);
   const selectedTags = useMemo(
-    () => queryString.getAll('tags') ?? [],
-    [queryString],
+    () => searchParams.tags || [],
+    [searchParams.tags],
   );
 
   const { data, isPending } = usePhotoList({
@@ -39,35 +37,32 @@ export const PhotoSection: FC<Props> = ({ boardInfo }) => {
   });
 
   const clickAll = () => {
-    history.push({
-      search: '',
+    navigate({
+      search: (prev) => {
+        const { tags, ...rest } = prev;
+        return rest;
+      },
     });
   };
 
   const clickTag = (e: ChangeEvent<HTMLInputElement>) => {
     const tagId = e.target.id;
-    const nextSearchParams = new URLSearchParams(queryString);
 
-    // Note: URLSearchParams doesn't have a simple toggle or array set method for same key
-    // We need to reconstruct the tags
-    const currentTags = nextSearchParams.getAll('tags');
-    nextSearchParams.delete('tags');
-
-    if (currentTags.includes(tagId)) {
-      currentTags
-        .filter((tag) => tagId !== tag)
-        .forEach((tag) => nextSearchParams.append('tags', tag));
-    } else {
-      [...currentTags, tagId].forEach((tag) =>
-        nextSearchParams.append('tags', tag),
-      );
-    }
-
-    // Reset page when filtering
-    nextSearchParams.set('page', '1');
-
-    history.push({
-      search: nextSearchParams.toString(),
+    navigate({
+      search: (prev) => {
+        const currentTags: string[] = prev.tags || [];
+        let newTags;
+        if (currentTags.includes(tagId)) {
+          newTags = currentTags.filter((tag) => tagId !== tag);
+        } else {
+          newTags = [...currentTags, tagId];
+        }
+        return {
+          ...prev,
+          tags: newTags,
+          page: 1,
+        };
+      },
     });
   };
 
@@ -121,11 +116,6 @@ export const PhotoSection: FC<Props> = ({ boardInfo }) => {
         <Pagination
           currentPage={pageIdx}
           totalPageCount={Math.ceil(data.count / PHOTO_ROW_NUM)}
-          routeGenerator={(page) => {
-            const nextSearchParam = new URLSearchParams(queryString);
-            nextSearchParam.set('page', page.toString());
-            return `${location.pathname}?${nextSearchParam.toString()}`;
-          }}
         />
       )}
     </>

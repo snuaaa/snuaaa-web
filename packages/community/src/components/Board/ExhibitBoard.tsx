@@ -1,5 +1,5 @@
 import { FC, useCallback, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 import Loading from '../../components/Common/Loading';
 import { convertDateWithDay } from '../../utils/convertDate';
 import BoardName from '../../components/Board/BoardName';
@@ -33,7 +33,10 @@ const ExhibitBoard: FC<ExhibitBoardProps> = ({ boardInfo }) => {
       if (!content.exhibition) return null;
 
       return (
-        <Link to={`/exhibition/${content.content_id}`}>
+        <Link
+          to="/exhibition/$exhibition_id"
+          params={{ exhibition_id: String(content.content_id) }}
+        >
           <div className="exhibition-unit">
             <div className="hanger"></div>
             <div className="poster-wrapper">

@@ -1,6 +1,6 @@
 import { Board } from '~/services/types';
 import { MenuLink } from './types';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 import useDeviceType, { DeviceType } from '~/hooks/useDeviceType';
 
 type Props = {
@@ -16,7 +16,8 @@ function MenuItem(props: Props) {
     <li className="text-left relative md:font-bold md:[text-shadow:_0_0_3px_#E6AD0F] transition-all duration-300 hover:bg-[#FCE8A7] hover:text-[#646464] md:hover:[text-shadow:none]">
       {'board_id' in item ? (
         <Link
-          to={`/board/${item.board_id}`}
+          to="/board/$board_id"
+          params={{ board_id: item.board_id }}
           className="w-full p-2.5 inline-block"
         >
           {item.board_name}
@@ -29,14 +30,14 @@ function MenuItem(props: Props) {
           className="w-full p-2.5 flex items-center justify-between"
         >
           {deviceType === DeviceType.Mobile
-            ? item.shortName ?? item.name
+            ? (item.shortName ?? item.name)
             : item.name}
           <i className="ri-external-link-line"></i>
         </a>
       ) : (
         <Link to={item.url} className="w-full p-2.5 inline-block">
           {deviceType === DeviceType.Mobile
-            ? item.shortName ?? item.name
+            ? (item.shortName ?? item.name)
             : item.name}
         </Link>
       )}

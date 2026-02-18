@@ -7,9 +7,11 @@ import React, {
   useState,
 } from 'react';
 import SpinningLoader from '~/components/Common/SpinningLoader';
-import { EquipSearchLocationState, SortBy } from '../EquipSearchBar';
+import {
+  EquipSearchLocationState,
+  SortBy,
+} from '~/components/Equipment/common';
 import { RetrieveEquipmentListResponse } from '~/services/EquipmentService';
-import { useLocation } from 'react-router';
 import { Equipment } from '~/services/types';
 import EquipmentItem from './EquipmentItem';
 
@@ -17,6 +19,7 @@ type Props = {
   type: 'rent' | 'admin';
   data: RetrieveEquipmentListResponse;
   columns: 1 | 2 | 3;
+  search: EquipSearchLocationState;
 };
 
 const gridColumnsStyles = {
@@ -29,11 +32,10 @@ const fakeFetch = (delay = 500) => new Promise((res) => setTimeout(res, delay));
 
 const LIMIT_UNIT = 12;
 
-const EquipList: React.FC<Props> = ({ data, columns, type }) => {
-  const location = useLocation<EquipSearchLocationState>();
+const EquipList: React.FC<Props> = ({ data, columns, type, search }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  //const equipCount = data?.equipCount ?? 0;
+  // ...
 
   const [limit, setLimit] = useState<number>(LIMIT_UNIT);
 
@@ -51,40 +53,44 @@ const EquipList: React.FC<Props> = ({ data, columns, type }) => {
   };
 
   const [filteredEquipments, equipCount] = useMemo(() => {
-    const filtered = location.state
+    // using search params instead of location.state
+    const filtered = search
       ? data?.equipInfo
           .filter((equip) => {
             if (
-              location.state.category_id &&
-              location.state.category_id !== 0 &&
-              equip.category_id !== location.state?.category_id
+              search.category_id &&
+              search.category_id !== 0 &&
+              equip.category_id !== search.category_id
+            )
+              return false;
+            // ... keyword, maker, status, rent_status checks using search object
+            if (
+              search.status !== '' &&
+              search.status !== undefined &&
+              equip.status !== search.status
             )
               return false;
             if (
-              location.state.status !== '' &&
-              equip.status !== location.state.status
+              search.rent_status !== '' &&
+              search.rent_status !== undefined &&
+              equip.rent_status !== search.rent_status
             )
               return false;
             if (
-              location.state.rent_status !== '' &&
-              equip.rent_status !== location.state.rent_status
-            )
-              return false;
-            if (
-              location.state.keyword !== '' &&
+              search.keyword &&
+              search.keyword !== '' &&
               !equip.name
                 .toLowerCase()
-                .includes(location.state.keyword.toLowerCase()) &&
+                .includes(search.keyword.toLowerCase()) &&
               !equip.nickname
                 .toLowerCase()
-                .includes(location.state.keyword.toLowerCase())
+                .includes(search.keyword.toLowerCase())
             )
               return false;
             if (
-              location.state.maker !== '' &&
-              !equip.maker
-                .toLowerCase()
-                .includes(location.state.maker.toLowerCase())
+              search.maker &&
+              search.maker !== '' &&
+              !equip.maker.toLowerCase().includes(search.maker.toLowerCase())
             )
               return false;
             return true;
@@ -93,17 +99,17 @@ const EquipList: React.FC<Props> = ({ data, columns, type }) => {
             sortCompareFunction(
               a,
               b,
-              location.state.sort_by,
-              location.state.sort_order,
+              search.sort_by ?? SortBy.CREATED_AT,
+              search.sort_order ?? 'DESC',
             ),
           )
       : data?.equipInfo;
-    return [filtered.slice(0, limit) ?? [], filtered.length];
-  }, [data?.equipInfo, limit, location.state]);
+    return [filtered?.slice(0, limit) ?? [], filtered?.length ?? 0];
+  }, [data?.equipInfo, limit, search]);
 
   useEffect(() => {
     setLimit(LIMIT_UNIT);
-  }, [location.state]);
+  }, [search]);
 
   const increaseLimit = () => {
     setLimit((prevLimit) => prevLimit + LIMIT_UNIT);

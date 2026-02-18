@@ -1,5 +1,4 @@
-import { Link } from 'react-router-dom';
-import history from '~/common/history';
+import { Link, useNavigate } from '@tanstack/react-router';
 
 type Props = {
   /**
@@ -10,10 +9,6 @@ type Props = {
    * 총 페이지 수
    */
   totalPageCount: number;
-  /**
-   * page route 생성 함수
-   */
-  routeGenerator: (page: number) => string;
 };
 
 // 유틸리티: start부터 end까지의 숫자 배열 생성 (lodash _.range와 유사)
@@ -67,16 +62,20 @@ const usePagination = ({ currentPage, totalPages }: UsePaginationProps) => {
   ];
 };
 
-const Pagination = ({ currentPage, totalPageCount, routeGenerator }: Props) => {
+const Pagination = ({ currentPage, totalPageCount }: Props) => {
   const pages = usePagination({ currentPage, totalPages: totalPageCount });
-  const buttonClassName = 'w-6 h-6 flex justify-center items-center font-bold';
+  const navigate = useNavigate();
+  const buttonClassName = 'w-6 h-6 flex justify-center items-center font-bold ';
 
   return (
     <ul className="flex w-full justify-center items-center py-2 gap-2">
       <li>
         <button
           onClick={() => {
-            history.push(routeGenerator(currentPage - 1));
+            navigate({
+              to: '.',
+              search: (prev) => ({ ...prev, page: currentPage - 1 }),
+            });
           }}
           disabled={currentPage === 1}
           aria-label="Previous page"
@@ -92,7 +91,8 @@ const Pagination = ({ currentPage, totalPageCount, routeGenerator }: Props) => {
           ) : (
             <Link
               className={`${buttonClassName} ${page === currentPage ? 'text-white bg-[#7193C4] rounded-full' : ''}`}
-              to={routeGenerator(page)}
+              to="."
+              search={(prev) => ({ ...prev, page })}
             >
               {page}
             </Link>
@@ -102,7 +102,10 @@ const Pagination = ({ currentPage, totalPageCount, routeGenerator }: Props) => {
       <li>
         <button
           onClick={() => {
-            history.push(routeGenerator(currentPage + 1));
+            navigate({
+              to: '.',
+              search: (prev) => ({ ...prev, page: currentPage + 1 }),
+            });
           }}
           disabled={currentPage === totalPageCount}
           aria-label="Next page"

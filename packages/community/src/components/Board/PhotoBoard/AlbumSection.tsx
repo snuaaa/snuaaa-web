@@ -3,13 +3,12 @@ import Loading from '~/components/Common/Loading';
 import AlbumList from '~/components/Album/AlbumList';
 import { useFetch } from '~/hooks/useFetch';
 import { FC, useCallback, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useSearch } from '@tanstack/react-router';
 import PhotoBoardService from '~/services/PhotoBoardService';
 import { Board } from '~/services/types';
 import { useAuth } from '~/contexts/auth';
 import { Divider } from '~/ui';
 import Pagination from '~/components/Common/Pagination';
-import useQueryString from '~/hooks/useQueryString';
 
 type Props = {
   boardInfo: Board;
@@ -22,11 +21,9 @@ export const AlbumSection: FC<Props> = ({ boardInfo }) => {
 
   const [isCreating, setIsCreating] = useState(false);
 
-  // const history = useHistory();
-  const location = useLocation();
-  const queryString = useQueryString();
+  const searchParams = useSearch({ from: '/board/$board_id' });
 
-  const page = Number(queryString.get('page') ?? 1);
+  const page = Number(searchParams.page ?? 1);
 
   const fetchFunction = useCallback(() => {
     return PhotoBoardService.retrieveAlbumsInPhotoBoard(
@@ -75,11 +72,6 @@ export const AlbumSection: FC<Props> = ({ boardInfo }) => {
         <Pagination
           currentPage={page}
           totalPageCount={Math.ceil(data.albumCount / PAGE_SIZE)}
-          routeGenerator={(page) => {
-            const nextSearchParam = new URLSearchParams(queryString);
-            nextSearchParam.set('page', page.toString());
-            return `${location.pathname}?${nextSearchParam.toString()}`;
-          }}
         />
       )}
     </>

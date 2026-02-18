@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 import Menu from './Menu';
 import { useBoards } from '~/contexts/board';
 import { ABOUT_AAA_LINKS, TOOLS_LINKS } from '../constants';
@@ -14,7 +14,7 @@ function Navigation() {
       }
     >
       <ul className="h-full w-full flex justify-around md:justify-center items-center">
-        <Menu menuName={<NavLink to="/">★</NavLink>} />
+        <Menu menuName={<Link to="/">★</Link>} />
         <Menu menuName="A.A.A." menuItems={ABOUT_AAA_LINKS} />
         <Menu menuName="Notice" menuItems={noticeBoards} />
         <Menu menuName="Daily" menuItems={communityBoards} />

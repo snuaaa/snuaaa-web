@@ -1,4 +1,4 @@
-import { Link, useHistory } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 import Image from '~/components/Common/AaaImage';
 import { ExhibitPhoto } from '~/services/types';
 
@@ -7,7 +7,6 @@ function ExhibitPhotoList({
 }: {
   exhibitPhotos: ExhibitPhoto[];
 }) {
-  const history = useHistory();
   const makePhotoList = () => {
     if (exhibitPhotos && exhibitPhotos.length > 0) {
       return exhibitPhotos.map((content) => {
@@ -15,13 +14,11 @@ function ExhibitPhotoList({
         return (
           <div className="photo-wrapper" key={content.content_id}>
             <Link
-              to={{
-                pathname: `/exhibitPhoto/${content.content_id}`,
-                state: {
-                  exhibitPhotoModal: true,
-                  backgroundLocation: history.location,
-                },
-              }}
+              to="."
+              search={(prev) => ({
+                ...prev,
+                exhibitPhoto: content.content_id,
+              })}
             >
               <Image imgSrc={exhibitPhoto.thumbnail_path} />
             </Link>

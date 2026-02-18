@@ -2,18 +2,17 @@ import BoardName from '~/components/Board/BoardName';
 import { Board } from '~/services/types';
 import CreatePost from './Create';
 import ListPost from './List';
-import useQueryString from '~/hooks/useQueryString';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useRouter, useSearch, useNavigate } from '@tanstack/react-router';
 
 type PostBoardProps = {
   boardInfo: Board;
 };
 
 function PostBoard({ boardInfo }: PostBoardProps) {
-  const queryString = useQueryString();
-  const status = queryString.get('status');
-  const history = useHistory();
-  const location = useLocation();
+  const search = useSearch({ from: '/board/$board_id' });
+  const status = search.status;
+  const router = useRouter();
+  const navigate = useNavigate({ from: '/board/$board_id' });
 
   return (
     <div className="board-wrapper postboard-wrapper">
@@ -26,16 +25,20 @@ function PostBoard({ boardInfo }: PostBoardProps) {
         <ListPost
           boardInfo={boardInfo}
           onClickCreate={() => {
-            const searchParams = new URLSearchParams([['status', 'create']]);
-            history.push(`?${searchParams.toString()}`);
+            navigate({
+              search: (prev) => ({ ...prev, status: 'create' }),
+            });
           }}
         />
       ) : (
         <CreatePost
           board_id={boardInfo.board_id}
-          onClose={() => history.goBack()}
+          onClose={() => router.history.back()}
           onCreate={() => {
-            history.replace(location.pathname);
+            navigate({
+              search: (prev) => ({ ...prev, status: undefined }),
+              replace: true,
+            });
           }}
         />
       )}

@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { Album } from '~/services/types';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 import Image from '../../Common/AaaImage';
 import defaultAlbumCover from '~/assets/img/default_photo_img.png';
 import { getThumbnailPath } from '~/utils/getThumbnailPath';
@@ -15,9 +15,8 @@ const AlbumItem: FC<Props> = ({ album }) => {
   return (
     <div className="relative pb-full">
       <Link
-        to={{
-          pathname: `/album/${album.content_id}`,
-        }}
+        to="/album/$album_id"
+        params={{ album_id: String(album.content_id) }}
       >
         <Image
           className="w-full h-full object-cover"

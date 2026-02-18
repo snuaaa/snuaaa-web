@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 import Image from '../../components/Common/AaaImage';
 import imgProfile from '../../assets/img/common/profile.png';
 import { useAuth } from '~/contexts/auth';
@@ -44,11 +44,11 @@ function PopupUser({ profile_path, togglePopup, logout }: Props) {
           className="w-32 h-32 rounded-full object-cover"
         />
       </div>
-      <Link to="/mypage/info" onClick={togglePopup}>
+      <Link to="/mypage/$view" params={{ view: 'info' }} onClick={togglePopup}>
         <p className="text-2xl md:text-base">My Page</p>
       </Link>
       {hasManagementAuthority && (
-        <Link to="/mgt/user" onClick={togglePopup}>
+        <Link to="/admin/user" onClick={togglePopup}>
           <p className="text-2xl md:text-base">
             {/* <i className="ri-admin-line"></i> */}
             회원 관리

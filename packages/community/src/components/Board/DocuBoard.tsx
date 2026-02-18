@@ -1,4 +1,5 @@
 import { ChangeEvent, useState, useCallback } from 'react';
+import { useNavigate, useSearch } from '@tanstack/react-router';
 
 import Loading from '../../components/Common/Loading';
 import SelectBox from '../../components/Common/SelectBox';
@@ -8,7 +9,6 @@ import CreateDocu from './CreateDocu';
 import BoardName from '../../components/Board/BoardName';
 import DocuService from '../../services/DocuService';
 
-import { useLocation, useHistory } from 'react-router-dom';
 import { Board } from '~/services/types';
 import { useFetch } from '~/hooks/useFetch';
 import { useAuth } from '~/contexts/auth';
@@ -19,26 +19,21 @@ type DocuBoardProps = {
   boardInfo: Board;
 };
 
-type LocationState = {
-  category?: string;
-  generation?: number;
-  page?: number;
-};
-
 function DocuBoard({ boardInfo }: DocuBoardProps) {
-  const history = useHistory();
-  const location = useLocation<LocationState>();
+  const navigate = useNavigate({ from: '/board/$board_id' });
+  const searchParams = useSearch({ from: '/board/$board_id' });
   const authContext = useAuth();
 
   const [isCreating, setIsCreating] = useState(false);
 
-  const { category, generation, page = 1 } = location.state ?? {};
+  const { category, generation } = searchParams;
+  const page = Number(searchParams.page ?? 1);
 
   const fetchFunction = useCallback(() => {
     return DocuService.retrieveDocuments({
       page,
       category,
-      generation,
+      generation: generation ? Number(generation) : undefined,
     });
   }, [category, generation, page]);
 
@@ -48,31 +43,31 @@ function DocuBoard({ boardInfo }: DocuBoardProps) {
   const documents = data?.docInfo ?? [];
 
   const handleChangeCategory = (e: ChangeEvent<HTMLInputElement>) => {
-    history.push({
-      state: {
-        ...(location.state ?? {}),
+    navigate({
+      search: (prev) => ({
+        ...prev,
         category: e.target.value,
         page: 1,
-      },
+      }),
     });
   };
 
   const handleChangeGeneration = (e: ChangeEvent<HTMLInputElement>) => {
-    history.push({
-      state: {
-        ...(location.state ?? {}),
+    navigate({
+      search: (prev) => ({
+        ...prev,
         generation: e.target.value,
         page: 1,
-      },
+      }),
     });
   };
 
   const handleClickPage = (idx: number) => {
-    history.push({
-      state: {
-        ...(location.state ?? {}),
+    navigate({
+      search: (prev) => ({
+        ...prev,
         page: idx,
-      },
+      }),
     });
   };
 

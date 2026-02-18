@@ -3,7 +3,7 @@ import UserService from '~/services/UserService';
 import { convertFullDate, convertDateWithDay } from '~/utils/convertDate';
 import { UsersSearchType } from '~/types/SearchTypes';
 import Paginator from '~/components/Common/Paginator';
-import { useHistory } from 'react-router';
+import { useRouter, useSearch, useNavigate } from '@tanstack/react-router';
 import { User } from '~/services/types';
 import axios from 'axios';
 
@@ -12,13 +12,18 @@ const USER_ROW_NUM = 20;
 function UserManagement() {
   const [userInfo, setUserInfo] = useState<User[]>([]);
   const [userCount, setUserCount] = useState<number>(0);
-  const [pageIdx, setPageIdx] = useState<number>(1);
-  const [searchOption, setSearchOption] = useState<UsersSearchType>({
-    sort: '',
-    order: '',
-  });
-  const history = useHistory();
-  // const location = useLocation();
+
+  const searchParams = useSearch({ from: '/admin/user' });
+  const navigate = useNavigate();
+  const router = useRouter();
+
+  const pageIdx = searchParams.page || 1;
+  const searchOption: UsersSearchType = {
+    sort: searchParams.sort || '',
+    order: searchParams.order || '',
+    limit: USER_ROW_NUM,
+    offset: (pageIdx - 1) * USER_ROW_NUM,
+  };
 
   const fetch = useCallback(async () => {
     try {
@@ -28,14 +33,14 @@ function UserManagement() {
     } catch (err) {
       if (axios.isAxiosError(err) && err.response?.status === 403) {
         alert('권한이 없습니다.');
-        history.goBack();
+        router.history.back();
       }
     }
-  }, [history, searchOption]);
+  }, [router, searchOption]);
 
   useEffect(() => {
     fetch();
-  }, [fetch, searchOption]);
+  }, [fetch]); // removed searchOption dependency to avoid infinite loop if object reference changes, but searchOption is derived from searchParams which changes. Actually searchOption is derived properly.
 
   const makeUserList = () => {
     if (userInfo && userInfo.length > 0) {
@@ -83,34 +88,29 @@ function UserManagement() {
   };
 
   const clickSearchOption = (sort: string) => () => {
-    setSearchOption({
-      sort: sort,
-      order:
-        searchOption &&
-        searchOption.sort === sort &&
-        searchOption.order === 'ASC'
-          ? 'DESC'
-          : 'ASC',
+    const nextOrder =
+      searchOption.sort === sort && searchOption.order === 'ASC'
+        ? 'DESC'
+        : 'ASC';
+
+    navigate({
+      search: (prev) => ({
+        ...prev,
+        sort: sort,
+        order: nextOrder,
+        page: 1,
+      }),
     });
-    setPageIdx(1);
   };
 
   const clickPage = (idx: number) => {
-    setPageIdx(idx);
-    setSearchOption({
-      ...searchOption,
-      limit: USER_ROW_NUM,
-      offset: (idx - 1) * USER_ROW_NUM,
+    navigate({
+      search: (prev) => ({
+        ...prev,
+        page: idx,
+      }),
     });
-    // history.push({
-    //     state: {
-    //         ...location.state,
-    //         page: idx
-    //     }
-    // })
   };
-
-  // let pageIdx = location.state && location.state.page ? location.state.page : 1;
 
   return (
     <div className="mgt-user-wrp">

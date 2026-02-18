@@ -1,5 +1,5 @@
 import { useState, PropsWithChildren } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 
 import AaaImage from './AaaImage';
 import defaultProfile from '~/assets/img/common/profile.png';
@@ -94,7 +94,8 @@ function UserActionDrawer({
                     </div>
                     <Link
                       className={'profile-more-btn'}
-                      to={`/userpage/${userInfo.user_uuid}`}
+                      to="/userpage/$uuid"
+                      params={{ uuid: userInfo.user_uuid }}
                     >
                       <div>상세 정보</div>
                     </Link>

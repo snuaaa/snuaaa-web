@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 import { convertDate } from '../../utils/convertDate';
 import { Content } from '~/services/types';
 
@@ -14,14 +14,20 @@ const AllPostList = ({ posts }: { posts: Content[] }) => {
           <div className="post-list" key={contentInfo.content_id}>
             <div className="post-list-unit post-list-unit-4">
               {boardInfo && (
-                <Link to={`/board/${boardInfo.board_id}`}>
+                <Link
+                  to="/board/$board_id"
+                  params={{ board_id: boardInfo.board_id }}
+                >
                   {boardInfo.board_name}
                 </Link>
               )}
             </div>
             <div className="post-list-unit-left with-boardname">
               <div className="post-list-unit-title">
-                <Link to={`/post/${contentInfo.content_id}`}>
+                <Link
+                  to="/post/$post_id"
+                  params={{ post_id: String(contentInfo.content_id) }}
+                >
                   <h5>{contentInfo.title}</h5>
                 </Link>
               </div>

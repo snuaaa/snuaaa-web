@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
+import { useRouter, useNavigate } from '@tanstack/react-router';
 
 import ProfileMini from '../Common/ProfileMini';
 import { convertFullDate } from '../../utils/convertDate';
 import DownloadFile from './DownloadFile';
 import ActionDrawer from '../Common/ActionDrawer';
-import history from '../../common/history';
 import FileIcon from '../../components/Common/FileIcon';
 
 import Editor from '../Common/Editor';
@@ -25,6 +25,8 @@ const PostView: React.FC<PostComponentProps> = ({
   isLiked: isLikedProp,
   onClickEdit,
 }) => {
+  const router = useRouter();
+  const navigate = useNavigate();
   const user = postInfo.user;
 
   const [likeNum, setLikeNum] = useState(postInfo.like_num);
@@ -40,7 +42,7 @@ const PostView: React.FC<PostComponentProps> = ({
     if (goDrop) {
       try {
         await PostService.deletePost(postInfo.content_id);
-        history.replace(`/board/${postInfo.board_id}`);
+        navigate({ to: `/board/${postInfo.board_id}`, replace: true });
       } catch (err) {
         console.error(err);
         alert('삭제 실패');
@@ -88,7 +90,7 @@ const PostView: React.FC<PostComponentProps> = ({
   return (
     <div className="post-wrapper">
       <div className="post-title">
-        <div className="post-title-back" onClick={() => history.goBack()}>
+        <div className="post-title-back" onClick={() => router.history.back()}>
           <i className="ri-arrow-left-line cursor-pointer"> </i>
         </div>
         <h5> {postInfo.title} </h5>

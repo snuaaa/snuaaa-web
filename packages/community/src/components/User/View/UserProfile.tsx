@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 import AaaImage from '~/components/Common/AaaImage';
 import imgDefaultProfile from '~/assets/img/common/profile.png';
 import { breakLine } from '~/utils/breakLine';
@@ -91,7 +91,7 @@ function UserProfile({ userInfo, isCanEdit }: Props) {
 
         {isCanEdit && (
           <div className="btn-edit-info">
-            <Link to="profile">
+            <Link to="/mypage/$view" params={{ view: 'profile' }}>
               <button>회원정보 수정</button>
             </Link>
           </div>

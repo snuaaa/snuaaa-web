@@ -1,23 +1,18 @@
 import { useCallback } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 import { convertDate } from '~/utils/convertDate';
 import Pagination from '~/components/Common/Pagination';
 import { useFetch } from '~/hooks/useFetch';
-import useQueryString from '~/hooks/useQueryString';
 import PostService from '~/services/PostService';
 
 type Props = {
   userUuid: string;
+  page: number;
 };
 
 const PAGE_SIZE = 10;
 
-const PostList = ({ userUuid }: Props) => {
-  const location = useLocation();
-
-  const queryString = useQueryString();
-  const page = Number(queryString.get('page') ?? 1);
-
+const PostList = ({ userUuid, page }: Props) => {
   const fetchFunction = useCallback(() => {
     return PostService.retrievePostList({
       user_uuid: userUuid,
@@ -47,7 +42,10 @@ const PostList = ({ userUuid }: Props) => {
           <div className="my-post-wrapper" key={contentInfo.content_id}>
             <div className="my-post-boardname">{boardInfo.board_name}</div>
             <div className="my-post-title">
-              <Link to={`/post/${contentInfo.content_id}`}>
+              <Link
+                to="/post/$post_id"
+                params={{ post_id: String(contentInfo.content_id) }}
+              >
                 <h5>{contentInfo.title}</h5>
               </Link>
             </div>
@@ -61,11 +59,6 @@ const PostList = ({ userUuid }: Props) => {
       <Pagination
         currentPage={page}
         totalPageCount={Math.ceil(data.count / PAGE_SIZE)}
-        routeGenerator={(page) => {
-          const nextSearchParam = new URLSearchParams(queryString);
-          nextSearchParam.set('page', page.toString());
-          return `${location.pathname}?${nextSearchParam.toString()}`;
-        }}
       />
     </div>
   );

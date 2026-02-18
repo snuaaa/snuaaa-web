@@ -1,5 +1,5 @@
 import { FC, useCallback, useState } from 'react';
-import { useParams } from 'react-router';
+import { useParams } from '@tanstack/react-router';
 import ExhibitionService from '~/services/ExhibitionService';
 import Loading from '~/components/Common/Loading';
 import CreateExhibitPhoto from '~/components/Exhibition/CreateExhibitPhoto';
@@ -10,7 +10,7 @@ import { useFetch } from '~/hooks/useFetch';
 import { useAuth } from '~/contexts/auth';
 
 const ExhibitionPage: FC = () => {
-  const { exhibition_id } = useParams<{ exhibition_id: string }>();
+  const { exhibition_id } = useParams({ from: '/exhibition/$exhibition_id' });
 
   const fetchFunction = useCallback(() => {
     const exhibitionId = Number(exhibition_id);

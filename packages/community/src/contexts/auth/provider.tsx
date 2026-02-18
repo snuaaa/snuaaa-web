@@ -3,7 +3,7 @@ import { AuthContext } from './context';
 import AuthType from '~/types/AuthType';
 import { User } from '~/services/types';
 import { useCallback, useEffect, useState, PropsWithChildren } from 'react';
-import { Redirect, useHistory, useLocation } from 'react-router-dom';
+import { useRouter, useLocation, Navigate } from '@tanstack/react-router';
 import AuthService from '~/services/AuthService';
 import Loading from '~/components/Common/Loading';
 
@@ -18,10 +18,12 @@ const initialAuth: AuthType = {
   },
 };
 
+const PUBLIC_PAGES = ['/auth/login', '/auth/signup'];
+
 const Provider = ({ children }: PropsWithChildren) => {
   const [authInfo, setAuthInfo] = useState<AuthType>(initialAuth);
   const [isReady, setIsReady] = useState<boolean>(false);
-  const history = useHistory();
+  const router = useRouter();
   const location = useLocation();
 
   const authLogin = useCallback(
@@ -43,14 +45,23 @@ const Provider = ({ children }: PropsWithChildren) => {
   };
 
   const checkToken = useCallback(async () => {
+    const currentPath = location.pathname;
+
+    // 이미 공개 페이지에 있으면 리다이렉트하지 않음
+    if (PUBLIC_PAGES.includes(currentPath)) {
+      setIsReady(true);
+      return;
+    }
+
     const accessToken = getToken();
     if (!accessToken) {
       //토큰이 없으면 logout
-      history.replace({
-        pathname: '/auth/login',
-        state: {
-          accessLocation: history.location,
+      router.navigate({
+        to: '/auth/login',
+        search: {
+          redirect: currentPath,
         },
+        replace: true,
       });
       authLogout();
       setIsReady(true);
@@ -62,16 +73,17 @@ const Provider = ({ children }: PropsWithChildren) => {
       } catch (err) {
         // TODO: 401의 경우에만 로그아웃
         console.error(err);
-        history.replace({
-          pathname: '/auth/login',
-          state: {
-            accessLocation: history.location,
+        router.navigate({
+          to: '/auth/login',
+          search: {
+            redirect: currentPath,
           },
+          replace: true,
         });
         authLogout();
       }
     }
-  }, [authLogin, history]);
+  }, [authLogin, router, location.pathname]);
 
   useEffect(() => {
     checkToken();
@@ -85,7 +97,7 @@ const Provider = ({ children }: PropsWithChildren) => {
     !authInfo.isLoggedIn &&
     !['/auth/login', '/auth/signup'].includes(location.pathname)
   ) {
-    return <Redirect to="/auth/login" />;
+    return <Navigate to="/auth/login" />;
   }
 
   return (

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 import { convertDate } from '../../utils/convertDate';
 import { Content } from '~/services/types';
 
@@ -13,7 +13,10 @@ function PostList({ posts }: { posts: Content[] }) {
         <div className="post-list" key={content.content_id}>
           <div className="post-list-unit-left">
             <div className="post-list-unit-title">
-              <Link to={`/post/${content.content_id}`}>
+              <Link
+                to="/post/$post_id"
+                params={{ post_id: String(content.content_id) }}
+              >
                 <h5>{content.title}</h5>
               </Link>
             </div>

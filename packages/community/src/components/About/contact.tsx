@@ -1,5 +1,5 @@
 import React, { RefCallback, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare const kakao: any;
 
@@ -52,7 +52,7 @@ const Contact = () => {
           <br />
         </p>
         <div className="intro-contact-btn-wrapper">
-          <Link to="/board/brd92">
+          <Link to="/board/$board_id" params={{ board_id: 'brd92' }}>
             <button>방명록 남기기</button>
           </Link>
         </div>

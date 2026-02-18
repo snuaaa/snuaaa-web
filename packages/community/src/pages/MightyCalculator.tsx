@@ -1,5 +1,5 @@
 import { useState, ChangeEvent, KeyboardEvent, useEffect } from 'react';
-import { Prompt } from 'react-router';
+// import { Prompt } from 'react-router'; // removed
 
 const CalculatorStateEnum = {
   INIT: 0,
@@ -328,10 +328,10 @@ function MightyCalculator() {
 
   return (
     <>
-      <Prompt
+      {/* <Prompt
         when={true}
         message="페이지를 나가면 기록은 저장되지 않습니다. 나가시겠습니까?"
-      />
+      /> */}
       <div className="mighty-options-wrapper">
         <h5>점수 옵션</h5>
         <div className="mighty-options">

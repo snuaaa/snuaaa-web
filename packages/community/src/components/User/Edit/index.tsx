@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 import EditPassword from './EditPassword';
 import EditProfile from './EditProfile';
 
@@ -9,7 +9,7 @@ function EditMyInfo() {
   return (
     <div>
       <div className="my-title-wrapper">
-        <Link to={'/mypage/info'}>
+        <Link to="/mypage/$view" params={{ view: 'info' }}>
           <i className="ri-arrow-left-line text-2xl"></i>
         </Link>
         <h3>프로필 수정</h3>

@@ -1,7 +1,7 @@
 import { ChangeEvent, useState } from 'react';
 
 import 'react-datepicker/dist/react-datepicker.css';
-import { Prompt } from 'react-router';
+// import { Prompt } from 'react-router';
 import UserService from '~/services/UserService';
 import ExhibitPhotoService, {
   ExhibitPhotoInfo,
@@ -109,10 +109,10 @@ function EditExhibitPhotoInfo({
     <>
       {
         <>
-          <Prompt
+          {/* <Prompt
             when={true}
             message="작성 중인 내용은 저장되지 않습니다. 작성을 취소하시겠습니까?"
-          ></Prompt>
+          ></Prompt> */}
           <div className="crt-photo-right-top">
             <CreateExhibitPhotoInfo
               photoInfo={editingContentInfo}
