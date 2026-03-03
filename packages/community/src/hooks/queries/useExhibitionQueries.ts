@@ -11,6 +11,7 @@ import ExhibitPhotoService, {
   CreateExhibitPhotoRequest,
   UpdateExhibitPhotoRequest,
 } from '~/services/ExhibitPhotoService';
+import { exhibitPhotoKeys } from './useExhibitPhotoQueries';
 
 // Query keys
 export const exhibitionKeys = {
@@ -93,8 +94,11 @@ export function useUpdateExhibitPhoto() {
       exhibitPhoto_id: number;
       data: UpdateExhibitPhotoRequest;
     }) => ExhibitPhotoService.updateExhibitPhoto(exhibitPhoto_id, data),
-    onSuccess: () => {
+    onSuccess: (_, { exhibitPhoto_id }) => {
       queryClient.invalidateQueries({ queryKey: exhibitionKeys.all });
+      queryClient.invalidateQueries({
+        queryKey: exhibitPhotoKeys.detail(exhibitPhoto_id),
+      });
     },
   });
 }

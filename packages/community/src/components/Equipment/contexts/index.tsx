@@ -10,15 +10,12 @@ import { RetrieveEquipmentListResponse } from '~/services/EquipmentService';
 import { Equipment } from '~/services/types';
 import {
   useEquipmentList,
-  equipmentKeys,
   useRentEquipments,
 } from '~/hooks/queries/useEquipmentQueries';
-import { useQueryClient } from '@tanstack/react-query';
 
 type EquipmentContextState = {
   data?: RetrieveEquipmentListResponse;
   cart: Equipment[];
-  refresh: () => void;
   addToCart: (equipment: Equipment) => void;
   removeFromCart: (equipment: Equipment) => void;
   rentSingleEquipment: (equipment: Equipment) => Promise<void>;
@@ -31,13 +28,7 @@ const EquipmentContext = React.createContext<EquipmentContextState | null>(
 
 export const EquipmentProvider = ({ children }: PropsWithChildren) => {
   const { data } = useEquipmentList();
-  const queryClient = useQueryClient();
   const [cart, setCart] = useState<Equipment[]>([]);
-
-  const refresh = useCallback(() => {
-    queryClient.invalidateQueries({ queryKey: equipmentKeys.list() });
-    queryClient.invalidateQueries({ queryKey: equipmentKeys.myRentList() });
-  }, [queryClient]);
 
   const addToCart = useCallback((equipment: Equipment) => {
     setCart((cart) => [...cart, equipment]);
@@ -62,9 +53,8 @@ export const EquipmentProvider = ({ children }: PropsWithChildren) => {
         console.error(e);
       }
       removeFromCart(equipment);
-      refresh();
     },
-    [refresh, removeFromCart, mutateRentEquipments],
+    [removeFromCart, mutateRentEquipments],
   );
 
   const rentAllEquipment = useCallback(async () => {
@@ -77,14 +67,12 @@ export const EquipmentProvider = ({ children }: PropsWithChildren) => {
       console.error(e);
     }
     setCart([]);
-    refresh();
-  }, [cart, refresh, mutateRentEquipments]);
+  }, [cart, mutateRentEquipments]);
 
   const equipmentContextValue: EquipmentContextState = useMemo(
     () => ({
       data,
       cart,
-      refresh,
       addToCart,
       removeFromCart,
       rentSingleEquipment,
@@ -94,7 +82,6 @@ export const EquipmentProvider = ({ children }: PropsWithChildren) => {
       addToCart,
       cart,
       data,
-      refresh,
       removeFromCart,
       rentAllEquipment,
       rentSingleEquipment,

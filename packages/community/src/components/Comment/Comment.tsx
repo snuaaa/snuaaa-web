@@ -17,10 +17,9 @@ import {
 type Props = {
   comment: CommentType;
   parent_id: number;
-  onUpdate: () => void;
 };
 
-export const Comment: FC<Props> = ({ comment, parent_id, onUpdate }) => {
+export const Comment: FC<Props> = ({ comment, parent_id }) => {
   const authContext = useAuth();
 
   const myId = authContext.authInfo.user.user_id;
@@ -47,7 +46,6 @@ export const Comment: FC<Props> = ({ comment, parent_id, onUpdate }) => {
     if (goDrop) {
       try {
         await mutateDeleteComment(comment_id);
-        onUpdate();
       } catch (err) {
         console.error(err);
         alert('댓글 삭제 실패');
@@ -57,7 +55,6 @@ export const Comment: FC<Props> = ({ comment, parent_id, onUpdate }) => {
 
   const likeComment = async (comment_id: number) => {
     await mutateLikeComment(comment_id);
-    onUpdate();
   };
 
   const user = comment.user;
@@ -78,7 +75,6 @@ export const Comment: FC<Props> = ({ comment, parent_id, onUpdate }) => {
       try {
         await mutateCreateComment({ parentId: parent_id, data: commentInfo });
         setText('');
-        onUpdate();
       } catch (err) {
         console.error(err);
         alert('댓글 작성 실패');
@@ -100,7 +96,6 @@ export const Comment: FC<Props> = ({ comment, parent_id, onUpdate }) => {
       await mutateUpdateComment({ commentId: comment_id, data: commentInfo });
       setEditingCommentId(0);
       setEditingCommentText('');
-      onUpdate();
     } catch (err) {
       console.error(err);
       alert('댓글 업데이트 실패');

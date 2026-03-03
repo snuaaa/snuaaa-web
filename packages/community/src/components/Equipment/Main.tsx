@@ -5,11 +5,7 @@ import { Link } from '@tanstack/react-router';
 import { useModal, withModal } from '~/contexts/modal';
 import RentReturn from './Modal/RentReturn';
 import { useAuth } from '~/contexts/auth';
-import {
-  useMyRentList,
-  equipmentKeys,
-} from '~/hooks/queries/useEquipmentQueries';
-import { useQueryClient } from '@tanstack/react-query';
+import { useMyRentList } from '~/hooks/queries/useEquipmentQueries';
 
 //const EQUIP_RENT_GRADE = 7;
 const EQUIP_ADMIN_GRADE = 6;
@@ -30,11 +26,6 @@ const getTimeLeft = (endDate: string) => {
 
 const Main: FC = () => {
   const { data } = useMyRentList();
-  const queryClient = useQueryClient();
-
-  const refresh = () => {
-    queryClient.invalidateQueries({ queryKey: equipmentKeys.myRentList() });
-  };
 
   const { openModal } = useModal();
 
@@ -68,11 +59,7 @@ const Main: FC = () => {
                 <div className="font-bold py-1">{rent.equipment.name}</div>
               </div>
               <div className="z-1 absolute top-0 right-0 bg-red-400 text-white text-xs font-bold px-1">
-                <button
-                  onClick={() =>
-                    openModal(<RentReturn rent={rent} onSubmit={refresh} />)
-                  }
-                >
+                <button onClick={() => openModal(<RentReturn rent={rent} />)}>
                   <i className="ri-arrow-go-back-line text-base"></i>
                 </button>
               </div>

@@ -11,7 +11,6 @@ import { useCreateFile } from '~/hooks/queries/useContentQueries';
 const MAX_SIZE = 20 * 1024 * 1024;
 
 type CreateDocuProps = {
-  fetch: () => void;
   boardInfo: Board;
   onClose: () => void;
 };
@@ -91,7 +90,7 @@ function CreateDocu(props: CreateDocuProps) {
   };
 
   const createDocu = async () => {
-    const { boardInfo, fetch } = props;
+    const { boardInfo } = props;
 
     if (!docuInfo.title) {
       alert('제목을 입력해주세요');
@@ -119,7 +118,6 @@ function CreateDocu(props: CreateDocuProps) {
           }
         }
         setIsUploading(false);
-        fetch();
         props.onClose();
       } catch (err) {
         console.error(err);

@@ -3,10 +3,9 @@ import { useCreateComment } from '~/hooks/queries/useCommentQueries';
 
 type Props = {
   contentId: number;
-  onCreate: () => void;
 };
 
-export const CreateComment: FC<Props> = ({ contentId, onCreate }) => {
+export const CreateComment: FC<Props> = ({ contentId }) => {
   const [text, setText] = useState<string>('');
   const { mutateAsync: mutateCreateComment } = useCreateComment();
 
@@ -21,7 +20,6 @@ export const CreateComment: FC<Props> = ({ contentId, onCreate }) => {
       try {
         await mutateCreateComment({ parentId: contentId, data: commentInfo });
         setText('');
-        onCreate();
       } catch (err) {
         console.error(err);
         alert('댓글 작성 실패');

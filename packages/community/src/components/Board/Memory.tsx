@@ -10,14 +10,10 @@ import BoardName from '../../components/Board/BoardName';
 import { useNavigate, useSearch } from '@tanstack/react-router';
 
 import { Board } from '~/services/types';
-import {
-  useAlbumsInPhotoBoard,
-  albumKeys,
-} from '~/hooks/queries/useAlbumQueries';
+import { useAlbumsInPhotoBoard } from '~/hooks/queries/useAlbumQueries';
 import { useAuth } from '~/contexts/auth';
 import { Divider } from '~/ui';
 import Pagination from '../Common/Pagination';
-import { useQueryClient } from '@tanstack/react-query';
 
 type MemoryProps = {
   boardInfo: Board;
@@ -28,7 +24,6 @@ const PAGE_SIZE = 12;
 function Memory({ boardInfo }: MemoryProps) {
   const [isCreating, setIsCreating] = useState<boolean>(false);
   const navigate = useNavigate({ from: '/board/$board_id' });
-  const queryClient = useQueryClient();
 
   const searchParams = useSearch({ from: '/board/$board_id' });
 
@@ -100,13 +95,6 @@ function Memory({ boardInfo }: MemoryProps) {
               categories={boardInfo.categories}
               onCreate={() => {
                 setIsCreating(false);
-                queryClient.invalidateQueries({
-                  queryKey: albumKeys.inBoard(
-                    boardInfo.board_id,
-                    page,
-                    category,
-                  ),
-                });
               }}
               onCancel={() => {
                 setIsCreating(false);

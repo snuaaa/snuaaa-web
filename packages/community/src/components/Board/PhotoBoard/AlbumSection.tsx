@@ -7,11 +7,7 @@ import { Board } from '~/services/types';
 import { useAuth } from '~/contexts/auth';
 import { Divider } from '~/ui';
 import Pagination from '~/components/Common/Pagination';
-import {
-  useAlbumsInPhotoBoard,
-  albumKeys,
-} from '~/hooks/queries/useAlbumQueries';
-import { useQueryClient } from '@tanstack/react-query';
+import { useAlbumsInPhotoBoard } from '~/hooks/queries/useAlbumQueries';
 
 type Props = {
   boardInfo: Board;
@@ -21,7 +17,6 @@ const PAGE_SIZE = 12;
 
 export const AlbumSection: FC<Props> = ({ boardInfo }) => {
   const authContext = useAuth();
-  const queryClient = useQueryClient();
 
   const [isCreating, setIsCreating] = useState(false);
 
@@ -60,9 +55,6 @@ export const AlbumSection: FC<Props> = ({ boardInfo }) => {
           board_id={boardInfo.board_id}
           onCreate={() => {
             setIsCreating(false);
-            queryClient.invalidateQueries({
-              queryKey: albumKeys.inBoard(boardInfo.board_id, page),
-            });
           }}
           onCancel={() => setIsCreating(false)}
         />

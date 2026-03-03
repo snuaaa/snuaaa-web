@@ -9,9 +9,8 @@ import CreateDocu from './CreateDocu';
 import BoardName from '../../components/Board/BoardName';
 
 import { Board } from '~/services/types';
-import { useDocuments, docuKeys } from '~/hooks/queries/useDocuQueries';
+import { useDocuments } from '~/hooks/queries/useDocuQueries';
 import { useAuth } from '~/contexts/auth';
-import { useQueryClient } from '@tanstack/react-query';
 
 const DOCROWNUM = 10;
 
@@ -23,7 +22,6 @@ function DocuBoard({ boardInfo }: DocuBoardProps) {
   const navigate = useNavigate({ from: '/board/$board_id' });
   const searchParams = useSearch({ from: '/board/$board_id' });
   const authContext = useAuth();
-  const queryClient = useQueryClient();
 
   const [isCreating, setIsCreating] = useState(false);
 
@@ -134,9 +132,6 @@ function DocuBoard({ boardInfo }: DocuBoardProps) {
         )}
         {isCreating && (
           <CreateDocu
-            fetch={() => {
-              queryClient.invalidateQueries({ queryKey: docuKeys.list() });
-            }}
             boardInfo={boardInfo}
             onClose={() => setIsCreating(false)}
           />

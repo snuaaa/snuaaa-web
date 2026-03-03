@@ -6,10 +6,9 @@ import { useReturnEquipment } from '~/hooks/queries/useEquipmentQueries';
 
 type Props = {
   rent: MyRent;
-  onSubmit: () => void;
 };
 
-const RentReturn: FC<Props> = ({ rent, onSubmit }) => {
+const RentReturn: FC<Props> = ({ rent }) => {
   const { closeModal } = useModal();
   const [imgPath, setImgPath] = useState<string | undefined>();
   const { mutateAsync: mutateReturnEquipment } = useReturnEquipment();
@@ -26,7 +25,6 @@ const RentReturn: FC<Props> = ({ rent, onSubmit }) => {
       alert('반납에 실패했습니다!');
       console.error(e);
     }
-    onSubmit();
     closeModal();
   };
 

@@ -9,8 +9,6 @@ import { Board } from '~/services/types';
 import { useExhibitionsInBoard } from '~/hooks/queries/useExhibitionQueries';
 import CreateExhibition from '~/components/Exhibition/CreateExhibition';
 import { useAuth } from '~/contexts/auth';
-import { useQueryClient } from '@tanstack/react-query';
-import { exhibitionKeys } from '~/hooks/queries/useExhibitionQueries';
 
 type ExhibitBoardProps = {
   boardInfo: Board;
@@ -18,7 +16,6 @@ type ExhibitBoardProps = {
 
 const ExhibitBoard: FC<ExhibitBoardProps> = ({ boardInfo }) => {
   const [isCreating, setIsCreating] = useState(false);
-  const queryClient = useQueryClient();
 
   const { data: exhibitions = [] } = useExhibitionsInBoard(boardInfo.board_id);
 
@@ -87,9 +84,6 @@ const ExhibitBoard: FC<ExhibitBoardProps> = ({ boardInfo }) => {
           onClose={() => setIsCreating(false)}
           onCreate={() => {
             setIsCreating(false);
-            queryClient.invalidateQueries({
-              queryKey: exhibitionKeys.inBoard(boardInfo.board_id),
-            });
           }}
         />
       )}
