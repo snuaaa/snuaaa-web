@@ -1,12 +1,11 @@
 import BoardName from '~/components/Board/BoardName';
-import { useFetch } from '~/hooks/useFetch';
-import { FC, useCallback } from 'react';
+import { FC } from 'react';
 import Image from '../Common/AaaImage';
 import { Link } from '@tanstack/react-router';
-import EquipmentService from '~/services/EquipmentService';
 import { useModal, withModal } from '~/contexts/modal';
 import RentReturn from './Modal/RentReturn';
 import { useAuth } from '~/contexts/auth';
+import { useMyRentList } from '~/hooks/queries/useEquipmentQueries';
 
 //const EQUIP_RENT_GRADE = 7;
 const EQUIP_ADMIN_GRADE = 6;
@@ -26,11 +25,7 @@ const getTimeLeft = (endDate: string) => {
 };
 
 const Main: FC = () => {
-  const fetchFunction = useCallback(() => {
-    return EquipmentService.retrieveMyRentList();
-  }, []);
-
-  const { data, refresh } = useFetch({ fetch: fetchFunction });
+  const { data } = useMyRentList();
 
   const { openModal } = useModal();
 
@@ -64,11 +59,7 @@ const Main: FC = () => {
                 <div className="font-bold py-1">{rent.equipment.name}</div>
               </div>
               <div className="z-1 absolute top-0 right-0 bg-red-400 text-white text-xs font-bold px-1">
-                <button
-                  onClick={() =>
-                    openModal(<RentReturn rent={rent} onSubmit={refresh} />)
-                  }
-                >
+                <button onClick={() => openModal(<RentReturn rent={rent} />)}>
                   <i className="ri-arrow-go-back-line text-base"></i>
                 </button>
               </div>

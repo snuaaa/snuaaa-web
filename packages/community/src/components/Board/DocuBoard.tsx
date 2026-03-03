@@ -1,4 +1,4 @@
-import { ChangeEvent, useState, useCallback } from 'react';
+import { ChangeEvent, useState } from 'react';
 import { useNavigate, useSearch } from '@tanstack/react-router';
 
 import Loading from '../../components/Common/Loading';
@@ -7,10 +7,9 @@ import Paginator from '../../components/Common/Paginator';
 import DocuList from '../../components/Document/DocuList';
 import CreateDocu from './CreateDocu';
 import BoardName from '../../components/Board/BoardName';
-import DocuService from '../../services/DocuService';
 
 import { Board } from '~/services/types';
-import { useFetch } from '~/hooks/useFetch';
+import { useDocuments } from '~/hooks/queries/useDocuQueries';
 import { useAuth } from '~/contexts/auth';
 
 const DOCROWNUM = 10;
@@ -29,15 +28,11 @@ function DocuBoard({ boardInfo }: DocuBoardProps) {
   const { category, generation } = searchParams;
   const page = Number(searchParams.page ?? 1);
 
-  const fetchFunction = useCallback(() => {
-    return DocuService.retrieveDocuments({
-      page,
-      category,
-      generation: generation ? Number(generation) : undefined,
-    });
-  }, [category, generation, page]);
-
-  const { data, refresh } = useFetch({ fetch: fetchFunction });
+  const { data } = useDocuments({
+    page,
+    category,
+    generation: generation ? Number(generation) : undefined,
+  });
 
   const docCount = data?.docCount ?? 0;
   const documents = data?.docInfo ?? [];
@@ -137,7 +132,6 @@ function DocuBoard({ boardInfo }: DocuBoardProps) {
         )}
         {isCreating && (
           <CreateDocu
-            fetch={refresh}
             boardInfo={boardInfo}
             onClose={() => setIsCreating(false)}
           />

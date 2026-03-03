@@ -1,21 +1,14 @@
-import { useEffect, useState, useCallback } from 'react';
-import UserService from '~/services/UserService';
 import { convertFullDate, convertDateWithDay } from '~/utils/convertDate';
 import { UsersSearchType } from '~/types/SearchTypes';
 import Paginator from '~/components/Common/Paginator';
-import { useRouter, useSearch, useNavigate } from '@tanstack/react-router';
-import { User } from '~/services/types';
-import axios from 'axios';
+import { useSearch, useNavigate } from '@tanstack/react-router';
+import { useUserList } from '~/hooks/queries/useUserQueries';
 
 const USER_ROW_NUM = 20;
 
 function UserManagement() {
-  const [userInfo, setUserInfo] = useState<User[]>([]);
-  const [userCount, setUserCount] = useState<number>(0);
-
   const searchParams = useSearch({ from: '/admin/user' });
   const navigate = useNavigate({ from: '/admin/user' });
-  const router = useRouter();
 
   const pageIdx = searchParams.page || 1;
   const searchOption: UsersSearchType = {
@@ -25,22 +18,9 @@ function UserManagement() {
     offset: (pageIdx - 1) * USER_ROW_NUM,
   };
 
-  const fetch = useCallback(async () => {
-    try {
-      const res = await UserService.retrieveUsers(searchOption);
-      setUserInfo(res.userInfo);
-      setUserCount(res.count);
-    } catch (err) {
-      if (axios.isAxiosError(err) && err.response?.status === 403) {
-        alert('권한이 없습니다.');
-        router.history.back();
-      }
-    }
-  }, [router, searchOption]);
-
-  useEffect(() => {
-    fetch();
-  }, [fetch]); // removed searchOption dependency to avoid infinite loop if object reference changes, but searchOption is derived from searchParams which changes. Actually searchOption is derived properly.
+  const { data } = useUserList(searchOption);
+  const userInfo = data?.userInfo ?? [];
+  const userCount = data?.count ?? 0;
 
   const makeUserList = () => {
     if (userInfo && userInfo.length > 0) {

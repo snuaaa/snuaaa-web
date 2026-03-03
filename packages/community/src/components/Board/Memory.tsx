@@ -1,17 +1,16 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 
 import CreateAlbum from '../Album/modals/CreateAlbum';
 import AlbumList from '../../components/Album/AlbumList';
 import AlbumCategorySelector from '~/components/Common/AlbumCategorySelector';
 import Loading from '../../components/Common/Loading';
-import PhotoBoardService from '../../services/PhotoBoardService';
 
 import BoardName from '../../components/Board/BoardName';
 
 import { useNavigate, useSearch } from '@tanstack/react-router';
 
 import { Board } from '~/services/types';
-import { useFetch } from '~/hooks/useFetch';
+import { useAlbumsInPhotoBoard } from '~/hooks/queries/useAlbumQueries';
 import { useAuth } from '~/contexts/auth';
 import { Divider } from '~/ui';
 import Pagination from '../Common/Pagination';
@@ -31,15 +30,7 @@ function Memory({ boardInfo }: MemoryProps) {
   const page = Number(searchParams.page ?? 1);
   const category = searchParams.category || '';
 
-  const fetchFunction = useCallback(() => {
-    return PhotoBoardService.retrieveAlbumsInPhotoBoard(
-      boardInfo.board_id,
-      page,
-      category,
-    );
-  }, [boardInfo.board_id, category, page]);
-
-  const { data, refresh } = useFetch({ fetch: fetchFunction });
+  const { data } = useAlbumsInPhotoBoard(boardInfo.board_id, page, category);
 
   const clickCategory = (ctg_id: string) => {
     navigate({
@@ -104,7 +95,6 @@ function Memory({ boardInfo }: MemoryProps) {
               categories={boardInfo.categories}
               onCreate={() => {
                 setIsCreating(false);
-                refresh();
               }}
               onCancel={() => {
                 setIsCreating(false);

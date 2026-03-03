@@ -1,5 +1,5 @@
-import { ChangeEvent, FC, useContext, useEffect, useState } from 'react';
-import { EquipmentCategoryContext } from '~/contexts/EquipmentCategoryContext';
+import { ChangeEvent, FC, useEffect, useState } from 'react';
+import { useEquipmentCategories } from '~/hooks/queries/useEquipmentQueries';
 import SearchString from './SearchString';
 import SearchSelect from './SearchSelect';
 import { equipmentRentStatusOptions, equipmentStatusOptions } from '../common';
@@ -29,7 +29,7 @@ type Props = {
 };
 
 const EquipSearchBar: FC<Props> = ({ search, onSearchChange }) => {
-  const equipmentCategories = useContext(EquipmentCategoryContext);
+  const { data: categories = [] } = useEquipmentCategories();
 
   const [searchStrings, setSearchStrings] = useState({
     keyword: search.keyword ?? '',
@@ -87,7 +87,7 @@ const EquipSearchBar: FC<Props> = ({ search, onSearchChange }) => {
         <SearchSelect
           name="category"
           options={
-            equipmentCategories?.categories.map((option) => ({
+            categories.map((option) => ({
               value: option.id,
               name: option.name,
             })) ?? []

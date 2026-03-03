@@ -1,4 +1,4 @@
-import { useState, useEffect, ChangeEvent, useCallback } from 'react';
+import { useState, ChangeEvent } from 'react';
 import { AxiosProgressEvent } from 'axios';
 import { Navigate, useParams } from '@tanstack/react-router';
 
@@ -6,20 +6,32 @@ import ContentStateEnum from '~/common/ContentStateEnum';
 import Loading from '~/components/Common/Loading';
 import DocuComponent from '~/components/Document/DocuComponent';
 import EditDocu from '~/components/Document/EditDocu';
-import ContentService from '~/services/ContentService';
-import DocuService from '~/services/DocuService';
 
-import FileService from '~/services/FileService';
 import { Content } from '~/services/types';
 import { useAuth } from '~/contexts/auth';
+import {
+  useDocument,
+  useUpdateDocument,
+  useDeleteDocument,
+  docuKeys,
+} from '~/hooks/queries/useDocuQueries';
+import {
+  useLikeContent,
+  useCreateFile,
+  useDeleteFile,
+} from '~/hooks/queries/useContentQueries';
+import { useQueryClient } from '@tanstack/react-query';
 
 const MAX_SIZE = 20 * 1024 * 1024;
 
 function DocumentPage() {
   const { doc_id } = useParams({ from: '/document/$doc_id' });
-  const [docuInfo, setDocuInfo] = useState<Content>();
-  const [likeInfo, setLikeInfo] = useState<boolean>(false);
-  const [docState, setDocState] = useState<number>(ContentStateEnum.LOADING);
+  const docIdNum = Number(doc_id);
+  const queryClient = useQueryClient();
+
+  const { data, isLoading, isError } = useDocument(docIdNum);
+
+  const [docState, setDocState] = useState<number>(ContentStateEnum.READY);
   const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
   const [, setProgress] = useState<number>(0);
   const [removedFiles, setRemovedFiles] = useState<number[]>([]);
@@ -27,23 +39,14 @@ function DocumentPage() {
   const authContext = useAuth();
   let currentSize = 0;
 
-  const fetch = useCallback(async () => {
-    await DocuService.retrieveDocument(Number(doc_id))
-      .then((res) => {
-        setDocuInfo(res.docuInfo);
-        setLikeInfo(res.likeInfo);
-        setDocState(ContentStateEnum.READY);
-        setEditingDocData(res.docuInfo);
-      })
-      .catch((err) => {
-        console.error(err);
-        setDocState(ContentStateEnum.ERROR);
-      });
-  }, [doc_id]);
+  const updateDocMutation = useUpdateDocument();
+  const deleteDocMutation = useDeleteDocument();
+  const likeContentMutation = useLikeContent();
+  const createFileMutation = useCreateFile();
+  const deleteFileMutation = useDeleteFile();
 
-  useEffect(() => {
-    fetch();
-  }, [fetch]);
+  const docuInfo = data?.docuInfo;
+  const likeInfo = data?.likeInfo ?? false;
 
   const handleEditting = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -60,26 +63,33 @@ function DocumentPage() {
   };
 
   const updateDoc = async () => {
-    // const doc_id = Number(match.params.doc_id);
-    const docIdNum = Number(doc_id);
-
     try {
       if (editingDocData) {
-        await DocuService.updateDocument(docIdNum, editingDocData);
+        await updateDocMutation.mutateAsync({
+          doc_id: docIdNum,
+          data: editingDocData,
+        });
       }
       if (attachedFiles.length > 0) {
         for (let i = 0; i < attachedFiles.length; i++) {
           const formData = new FormData();
           formData.append('attachedFile', attachedFiles[i]);
-          await ContentService.createFile(docIdNum, formData, uploadProgress);
+          await createFileMutation.mutateAsync({
+            content_id: docIdNum,
+            formData,
+            onUploadProgress: uploadProgress,
+          });
         }
       }
       if (removedFiles.length > 0) {
         for (let i = 0; i < removedFiles.length; i++) {
-          await FileService.deleteFile(removedFiles[i]);
+          await deleteFileMutation.mutateAsync(removedFiles[i]);
         }
       }
-      fetch();
+      queryClient.invalidateQueries({ queryKey: docuKeys.detail(docIdNum) });
+      setDocState(ContentStateEnum.READY);
+      setAttachedFiles([]);
+      setRemovedFiles([]);
     } catch (err) {
       console.error(err);
       alert('업데이트 오류');
@@ -91,42 +101,25 @@ function DocumentPage() {
       '정말로 삭제하시겠습니까? 삭제한 게시글은 다시 복원할 수 없습니다.',
     );
     if (goDrop) {
-      await DocuService.deleteDocument(Number(doc_id))
-        .then(() => {
-          setDocState(ContentStateEnum.DELETED);
-        })
-        .catch((err: Error) => {
-          console.error(err);
-          alert('삭제 실패');
-        });
+      try {
+        await deleteDocMutation.mutateAsync(docIdNum);
+        setDocState(ContentStateEnum.DELETED);
+      } catch (err) {
+        console.error(err);
+        alert('삭제 실패');
+      }
     }
   };
 
   const likeDoc = async () => {
-    await ContentService.likeContent(Number(doc_id))
-      .then(() => {
-        if (docuInfo) {
-          if (likeInfo) {
-            setDocuInfo({
-              ...docuInfo,
-              like_num: docuInfo.like_num - 1,
-            });
-          } else {
-            setDocuInfo({
-              ...docuInfo,
-              like_num: docuInfo.like_num + 1,
-            });
-          }
-        }
-        setLikeInfo(!likeInfo);
-      })
-      .catch((err: Error) => {
-        console.error(err);
-      });
+    try {
+      await likeContentMutation.mutateAsync(docIdNum);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const attachFile = (e: ChangeEvent<HTMLInputElement>) => {
-    // const { attachedFiles } = this.state;
     if (e.target.files && docuInfo) {
       if (
         e.target.files.length +
@@ -162,7 +155,7 @@ function DocumentPage() {
 
   const removeAttachedFile = (index: number) => {
     setAttachedFiles(
-      attachedFiles.filter((file, i) => {
+      attachedFiles.filter((_, i) => {
         return index !== i;
       }),
     );
@@ -182,49 +175,54 @@ function DocumentPage() {
     }
   };
 
+  const startEditing = () => {
+    setEditingDocData(docuInfo);
+    setDocState(ContentStateEnum.EDITTING);
+  };
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  if (isError || !docuInfo) {
+    return <div>ERROR</div>;
+  }
+
+  if (docState === ContentStateEnum.DELETED) {
+    return (
+      <Navigate
+        to="/board/$board_id"
+        params={{ board_id: docuInfo.board_id }}
+      />
+    );
+  }
+
+  if (docState === ContentStateEnum.EDITTING && editingDocData) {
+    return (
+      <EditDocu
+        editingDocData={editingDocData}
+        handleEditting={handleEditting}
+        attachedFiles={attachedFiles}
+        attachFile={attachFile}
+        removeAttachedFile={removeAttachedFile}
+        removedFiles={removedFiles}
+        removeFile={removeFile}
+        cancelRemoveFile={cancelRemoveFile}
+        cancel={() => setDocState(ContentStateEnum.READY)}
+        confirm={() => updateDoc()}
+      />
+    );
+  }
+
   return (
-    <>
-      {(() => {
-        if (docState === ContentStateEnum.LOADING) {
-          return <Loading />;
-        } else if (docState === ContentStateEnum.READY && docuInfo) {
-          return (
-            <DocuComponent
-              docData={docuInfo}
-              my_id={authContext.authInfo.user.user_id}
-              isLiked={likeInfo}
-              likeDoc={likeDoc}
-              deleteDoc={deleteDoc}
-              setEditState={() => setDocState(ContentStateEnum.EDITTING)}
-            />
-          );
-        } else if (docState === ContentStateEnum.EDITTING && editingDocData) {
-          return (
-            <EditDocu
-              editingDocData={editingDocData}
-              handleEditting={handleEditting}
-              attachedFiles={attachedFiles}
-              attachFile={attachFile}
-              removeAttachedFile={removeAttachedFile}
-              removedFiles={removedFiles}
-              removeFile={removeFile}
-              cancelRemoveFile={cancelRemoveFile}
-              cancel={() => setDocState(ContentStateEnum.READY)}
-              confirm={() => updateDoc()}
-            />
-          );
-        } else if (docState === ContentStateEnum.DELETED && docuInfo)
-          return (
-            <Navigate
-              to="/board/$board_id"
-              params={{ board_id: docuInfo.board_id }}
-            />
-          );
-        else {
-          return <div>ERROR</div>;
-        }
-      })()}
-    </>
+    <DocuComponent
+      docData={docuInfo}
+      my_id={authContext.authInfo.user.user_id}
+      isLiked={likeInfo}
+      likeDoc={likeDoc}
+      deleteDoc={deleteDoc}
+      setEditState={startEditing}
+    />
   );
 }
 

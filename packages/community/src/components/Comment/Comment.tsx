@@ -6,16 +6,20 @@ import defaultProfile from '~/assets/img/common/profile.png';
 import UserActionDrawer from '../../components/Common/UserActionDrawer';
 import { Comment as CommentType } from '~/services/types';
 import { User } from '~/services/types';
-import CommentService from '~/services/CommentService';
 import { useAuth } from '~/contexts/auth';
+import {
+  useCreateComment,
+  useUpdateComment,
+  useDeleteComment,
+  useLikeComment,
+} from '~/hooks/queries/useCommentQueries';
 
 type Props = {
   comment: CommentType;
   parent_id: number;
-  onUpdate: () => void;
 };
 
-export const Comment: FC<Props> = ({ comment, parent_id, onUpdate }) => {
+export const Comment: FC<Props> = ({ comment, parent_id }) => {
   const authContext = useAuth();
 
   const myId = authContext.authInfo.user.user_id;
@@ -25,6 +29,11 @@ export const Comment: FC<Props> = ({ comment, parent_id, onUpdate }) => {
   const [editingCommentText, setEditingCommentText] = useState<string>('');
   const [parentCommentId, setParentCommentId] = useState<number>(0);
   const textareaTarget = useRef<HTMLTextAreaElement>(null);
+
+  const { mutateAsync: mutateCreateComment } = useCreateComment();
+  const { mutateAsync: mutateUpdateComment } = useUpdateComment();
+  const { mutateAsync: mutateDeleteComment } = useDeleteComment();
+  const { mutateAsync: mutateLikeComment } = useLikeComment();
 
   const checkLike = (users: User[]) => {
     return users
@@ -36,8 +45,7 @@ export const Comment: FC<Props> = ({ comment, parent_id, onUpdate }) => {
     const goDrop = window.confirm('정말로 삭제하시겠습니까?');
     if (goDrop) {
       try {
-        await CommentService.deleteComment(comment_id);
-        onUpdate();
+        await mutateDeleteComment(comment_id);
       } catch (err) {
         console.error(err);
         alert('댓글 삭제 실패');
@@ -46,8 +54,7 @@ export const Comment: FC<Props> = ({ comment, parent_id, onUpdate }) => {
   };
 
   const likeComment = async (comment_id: number) => {
-    await CommentService.likeComment(comment_id);
-    onUpdate();
+    await mutateLikeComment(comment_id);
   };
 
   const user = comment.user;
@@ -66,9 +73,8 @@ export const Comment: FC<Props> = ({ comment, parent_id, onUpdate }) => {
         text: text,
       };
       try {
-        await CommentService.createComment(parent_id, commentInfo);
+        await mutateCreateComment({ parentId: parent_id, data: commentInfo });
         setText('');
-        onUpdate();
       } catch (err) {
         console.error(err);
         alert('댓글 작성 실패');
@@ -87,10 +93,9 @@ export const Comment: FC<Props> = ({ comment, parent_id, onUpdate }) => {
     };
 
     try {
-      await CommentService.updateComment(comment_id, commentInfo);
+      await mutateUpdateComment({ commentId: comment_id, data: commentInfo });
       setEditingCommentId(0);
       setEditingCommentText('');
-      onUpdate();
     } catch (err) {
       console.error(err);
       alert('댓글 업데이트 실패');

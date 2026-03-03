@@ -1,14 +1,13 @@
 import CreateAlbum from '~/components/Album/modals/CreateAlbum';
 import Loading from '~/components/Common/Loading';
 import AlbumList from '~/components/Album/AlbumList';
-import { useFetch } from '~/hooks/useFetch';
-import { FC, useCallback, useState } from 'react';
+import { FC, useState } from 'react';
 import { useSearch } from '@tanstack/react-router';
-import PhotoBoardService from '~/services/PhotoBoardService';
 import { Board } from '~/services/types';
 import { useAuth } from '~/contexts/auth';
 import { Divider } from '~/ui';
 import Pagination from '~/components/Common/Pagination';
+import { useAlbumsInPhotoBoard } from '~/hooks/queries/useAlbumQueries';
 
 type Props = {
   boardInfo: Board;
@@ -25,14 +24,7 @@ export const AlbumSection: FC<Props> = ({ boardInfo }) => {
 
   const page = Number(searchParams.page ?? 1);
 
-  const fetchFunction = useCallback(() => {
-    return PhotoBoardService.retrieveAlbumsInPhotoBoard(
-      boardInfo.board_id,
-      page,
-    );
-  }, [boardInfo.board_id, page]);
-
-  const { data, refresh } = useFetch({ fetch: fetchFunction });
+  const { data } = useAlbumsInPhotoBoard(boardInfo.board_id, page);
 
   if (!data) {
     return <Loading />;
@@ -63,7 +55,6 @@ export const AlbumSection: FC<Props> = ({ boardInfo }) => {
           board_id={boardInfo.board_id}
           onCreate={() => {
             setIsCreating(false);
-            refresh();
           }}
           onCancel={() => setIsCreating(false)}
         />

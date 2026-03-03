@@ -1,6 +1,6 @@
-import { FC, useContext } from 'react';
+import { FC } from 'react';
 import { Equipment, EquipmentRentStatus } from '~/services/types';
-import { EquipmentCategoryContext } from '~/contexts/EquipmentCategoryContext';
+import { useEquipmentCategories } from '~/hooks/queries/useEquipmentQueries';
 import {
   equipmentRentColorMap,
   equipmentStatusColorMap,
@@ -21,7 +21,7 @@ const mapEquipmentRentStatText = (equipment: Equipment) => {
 };
 
 const BasicInfo: FC<Props> = ({ equipment }) => {
-  const { categories } = useContext(EquipmentCategoryContext);
+  const { data: categories = [] } = useEquipmentCategories();
 
   return (
     <>

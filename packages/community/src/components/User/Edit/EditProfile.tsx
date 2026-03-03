@@ -1,9 +1,14 @@
-import { useState, useEffect, ChangeEvent, useCallback } from 'react';
+import { useState, useEffect, ChangeEvent } from 'react';
 
-import UserService, { UpdateUserInfoRequest } from '~/services/UserService';
+import { UpdateUserInfoRequest } from '~/services/UserService';
 import Loading from '~/components/Common/Loading';
 import ProfileComponent from './ProfileComponent.jsx';
 import { useAuth } from '~/contexts/auth';
+import {
+  useMyUserInfo,
+  useUpdateUserInfo,
+  useDeleteUserInfo,
+} from '~/hooks/queries/useUserQueries';
 
 type InputFormat = {
   label: string;
@@ -88,61 +93,51 @@ function EditProfile() {
     useState<boolean>(false);
   const [isShow, setIsShow] = useState<boolean>(false);
 
-  const fetch = useCallback(async () => {
-    setIsShow(false);
-
-    await UserService.retrieveUserInfo()
-      .then((res) => {
-        const resUserInfo = res.userInfo;
-
-        setUserInfo((_userInfo) =>
-          _userInfo.map((info) => {
-            // let label = info.label
-            // if(label === 'id' && resUserInfo[label]) {
-            //     info.value = resUserInfo[label]
-            // }
-            if (info.label === 'id' && resUserInfo.id) {
-              info.value = resUserInfo.id;
-            }
-            if (info.label === 'nickname' && resUserInfo.nickname) {
-              info.value = resUserInfo.nickname;
-            }
-            if (info.label === 'username' && resUserInfo.username) {
-              info.value = resUserInfo.username;
-            }
-            if (info.label === 'aaa_no' && resUserInfo.aaa_no) {
-              info.value = resUserInfo.aaa_no;
-            }
-            if (info.label === 'col_no' && resUserInfo.col_no) {
-              info.value = resUserInfo.col_no;
-            }
-            if (info.label === 'major' && resUserInfo.major) {
-              info.value = resUserInfo.major;
-            }
-            if (info.label === 'email' && resUserInfo.email) {
-              info.value = resUserInfo.email;
-            }
-            if (info.label === 'mobile' && resUserInfo.mobile) {
-              info.value = resUserInfo.mobile;
-            }
-            if (info.label === 'introduction' && resUserInfo.introduction) {
-              info.value = resUserInfo.introduction;
-            }
-            return { ...info, valid: true };
-          }),
-        );
-        setProfilePath(resUserInfo.profile_path);
-        setIsProfileImgChanged(false);
-        setIsShow(true);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  }, []);
+  const { data: myUserData, refetch } = useMyUserInfo();
+  const { mutateAsync: mutateUpdateUserInfo } = useUpdateUserInfo();
+  const { mutateAsync: mutateDeleteUserInfo } = useDeleteUserInfo();
 
   useEffect(() => {
-    fetch();
-  }, [fetch]);
+    if (myUserData) {
+      const resUserInfo = myUserData.userInfo;
+
+      setUserInfo((_userInfo) =>
+        _userInfo.map((info) => {
+          if (info.label === 'id' && resUserInfo.id) {
+            info.value = resUserInfo.id;
+          }
+          if (info.label === 'nickname' && resUserInfo.nickname) {
+            info.value = resUserInfo.nickname;
+          }
+          if (info.label === 'username' && resUserInfo.username) {
+            info.value = resUserInfo.username;
+          }
+          if (info.label === 'aaa_no' && resUserInfo.aaa_no) {
+            info.value = resUserInfo.aaa_no;
+          }
+          if (info.label === 'col_no' && resUserInfo.col_no) {
+            info.value = resUserInfo.col_no;
+          }
+          if (info.label === 'major' && resUserInfo.major) {
+            info.value = resUserInfo.major;
+          }
+          if (info.label === 'email' && resUserInfo.email) {
+            info.value = resUserInfo.email;
+          }
+          if (info.label === 'mobile' && resUserInfo.mobile) {
+            info.value = resUserInfo.mobile;
+          }
+          if (info.label === 'introduction' && resUserInfo.introduction) {
+            info.value = resUserInfo.introduction;
+          }
+          return { ...info, valid: true };
+        }),
+      );
+      setProfilePath(resUserInfo.profile_path);
+      setIsProfileImgChanged(false);
+      setIsShow(true);
+    }
+  }, [myUserData]);
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -184,29 +179,26 @@ function EditProfile() {
       data.profileImg = profileImg;
     }
 
-    await UserService.updateUserInfo(data)
-      .then(() => {
-        fetch();
-      })
-      .catch((err: Error) => {
-        console.error(err);
-        alert('업데이트 실패');
-      });
+    try {
+      await mutateUpdateUserInfo(data);
+      refetch();
+    } catch (err) {
+      console.error(err);
+      alert('업데이트 실패');
+    }
   };
 
   const deleteUser = async () => {
     const goDrop = window.confirm('정말로 탈퇴하시겠습니까?');
     if (goDrop) {
-      await UserService.deleteUserInfo()
-        .then(() => {
-          alert('탈퇴 요청이 정상적으로 처리되었습니다.');
-          // this.props.onLogout();
-          authContext.authLogout();
-        })
-        .catch((err: Error) => {
-          console.error(err);
-          alert('탈퇴 실패');
-        });
+      try {
+        await mutateDeleteUserInfo();
+        alert('탈퇴 요청이 정상적으로 처리되었습니다.');
+        authContext.authLogout();
+      } catch (err) {
+        console.error(err);
+        alert('탈퇴 실패');
+      }
     }
   };
 

@@ -1,9 +1,8 @@
 import { ChangeEvent, FC, useCallback, useState } from 'react';
-import ExhibitionService, {
-  CreateExhibitionRequest,
-} from '~/services/ExhibitionService';
+import { CreateExhibitionRequest } from '~/services/ExhibitionService';
 import DatePicker from 'react-datepicker';
 import useBlockBackgroundScroll from '~/hooks/useBlockBackgroundScroll';
+import { useCreateExhibition } from '~/hooks/queries/useExhibitionQueries';
 
 type Props = {
   boardId: string;
@@ -15,6 +14,7 @@ export const CreateExhibition: FC<Props> = ({ boardId, onClose, onCreate }) => {
   useBlockBackgroundScroll();
 
   const [data, setData] = useState<Partial<CreateExhibitionRequest>>({});
+  const { mutateAsync: mutateCreateExhibition } = useCreateExhibition();
 
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -42,15 +42,18 @@ export const CreateExhibition: FC<Props> = ({ boardId, onClose, onCreate }) => {
       alert('모든 항목을 입력해주세요.');
     } else {
       try {
-        await ExhibitionService.createExhibition(boardId, {
-          title: '',
-          text,
-          exhibition_no,
-          slogan,
-          date_start,
-          date_end,
-          place,
-          poster,
+        await mutateCreateExhibition({
+          board_id: boardId,
+          data: {
+            title: '',
+            text,
+            exhibition_no,
+            slogan,
+            date_start,
+            date_end,
+            place,
+            poster,
+          },
         });
         onCreate();
       } catch (err) {
@@ -58,7 +61,7 @@ export const CreateExhibition: FC<Props> = ({ boardId, onClose, onCreate }) => {
         alert('사진전 생성 실패');
       }
     }
-  }, [boardId, data, onCreate]);
+  }, [boardId, data, onCreate, mutateCreateExhibition]);
 
   const handleDateStart = (date: Date) => {
     setData({

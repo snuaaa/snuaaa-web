@@ -1,21 +1,15 @@
-import { useCallback, FC } from 'react';
+import { FC } from 'react';
 
 import { Comment } from './Comment';
-import CommentService from '../../services/CommentService';
-import { useFetch } from '~/hooks/useFetch';
 import { CreateComment } from './CreateComment';
+import { useComments } from '~/hooks/queries/useCommentQueries';
 
 type Props = {
   parent_id: number;
 };
 
 const CommentSection: FC<Props> = ({ parent_id }) => {
-  const fetchFunction = useCallback(
-    () => CommentService.retrieveComments(parent_id),
-    [parent_id],
-  );
-
-  const { data: comments, refresh } = useFetch({ fetch: fetchFunction });
+  const { data: comments } = useComments(parent_id);
 
   // TODO: Add Loading UI
   return (
@@ -27,12 +21,11 @@ const CommentSection: FC<Props> = ({ parent_id }) => {
               key={comment.comment_id}
               parent_id={parent_id}
               comment={comment}
-              onUpdate={refresh}
             />
           ))}
         </div>
       )}
-      <CreateComment contentId={parent_id} onCreate={refresh} />
+      <CreateComment contentId={parent_id} />
     </div>
   );
 };

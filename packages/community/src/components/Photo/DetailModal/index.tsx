@@ -3,8 +3,6 @@ import { Link, useNavigate } from '@tanstack/react-router';
 
 import { useAuth } from '~/contexts/auth';
 import useBlockBackgroundScroll from '~/hooks/useBlockBackgroundScroll';
-import ContentService from '~/services/ContentService';
-import AlbumService from '~/services/AlbumService';
 import Loading from '~/components/Common/Loading';
 import Comment from '~/components/Comment';
 import { Photo } from '~/services/types';
@@ -16,6 +14,8 @@ import {
   usePhotoDetail,
   useDeletePhoto,
 } from '~/hooks/queries/usePhotoQueries';
+import { useLikeContent } from '~/hooks/queries/useContentQueries';
+import { useUpdateAlbumThumbnail } from '~/hooks/queries/useAlbumQueries';
 
 type Props = {
   photoId: number;
@@ -44,6 +44,8 @@ const PhotoDetailModal = ({ photoId, onClose, onMovePhoto }: Props) => {
   }, [data]);
 
   const { mutateAsync: mutateAsyncDeletePhoto } = useDeletePhoto(photoId);
+  const { mutateAsync: mutateLikeContent } = useLikeContent();
+  const { mutateAsync: mutateUpdateAlbumThumbnail } = useUpdateAlbumThumbnail();
 
   const setAlbumThumbnail = useCallback(async () => {
     const albumInfo = contentInfo?.parent;
@@ -56,13 +58,16 @@ const PhotoDetailModal = ({ photoId, onClose, onMovePhoto }: Props) => {
       alert('섬네일로 설정할 수 없습니다.');
     } else {
       try {
-        await AlbumService.updateAlbumThumbnail(albumInfo.content_id, data);
+        await mutateUpdateAlbumThumbnail({
+          album_id: albumInfo.content_id,
+          data,
+        });
       } catch (err) {
         console.error(err);
         alert('섬네일 설정 실패');
       }
     }
-  }, [contentInfo, photoId]);
+  }, [contentInfo, photoId, mutateUpdateAlbumThumbnail]);
 
   const moveToAlbum = useCallback(
     (direction: 1 | -1) => {
@@ -100,7 +105,7 @@ const PhotoDetailModal = ({ photoId, onClose, onMovePhoto }: Props) => {
       return;
     }
     try {
-      await ContentService.likeContent(Number(photoId));
+      await mutateLikeContent(Number(photoId));
       if (isLiked) {
         setContentInfo((prev) =>
           prev
@@ -125,7 +130,7 @@ const PhotoDetailModal = ({ photoId, onClose, onMovePhoto }: Props) => {
     } catch (err) {
       console.error(err);
     }
-  }, [contentInfo, isLiked, photoId]);
+  }, [contentInfo, isLiked, photoId, mutateLikeContent]);
 
   const parentAlbum = contentInfo?.parent;
 

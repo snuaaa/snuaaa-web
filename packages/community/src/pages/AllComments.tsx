@@ -1,12 +1,8 @@
-import { useCallback } from 'react';
-
-import HomeService from '~/services/HomeService';
 import Loading from '~/components/Common/Loading';
 import Paginator from '~/components/Common/Paginator';
 import BoardName from '~/components/Board/BoardName';
-
 import { useNavigate, useSearch } from '@tanstack/react-router';
-import { useFetch } from '~/hooks/useFetch';
+import { useAllComments } from '~/hooks/queries/useHomeQueries';
 import CommentList from '~/components/Comment/CommentList';
 
 const COMMENTROWNUM = 10;
@@ -25,11 +21,7 @@ function AllComments() {
     });
   };
 
-  const fetchFunction = useCallback(async () => {
-    return HomeService.retrieveAllComments(pageIdx);
-  }, [pageIdx]);
-
-  const { data } = useFetch({ fetch: fetchFunction });
+  const { data } = useAllComments(pageIdx);
 
   if (!data) {
     return <Loading />;

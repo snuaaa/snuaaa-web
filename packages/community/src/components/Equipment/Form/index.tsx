@@ -1,5 +1,5 @@
-import { EquipmentCategoryContext } from '~/contexts/EquipmentCategoryContext';
-import { ChangeEvent, useContext } from 'react';
+import { useEquipmentCategories } from '~/hooks/queries/useEquipmentQueries';
+import { ChangeEvent } from 'react';
 import { Equipment } from '~/services/types';
 import { equipmentStatusOptions } from '../common';
 import InputField from './InputField';
@@ -48,7 +48,7 @@ const EquipmentForm: React.FC<Props> = ({
   onCancel,
   onDelete,
 }) => {
-  const { categories } = useContext(EquipmentCategoryContext);
+  const { data: categories = [] } = useEquipmentCategories();
 
   const categoryOptions =
     categories.map((category) => ({

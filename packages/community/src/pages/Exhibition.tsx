@@ -1,33 +1,29 @@
-import { FC, useCallback, useState } from 'react';
+import { FC, useState } from 'react';
 import { useParams } from '@tanstack/react-router';
-import ExhibitionService from '~/services/ExhibitionService';
 import Loading from '~/components/Common/Loading';
 import CreateExhibitPhoto from '~/components/Exhibition/CreateExhibitPhoto';
-import ExhibitPhotoService from '~/services/ExhibitPhotoService';
 import ExhibitionInfo from '~/components/Exhibition/ExhibitionInfo';
 import ExhibitPhotoList from '~/components/Exhibition/ExhibitPhotoList';
-import { useFetch } from '~/hooks/useFetch';
+import { useExhibition } from '~/hooks/queries/useExhibitionQueries';
 import { useAuth } from '~/contexts/auth';
+import { useQueryClient } from '@tanstack/react-query';
+import { exhibitionKeys } from '~/hooks/queries/useExhibitionQueries';
 
 const ExhibitionPage: FC = () => {
   const { exhibition_id } = useParams({ from: '/exhibition/$exhibition_id' });
+  const exhibitionId = Number(exhibition_id);
+  const queryClient = useQueryClient();
 
-  const fetchFunction = useCallback(() => {
-    const exhibitionId = Number(exhibition_id);
-    return Promise.all([
-      ExhibitionService.retrieveExhibition(exhibitionId),
-      ExhibitPhotoService.retrieveExhibitPhotosinExhibition(exhibitionId),
-    ]);
-  }, [exhibition_id]);
-
-  const { data, refresh } = useFetch({ fetch: fetchFunction });
+  const { data } = useExhibition(exhibitionId);
 
   const authContext = useAuth();
 
   const [isCreating, setIsCreating] = useState(false);
 
   const handleCreatePhoto = () => {
-    refresh();
+    queryClient.invalidateQueries({
+      queryKey: exhibitionKeys.detail(exhibitionId),
+    });
     setIsCreating(false);
   };
 
@@ -35,8 +31,8 @@ const ExhibitionPage: FC = () => {
     return <Loading />;
   }
 
-  const exhibitionInfo = data[0].exhibitionInfo;
-  const exhibitPhotos = data[1].exhibitPhotosInfo;
+  const exhibitionInfo = data.exhibition.exhibitionInfo;
+  const exhibitPhotos = data.exhibitPhotos.exhibitPhotosInfo;
 
   return (
     <>
@@ -59,7 +55,7 @@ const ExhibitionPage: FC = () => {
             {isCreating && (
               <CreateExhibitPhoto
                 board_id={exhibitionInfo.board_id}
-                exhibition_id={Number(exhibition_id)}
+                exhibition_id={exhibitionId}
                 exhibition_no={exhibitionInfo.exhibition.exhibition_no}
                 onCreate={handleCreatePhoto}
                 onCancel={() => setIsCreating(false)}

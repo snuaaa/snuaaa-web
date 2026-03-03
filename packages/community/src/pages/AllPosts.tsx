@@ -1,13 +1,9 @@
-import { useCallback } from 'react';
-
-import HomeService from '~/services/HomeService';
 import Loading from '~/components/Common/Loading';
 import AllPostList from '~/components/Post/AllPostList';
 import Paginator from '~/components/Common/Paginator';
 import BoardName from '~/components/Board/BoardName';
-
 import { useNavigate, useSearch } from '@tanstack/react-router';
-import { useFetch } from '~/hooks/useFetch';
+import { useAllPosts } from '~/hooks/queries/useHomeQueries';
 
 const POSTROWNUM = 10;
 
@@ -25,11 +21,7 @@ function AllPosts() {
     });
   };
 
-  const fetchFunction = useCallback(() => {
-    return HomeService.retrieveAllPosts(pageIdx);
-  }, [pageIdx]);
-
-  const { data } = useFetch({ fetch: fetchFunction });
+  const { data } = useAllPosts(pageIdx);
 
   if (!data) {
     return <Loading />;

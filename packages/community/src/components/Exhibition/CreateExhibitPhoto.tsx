@@ -1,12 +1,11 @@
 import { useState, ChangeEvent } from 'react';
-import UserService from '~/services/UserService';
 import CreateExhibitPhotoComponent from './ExhibitPhoto/CreateExhibitPhotoComponent';
 import useBlockBackgroundScroll from '~/hooks/useBlockBackgroundScroll';
 import { List } from 'immutable';
 import { User } from '~/services/types';
-import ExhibitPhotoService, {
-  ExhibitPhotoInfo,
-} from '~/services/ExhibitPhotoService';
+import { ExhibitPhotoInfo } from '~/services/ExhibitPhotoService';
+import { useSearchMini } from '~/hooks/queries/useUserQueries';
+import { useCreateExhibitPhoto } from '~/hooks/queries/useExhibitionQueries';
 
 const MAX_SIZE = 100 * 1024 * 1024;
 
@@ -49,6 +48,9 @@ function CreateExhibitPhoto({
   const [imgIdx, setImgIdx] = useState<number>(-1);
   const [searchUsers, setSearchUsers] = useState<User[]>([]);
   const [btnDisabled, setBtnDisabled] = useState<boolean>(false);
+
+  const { mutateAsync: mutateSearchMini } = useSearchMini();
+  const { mutateAsync: mutateCreateExhibitPhoto } = useCreateExhibitPhoto();
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -94,13 +96,12 @@ function CreateExhibitPhoto({
   };
 
   const fetchUsers = async (name: string) => {
-    UserService.searchMini(name)
-      .then((res) => {
-        setSearchUsers(res.userList);
-      })
-      .catch((err: Error) => {
-        console.error(err);
-      });
+    try {
+      const res = await mutateSearchMini(name);
+      setSearchUsers(res.userList);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const selectPhotographer = (index: number) => {
@@ -198,11 +199,14 @@ function CreateExhibitPhoto({
           try {
             const photoInfo = photoInfos.get(i);
             if (photoInfo) {
-              await ExhibitPhotoService.createExhibitPhoto(exhibition_id, {
-                board_id,
-                photoInfo,
-                exhibition_no: exhibition_no,
-                exhibitPhoto: uploadPhotos[i],
+              await mutateCreateExhibitPhoto({
+                exhibition_id,
+                data: {
+                  board_id,
+                  photoInfo,
+                  exhibition_no: exhibition_no,
+                  exhibitPhoto: uploadPhotos[i],
+                },
               });
             }
           } catch (err) {

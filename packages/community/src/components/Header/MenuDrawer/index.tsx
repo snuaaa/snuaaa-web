@@ -1,4 +1,4 @@
-import { useBoards } from '~/contexts/board';
+import { useBoards } from '~/hooks/queries/useBoardQueries';
 import Menu from './Menu';
 import { ABOUT_AAA_LINKS, TOOLS_LINKS } from '../constants';
 import Drawer from '~/components/Common/Drawer';

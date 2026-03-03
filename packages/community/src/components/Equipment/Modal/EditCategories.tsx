@@ -1,35 +1,37 @@
-import { EquipmentCategoryContext } from '~/contexts/EquipmentCategoryContext';
+import {
+  useEquipmentCategories,
+  useCreateCategory,
+  useUpdateCategory,
+  useDeleteCategory,
+} from '~/hooks/queries/useEquipmentQueries';
 import { useModal } from '~/contexts/modal';
-import { FC, useContext, useState } from 'react';
+import { FC, useState } from 'react';
 import EditCategoryEntry from './EditCategoryEntry';
-import EquipmentService from '~/services/EquipmentService';
 
 const EditCategoriesModal: FC = () => {
   const { closeModal } = useModal();
-  const { categories, refreshCategories } = useContext(
-    EquipmentCategoryContext,
-  );
+  const { data: categories = [] } = useEquipmentCategories();
+  const { mutateAsync: mutateCreateCategory } = useCreateCategory();
+  const { mutateAsync: mutateUpdateCategory } = useUpdateCategory();
+  const { mutateAsync: mutateDeleteCategory } = useDeleteCategory();
 
   const [editCategoryId, setEditCategoryId] = useState<number | null>(null);
   const [isCreating, setIsCreating] = useState<boolean>(false);
 
   const onCategoryUpdate = async (id: number | null, name: string) => {
-    //setEditCategoryId(id);
-    if (id) await EquipmentService.updateCategory(id, name);
-    else await EquipmentService.createCategory(name);
+    if (id) await mutateUpdateCategory({ id, name });
+    else await mutateCreateCategory(name);
     setEditCategoryId(null);
     setIsCreating(false);
-    refreshCategories();
   };
 
   const handleCategoryDelete = async (id: number) => {
-    await EquipmentService.deleteCategory(id).catch((err) => {
+    await mutateDeleteCategory(id).catch((err) => {
       alert(
         '분류 삭제에 실패했습니다.\n해당 분류에 속하는 장비가 존재하는지 확인해 주세요.',
       );
       console.error(err);
     });
-    refreshCategories();
   };
 
   return (

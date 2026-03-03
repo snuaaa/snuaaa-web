@@ -1,18 +1,19 @@
-import { FC, useContext, useState } from 'react';
+import { FC, useState } from 'react';
 import EquipmentForm from '../Form';
-import EquipmentService, {
-  CreateEquipmentRequest,
-} from '~/services/EquipmentService';
+import { CreateEquipmentRequest } from '~/services/EquipmentService';
 import { EquipmentStatus } from '~/services/types';
 import { useModal } from '~/contexts/modal';
-import { EquipmentCategoryContext } from '~/contexts/EquipmentCategoryContext';
+import {
+  useEquipmentCategories,
+  useCreateEquipment,
+} from '~/hooks/queries/useEquipmentQueries';
 
 type Props = {
   onCreate: () => void;
 };
 
 const CreateModal: FC<Props> = ({ onCreate }) => {
-  const { categories } = useContext(EquipmentCategoryContext);
+  const { data: categories = [] } = useEquipmentCategories();
   const [equipment, setEquipment] = useState<CreateEquipmentRequest>({
     name: '',
     nickname: '',
@@ -25,9 +26,10 @@ const CreateModal: FC<Props> = ({ onCreate }) => {
   });
 
   const { closeModal } = useModal();
+  const { mutateAsync: mutateCreateEquipment } = useCreateEquipment();
 
   const handleSubmit = async () => {
-    await EquipmentService.createEquipment(equipment);
+    await mutateCreateEquipment(equipment);
     closeModal();
     onCreate();
   };

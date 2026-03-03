@@ -1,6 +1,5 @@
-import { EquipmentCategoryContext } from '~/contexts/EquipmentCategoryContext';
+import { useEquipmentCategories } from '~/hooks/queries/useEquipmentQueries';
 import { useModal } from '~/contexts/modal';
-import { useContext } from 'react';
 import { Equipment } from '~/services/types';
 import { equipmentStatusTextMap } from '../common';
 
@@ -9,7 +8,7 @@ type Props = {
 };
 
 const EquipDescription: React.FC<Props> = ({ equipment }) => {
-  const { categories } = useContext(EquipmentCategoryContext);
+  const { data: categories = [] } = useEquipmentCategories();
   const { closeModal } = useModal();
 
   return (

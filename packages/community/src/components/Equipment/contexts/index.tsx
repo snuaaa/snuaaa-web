@@ -1,4 +1,3 @@
-import { useFetch } from '~/hooks/useFetch';
 import React, {
   PropsWithChildren,
   useCallback,
@@ -7,15 +6,16 @@ import React, {
 } from 'react';
 
 import { useContext } from 'react';
-import EquipmentService, {
-  RetrieveEquipmentListResponse,
-} from '~/services/EquipmentService';
+import { RetrieveEquipmentListResponse } from '~/services/EquipmentService';
 import { Equipment } from '~/services/types';
+import {
+  useEquipmentList,
+  useRentEquipments,
+} from '~/hooks/queries/useEquipmentQueries';
 
 type EquipmentContextState = {
   data?: RetrieveEquipmentListResponse;
   cart: Equipment[];
-  refresh: () => Promise<void>;
   addToCart: (equipment: Equipment) => void;
   removeFromCart: (equipment: Equipment) => void;
   rentSingleEquipment: (equipment: Equipment) => Promise<void>;
@@ -27,13 +27,7 @@ const EquipmentContext = React.createContext<EquipmentContextState | null>(
 );
 
 export const EquipmentProvider = ({ children }: PropsWithChildren) => {
-  const fetchFunction = useCallback(() => {
-    return EquipmentService.retrieveList();
-  }, []);
-
-  const { data, refresh } = useFetch({
-    fetch: fetchFunction,
-  });
+  const { data } = useEquipmentList();
   const [cart, setCart] = useState<Equipment[]>([]);
 
   const addToCart = useCallback((equipment: Equipment) => {
@@ -46,10 +40,12 @@ export const EquipmentProvider = ({ children }: PropsWithChildren) => {
     );
   }, []);
 
+  const { mutateAsync: mutateRentEquipments } = useRentEquipments();
+
   const rentSingleEquipment = useCallback(
     async (equipment: Equipment) => {
       try {
-        await EquipmentService.rentEquipments({
+        await mutateRentEquipments({
           equipmentIds: [equipment.id],
         });
       } catch (e) {
@@ -57,14 +53,13 @@ export const EquipmentProvider = ({ children }: PropsWithChildren) => {
         console.error(e);
       }
       removeFromCart(equipment);
-      await refresh();
     },
-    [refresh, removeFromCart],
+    [removeFromCart, mutateRentEquipments],
   );
 
   const rentAllEquipment = useCallback(async () => {
     try {
-      await EquipmentService.rentEquipments({
+      await mutateRentEquipments({
         equipmentIds: cart.map((equip) => equip.id),
       });
     } catch (e) {
@@ -72,14 +67,12 @@ export const EquipmentProvider = ({ children }: PropsWithChildren) => {
       console.error(e);
     }
     setCart([]);
-    await refresh();
-  }, [cart, refresh]);
+  }, [cart, mutateRentEquipments]);
 
   const equipmentContextValue: EquipmentContextState = useMemo(
     () => ({
       data,
       cart,
-      refresh,
       addToCart,
       removeFromCart,
       rentSingleEquipment,
@@ -89,7 +82,6 @@ export const EquipmentProvider = ({ children }: PropsWithChildren) => {
       addToCart,
       cart,
       data,
-      refresh,
       removeFromCart,
       rentAllEquipment,
       rentSingleEquipment,

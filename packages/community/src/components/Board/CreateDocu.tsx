@@ -1,16 +1,16 @@
 import React, { useState, ChangeEvent } from 'react';
 import { AxiosProgressEvent } from 'axios';
-import DocuService, { CreateDocuRequest } from '../../services/DocuService';
+import { CreateDocuRequest } from '../../services/DocuService';
 import CreateDocuComponent from '../../components/Document/CreateDocuComponent';
 
-import ContentService from '../../services/ContentService';
 import useBlockBackgroundScroll from '../../hooks/useBlockBackgroundScroll';
 import { Board } from '~/services/types';
+import { useCreateDocument } from '~/hooks/queries/useDocuQueries';
+import { useCreateFile } from '~/hooks/queries/useContentQueries';
 
 const MAX_SIZE = 20 * 1024 * 1024;
 
 type CreateDocuProps = {
-  fetch: () => void;
   boardInfo: Board;
   onClose: () => void;
 };
@@ -33,6 +33,9 @@ function CreateDocu(props: CreateDocuProps) {
   const [uploadIdx, setUploadIdx] = useState<number>(0);
 
   useBlockBackgroundScroll();
+
+  const { mutateAsync: mutateCreateDocument } = useCreateDocument();
+  const { mutateAsync: mutateCreateFile } = useCreateFile();
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -87,7 +90,7 @@ function CreateDocu(props: CreateDocuProps) {
   };
 
   const createDocu = async () => {
-    const { boardInfo, fetch } = props;
+    const { boardInfo } = props;
 
     if (!docuInfo.title) {
       alert('제목을 입력해주세요');
@@ -98,24 +101,23 @@ function CreateDocu(props: CreateDocuProps) {
     } else {
       setIsUploading(true);
       try {
-        const res = await DocuService.createDocument(
-          boardInfo.board_id,
-          docuInfo,
-        );
+        const res = await mutateCreateDocument({
+          board_id: boardInfo.board_id,
+          data: docuInfo,
+        });
         if (attachedFiles.length > 0) {
           for (let i = 0, max = attachedFiles.length; i < max; i++) {
             const fileFormData = new FormData();
             fileFormData.append('attachedFile', attachedFiles[i]);
-            await ContentService.createFile(
-              res.data.content_id,
-              fileFormData,
-              uploadProgress,
-            );
+            await mutateCreateFile({
+              content_id: res.data.content_id,
+              formData: fileFormData,
+              onUploadProgress: uploadProgress,
+            });
             setUploadIdx(uploadIdx + 1);
           }
         }
         setIsUploading(false);
-        fetch();
         props.onClose();
       } catch (err) {
         console.error(err);

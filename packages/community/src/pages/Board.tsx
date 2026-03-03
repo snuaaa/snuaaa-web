@@ -7,7 +7,7 @@ import ExhibitBoard from '~/components/Board/ExhibitBoard';
 import Loading from '~/components/Common/Loading';
 import Memory from '~/components/Board/Memory';
 import AstroPhoto from '~/components/Board/AstroPhoto';
-import { useBoards } from '~/contexts/board';
+import { useBoards } from '~/hooks/queries/useBoardQueries';
 
 const BoardPage: FC = () => {
   const boardContext = useBoards();

@@ -1,14 +1,18 @@
 import { useState, useEffect, createRef, useCallback } from 'react';
 import { useRouter, useNavigate } from '@tanstack/react-router';
-import ExhibitPhotoService from '~/services/ExhibitPhotoService';
 import FullScreenPortal from '~/components/Common/FullScreenPortal';
 import { RecordOf, Record } from 'immutable';
 
 import useBlockBackgroundScroll from '~/hooks/useBlockBackgroundScroll';
 import { ExhibitPhoto } from '~/services/types';
 import ExhibitPhotoComponent from '~/components/Exhibition/ExhibitPhoto/ExhibitPhotoComponent';
-import { useFetch } from '~/hooks/useFetch';
 import Loading from '~/components/Common/Loading';
+import {
+  useExhibitPhoto,
+  useDeleteExhibitPhoto,
+  exhibitPhotoKeys,
+} from '~/hooks/queries/useExhibitPhotoQueries';
+import { useQueryClient } from '@tanstack/react-query';
 
 type ExhibitPhotoPageProps = {
   exhibitPhotoId: number;
@@ -17,8 +21,8 @@ type ExhibitPhotoPageProps = {
 function ExhibitPhotoPage({ exhibitPhotoId }: ExhibitPhotoPageProps) {
   const router = useRouter();
   const navigate = useNavigate();
-  const exhibitPhoto_id = String(exhibitPhotoId);
   const fullscreenRef = createRef<HTMLDivElement>();
+  const queryClient = useQueryClient();
 
   const [exhibitPhotosInfo, setExhibitPhotosInfo] = useState<ExhibitPhoto[]>(
     [],
@@ -28,15 +32,8 @@ function ExhibitPhotoPage({ exhibitPhotoId }: ExhibitPhotoPageProps) {
 
   useBlockBackgroundScroll();
 
-  const fetchFunction = useCallback(() => {
-    const exhibitPhotoId = Number(exhibitPhoto_id);
-
-    return ExhibitPhotoService.retrieveExhibitPhoto(exhibitPhotoId);
-  }, [exhibitPhoto_id]);
-
-  const { data, refresh } = useFetch({
-    fetch: fetchFunction,
-  });
+  const { data } = useExhibitPhoto(exhibitPhotoId);
+  const deletePhotoMutation = useDeleteExhibitPhoto();
 
   useEffect(() => {
     if (data) {
@@ -122,7 +119,7 @@ function ExhibitPhotoPage({ exhibitPhotoId }: ExhibitPhotoPageProps) {
     );
     if (goDrop) {
       try {
-        await ExhibitPhotoService.deleteExhibitPhoto(Number(exhibitPhoto_id));
+        await deletePhotoMutation.mutateAsync(exhibitPhotoId);
 
         const backLink = contentInfo?.parent
           ? `/exhibition/${contentInfo.parent.content_id}`
@@ -133,6 +130,12 @@ function ExhibitPhotoPage({ exhibitPhotoId }: ExhibitPhotoPageProps) {
         alert('삭제 실패');
       }
     }
+  };
+
+  const refresh = () => {
+    queryClient.invalidateQueries({
+      queryKey: exhibitPhotoKeys.detail(exhibitPhotoId),
+    });
   };
 
   if (!contentInfo) {
