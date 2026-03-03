@@ -13,18 +13,18 @@ const AlbumItem: FC<Props> = ({ album }) => {
   const thumbnailPath = getThumbnailPath(album);
 
   return (
-    <div className="relative pb-full">
+    <div className="group relative aspect-[4/3] rounded-xl overflow-hidden cursor-pointer shadow-sm hover:shadow-lg transition-shadow duration-300">
       <Link
         to="/album/$album_id"
         params={{ album_id: String(album.content_id) }}
       >
         <Image
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           imgSrc={thumbnailPath}
           defaultImgSrc={defaultAlbumCover}
         />
-        <div className="absolute top-0 left-0 flex justify-center items-center w-full h-full z-10 bg-[#333333]/[0.1] hover:bg-[#686868]/[0.5] transition-all">
-          <h5 className="text-center text-lg font-bold text-white">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent flex items-end p-3 group-hover:from-black/70 transition-all duration-300">
+          <h5 className="text-white text-sm font-bold drop-shadow-md leading-tight">
             {album.title}
           </h5>
         </div>

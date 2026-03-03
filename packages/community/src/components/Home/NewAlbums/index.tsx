@@ -10,11 +10,17 @@ type NewAlbumsProps = {
 
 function NewAlbums({ title, board_id, albums }: NewAlbumsProps) {
   return (
-    <div className="w-full md:w-1/2 p-2 md:p-[5px]">
-      <Link to="/board/$board_id" params={{ board_id }}>
-        <h4 className="text-xl font-bold text-[#7193C4] py-2 px-1">{title}</h4>
+    <div>
+      <Link
+        to="/board/$board_id"
+        params={{ board_id }}
+        className="flex items-center gap-2 mb-5 text-[#000E2C] font-extrabold text-lg tracking-tight no-underline"
+      >
+        <i className="ri-gallery-line text-xl text-[#49A0AE]"></i>
+        <span>{title}</span>
+        <div className="flex-1 h-0.5 ml-3 bg-gradient-to-r from-[#49A0AE] to-[#74B9FF] rounded-full opacity-30"></div>
       </Link>
-      <div className="grid grid-cols-2 grid-rows-2 gap-px aspect-[1/1]">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
         {albums.map((album) => (
           <AlbumItem key={album.content_id} album={album} />
         ))}
