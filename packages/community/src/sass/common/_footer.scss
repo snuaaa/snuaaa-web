@@ -1,27 +1,10 @@
 /****** FOOTER ******/
+/* Styles moved to Tailwind in Footer.tsx */
+/* Keeping minimal fallback for login page footer */
 
 footer {
-    background-color: #434343;
-    color: white;
-    padding: 20px;
+    padding: 0;
 }
 
-.footer-contents {
-    width: 100%;
-    text-align: center;
-    p {
-        margin: 10px;
-        line-height: 1.5;
-    }
-}
 
 /****** FOOTER ******/
-
-@media screen and (max-width: 800px) {
-
-    .footer-contents {
-        p {
-            font-size: 0.8rem;
-        }
-    }
-}

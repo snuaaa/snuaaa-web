@@ -1,31 +1,22 @@
 import { useState } from 'react';
-import logo from '~/assets/img/logo_white.png';
+
 import imgProfile from '~/assets/img/common/profile.png';
 import Navigation from '~/components/Header/Navigation';
 import PopupUser from '~/components/Header/PopupUser';
 import Image from '~/components/Common/AaaImage';
-import { useNavigate, useLocation } from '@tanstack/react-router';
+
 import { useAuth } from '~/contexts/auth';
 import { useViewportSize } from '~/contexts/viewportSize';
-import Drawer from '~/components/Common/Drawer';
+
+import MenuDrawer from '~/components/Header/MenuDrawer';
 import backgroundImg from '~/assets/img/header.gif';
 
 function Header() {
   const [isShowPopupUser, setIsShowPopupUser] = useState(false);
-  const navigate = useNavigate();
-  const location = useLocation();
   const authContext = useAuth();
 
   const togglePopup = () => {
     setIsShowPopupUser(!isShowPopupUser);
-  };
-
-  const handleClickLogo = () => {
-    if (location.pathname === '/') {
-      window.location.reload();
-    } else {
-      navigate({ to: '/' });
-    }
   };
 
   const isNotGuest = authContext.authInfo.user.grade < 10;
@@ -43,35 +34,35 @@ function Header() {
 
   return (
     <>
-      <div id="aaa-top" className="w-full bg-[#040c22]">
-        <div className="w-full flex md:max-w-[1920px] relative m-auto">
+      <div id="aaa-top" className="w-full bg-[#040c22] relative">
+        {/* Background image container */}
+        <div className="w-full relative md:max-w-[1920px] mx-auto">
           <img
             src={backgroundImg}
             alt="background-header"
-            className="hidden md:block md:h-[250px] md:object-cover"
-          ></img>
-          <div className="md:absolute w-full flex justify-between md:py-2 md:px-6">
+            className="hidden md:block w-full h-[220px] object-cover"
+          />
+          {/* Bottom gradient fade */}
+          <div className="hidden md:block absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-[#040c22] to-transparent"></div>
+
+          {/* Top bar: Hamburger (mobile) + Profile */}
+          <div className="md:absolute md:top-0 w-full flex items-center justify-between py-2 px-4 md:px-8">
+            {/* Mobile hamburger */}
             <button
-              className="text-white flex items-center px-2 text-xl md:hidden"
+              className="text-white flex items-center px-1 text-xl md:hidden"
               onClick={openDrawer}
             >
               <i className="ri-menu-line"></i>
             </button>
-            <button
-              className="text-white flex items-center gap-1 pl-1"
-              onClick={handleClickLogo}
-            >
-              <img
-                src={logo}
-                alt="logo"
-                className="w-10 h-10 md:w-12 md:h-12 shrink-0"
-              />
-              <p className="text-lg">서울대학교 아마추어 천문회</p>
-            </button>
+
+            {/* Spacer for desktop (logo removed, profile stays right) */}
+            <div className="hidden md:block" />
+
+            {/* Profile */}
             {isNotGuest ? (
-              <div className="flex my-1 mr-3 md:my-0 md:mr-10 md:justify-center">
+              <div className="relative flex items-center">
                 <Image
-                  className="w-10 h-10 md:w-[50px] md:h-[50px] rounded-full cursor-pointer object-cover"
+                  className="w-9 h-9 md:w-11 md:h-11 rounded-full cursor-pointer object-cover ring-2 ring-white/20 hover:ring-[#49A0AE]/60 transition-all duration-300"
                   onClick={togglePopup}
                   imgSrc={profile_path}
                   defaultImgSrc={imgProfile}
@@ -86,7 +77,7 @@ function Header() {
               </div>
             ) : (
               <button
-                className="ml-auto text-white mr-1"
+                className="text-white/70 hover:text-white text-sm font-medium transition-colors"
                 onClick={authContext.authLogout}
               >
                 LOGOUT
@@ -94,11 +85,17 @@ function Header() {
             )}
           </div>
         </div>
+
+        {/* Desktop Navigation — integrated into header */}
+        {!isMobile && <Navigation />}
       </div>
-      {isMobile ? (
-        <Drawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />
-      ) : (
-        <Navigation />
+
+      {/* Mobile drawer */}
+      {isMobile && (
+        <MenuDrawer
+          isOpen={isDrawerOpen}
+          onClose={() => setIsDrawerOpen(false)}
+        />
       )}
     </>
   );
