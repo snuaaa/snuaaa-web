@@ -1,10 +1,18 @@
 import logo from '~/assets/img/logo_white.png';
 
-function Footer() {
+type FooterProps = {
+  transparent?: boolean;
+};
+
+function Footer({ transparent = false }: FooterProps) {
   return (
     <footer
       id="aaa-bottom"
-      className="bg-gradient-to-b from-[#0a1628] to-[#040c22] border-t border-white/[0.06]"
+      className={
+        transparent
+          ? 'bg-black/20 backdrop-blur-md border-t border-white/[0.08]'
+          : 'bg-gradient-to-b from-[#0a1628] to-[#040c22] border-t border-white/[0.06]'
+      }
     >
       <div className="max-w-[1200px] mx-auto px-6 py-10 md:py-12">
         {/* Main footer content */}

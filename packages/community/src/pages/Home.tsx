@@ -19,7 +19,7 @@ function Home() {
   return (
     <div className="flex-1">
       {/* ── Section 1: Dark — Notice + Astro Info ── */}
-      <div className="bg-gradient-to-b from-[#040c22] via-[#0a1a3a] to-[#0f2447]">
+      <div className="bg-gradient-to-b from-primary-900 via-primary-800 to-primary-700">
         <div className="max-w-[1200px] mx-auto px-4 md:px-8 py-8 md:py-12">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="md:col-span-2">
@@ -34,7 +34,7 @@ function Home() {
       </div>
 
       {/* ── Section 2: Light — New Posts + New Comments ── */}
-      <div className="bg-[#f5f6f8]">
+      <div className="bg-primary-50">
         <div className="max-w-[1200px] mx-auto px-4 md:px-8 py-8 md:py-12">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <NewPosts posts={homeData.recentPosts} />
@@ -44,7 +44,7 @@ function Home() {
       </div>
 
       {/* ── Section 3: Dark — Star Photos ── */}
-      <div className="bg-gradient-to-b from-[#0a1628] to-[#162d50]">
+      <div className="bg-gradient-to-b from-primary-800 to-primary-700">
         <div className="max-w-[1200px] mx-auto px-4 md:px-8 py-8 md:py-12">
           <NewPhotos
             title="New 별사진"
@@ -55,7 +55,7 @@ function Home() {
       </div>
 
       {/* ── Section 4: Light — Albums ── */}
-      <div className="bg-[#f5f6f8]">
+      <div className="bg-primary-50">
         <div className="max-w-[1200px] mx-auto px-4 md:px-8 py-8 md:py-12">
           <NewAlbums
             title="New 추억만들기"
@@ -66,7 +66,7 @@ function Home() {
       </div>
 
       {/* ── Section 5: Dark — Exhibitions ── */}
-      <div className="bg-gradient-to-b from-[#0f2447] to-[#0a1628]">
+      <div className="bg-gradient-to-b from-primary-700 to-primary-900">
         <div className="max-w-[1200px] mx-auto px-4 md:px-8 py-8 md:py-12">
           <NewExhibitions
             board_id="brd41"
