@@ -174,35 +174,53 @@ const PhotoDetailModal = ({ photoId, onClose, onMovePhoto }: Props) => {
         <Loading />
       ) : (
         <>
-          <div className="enif-popup photo-popup" onClick={onClose}>
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 z-30 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-[fadeIn_300ms_ease]"
+            onClick={onClose}
+          >
+            {/* Modal Container */}
             <div
-              className="photo-section-wrapper"
+              className="relative flex flex-col w-[90vw] max-w-[1200px] h-[90vh] max-h-[90vh] rounded-2xl shadow-2xl overflow-hidden animate-[slideUp_400ms_ease]"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="photo-alb-title-wrp">
-                <i
-                  className="ri-arrow-left-s-line cursor-pointer"
+              {/* ── Header Bar ── */}
+              <div className="flex items-center justify-center gap-2 px-6 py-2.5 bg-gradient-to-r from-primary-800 to-primary-700 text-white relative shrink-0">
+                <button
+                  className="p-1 rounded-full hover:bg-white/20 transition-colors duration-200"
                   onClick={() => moveToAlbum(-1)}
-                ></i>
-                <Link className="photo-alb-title" to={backLink}>
-                  <i className="ri-gallery-line"></i>
-                  <h5>{parentAlbum ? parentAlbum.title : '기본앨범'}</h5>
+                >
+                  <i className="ri-arrow-left-s-line text-xl"></i>
+                </button>
+                <Link
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-white/10 transition-colors duration-200 text-white no-underline font-bold text-lg tracking-tight"
+                  to={backLink}
+                >
+                  <i className="ri-gallery-line text-primary-300"></i>
+                  <span>{parentAlbum ? parentAlbum.title : '기본앨범'}</span>
                 </Link>
-                <i
-                  className="ri-arrow-right-s-line cursor-pointer"
+                <button
+                  className="p-1 rounded-full hover:bg-white/20 transition-colors duration-200"
                   onClick={() => moveToAlbum(1)}
-                ></i>
-                <div className="enif-modal-close" onClick={onClose}>
-                  <i className="ri-close-fill text-2xl cursor-pointer"></i>
-                </div>
+                >
+                  <i className="ri-arrow-right-s-line text-xl"></i>
+                </button>
+                <button
+                  className="absolute right-3 p-1.5 rounded-full hover:bg-white/20 transition-colors duration-200"
+                  onClick={onClose}
+                >
+                  <i className="ri-close-fill text-2xl"></i>
+                </button>
               </div>
-              <div className="photo-section-bottom">
+
+              {/* ── Body: Photo + Side Panel ── */}
+              <div className="flex flex-1 min-h-0 flex-col md:flex-row">
                 <PhotoViewer
                   onClickPrev={() => moveToPhoto('prev')}
                   onClickNext={() => moveToPhoto('next')}
                   imgUrl={photoInfo.img_url ?? photoInfo.file_path}
                 />
-                <div className="grow flex flex-col basis-[400px] bg-[#FFFFFF] overflow-auto">
+                <div className="grow flex flex-col basis-[400px] bg-primary-50 overflow-auto">
                   {isEditing ? (
                     <EditPhotoInfo
                       photoInfo={contentInfo}

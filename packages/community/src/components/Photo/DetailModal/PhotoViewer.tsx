@@ -62,33 +62,36 @@ const PhotoViewer = ({ onClickPrev, onClickNext, imgUrl }: Props) => {
     : 'ri-fullscreen-fill';
 
   return (
-    <div className="photo-section-left">
+    <div className="flex-[2] min-h-0 max-h-full hidden md:block">
       <div
-        className="photo-img-wrapper"
+        className="relative flex justify-center bg-[#1d1d1d] h-full group"
         ref={fullscreenRef}
         onMouseMove={handleMouseHover}
       >
         {isArrowVisible && (
-          <div className="photo-move-action prev">
-            <button className="photo-move-btn" onClick={onClickNext}>
-              <i className="ri-arrow-left-s-line ri-icons cursor-pointer"></i>
+          <div className="absolute left-0 top-0 h-full z-10 flex items-center pl-2 transition-opacity duration-200">
+            <button
+              className="bg-white/30 hover:bg-white/50 backdrop-blur-sm rounded-full h-10 w-10 flex items-center justify-center transition-colors duration-200"
+              onClick={onClickNext}
+            >
+              <i className="ri-arrow-left-s-line text-2xl text-white"></i>
             </button>
           </div>
         )}
         <Image imgSrc={imgUrl} />
         {isArrowVisible && (
-          <div className="photo-move-action next">
+          <div className="absolute right-0 top-0 h-full z-10 flex items-center pr-2 transition-opacity duration-200">
             <button
-              className="photo-move-btn flex items-center center"
+              className="bg-white/30 hover:bg-white/50 backdrop-blur-sm rounded-full h-10 w-10 flex items-center justify-center transition-colors duration-200"
               onClick={onClickPrev}
             >
-              <i className="ri-arrow-right-s-line ri-icons cursor-pointer"></i>
+              <i className="ri-arrow-right-s-line text-2xl text-white"></i>
             </button>
           </div>
         )}
-        <button className="absolute right-2 bottom-2 z-10 bg-gray-400 opacity-50 p-2 md:p-3 rounded-full flex items-center center">
+        <button className="absolute right-2 bottom-2 z-10 bg-white/30 hover:bg-white/50 backdrop-blur-sm p-2 md:p-3 rounded-full flex items-center justify-center transition-colors duration-200">
           <i
-            className={`${fullscreenClass} cursor-pointer enif-f-1p2x`}
+            className={`${fullscreenClass} text-white cursor-pointer text-lg`}
             onClick={clickFullScreen}
           ></i>
         </button>

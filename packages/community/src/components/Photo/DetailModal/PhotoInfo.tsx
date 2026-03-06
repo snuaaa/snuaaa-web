@@ -4,7 +4,6 @@ import { convertDate, convertFullDate } from '~/utils/convertDate';
 import ActionDrawer from '~/components/Common/ActionDrawer';
 
 import { ExhibitPhoto, Photo } from '~/services/types';
-import { Divider } from '~/ui';
 
 type PhotoInfoProps = {
   photoInfo: Photo | ExhibitPhoto;
@@ -30,24 +29,12 @@ const PhotoInfo = ({
   const userInfo = photoInfo && photoInfo.user;
   const tagInfo = photoInfo && photoInfo.tags;
 
-  const makeTagList = () => {
-    if (tagInfo) {
-      return tagInfo.map((tag) => {
-        const tagClassName = tag.tag_type === 'M' ? 'tag-type-1' : 'tag-type-2';
-        return (
-          <div key={tag.tag_id} className={`tag-unit ${tagClassName}`}>
-            # {tag.tag_name}
-          </div>
-        );
-      });
-    }
-  };
-
   return (
     <>
       {photoInfo && photo && (
-        <>
-          <div className="photo-contents-wrapper">
+        <div className="flex flex-col h-full">
+          {/* ── Photo Info Content ── */}
+          <div className="relative p-5 flex-1 overflow-auto">
             {userInfo && my_id === userInfo.user_id && (
               <ActionDrawer
                 clickEdit={onClickEdit}
@@ -57,111 +44,138 @@ const PhotoInfo = ({
               />
             )}
 
-            <div className="info-wrapper">
-              <div className="info-title-date">
-                <h4>{content.title}</h4>
-                <p className="info-date">
-                  {convertFullDate(content.createdAt)}
-                </p>
+            {/* Title & Date */}
+            <div className="mb-3">
+              <h4 className="text-xl font-bold text-primary-900 leading-tight font-[S-CoreDream-5Medium]">
+                {content.title}
+              </h4>
+              <p className="text-sm text-gray-400 mt-1">
+                {convertFullDate(content.createdAt)}
+              </p>
+            </div>
+
+            {/* Tags */}
+            {tagInfo && tagInfo.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 mb-4">
+                {tagInfo.map((tag) => (
+                  <span
+                    key={tag.tag_id}
+                    className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium text-white ${
+                      tag.tag_type === 'M' ? 'bg-red-500' : 'bg-primary-500'
+                    }`}
+                  >
+                    # {tag.tag_name}
+                  </span>
+                ))}
               </div>
-              <div className="info-tags">{makeTagList()}</div>
-              <div className="info-text-infos-wrapper">
-                {content.text && (
-                  <>
-                    <Divider />
-                    <div className="info-text-wrapper">
-                      <p>{breakLine(content.text)}</p>
-                    </div>
-                  </>
-                )}
+            )}
 
-                {photo &&
-                  (photo.date ||
-                    photo.location ||
-                    photo.camera ||
-                    photo.lens ||
-                    photo.focal_length ||
-                    photo.focal_length ||
-                    photo.exposure_time ||
-                    photo.iso) && (
-                    <>
-                      <Divider />
-                      <div className="info-infos-wrapper">
-                        {photo.date && (
-                          <div className="photo-info-unit">
-                            <div className="photo-info-label">Date</div>
-                            <div>{convertDate(photo.date)}</div>
-                          </div>
-                        )}
+            {/* Description */}
+            {content.text && (
+              <>
+                <div className="h-px bg-gray-200 my-3" />
+                <div className="text-sm text-gray-600 leading-relaxed max-h-[120px] overflow-auto">
+                  {breakLine(content.text)}
+                </div>
+              </>
+            )}
 
-                        {photo.location && (
-                          <div className="photo-info-unit">
-                            <div className="photo-info-label">Location</div>
-                            <div>{photo.location}</div>
-                          </div>
-                        )}
-
-                        {photo.camera && (
-                          <div className="photo-info-unit">
-                            <div className="photo-info-label">Camera</div>
-                            <div>{photo.camera}</div>
-                          </div>
-                        )}
-
-                        {photo.lens && (
-                          <div className="photo-info-unit">
-                            <div className="photo-info-label">Lens</div>
-                            <div>{photo.lens}</div>
-                            {photo.focal_length && (
-                              <>
-                                <div className="photo-info-fl">@</div>
-                                <div>{photo.focal_length}mm</div>
-                              </>
-                            )}
-                          </div>
-                        )}
-
-                        {(photo.f_stop || photo.exposure_time || photo.iso) && (
-                          <div className="photo-info-unit">
-                            <div className="photo-info-label">Setting</div>
-                            <div>
-                              {photo.f_stop && <>F/{photo.f_stop}</>}
-                              {photo.exposure_time && (
-                                <> {photo.exposure_time}</>
-                              )}
-                              {photo.iso && <> ISO{photo.iso}</>}
-                            </div>
-                          </div>
-                        )}
+            {/* EXIF Metadata */}
+            {photo &&
+              (photo.date ||
+                photo.location ||
+                photo.camera ||
+                photo.lens ||
+                photo.exposure_time ||
+                photo.iso) && (
+                <>
+                  <div className="h-px bg-gray-200 my-3" />
+                  <div className="bg-white rounded-xl p-3 space-y-2 border border-gray-100 shadow-sm">
+                    {photo.date && (
+                      <div className="flex items-center gap-2.5 text-sm">
+                        <i className="ri-calendar-line text-primary-400 text-base w-5 text-center" />
+                        <span className="text-gray-500 w-16 shrink-0">
+                          Date
+                        </span>
+                        <span className="text-gray-800">
+                          {convertDate(photo.date)}
+                        </span>
                       </div>
-                    </>
-                  )}
-              </div>
-            </div>
-            <Divider />
+                    )}
+                    {photo.location && (
+                      <div className="flex items-center gap-2.5 text-sm">
+                        <i className="ri-map-pin-line text-primary-400 text-base w-5 text-center" />
+                        <span className="text-gray-500 w-16 shrink-0">
+                          Location
+                        </span>
+                        <span className="text-gray-800">{photo.location}</span>
+                      </div>
+                    )}
+                    {photo.camera && (
+                      <div className="flex items-center gap-2.5 text-sm">
+                        <i className="ri-camera-line text-primary-400 text-base w-5 text-center" />
+                        <span className="text-gray-500 w-16 shrink-0">
+                          Camera
+                        </span>
+                        <span className="text-gray-800">{photo.camera}</span>
+                      </div>
+                    )}
+                    {photo.lens && (
+                      <div className="flex items-center gap-2.5 text-sm">
+                        <i className="ri-focus-2-line text-primary-400 text-base w-5 text-center" />
+                        <span className="text-gray-500 w-16 shrink-0">
+                          Lens
+                        </span>
+                        <span className="text-gray-800">
+                          {photo.lens}
+                          {photo.focal_length && ` @ ${photo.focal_length}mm`}
+                        </span>
+                      </div>
+                    )}
+                    {(photo.f_stop || photo.exposure_time || photo.iso) && (
+                      <div className="flex items-center gap-2.5 text-sm">
+                        <i className="ri-settings-3-line text-primary-400 text-base w-5 text-center" />
+                        <span className="text-gray-500 w-16 shrink-0">
+                          Setting
+                        </span>
+                        <span className="text-gray-800">
+                          {photo.f_stop && <>F/{photo.f_stop}</>}
+                          {photo.exposure_time && <> {photo.exposure_time}</>}
+                          {photo.iso && <> ISO{photo.iso}</>}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
+
+            {/* Profile */}
+            <div className="h-px bg-gray-200 my-3" />
             <ProfileMini userInfo={userInfo} />
-            <Divider />
+            <div className="h-px bg-gray-200 my-3" />
           </div>
-          <div className="actions-wrapper">
-            <div className="nums-wrapper">
-              <div className="view-num-wrapper">
-                <i className="ri-eye-fill"></i>
-                {content.view_num}
+
+          {/* ── Stats Bar (sticky bottom) ── */}
+          <div className="shrink-0 px-5 py-3 bg-white border-t border-gray-100">
+            <div className="flex items-center text-sm">
+              <div className="flex items-center gap-1 text-gray-400 mr-auto">
+                <i className="ri-eye-fill text-lg" />
+                <span>{content.view_num}</span>
               </div>
-              <div className="like-num-wrapper">
+              <div className="flex items-center gap-1 text-pink-400 mr-3">
                 <i
-                  className={`${likeInfo ? 'ri-heart-fill' : 'ri-heart-line'} text-2xl cursor-pointer`}
+                  className={`${likeInfo ? 'ri-heart-fill' : 'ri-heart-line'} text-xl cursor-pointer hover:scale-110 transition-transform`}
                   onClick={() => likePhoto()}
-                ></i>
-                {content.like_num}
+                />
+                <span>{content.like_num}</span>
               </div>
-              <div className="comment-num-wrapper">
-                <i className="ri-message-2-fill text-2xl"></i>
-                {content.comment_num}
+              <div className="flex items-center gap-1 text-gray-400">
+                <i className="ri-message-2-fill text-lg" />
+                <span>{content.comment_num}</span>
               </div>
             </div>
           </div>
-        </>
+        </div>
       )}
     </>
   );
