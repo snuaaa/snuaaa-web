@@ -181,7 +181,7 @@ const PhotoDetailModal = ({ photoId, onClose, onMovePhoto }: Props) => {
           >
             {/* Modal Container */}
             <div
-              className="relative flex flex-col w-[90vw] max-w-[1200px] h-[90vh] max-h-[90vh] rounded-2xl shadow-2xl overflow-hidden animate-[slideUp_400ms_ease]"
+              className="relative flex flex-col w-[95vw] max-w-[1400px] h-[90vh] max-h-[90vh] rounded-2xl shadow-2xl overflow-hidden animate-[slideUp_400ms_ease]"
               onClick={(e) => e.stopPropagation()}
             >
               {/* ── Header Bar ── */}
@@ -220,7 +220,7 @@ const PhotoDetailModal = ({ photoId, onClose, onMovePhoto }: Props) => {
                   onClickNext={() => moveToPhoto('next')}
                   imgUrl={photoInfo.img_url ?? photoInfo.file_path}
                 />
-                <div className="grow flex flex-col basis-[400px] bg-primary-50 overflow-auto">
+                <div className="grow flex flex-col basis-auto md:basis-[400px] md:min-w-[400px] bg-primary-50 overflow-auto">
                   {isEditing ? (
                     <EditPhotoInfo
                       photoInfo={contentInfo}

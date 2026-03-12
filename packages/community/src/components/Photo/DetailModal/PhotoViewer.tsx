@@ -62,9 +62,9 @@ const PhotoViewer = ({ onClickPrev, onClickNext, imgUrl }: Props) => {
     : 'ri-fullscreen-fill';
 
   return (
-    <div className="flex-[2] min-h-0 max-h-full hidden md:block">
+    <div className="flex-3 min-h-[40vh] md:min-h-0 max-h-full">
       <div
-        className="relative flex justify-center bg-[#1d1d1d] h-full group"
+        className="relative flex justify-center bg-[#1d1d1d] h-full w-full group overflow-hidden"
         ref={fullscreenRef}
         onMouseMove={handleMouseHover}
       >
@@ -78,7 +78,7 @@ const PhotoViewer = ({ onClickPrev, onClickNext, imgUrl }: Props) => {
             </button>
           </div>
         )}
-        <Image imgSrc={imgUrl} />
+        <Image imgSrc={imgUrl} className="w-full h-full object-contain" />
         {isArrowVisible && (
           <div className="absolute right-0 top-0 h-full z-10 flex items-center pr-2 transition-opacity duration-200">
             <button
