@@ -41,11 +41,13 @@ const PhotoInfo = ({
                 clickDelete={deletePhoto}
                 isPhoto={true}
                 clickSetThumbnail={setAlbumThumbnail}
+                className="top-4 right-4 z-20"
+                iconClass="text-2xl text-gray-400 hover:text-gray-700 transition-colors"
               />
             )}
 
             {/* Title & Date */}
-            <div className="mb-3">
+            <div className="mb-3 pr-10">
               <h4 className="text-xl font-bold text-primary-900 leading-tight font-[S-CoreDream-5Medium]">
                 {content.title}
               </h4>

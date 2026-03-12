@@ -5,6 +5,8 @@ type ActionDrawerProps = {
   clickDelete: () => void;
   isPhoto?: boolean;
   clickSetThumbnail?: () => void;
+  className?: string;
+  iconClass?: string;
 };
 
 function ActionDrawer({
@@ -12,13 +14,15 @@ function ActionDrawer({
   clickDelete,
   isPhoto,
   clickSetThumbnail,
+  className = '',
+  iconClass = '',
 }: ActionDrawerProps) {
   const [isOpened, setIsOpened] = useState(false);
 
   return (
-    <div className="actions-drawer">
+    <div className={`actions-drawer ${className}`}>
       <i
-        className="ri-more-2-fill cursor-pointer"
+        className={`ri-more-2-fill cursor-pointer ${iconClass}`}
         onClick={() => setIsOpened(!isOpened)}
       ></i>
       {
