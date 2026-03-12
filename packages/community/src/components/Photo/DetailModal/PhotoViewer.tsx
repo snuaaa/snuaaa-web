@@ -89,7 +89,7 @@ const PhotoViewer = ({ onClickPrev, onClickNext, imgUrl }: Props) => {
             </button>
           </div>
         )}
-        <button className="absolute right-2 bottom-2 z-10 bg-white/30 hover:bg-white/50 backdrop-blur-sm p-2 md:p-3 rounded-full flex items-center justify-center transition-colors duration-200">
+        <button className="absolute right-2 bottom-2 z-10 bg-white/30 hover:bg-white/50 backdrop-blur-sm w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center transition-colors duration-200">
           <i
             className={`${fullscreenClass} text-white cursor-pointer text-lg`}
             onClick={clickFullScreen}
