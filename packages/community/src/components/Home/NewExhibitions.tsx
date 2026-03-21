@@ -42,9 +42,9 @@ function NewExhibitions({ board_id, exhibitions }: NewExhibitionsProps) {
         params={{ board_id }}
         className="flex items-center gap-2 mb-5 text-white font-extrabold text-lg tracking-tight no-underline"
       >
-        <i className="ri-gallery-view-2 text-xl text-[#49A0AE]"></i>
+        <i className="ri-gallery-view-2 text-xl text-aqua-400"></i>
         <span>역대 사진전</span>
-        <div className="flex-1 h-0.5 ml-3 bg-gradient-to-r from-[#49A0AE] to-transparent rounded-full opacity-40"></div>
+        <div className="flex-1 h-0.5 ml-3 bg-linear-to-r from-aqua-400 to-transparent rounded-full opacity-40"></div>
       </Link>
 
       <div className="relative flex items-center">
@@ -52,7 +52,7 @@ function NewExhibitions({ board_id, exhibitions }: NewExhibitionsProps) {
         {hasPrev && (
           <button
             onClick={clickPrev}
-            className="flex absolute left-1 md:-left-5 z-10 w-8 h-8 md:w-10 md:h-10 items-center justify-center rounded-full bg-black/50 hover:bg-[#49A0AE] text-white hover:text-white backdrop-blur-md border border-white/20 transition-all duration-300 cursor-pointer shadow-lg"
+            className="flex absolute left-1 md:-left-5 z-10 w-8 h-8 md:w-10 md:h-10 items-center justify-center rounded-full bg-black/50 hover:bg-white/20 text-white hover:text-white backdrop-blur-md border border-white/20 hover:border-white/50 transition-all duration-300 cursor-pointer shadow-lg"
           >
             <i className="ri-arrow-left-s-line text-lg md:text-xl"></i>
           </button>
@@ -72,7 +72,7 @@ function NewExhibitions({ board_id, exhibitions }: NewExhibitionsProps) {
                     params={{ exhibition_id: String(content.content_id) }}
                     className="block"
                   >
-                    <div className="relative aspect-[2/3] rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 group-hover:-translate-y-1">
+                    <div className="relative aspect-2/3 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 group-hover:-translate-y-1">
                       <Image
                         imgSrc={content.exhibition.poster_thumbnail_path}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -89,7 +89,7 @@ function NewExhibitions({ board_id, exhibitions }: NewExhibitionsProps) {
         {hasNext && (
           <button
             onClick={clickNext}
-            className="flex absolute right-1 md:-right-5 z-10 w-8 h-8 md:w-10 md:h-10 items-center justify-center rounded-full bg-black/50 hover:bg-[#49A0AE] text-white hover:text-white backdrop-blur-md border border-white/20 transition-all duration-300 cursor-pointer shadow-lg"
+            className="flex absolute right-1 md:-right-5 z-10 w-8 h-8 md:w-10 md:h-10 items-center justify-center rounded-full bg-black/50 hover:bg-white/20 text-white hover:text-white backdrop-blur-md border border-white/20 hover:border-white/50 transition-all duration-300 cursor-pointer shadow-lg"
           >
             <i className="ri-arrow-right-s-line text-lg md:text-xl"></i>
           </button>
