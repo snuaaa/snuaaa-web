@@ -96,6 +96,8 @@ function RootComponent() {
   // Check if the current path is an auth path (login or signup)
   const isAuthPage = location.pathname.startsWith('/auth');
   const isHomePage = location.pathname === '/';
+  const isPostPage = location.pathname.startsWith('/post');
+  const isFullWidthPage = isHomePage || isPostPage;
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -104,7 +106,7 @@ function RootComponent() {
           <AuthProvider>
             {isAuthPage ? (
               <Outlet />
-            ) : isHomePage ? (
+            ) : isFullWidthPage ? (
               <>
                 <Header />
                 <Outlet />
