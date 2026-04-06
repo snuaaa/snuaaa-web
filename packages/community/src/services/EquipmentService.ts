@@ -5,6 +5,7 @@ import {
   EquipmentCategory,
   ListResponse,
   MyRent,
+  PenaltyStatus,
   Rent,
   RentWithEquipment,
 } from './types';
@@ -100,7 +101,7 @@ const EquipmentService = {
   },
 
   retrieveAllRentRecords: function (params: {
-    penaltyStatus?: string;
+    penaltyStatus?: PenaltyStatus;
     dateFromStart?: string;
     dateToStart?: string;
     dateFromReturn?: string;
@@ -124,7 +125,7 @@ const EquipmentService = {
     );
   },
 
-  updatePenaltyStatus: function (rentId: number, penaltyStatus: string) {
+  updatePenaltyStatus: function (rentId: number, penaltyStatus: PenaltyStatus) {
     return API.patch(`equipment/rent/${rentId}/penalty`, {
       penalty_status: penaltyStatus,
     });
