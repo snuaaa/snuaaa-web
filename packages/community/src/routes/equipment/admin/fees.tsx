@@ -3,7 +3,7 @@ import LateFees from '~/components/Equipment/LateFees';
 import { PenaltyStatus } from '~/services/types';
 
 export type FeeSearchState = {
-  penalty_status?: PenaltyStatus | '';
+  penalty_status?: PenaltyStatus;
   date_from_start?: string;
   date_to_start?: string;
   date_from_return?: string;
