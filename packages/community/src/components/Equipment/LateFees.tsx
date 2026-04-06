@@ -88,12 +88,17 @@ const LateFees: FC = () => {
     setPhotoRentId(photoRentId === id ? null : id);
   };
 
-  const handleMarkPaid = (rentId: number) => {
-    if (!window.confirm('연체료 완납 처리하시겠습니까?')) return;
-    updatePenalty.mutate({
-      rentId,
-      penaltyStatus: PenaltyStatus.RECEIVED_PAYMENT,
-    });
+  const handleTogglePenalty = (rentId: number, current: PenaltyStatus) => {
+    const next =
+      current === PenaltyStatus.NEED_PAYMENT
+        ? PenaltyStatus.RECEIVED_PAYMENT
+        : PenaltyStatus.NEED_PAYMENT;
+    const msg =
+      current === PenaltyStatus.NEED_PAYMENT
+        ? '연체료 완납 처리하시겠습니까?'
+        : '연체료 미납 상태로 되돌리시겠습니까?';
+    if (!window.confirm(msg)) return;
+    updatePenalty.mutate({ rentId, penaltyStatus: next });
   };
 
   if (authContext.authInfo.user.grade > EQUIP_ADMIN_GRADE) {
@@ -256,10 +261,24 @@ const LateFees: FC = () => {
                       PenaltyStatus.NEED_PAYMENT && (
                       <button
                         className="bg-[#49A1AF] text-white text-xs px-2 py-1 rounded hover:bg-[#3d8a96]"
-                        onClick={() => handleMarkPaid(record.id)}
+                        onClick={() =>
+                          handleTogglePenalty(record.id, PenaltyStatus.NEED_PAYMENT)
+                        }
                         disabled={updatePenalty.isPending}
                       >
                         완납 처리
+                      </button>
+                    )}
+                    {record.rentReturn?.penalty_status ===
+                      PenaltyStatus.RECEIVED_PAYMENT && (
+                      <button
+                        className="bg-gray-400 text-white text-xs px-2 py-1 rounded hover:bg-gray-500"
+                        onClick={() =>
+                          handleTogglePenalty(record.id, PenaltyStatus.RECEIVED_PAYMENT)
+                        }
+                        disabled={updatePenalty.isPending}
+                      >
+                        미납 처리
                       </button>
                     )}
                   </div>
