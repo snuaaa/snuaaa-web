@@ -220,9 +220,12 @@ const LateFees: FC = () => {
             )}
             {rentRecords.map((record) => (
               <div key={record.id}>
-                <button
+                <div
+                  role="button"
+                  tabIndex={0}
                   onClick={() => handleClickRecord(record.id)}
-                  className="flex items-center text-gray-950 border border-t-0 border-gray-300 w-full py-2 text-sm hover:bg-gray-50"
+                  onKeyDown={(e) => e.key === 'Enter' && handleClickRecord(record.id)}
+                  className="flex items-center text-gray-950 border border-t-0 border-gray-300 w-full py-2 text-sm hover:bg-gray-50 cursor-pointer"
                 >
                   <div className="w-[14%] text-center truncate px-1">
                     {record.equipment.name}
@@ -282,7 +285,7 @@ const LateFees: FC = () => {
                       </button>
                     )}
                   </div>
-                </button>
+                  </div>
                 {record.rentReturn && photoRentId === record.id && (
                   <div className="flex items-center border border-t-0 border-gray-300 w-full py-2">
                     <button
