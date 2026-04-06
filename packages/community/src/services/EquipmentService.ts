@@ -1,6 +1,13 @@
 import { API } from './index';
 
-import { Equipment, EquipmentCategory, MyRent, Rent } from './types';
+import {
+  Equipment,
+  EquipmentCategory,
+  ListResponse,
+  MyRent,
+  Rent,
+  RentWithEquipment,
+} from './types';
 
 export type RetrieveEquipmentListResponse = {
   equipCount: number;
@@ -90,6 +97,37 @@ const EquipmentService = {
 
   returnEquipment: function (rentId: number, photo_path: string) {
     return API.post(`equipment/rent/${rentId}/return`, { photo_path });
+  },
+
+  retrieveAllRentRecords: function (params: {
+    penaltyStatus?: string;
+    dateFromStart?: string;
+    dateToStart?: string;
+    dateFromReturn?: string;
+    dateToReturn?: string;
+    page: number;
+  }) {
+    const searchParams = new URLSearchParams();
+    searchParams.set('page', String(params.page));
+    if (params.penaltyStatus)
+      searchParams.set('penalty_status', params.penaltyStatus);
+    if (params.dateFromStart)
+      searchParams.set('date_from_start', params.dateFromStart);
+    if (params.dateToStart)
+      searchParams.set('date_to_start', params.dateToStart);
+    if (params.dateFromReturn)
+      searchParams.set('date_from_return', params.dateFromReturn);
+    if (params.dateToReturn)
+      searchParams.set('date_to_return', params.dateToReturn);
+    return API.get<ListResponse<RentWithEquipment>>(
+      `equipment/rent/records?${searchParams.toString()}`,
+    );
+  },
+
+  updatePenaltyStatus: function (rentId: number, penaltyStatus: string) {
+    return API.patch(`equipment/rent/${rentId}/penalty`, {
+      penalty_status: penaltyStatus,
+    });
   },
 };
 

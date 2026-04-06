@@ -8,7 +8,7 @@ import EquipSearchBar from './EquipSearchBar';
 import { useEquipment, withEquipment } from './contexts';
 import EditCategoriesModal from './Modal/EditCategories';
 import { ViewportSize, useViewportSize } from '~/contexts/viewportSize';
-import { useNavigate, useSearch } from '@tanstack/react-router';
+import { Link, useNavigate, useSearch } from '@tanstack/react-router';
 import { EquipSearchLocationState } from './common';
 import { useCallback } from 'react';
 
@@ -20,8 +20,8 @@ const Admin = () => {
 
   const viewportSize = useViewportSize();
 
-  const search = useSearch({ from: '/equipment/admin' });
-  const navigate = useNavigate({ from: '/equipment/admin' });
+  const search = useSearch({ from: '/equipment/admin/' });
+  const navigate = useNavigate({ from: '/equipment/admin/' });
 
   const handleSearchChange = useCallback(
     (updater: (prev: EquipSearchLocationState) => EquipSearchLocationState) => {
@@ -65,6 +65,12 @@ const Admin = () => {
             >
               <i className="ri-menu-add-line mr-1"></i> 장비 추가
             </button>
+            <Link
+              to="/equipment/admin/fees"
+              className="bg-[#A3A3A3] text-white ml-2 flex justify-center items-center text-base px-2 py-1 font-bold"
+            >
+              <i className="ri-money-dollar-circle-line mr-1"></i> 연체료 관리
+            </Link>
           </>
         )}
       </div>

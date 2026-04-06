@@ -7,7 +7,7 @@ import {
 } from '~/components/Equipment/common';
 import { EquipmentRentStatus, EquipmentStatus } from '~/services/types';
 
-export const Route = createFileRoute('/equipment/admin')({
+export const Route = createFileRoute('/equipment/admin/')({
   component: EquipmentAdmin,
   validateSearch: (
     search: Record<string, unknown>,
