@@ -303,11 +303,13 @@ const LateFees: FC = () => {
         </div>
       )}
 
-      <Paginator
-        pageIdx={pageIdx}
-        pageNum={Math.ceil(rentCount / ROWNUM)}
-        clickPage={handleClickPage}
-      />
+      {rentCount > 0 && (
+        <Paginator
+          pageIdx={pageIdx}
+          pageNum={Math.max(1, Math.ceil(rentCount / ROWNUM))}
+          clickPage={handleClickPage}
+        />
+      )}
     </div>
   );
 };
