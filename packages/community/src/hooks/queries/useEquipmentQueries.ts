@@ -141,7 +141,7 @@ export function useUpdatePenaltyStatus() {
       penaltyStatus,
     }: {
       rentId: number;
-      penaltyStatus: string;
+      penaltyStatus: PenaltyStatus;
     }) => EquipmentService.updatePenaltyStatus(rentId, penaltyStatus),
     onSuccess: () => {
       queryClient.invalidateQueries({
