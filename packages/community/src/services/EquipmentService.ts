@@ -108,21 +108,16 @@ const EquipmentService = {
     dateToReturn?: string;
     page: number;
   }) {
-    const searchParams = new URLSearchParams();
-    searchParams.set('page', String(params.page));
-    if (params.penaltyStatus)
-      searchParams.set('penalty_status', params.penaltyStatus);
-    if (params.dateFromStart)
-      searchParams.set('date_from_start', params.dateFromStart);
-    if (params.dateToStart)
-      searchParams.set('date_to_start', params.dateToStart);
-    if (params.dateFromReturn)
-      searchParams.set('date_from_return', params.dateFromReturn);
-    if (params.dateToReturn)
-      searchParams.set('date_to_return', params.dateToReturn);
-    return API.get<ListResponse<RentWithEquipment>>(
-      `equipment/rent/records?${searchParams.toString()}`,
-    );
+    return API.get<ListResponse<RentWithEquipment>>(`equipment/rent/records`, {
+      params: {
+        page: params.page,
+        penalty_status: params.penaltyStatus,
+        date_from_start: params.dateFromStart,
+        date_to_start: params.dateToStart,
+        date_from_return: params.dateFromReturn,
+        date_to_return: params.dateToReturn,
+      },
+    });
   },
 
   updatePenaltyStatus: function (rentId: number, penaltyStatus: PenaltyStatus) {
