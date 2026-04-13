@@ -21,7 +21,6 @@ import { Route as MypageViewRouteImport } from './routes/mypage/$view'
 import { Route as ExhibitionExhibition_idRouteImport } from './routes/exhibition/$exhibition_id'
 import { Route as ExhibitPhotoExhibitPhoto_idRouteImport } from './routes/exhibitPhoto/$exhibitPhoto_id'
 import { Route as EquipmentRentRouteImport } from './routes/equipment/rent'
-import { Route as EquipmentAdminRouteImport } from './routes/equipment/admin'
 import { Route as DocumentDoc_idRouteImport } from './routes/document/$doc_id'
 import { Route as CommentsAllRouteImport } from './routes/comments/all'
 import { Route as BoardBoard_idRouteImport } from './routes/board/$board_id'
@@ -30,6 +29,9 @@ import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as AlbumAlbum_idRouteImport } from './routes/album/$album_id'
 import { Route as AdminUserRouteImport } from './routes/admin/user'
 import { Route as AboutAaaRouteImport } from './routes/about/$aaa'
+import { Route as EquipmentAdminRouteRouteImport } from './routes/equipment/admin/route'
+import { Route as EquipmentAdminIndexRouteImport } from './routes/equipment/admin/index'
+import { Route as EquipmentAdminFeesRouteImport } from './routes/equipment/admin/fees'
 
 const CalculatorRoute = CalculatorRouteImport.update({
   id: '/calculator',
@@ -92,11 +94,6 @@ const EquipmentRentRoute = EquipmentRentRouteImport.update({
   path: '/rent',
   getParentRoute: () => EquipmentRouteRoute,
 } as any)
-const EquipmentAdminRoute = EquipmentAdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => EquipmentRouteRoute,
-} as any)
 const DocumentDoc_idRoute = DocumentDoc_idRouteImport.update({
   id: '/document/$doc_id',
   path: '/document/$doc_id',
@@ -137,11 +134,27 @@ const AboutAaaRoute = AboutAaaRouteImport.update({
   path: '/about/$aaa',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EquipmentAdminRouteRoute = EquipmentAdminRouteRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => EquipmentRouteRoute,
+} as any)
+const EquipmentAdminIndexRoute = EquipmentAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => EquipmentAdminRouteRoute,
+} as any)
+const EquipmentAdminFeesRoute = EquipmentAdminFeesRouteImport.update({
+  id: '/fees',
+  path: '/fees',
+  getParentRoute: () => EquipmentAdminRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/equipment': typeof EquipmentRouteRouteWithChildren
   '/calculator': typeof CalculatorRoute
+  '/equipment/admin': typeof EquipmentAdminRouteRouteWithChildren
   '/about/$aaa': typeof AboutAaaRoute
   '/admin/user': typeof AdminUserRoute
   '/album/$album_id': typeof AlbumAlbum_idRoute
@@ -150,7 +163,6 @@ export interface FileRoutesByFullPath {
   '/board/$board_id': typeof BoardBoard_idRoute
   '/comments/all': typeof CommentsAllRoute
   '/document/$doc_id': typeof DocumentDoc_idRoute
-  '/equipment/admin': typeof EquipmentAdminRoute
   '/equipment/rent': typeof EquipmentRentRoute
   '/exhibitPhoto/$exhibitPhoto_id': typeof ExhibitPhotoExhibitPhoto_idRoute
   '/exhibition/$exhibition_id': typeof ExhibitionExhibition_idRoute
@@ -160,6 +172,8 @@ export interface FileRoutesByFullPath {
   '/posts/all': typeof PostsAllRoute
   '/userpage/$uuid': typeof UserpageUuidRoute
   '/equipment/': typeof EquipmentIndexRoute
+  '/equipment/admin/fees': typeof EquipmentAdminFeesRoute
+  '/equipment/admin/': typeof EquipmentAdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -172,7 +186,6 @@ export interface FileRoutesByTo {
   '/board/$board_id': typeof BoardBoard_idRoute
   '/comments/all': typeof CommentsAllRoute
   '/document/$doc_id': typeof DocumentDoc_idRoute
-  '/equipment/admin': typeof EquipmentAdminRoute
   '/equipment/rent': typeof EquipmentRentRoute
   '/exhibitPhoto/$exhibitPhoto_id': typeof ExhibitPhotoExhibitPhoto_idRoute
   '/exhibition/$exhibition_id': typeof ExhibitionExhibition_idRoute
@@ -182,12 +195,15 @@ export interface FileRoutesByTo {
   '/posts/all': typeof PostsAllRoute
   '/userpage/$uuid': typeof UserpageUuidRoute
   '/equipment': typeof EquipmentIndexRoute
+  '/equipment/admin/fees': typeof EquipmentAdminFeesRoute
+  '/equipment/admin': typeof EquipmentAdminIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/equipment': typeof EquipmentRouteRouteWithChildren
   '/calculator': typeof CalculatorRoute
+  '/equipment/admin': typeof EquipmentAdminRouteRouteWithChildren
   '/about/$aaa': typeof AboutAaaRoute
   '/admin/user': typeof AdminUserRoute
   '/album/$album_id': typeof AlbumAlbum_idRoute
@@ -196,7 +212,6 @@ export interface FileRoutesById {
   '/board/$board_id': typeof BoardBoard_idRoute
   '/comments/all': typeof CommentsAllRoute
   '/document/$doc_id': typeof DocumentDoc_idRoute
-  '/equipment/admin': typeof EquipmentAdminRoute
   '/equipment/rent': typeof EquipmentRentRoute
   '/exhibitPhoto/$exhibitPhoto_id': typeof ExhibitPhotoExhibitPhoto_idRoute
   '/exhibition/$exhibition_id': typeof ExhibitionExhibition_idRoute
@@ -206,6 +221,8 @@ export interface FileRoutesById {
   '/posts/all': typeof PostsAllRoute
   '/userpage/$uuid': typeof UserpageUuidRoute
   '/equipment/': typeof EquipmentIndexRoute
+  '/equipment/admin/fees': typeof EquipmentAdminFeesRoute
+  '/equipment/admin/': typeof EquipmentAdminIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -213,6 +230,7 @@ export interface FileRouteTypes {
     | '/'
     | '/equipment'
     | '/calculator'
+    | '/equipment/admin'
     | '/about/$aaa'
     | '/admin/user'
     | '/album/$album_id'
@@ -221,7 +239,6 @@ export interface FileRouteTypes {
     | '/board/$board_id'
     | '/comments/all'
     | '/document/$doc_id'
-    | '/equipment/admin'
     | '/equipment/rent'
     | '/exhibitPhoto/$exhibitPhoto_id'
     | '/exhibition/$exhibition_id'
@@ -231,6 +248,8 @@ export interface FileRouteTypes {
     | '/posts/all'
     | '/userpage/$uuid'
     | '/equipment/'
+    | '/equipment/admin/fees'
+    | '/equipment/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -243,7 +262,6 @@ export interface FileRouteTypes {
     | '/board/$board_id'
     | '/comments/all'
     | '/document/$doc_id'
-    | '/equipment/admin'
     | '/equipment/rent'
     | '/exhibitPhoto/$exhibitPhoto_id'
     | '/exhibition/$exhibition_id'
@@ -253,11 +271,14 @@ export interface FileRouteTypes {
     | '/posts/all'
     | '/userpage/$uuid'
     | '/equipment'
+    | '/equipment/admin/fees'
+    | '/equipment/admin'
   id:
     | '__root__'
     | '/'
     | '/equipment'
     | '/calculator'
+    | '/equipment/admin'
     | '/about/$aaa'
     | '/admin/user'
     | '/album/$album_id'
@@ -266,7 +287,6 @@ export interface FileRouteTypes {
     | '/board/$board_id'
     | '/comments/all'
     | '/document/$doc_id'
-    | '/equipment/admin'
     | '/equipment/rent'
     | '/exhibitPhoto/$exhibitPhoto_id'
     | '/exhibition/$exhibition_id'
@@ -276,6 +296,8 @@ export interface FileRouteTypes {
     | '/posts/all'
     | '/userpage/$uuid'
     | '/equipment/'
+    | '/equipment/admin/fees'
+    | '/equipment/admin/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -385,13 +407,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EquipmentRentRouteImport
       parentRoute: typeof EquipmentRouteRoute
     }
-    '/equipment/admin': {
-      id: '/equipment/admin'
-      path: '/admin'
-      fullPath: '/equipment/admin'
-      preLoaderRoute: typeof EquipmentAdminRouteImport
-      parentRoute: typeof EquipmentRouteRoute
-    }
     '/document/$doc_id': {
       id: '/document/$doc_id'
       path: '/document/$doc_id'
@@ -448,17 +463,51 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutAaaRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/equipment/admin': {
+      id: '/equipment/admin'
+      path: '/admin'
+      fullPath: '/equipment/admin'
+      preLoaderRoute: typeof EquipmentAdminRouteRouteImport
+      parentRoute: typeof EquipmentRouteRoute
+    }
+    '/equipment/admin/': {
+      id: '/equipment/admin/'
+      path: '/'
+      fullPath: '/equipment/admin/'
+      preLoaderRoute: typeof EquipmentAdminIndexRouteImport
+      parentRoute: typeof EquipmentAdminRouteRoute
+    }
+    '/equipment/admin/fees': {
+      id: '/equipment/admin/fees'
+      path: '/fees'
+      fullPath: '/equipment/admin/fees'
+      preLoaderRoute: typeof EquipmentAdminFeesRouteImport
+      parentRoute: typeof EquipmentAdminRouteRoute
+    }
   }
 }
 
+interface EquipmentAdminRouteRouteChildren {
+  EquipmentAdminFeesRoute: typeof EquipmentAdminFeesRoute
+  EquipmentAdminIndexRoute: typeof EquipmentAdminIndexRoute
+}
+
+const EquipmentAdminRouteRouteChildren: EquipmentAdminRouteRouteChildren = {
+  EquipmentAdminFeesRoute: EquipmentAdminFeesRoute,
+  EquipmentAdminIndexRoute: EquipmentAdminIndexRoute,
+}
+
+const EquipmentAdminRouteRouteWithChildren =
+  EquipmentAdminRouteRoute._addFileChildren(EquipmentAdminRouteRouteChildren)
+
 interface EquipmentRouteRouteChildren {
-  EquipmentAdminRoute: typeof EquipmentAdminRoute
+  EquipmentAdminRouteRoute: typeof EquipmentAdminRouteRouteWithChildren
   EquipmentRentRoute: typeof EquipmentRentRoute
   EquipmentIndexRoute: typeof EquipmentIndexRoute
 }
 
 const EquipmentRouteRouteChildren: EquipmentRouteRouteChildren = {
-  EquipmentAdminRoute: EquipmentAdminRoute,
+  EquipmentAdminRouteRoute: EquipmentAdminRouteRouteWithChildren,
   EquipmentRentRoute: EquipmentRentRoute,
   EquipmentIndexRoute: EquipmentIndexRoute,
 }
