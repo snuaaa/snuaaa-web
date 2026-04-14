@@ -10,15 +10,12 @@ type Props = {
   logout: () => void;
 };
 
-// TODO: rename to ProfileMenu
 function PopupUser({ profile_path, togglePopup, logout }: Props) {
   const authContext = useAuth();
 
   useEffect(() => {
-    // window.addEventListener('click', togglePopup);
     document.body.classList.add('enif-overflow-hidden-mobile');
     return function () {
-      // window.removeEventListener('click', togglePopup);
       document.body.classList.remove('enif-overflow-hidden-mobile');
     };
   }, []);
@@ -30,29 +27,44 @@ function PopupUser({ profile_path, togglePopup, logout }: Props) {
 
   return (
     <div
-      className="fixed md:absolute left-0 md:left-auto top-0 md:top-[70px] z-[99] md:z-[11] w-full md:w-[150px] h-full md:h-[200px] bg-[#06234eee] md:bg-[#6181b0] md:rounded-[10px]
-        flex flex-col items-center pt-20 md:pt-8 text-white gap-8 md:gap-5"
+      className="fixed md:absolute left-0 md:left-auto md:right-0 top-0 md:top-14 z-[99] md:z-[11]
+        w-full md:w-[180px] h-full md:h-auto
+        bg-[#040c22]/95 md:bg-[#1a2d4d]/95
+        md:backdrop-blur-xl md:border md:border-white/15 md:rounded-xl md:shadow-[0_8px_30px_rgba(0,0,0,0.4)]
+        flex flex-col items-center
+        pt-20 md:pt-0 md:py-4
+        text-white gap-6 md:gap-0"
       onClick={(e) => e.stopPropagation()}
     >
+      {/* Mobile close button */}
       <div className="absolute top-4 right-4 md:hidden" onClick={togglePopup}>
-        <i className="ri-icons ri-close-fill text-3xl"></i>
+        <i className="ri-icons ri-close-fill text-3xl text-white/70 hover:text-white transition-colors cursor-pointer"></i>
       </div>
+
+      {/* Mobile profile image */}
       <div className="md:hidden">
         <Image
           imgSrc={profile_path}
           defaultImgSrc={imgProfile}
-          className="w-32 h-32 rounded-full object-cover"
+          className="w-28 h-28 rounded-full object-cover ring-2 ring-white/20"
         />
       </div>
-      <Link to="/mypage/$view" params={{ view: 'info' }} onClick={togglePopup}>
-        <p className="text-2xl md:text-base">My Page</p>
+
+      <Link
+        to="/mypage/$view"
+        params={{ view: 'info' }}
+        onClick={togglePopup}
+        className="w-full px-5 py-3 md:py-2.5 text-center md:text-left text-xl md:text-sm text-white/80 hover:text-white hover:bg-white/[0.08] transition-colors"
+      >
+        My Page
       </Link>
       {hasManagementAuthority && (
-        <Link to="/admin/user" onClick={togglePopup}>
-          <p className="text-2xl md:text-base">
-            {/* <i className="ri-admin-line"></i> */}
-            회원 관리
-          </p>
+        <Link
+          to="/admin/user"
+          onClick={togglePopup}
+          className="w-full px-5 py-3 md:py-2.5 text-center md:text-left text-xl md:text-sm text-white/80 hover:text-white hover:bg-white/[0.08] transition-colors"
+        >
+          회원 관리
         </Link>
       )}
       <button
@@ -60,7 +72,7 @@ function PopupUser({ profile_path, togglePopup, logout }: Props) {
           logout();
           togglePopup();
         }}
-        className="text-2xl md:text-base"
+        className="w-full px-5 py-3 md:py-2.5 text-center md:text-left text-xl md:text-sm text-white/80 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer"
       >
         Log out
       </button>

@@ -71,52 +71,103 @@ const PostView: React.FC<PostComponentProps> = ({
   const makeFileList = () => {
     if (postInfo.attachedFiles && postInfo.attachedFiles.length > 0) {
       return (
-        <div className="file-download-wrapper">
-          {postInfo.attachedFiles.map((file: File) => {
-            return (
-              <div className="file-download-list" key={file.file_id}>
-                <DownloadFile
-                  key={file.file_id}
-                  content_id={file.parent_id}
-                  file_id={file.file_id}
-                >
-                  <FileIcon fileInfo={file} isFull={true} isDownload={true} />
-                </DownloadFile>
-              </div>
-            );
-          })}
+        <div className="mt-8 pt-6 border-t border-black/4">
+          <h3 className="text-[13px] font-bold text-aqua-400 mb-3 flex items-center gap-2">
+            <i className="ri-attachment-line"></i>첨부파일
+          </h3>
+          <div className="flex flex-col gap-2">
+            {postInfo.attachedFiles.map((file: File) => {
+              return (
+                <div key={file.file_id} className="inline-flex">
+                  <DownloadFile
+                    content_id={file.parent_id}
+                    file_id={file.file_id}
+                  >
+                    <div className="flex items-center gap-3 px-4 py-3 bg-gray-50 hover:bg-primary-100/15 border border-black/4 rounded-xl transition-colors cursor-pointer group">
+                      <FileIcon
+                        fileInfo={file}
+                        isFull={true}
+                        isDownload={true}
+                      />
+                    </div>
+                  </DownloadFile>
+                </div>
+              );
+            })}
+          </div>
         </div>
       );
     }
   };
 
   return (
-    <div className="post-wrapper">
-      <div className="post-title">
-        <div className="post-title-back" onClick={() => router.history.back()}>
-          <i className="ri-arrow-left-line cursor-pointer"> </i>
-        </div>
-        <h5> {postInfo.title} </h5>
-        {my_id === postInfo.author_id && (
-          <ActionDrawer clickEdit={onClickEdit} clickDelete={deletePost} />
-        )}
-      </div>
-      <div className="post-info-other">
-        <div className="post-author">
-          <i className="ri-icons ri-pencil-fill"></i>
-          {user && user.nickname}
-        </div>
-        <div className="post-date-created flex items-center center">
-          <i className="ri-time-line"> </i>
-          {convertFullDate(postInfo.createdAt)}
-          {postInfo.createdAt !== postInfo.updatedAt && (
-            <div className="post-date-updated">
-              {convertFullDate(postInfo.updatedAt)} Updated
+    <div className="w-full">
+      {/* ── Header Area ── */}
+      <div className="relative pb-6 border-b border-black/4">
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => router.history.back()}
+            className="shrink-0 flex items-center justify-center w-10 h-10 rounded-full hover:bg-black/5 transition-colors"
+          >
+            <i className="ri-arrow-left-line text-xl text-primary-900"></i>
+          </button>
+          <h1 className="flex-1 text-2xl font-bold text-primary-900 wrap-break-word">
+            {postInfo.title}
+          </h1>
+          {my_id === postInfo.author_id && (
+            <div className="flex-shrink-0 ml-auto">
+              <ActionDrawer clickEdit={onClickEdit} clickDelete={deletePost} />
             </div>
           )}
         </div>
+
+        {/* Info Bar */}
+        <div className="flex flex-wrap items-center gap-y-2 gap-x-6 mt-4 px-2 text-[14px] text-gray-400">
+          <div className="flex items-center gap-2">
+            <i className="ri-user-line text-[16px] text-aqua-400"></i>
+            <span className="font-semibold text-primary-900">
+              {user && user.nickname}
+            </span>
+          </div>
+          <div className="flex items-center gap-2 relative group">
+            <i className="ri-time-line text-[16px] text-aqua-400"></i>
+            <span>{convertFullDate(postInfo.createdAt)}</span>
+            {postInfo.createdAt !== postInfo.updatedAt && (
+              <div className="hidden group-hover:block absolute left-0 top-full mt-1 px-3 py-1.5 bg-primary-900 text-white text-xs rounded shadow-lg whitespace-nowrap z-10 transition-opacity">
+                {convertFullDate(postInfo.updatedAt)} Updated
+              </div>
+            )}
+          </div>
+
+          <div className="flex items-center gap-4 ml-auto">
+            <div className="flex items-center gap-1.5" title="조회수">
+              <i className="ri-eye-line text-[17px]"></i>
+              <span>{postInfo.view_num}</span>
+            </div>
+            <button
+              onClick={() => likePost()}
+              className="flex items-center gap-1.5 group cursor-pointer hover:text-pink-500 transition-colors"
+              title="좋아요"
+            >
+              <i
+                className={`${isLiked ? 'ri-heart-fill text-pink-500' : 'ri-heart-line group-hover:text-pink-500'} text-[17px] transition-colors`}
+              ></i>
+              <span
+                className={`${isLiked ? 'text-pink-500 font-medium' : ''} transition-colors`}
+              >
+                {likeNum}
+              </span>
+            </button>
+            <div className="flex items-center gap-1.5" title="댓글">
+              <i className="ri-message-2-line text-[17px]"></i>
+              <span>{postInfo.comment_num}</span>
+            </div>
+          </div>
+        </div>
       </div>
-      <div className="post-content">
+
+      {/* ── Content Area ── */}
+      <div className="py-8 min-h-[300px]">
         <Editor
           text={postInfo.text}
           setText={() => {
@@ -125,27 +176,12 @@ const PostView: React.FC<PostComponentProps> = ({
           readOnly
         />
       </div>
+
       {makeFileList()}
-      <ProfileMini userInfo={user} />
-      <div className="enif-divider"> </div>
-      <div className="actions-wrapper">
-        <div className="nums-wrapper">
-          <div className="view-num-wrapper">
-            <i className="ri-eye-fill"> </i>
-            {postInfo.view_num}
-          </div>
-          <div className="like-num-wrapper">
-            <i
-              className={`${isLiked ? 'ri-heart-fill' : 'ri-heart-line'} text-2xl cursor-pointer`}
-              onClick={() => likePost()}
-            ></i>
-            {likeNum}
-          </div>
-          <div className="comment-num-wrapper">
-            <i className="ri-message-2-fill text-2xl"> </i>
-            {postInfo.comment_num}
-          </div>
-        </div>
+
+      {/* ── Footer Profile ── */}
+      <div className="mt-8 pt-8 border-t border-black/4">
+        <ProfileMini userInfo={user} />
       </div>
     </div>
   );

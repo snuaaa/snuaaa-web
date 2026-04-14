@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { Link } from '@tanstack/react-router';
 import Image from '../Common/AaaImage';
 import { Exhibition } from '~/services/types';
+import { useViewportSize, ViewportSize } from '~/contexts/viewportSize';
 
-const NUM_UNIT_DESKTOP = 4;
-const NUM_UNIT_MOBILE = 2;
+const NUM_UNIT_DESKTOP = 5;
+const NUM_UNIT_MOBILE = 3;
 
 type NewExhibitionsProps = {
   board_id: string;
@@ -12,71 +13,87 @@ type NewExhibitionsProps = {
 };
 
 function NewExhibitions({ board_id, exhibitions }: NewExhibitionsProps) {
-  const [viewIdx, setViewIdx] = useState(0);
+  const [page, setPage] = useState(0);
+  const viewportSize = useViewportSize();
+  const isMobile = viewportSize === ViewportSize.Mobile;
 
-  const clickPrev = function (isDesktop: boolean) {
-    const NUM_UNIT = isDesktop ? NUM_UNIT_DESKTOP : NUM_UNIT_MOBILE;
-    if (exhibitions && viewIdx > NUM_UNIT - 1) {
-      setViewIdx(viewIdx - NUM_UNIT);
+  const numUnits = isMobile ? NUM_UNIT_MOBILE : NUM_UNIT_DESKTOP;
+  const startIndex = page * numUnits;
+
+  const clickPrev = () => {
+    if (page > 0) {
+      setPage((prevPage) => prevPage - 1);
     }
   };
 
-  const clickNext = function (isDesktop: boolean) {
-    const NUM_UNIT = isDesktop ? NUM_UNIT_DESKTOP : NUM_UNIT_MOBILE;
-    if (exhibitions && viewIdx < exhibitions.length - NUM_UNIT) {
-      setViewIdx(viewIdx + NUM_UNIT);
+  const clickNext = () => {
+    if (exhibitions && startIndex + numUnits < exhibitions.length) {
+      setPage((prevPage) => prevPage + 1);
     }
   };
 
-  const makeExhibitionList = (isDesktop: boolean) => {
-    const NUM_UNIT = isDesktop ? NUM_UNIT_DESKTOP : NUM_UNIT_MOBILE;
-
-    if (exhibitions) {
-      return exhibitions.map((content, idx) => {
-        if (idx >= viewIdx && idx < viewIdx + NUM_UNIT && content.exhibition) {
-          return (
-            <div className="new-exhibition-list" key={content.content_id}>
-              <Link
-                to="/exhibition/$exhibition_id"
-                params={{ exhibition_id: String(content.content_id) }}
-              >
-                <Image imgSrc={content.exhibition.poster_thumbnail_path} />
-              </Link>
-            </div>
-          );
-        }
-        return null;
-      });
-    }
-  };
+  const hasPrev = page > 0;
+  const hasNext = exhibitions && startIndex + numUnits < exhibitions.length;
 
   return (
-    <div className="new-exhibitions-wrapper">
-      <Link to="/board/$board_id" params={{ board_id }}>
-        <h4>역대 사진전</h4>
+    <div>
+      <Link
+        to="/board/$board_id"
+        params={{ board_id }}
+        className="flex items-center gap-2 mb-5 text-white font-extrabold text-lg tracking-tight no-underline"
+      >
+        <i className="ri-gallery-view-2 text-xl text-aqua-400"></i>
+        <span>역대 사진전</span>
+        <div className="flex-1 h-0.5 ml-3 bg-linear-to-r from-aqua-400 to-transparent rounded-full opacity-40"></div>
       </Link>
-      <div className="new-exhibition-flex">
-        <div
-          className="new-exhibitions-arrow left enif-hide-mobile"
-          onClick={() => clickPrev(true)}
-        >
-          <i className="ri-arrow-left-s-line enif-f-1p2x cursor-pointer"></i>
+
+      <div className="relative flex items-center">
+        {/* Left arrow */}
+        {hasPrev && (
+          <button
+            onClick={clickPrev}
+            className="flex absolute left-1 md:-left-5 z-10 w-8 h-8 md:w-10 md:h-10 items-center justify-center rounded-full bg-black/50 hover:bg-white/20 text-white hover:text-white backdrop-blur-md border border-white/20 hover:border-white/50 transition-all duration-300 cursor-pointer shadow-lg"
+          >
+            <i className="ri-arrow-left-s-line text-lg md:text-xl"></i>
+          </button>
+        )}
+
+        {/* Exhibition list */}
+        <div className="grid grid-cols-3 md:grid-cols-5 gap-3 md:gap-4 w-full">
+          {exhibitions
+            .slice(startIndex, startIndex + numUnits)
+            .map((content) => {
+              if (!content.exhibition) return null;
+
+              return (
+                <div key={content.content_id} className="group relative w-full">
+                  <Link
+                    to="/exhibition/$exhibition_id"
+                    params={{ exhibition_id: String(content.content_id) }}
+                    className="block"
+                  >
+                    <div className="relative aspect-2/3 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 group-hover:-translate-y-1">
+                      <Image
+                        imgSrc={content.exhibition.poster_thumbnail_path}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300"></div>
+                    </div>
+                  </Link>
+                </div>
+              );
+            })}
         </div>
-        {/* <div className="new-exhibitions-arrow left hidden" onClick={() => clickPrev(false)}>
-                    <i className="ri-arrow-left-s-line enif-f-1p2x cursor-pointer"></i>
-                </div> */}
-        <div className="new-exhibition-list-wrapper">
-          {makeExhibitionList(true)}
-        </div>
-        <div
-          className="new-exhibitions-arrow right enif-hide-mobile"
-          onClick={() => clickNext(true)}
-        >
-          <i className="ri-arrow-right-s-line enif-f-1p2x cursor-pointer"></i>
-        </div>
-        {/* <div className="new-exhibitions-arrow right hidden" onClick={() => clickNext(false)}>
-                    <i className="ri-arrow-right-s-line enif-f-1p2x cursor-pointer"></i>
-                </div> */}
+
+        {/* Right arrow */}
+        {hasNext && (
+          <button
+            onClick={clickNext}
+            className="flex absolute right-1 md:-right-5 z-10 w-8 h-8 md:w-10 md:h-10 items-center justify-center rounded-full bg-black/50 hover:bg-white/20 text-white hover:text-white backdrop-blur-md border border-white/20 hover:border-white/50 transition-all duration-300 cursor-pointer shadow-lg"
+          >
+            <i className="ri-arrow-right-s-line text-lg md:text-xl"></i>
+          </button>
+        )}
       </div>
     </div>
   );

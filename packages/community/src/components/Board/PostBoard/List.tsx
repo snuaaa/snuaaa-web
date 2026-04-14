@@ -62,7 +62,7 @@ const ListPost = ({ boardInfo, onClickCreate }: Props) => {
     if (!searchType) {
       navigate({
         search: (prev) => {
-          const { type, keyword, page, ...rest } = prev;
+          const { type: _type, keyword: _keyword, page: _page, ...rest } = prev;
           return rest;
         },
       });
@@ -99,37 +99,53 @@ const ListPost = ({ boardInfo, onClickCreate }: Props) => {
 
   return (
     <>
-      {boardInfo.categories && boardInfo.categories.length > 0 && (
-        <select>
-          {boardInfo.categories.map((cate) => (
-            <option key={cate.category_id}>{cate.category_name}</option>
-          ))}
-        </select>
-      )}
-      <div className="board-search-wrapper">
-        <div className="board-select-wrapper ">
-          <SelectBox
-            selectName={'searchOption'}
-            optionList={searchOptions}
-            onSelect={handleSearchOption}
-            selectedOption={searchType}
-          />
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+        {/* Left: Search filter */}
+        <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
+          {boardInfo.categories && boardInfo.categories.length > 0 && (
+            <div className="shrink-0">
+              <select className="px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-[14px] font-medium text-gray-600 focus:outline-none focus:ring-2 focus:ring-aqua-400 shadow-sm hover:border-aqua-400 transition-colors">
+                {boardInfo.categories.map((cate) => (
+                  <option key={cate.category_id}>{cate.category_name}</option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          <div className="w-24 md:w-28 shrink-0">
+            <SelectBox
+              selectName={'searchOption'}
+              optionList={searchOptions}
+              onSelect={handleSearchOption}
+              selectedOption={searchType}
+            />
+          </div>
+
+          <div className="flex items-center min-w-[200px] flex-1 max-w-sm bg-white border border-gray-200 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-aqua-400 focus-within:border-aqua-400 transition-all shadow-sm">
+            <input
+              type="text"
+              className="w-full px-4 py-2 bg-transparent outline-none text-[14px] placeholder:text-gray-400"
+              placeholder="검색어 입력"
+              onChange={handleSearchKeyword}
+              value={searchKeyword}
+              onKeyDown={handleSearchKeyDown}
+            />
+            <button
+              className="px-4 py-2.5 bg-aqua-400 text-white hover:bg-aqua-500 transition-colors"
+              onClick={search}
+            >
+              <i className="ri-search-line font-medium"></i>
+            </button>
+          </div>
         </div>
-        <div className="board-search-input">
-          <input
-            type="text"
-            onChange={handleSearchKeyword}
-            value={searchKeyword}
-            onKeyDown={handleSearchKeyDown}
-          />
-          <button className="board-search-btn" onClick={search}>
-            <i className="ri-search-line text-base"></i>
-          </button>
-        </div>
-        <div className="board-btn-write-wrapper">
+        {/* Right: Write Button */}
+        <div className="shrink-0 self-end md:self-auto">
           {authContext.authInfo.user.grade <= boardInfo.lv_write && (
-            <button className="board-btn-write" onClick={onClickCreate}>
-              <i className="ri-pencil-line enif-f-1p2x"></i>글쓰기
+            <button
+              className="flex items-center gap-2 px-6 py-2.5 bg-linear-to-r from-aqua-400 to-blue-400 text-white text-[15px] font-bold rounded-xl hover:-translate-y-0.5 hover:opacity-90 transition-all shadow-md whitespace-nowrap"
+              onClick={onClickCreate}
+            >
+              <i className="ri-pencil-line"></i> 글쓰기
             </button>
           )}
         </div>

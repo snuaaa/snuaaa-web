@@ -12,13 +12,16 @@ function MenuItem(props: Props) {
 
   const deviceType = useDeviceType();
 
+  const baseClasses =
+    'block w-full px-4 py-2.5 text-sm text-white/80 hover:text-white hover:bg-white/[0.08] transition-colors duration-200';
+
   return (
-    <li className="text-left relative md:font-bold md:[text-shadow:_0_0_3px_#E6AD0F] transition-all duration-300 hover:bg-[#FCE8A7] hover:text-[#646464] md:hover:[text-shadow:none]">
+    <li className="list-none">
       {'board_id' in item ? (
         <Link
           to="/board/$board_id"
           params={{ board_id: item.board_id }}
-          className="w-full p-2.5 inline-block"
+          className={baseClasses}
         >
           {item.board_name}
         </Link>
@@ -27,15 +30,15 @@ function MenuItem(props: Props) {
           href={item.url}
           target="_blank"
           rel="noreferrer"
-          className="w-full p-2.5 flex items-center justify-between"
+          className={`${baseClasses} flex items-center justify-between`}
         >
           {deviceType === DeviceType.Mobile
             ? (item.shortName ?? item.name)
             : item.name}
-          <i className="ri-external-link-line"></i>
+          <i className="ri-external-link-line text-white/40 text-xs"></i>
         </a>
       ) : (
-        <Link to={item.url} className="w-full p-2.5 inline-block">
+        <Link to={item.url} className={baseClasses}>
           {deviceType === DeviceType.Mobile
             ? (item.shortName ?? item.name)
             : item.name}

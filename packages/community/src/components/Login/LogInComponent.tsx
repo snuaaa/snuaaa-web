@@ -79,7 +79,7 @@ const LogInComponent: React.FC<Props> = ({
           </p>
         </div>
       </div>
-      <Footer></Footer>
+      <Footer transparent />
     </div>
   );
 };
