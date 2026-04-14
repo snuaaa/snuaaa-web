@@ -9,6 +9,15 @@ import EquipmentService, {
   RentEquipmentRequest,
   UpdateEquipmentRequest,
 } from '~/services/EquipmentService';
+import { PenaltyStatus } from '~/services/types';
+
+export type AllRentRecordFilters = {
+  penaltyStatus?: PenaltyStatus | '';
+  dateFromStart?: string;
+  dateToStart?: string;
+  dateFromReturn?: string;
+  dateToReturn?: string;
+};
 
 // Query keys
 export const equipmentKeys = {
@@ -18,6 +27,8 @@ export const equipmentKeys = {
   rentRecord: (id: number, page: number) =>
     [...equipmentKeys.all, 'rentRecord', id, page] as const,
   categories: () => [...equipmentKeys.all, 'categories'] as const,
+  allRentRecords: (filters: AllRentRecordFilters, page: number) =>
+    [...equipmentKeys.all, 'allRentRecords', filters, page] as const,
 };
 
 // Query options
@@ -92,6 +103,50 @@ export function useReturnEquipment() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: equipmentKeys.list() });
       queryClient.invalidateQueries({ queryKey: equipmentKeys.myRentList() });
+    },
+  });
+}
+
+// All rent records (for late fee management)
+export const allRentRecordsQueryOptions = (
+  filters: AllRentRecordFilters,
+  page: number,
+) =>
+  queryOptions({
+    queryKey: equipmentKeys.allRentRecords(filters, page),
+    queryFn: () =>
+      EquipmentService.retrieveAllRentRecords({
+        penaltyStatus: filters.penaltyStatus || undefined,
+        dateFromStart: filters.dateFromStart || undefined,
+        dateToStart: filters.dateToStart || undefined,
+        dateFromReturn: filters.dateFromReturn || undefined,
+        dateToReturn: filters.dateToReturn || undefined,
+        page,
+      }),
+  });
+
+export function useAllRentRecords(
+  filters: AllRentRecordFilters,
+  page: number,
+) {
+  return useQuery(allRentRecordsQueryOptions(filters, page));
+}
+
+export function useUpdatePenaltyStatus() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      rentId,
+      penaltyStatus,
+    }: {
+      rentId: number;
+      penaltyStatus: PenaltyStatus;
+    }) => EquipmentService.updatePenaltyStatus(rentId, penaltyStatus),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [...equipmentKeys.all, 'allRentRecords'],
+      });
     },
   });
 }

@@ -208,6 +208,10 @@ export interface Rent {
   user: User;
 }
 
+export interface RentWithEquipment extends Rent {
+  equipment: Pick<Equipment, 'id' | 'name' | 'nickname'>;
+}
+
 export interface MyRent {
   id: number;
   start_date: string;

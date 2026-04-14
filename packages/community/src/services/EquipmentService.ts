@@ -1,6 +1,14 @@
 import { API } from './index';
 
-import { Equipment, EquipmentCategory, MyRent, Rent } from './types';
+import {
+  Equipment,
+  EquipmentCategory,
+  ListResponse,
+  MyRent,
+  PenaltyStatus,
+  Rent,
+  RentWithEquipment,
+} from './types';
 
 export type RetrieveEquipmentListResponse = {
   equipCount: number;
@@ -90,6 +98,32 @@ const EquipmentService = {
 
   returnEquipment: function (rentId: number, photo_path: string) {
     return API.post(`equipment/rent/${rentId}/return`, { photo_path });
+  },
+
+  retrieveAllRentRecords: function (params: {
+    penaltyStatus?: PenaltyStatus;
+    dateFromStart?: string;
+    dateToStart?: string;
+    dateFromReturn?: string;
+    dateToReturn?: string;
+    page: number;
+  }) {
+    return API.get<ListResponse<RentWithEquipment>>(`equipment/rent/records`, {
+      params: {
+        page: params.page,
+        penalty_status: params.penaltyStatus,
+        date_from_start: params.dateFromStart,
+        date_to_start: params.dateToStart,
+        date_from_return: params.dateFromReturn,
+        date_to_return: params.dateToReturn,
+      },
+    });
+  },
+
+  updatePenaltyStatus: function (rentId: number, penaltyStatus: PenaltyStatus) {
+    return API.patch(`equipment/rent/${rentId}/penalty`, {
+      penalty_status: penaltyStatus,
+    });
   },
 };
 
