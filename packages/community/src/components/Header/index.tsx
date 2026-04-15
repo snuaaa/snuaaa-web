@@ -7,8 +7,8 @@ import Image from '~/components/Common/AaaImage';
 import { useNavigate, useLocation } from '@tanstack/react-router';
 import { useAuth } from '~/contexts/auth';
 import { useViewportSize } from '~/contexts/viewportSize';
-import Drawer from '~/components/Common/Drawer';
 import backgroundImg from '~/assets/img/header.gif';
+import MenuDrawer from './MenuDrawer';
 
 function Header() {
   const [isShowPopupUser, setIsShowPopupUser] = useState(false);
@@ -96,7 +96,10 @@ function Header() {
         </div>
       </div>
       {isMobile ? (
-        <Drawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />
+        <MenuDrawer
+          isOpen={isDrawerOpen}
+          onClose={() => setIsDrawerOpen(false)}
+        />
       ) : (
         <Navigation />
       )}
