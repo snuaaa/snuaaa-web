@@ -59,7 +59,7 @@ const PhotoInfo = ({
 
             <div className="info-wrapper">
               <div className="info-title-date">
-                <h4>{content.title}</h4>
+                <h4 className="break-all">{content.title}</h4>
                 <p className="info-date">
                   {convertFullDate(content.createdAt)}
                 </p>

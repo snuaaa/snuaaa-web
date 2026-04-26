@@ -6,6 +6,7 @@ import { useAppForm } from '~/components/Form';
 import EditTagList from './EditTagList';
 import { FormEvent, useCallback } from 'react';
 import { useUpdatePhoto } from '~/hooks/queries/usePhotoQueries';
+import { format } from 'date-fns';
 
 type PhotoInfoProps = {
   photoInfo: Photo;
@@ -34,6 +35,8 @@ const EditPhotoInfo = ({
 
   const { mutateAsync: mutateAsyncUpdatePhoto } = useUpdatePhoto(content_id);
 
+  const formattedDate = date ? format(new Date(date), 'yyyy-MM-dd') : undefined;
+
   const formOpts = formOptions({
     defaultValues: {
       content_id,
@@ -41,7 +44,7 @@ const EditPhotoInfo = ({
       text,
       tags: tags?.map(({ tag_id }) => tag_id) ?? [],
       photo: {
-        date: date ? new Date(date) : undefined,
+        date: formattedDate,
         location,
         camera,
         lens,
@@ -94,11 +97,8 @@ const EditPhotoInfo = ({
         message="작성 중인 내용은 저장되지 않습니다. 작성을 취소하시겠습니까?"
       ></Prompt> */}
       <form.AppForm>
-        <form
-          className="flex flex-col h-full overflow-auto"
-          onSubmit={handleSubmit}
-        >
-          <div className="flex flex-col gap-2 h-full px-2 pb-2">
+        <form className="flex flex-col h-full" onSubmit={handleSubmit}>
+          <div className="flex flex-col gap-2 px-2 pb-2 flex-1 min-h-0 overflow-y-auto">
             <EditTagList
               boardTagInfo={boardTagInfo}
               selectedTags={selectedTags}
@@ -117,7 +117,7 @@ const EditPhotoInfo = ({
               name="text"
               children={(field) => (
                 <textarea
-                  className="w-full h-24 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  className="w-full min-h-24 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                   placeholder="설명"
                   name="text"
                   onChange={(e) => field.handleChange(e.target.value)}
