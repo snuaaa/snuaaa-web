@@ -97,11 +97,8 @@ const EditPhotoInfo = ({
         message="작성 중인 내용은 저장되지 않습니다. 작성을 취소하시겠습니까?"
       ></Prompt> */}
       <form.AppForm>
-        <form
-          className="flex flex-col h-full overflow-auto"
-          onSubmit={handleSubmit}
-        >
-          <div className="flex flex-col gap-2 px-2 pb-2">
+        <form className="flex flex-col h-full" onSubmit={handleSubmit}>
+          <div className="flex flex-col gap-2 px-2 pb-2 flex-1 min-h-0 overflow-y-auto">
             <EditTagList
               boardTagInfo={boardTagInfo}
               selectedTags={selectedTags}
