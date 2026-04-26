@@ -1,5 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
-import Board from '../../pages/Board';
+import BoardPage from '~/pages/Board';
+import { queryClient } from '~/lib/queryClient';
+import { boardsQueryOptions } from '~/hooks/queries/useBoardQueries';
 
 export type BoardSearch = {
   status?: string;
@@ -13,6 +15,7 @@ export type BoardSearch = {
 };
 
 export const Route = createFileRoute('/board/$board_id')({
+  loader: () => queryClient.ensureQueryData(boardsQueryOptions()),
   validateSearch: (search: Record<string, unknown>): BoardSearch => {
     return {
       status: (search.status as string) || undefined,
@@ -29,5 +32,5 @@ export const Route = createFileRoute('/board/$board_id')({
       view: (search.view as 'photo' | 'album') || undefined,
     };
   },
-  component: Board,
+  component: BoardPage,
 });
