@@ -101,7 +101,7 @@ const EditPhotoInfo = ({
           className="flex flex-col h-full overflow-auto"
           onSubmit={handleSubmit}
         >
-          <div className="flex flex-col gap-2 h-full px-2 pb-2">
+          <div className="flex flex-col gap-2 px-2 pb-2">
             <EditTagList
               boardTagInfo={boardTagInfo}
               selectedTags={selectedTags}
@@ -120,7 +120,7 @@ const EditPhotoInfo = ({
               name="text"
               children={(field) => (
                 <textarea
-                  className="w-full h-24 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  className="w-full min-h-24 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                   placeholder="설명"
                   name="text"
                   onChange={(e) => field.handleChange(e.target.value)}

@@ -21,7 +21,7 @@ export function Input({ iconClassName, Adornment, ...inputProps }: Props) {
       )}
       <input
         {...inputProps}
-        className="flex-grow text-sm text-gray-700 peer"
+        className="grow text-sm text-gray-700 peer"
         value={field.state.value}
         onChange={(e) => field.handleChange(e.target.value)}
       />
