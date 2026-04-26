@@ -6,6 +6,7 @@ import { useAppForm } from '~/components/Form';
 import EditTagList from './EditTagList';
 import { FormEvent, useCallback } from 'react';
 import { useUpdatePhoto } from '~/hooks/queries/usePhotoQueries';
+import { format } from 'date-fns';
 
 type PhotoInfoProps = {
   photoInfo: Photo;
@@ -34,6 +35,8 @@ const EditPhotoInfo = ({
 
   const { mutateAsync: mutateAsyncUpdatePhoto } = useUpdatePhoto(content_id);
 
+  const formattedDate = date ? format(new Date(date), 'yyyy-MM-dd') : undefined;
+
   const formOpts = formOptions({
     defaultValues: {
       content_id,
@@ -41,7 +44,7 @@ const EditPhotoInfo = ({
       text,
       tags: tags?.map(({ tag_id }) => tag_id) ?? [],
       photo: {
-        date: date ? new Date(date) : undefined,
+        date: formattedDate,
         location,
         camera,
         lens,
