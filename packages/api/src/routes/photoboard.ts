@@ -3,7 +3,7 @@ import multer from 'multer';
 import fs from 'fs';
 import path from 'path';
 
-import { verifyTokenMiddleware } from '../middlewares/auth';
+import { AuthenticatedRequest, verifyTokenMiddleware } from '../middlewares/auth';
 
 import { createContent } from '../controllers/content.controller';
 import {
@@ -33,25 +33,25 @@ const storage = multer.diskStorage({
     cb(null, './upload/album/default/');
   },
   filename(req, file, cb) {
-    let timestamp = new Date().valueOf();
+    const timestamp = new Date().valueOf();
     cb(null, timestamp + '_' + file.originalname);
   },
 });
 
 const upload = multer({ storage });
 
-router.get('/:board_id/albums', verifyTokenMiddleware, (req, res) => {
+router.get('/:board_id/albums', verifyTokenMiddleware, (req: AuthenticatedRequest, res) => {
   let offset = 0;
   let albumCount = 0;
   const ROWNUM = 12;
-  const query = (req as any).query;
+  const { query } = req;
 
-  if (query.page > 0) {
-    offset = ROWNUM * (query.page - 1);
+  if (Number(query.page) > 0) {
+    offset = ROWNUM * (Number(query.page) - 1);
   }
 
   retrieveAlbumCount(req.params.board_id, req.query.category)
-    .then((count: any) => {
+    .then((count: number) => {
       albumCount = count;
       return retrieveAlbumsInBoard(req.params.board_id, ROWNUM, offset, req.query.category);
     })
@@ -70,15 +70,15 @@ router.get('/:board_id/albums', verifyTokenMiddleware, (req, res) => {
     });
 });
 
-router.get('/:board_id/photos', (req, res) => {
+router.get('/:board_id/photos', (req: AuthenticatedRequest, res) => {
   let offset = 0;
   let photoCount = 0;
   const tags = req.query.tags;
   const ROWNUM = 12;
-  const query = (req as any).query;
+  const { query } = req;
 
-  if (query.page > 0) {
-    offset = ROWNUM * (query.page - 1);
+  if (Number(query.page) > 0) {
+    offset = ROWNUM * (Number(query.page) - 1);
   }
 
   if (tags) {
@@ -112,7 +112,7 @@ router.get('/:board_id/photos', (req, res) => {
           photoInfo: photoInfo,
         });
       })
-      .catch((err) => {
+      .catch(() => {
         res.status(409).json({
           error: 'RETRIEVE PHOTO FAIL',
           code: 1,
@@ -121,9 +121,9 @@ router.get('/:board_id/photos', (req, res) => {
   }
 });
 
-router.post('/:board_id/album', verifyTokenMiddleware, (req, res) => {
-  const decodedToken = (req as any).decodedToken;
-  let user_id = decodedToken._id;
+router.post('/:board_id/album', verifyTokenMiddleware, (req: AuthenticatedRequest, res) => {
+  const decodedToken = req.decodedToken;
+  const user_id = decodedToken._id;
   createContent(user_id, req.params.board_id, req.body, 'AL')
     .then((content_id) => {
       return createAlbum(content_id, req.body);
@@ -146,11 +146,11 @@ router.post(
   '/:board_id/photos',
   verifyTokenMiddleware,
   upload.single('uploadPhoto'),
-  (req, res) => {
+  (req: AuthenticatedRequest, res) => {
     console.info(`[POST] ${req.baseUrl + req.url}`);
 
-    const file = (req as any).file;
-    const decodedToken = (req as any).decodedToken;
+    const file = (req as AuthenticatedRequest & { file?: Express.Multer.File }).file;
+    const decodedToken = req.decodedToken;
 
     try {
       if (!file) {
@@ -160,10 +160,10 @@ router.post(
         });
       } else {
         const photoInfo = JSON.parse(req.body.photoInfo);
-        let basename = path.basename(file.filename, path.extname(file.filename));
+        const basename = path.basename(file.filename, path.extname(file.filename));
         resizeForThumbnail(file.path, null)
           .then(() => {
-            let photoData = {
+            const photoData = {
               ...photoInfo,
               type: 'PH',
               author_id: decodedToken._id,
@@ -176,7 +176,7 @@ router.post(
           .then((content_id) => {
             if (photoInfo.tags && photoInfo.tags.length > 0) {
               return Promise.all(
-                photoInfo.tags.map((tag_id) => createContentTag(content_id, tag_id)),
+                photoInfo.tags.map((tag_id: string) => createContentTag(content_id, tag_id)),
               );
             }
           })

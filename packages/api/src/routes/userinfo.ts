@@ -2,14 +2,9 @@ import express from 'express';
 import multer from 'multer';
 import bcrypt from 'bcryptjs';
 
-import { verifyTokenMiddleware } from '../middlewares/auth';
+import { verifyTokenMiddleware, AuthenticatedRequest } from '../middlewares/auth';
+import { UserModel } from '../models';
 
-import { retrievePostsByUser, retrievePostsByUserUuid } from '../controllers/post.controller';
-import { retrievePhotosByUser, retrievePhotosByUserUuid } from '../controllers/photo.controller';
-import {
-  retrieveCommentsByUser,
-  retrieveCommentsByUserUuid,
-} from '../controllers/comment.controller';
 import {
   retrieveUser,
   updateUser,
@@ -26,14 +21,14 @@ import {
 import { resize } from '../utils/resize';
 import { sendMail } from '../utils/mail';
 
-require('dotenv').config();
+import 'dotenv/config';
 
 const router = express.Router();
 
 const storage = multer.diskStorage({
   destination: './upload/profile',
   filename(req, file, cb) {
-    let timestamp = new Date().valueOf();
+    const timestamp = new Date().valueOf();
     cb(null, timestamp + '_' + file.originalname);
     // cb(new Error("Failed to make file name"), `${(new Date()).valueOf()}-${file.originalname}`);
   },
@@ -41,42 +36,50 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-const cryptoRandomString = require('crypto-random-string');
+import cryptoRandomString from 'crypto-random-string';
+import { AuthenticatedRequestWithFile } from '../middlewares/upload';
 
-router.get('/', verifyTokenMiddleware, (req, res) => {
-  const decodedToken = (req as any).decodedToken;
-  retrieveUser(decodedToken._id)
-    .then((userInfo) => {
-      return res.json({
-        success: true,
-        userInfo: userInfo,
+router.get('/', verifyTokenMiddleware, async (req: AuthenticatedRequest, res) => {
+  const { decodedToken } = req;
+
+  try {
+    const user = await retrieveUser(decodedToken._id);
+
+    if (!user) {
+      return res.status(404).json({
+        error: 'user not found',
       });
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).json({
-        error: 'internal server error',
-        code: 0,
-      });
+    }
+
+    return res.json({
+      success: true,
+      userInfo: user,
     });
-  // .catch(err => res.status(403).json({
-  //     success: false,
-  //     message: err.message
-  // }));
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      error: 'internal server error',
+    });
+  }
 });
 
-router.patch('/', verifyTokenMiddleware, upload.single('profileImg'), (req, res) => {
-  const decodedToken = (req as any).decodedToken;
-  let user_id = decodedToken._id;
+router.patch(
+  '/',
+  verifyTokenMiddleware,
+  upload.single('profileImg'),
+  async (req: AuthenticatedRequestWithFile, res) => {
+    const { decodedToken } = req;
+    const user_id = decodedToken._id;
 
-  retrieveUser(user_id)
-    .then((userInfo: any) => {
-      let data = req.body;
-      if ((req as any).file) {
-        data.profile_path = '/profile/' + (req as any).file.filename;
-        resize((req as any).file.path);
+    try {
+      const userInfo = await retrieveUser(user_id);
+
+      const data = req.body;
+      if (req.file) {
+        data.profile_path = '/profile/' + req.file.filename;
+        resize(req.file.path);
       } else {
-        data.profile_path = userInfo.profile_path;
+        data.profile_path = userInfo.get('profile_path');
       }
 
       let nickname = '';
@@ -97,17 +100,18 @@ router.patch('/', verifyTokenMiddleware, upload.single('profileImg'), (req, res)
         data.aaa_no = null;
       }
 
-      let grade;
+      const prevGrade = userInfo.get('grade') as number;
+      const grade = (() => {
+        if (prevGrade < 9) {
+          return prevGrade;
+        }
+        if (data.aaa_no) {
+          return 8;
+        }
+        return 9;
+      })();
 
-      if (userInfo.grade < 9) {
-        grade = userInfo.grade;
-      } else if (data.aaa_no) {
-        grade = 8;
-      } else {
-        grade = 9;
-      }
-
-      let userData = {
+      const userData = {
         username: data.username,
         nickname: nickname,
         aaa_no: data.aaa_no,
@@ -120,58 +124,51 @@ router.patch('/', verifyTokenMiddleware, upload.single('profileImg'), (req, res)
         profile_path: data.profile_path,
       };
 
-      return updateUser(user_id, userData);
-    })
-    .then(() => {
+      await updateUser(user_id, userData);
       return res.json({ success: true });
-    })
-    .catch((err) => {
+    } catch (err) {
       console.error(err);
-      res.status(500).json({
+      return res.status(500).json({
         error: 'internal server error',
-        code: 0,
       });
-    });
-});
+    }
+  },
+);
 
-router.patch('/password', verifyTokenMiddleware, (req, res, next) => {
-  const decodedToken = (req as any).decodedToken;
-  let user_id = decodedToken._id;
-  let data = req.body;
+router.patch('/password', verifyTokenMiddleware, (req: AuthenticatedRequest, res, next) => {
+  const { decodedToken } = req;
+  const user_id = decodedToken._id;
+  const data = req.body;
 
   retrieveUserPw(user_id)
-    .then((userInfo: any) => {
-      return new Promise<void>((resolve, reject) => {
-        if (!bcrypt.compareSync(data.password, userInfo.password)) {
-          const err = {
-            status: 403,
-            code: 1011,
-          };
-          reject(err);
-        } else if (!data.newPassword) {
-          const err = {
-            status: 403,
-            code: 1012,
-          };
-          reject(err);
-        } else if (data.newPassword !== data.newPasswordCf) {
-          const err = {
-            status: 403,
-            code: 1013,
-          };
-          reject(err);
-        } else if (data.newPassword.length < 8 || data.newPassword.length > 20) {
-          const err = {
-            status: 403,
-            code: 1014,
-          };
-          reject(err);
-        } else {
-          updateUserPw(user_id, bcrypt.hashSync(data.newPassword, 10))
-            .then(() => resolve())
-            .catch((err) => reject(err));
-        }
-      });
+    .then(async (userInfo: UserModel) => {
+      if (!bcrypt.compareSync(data.password, userInfo.get('password'))) {
+        const err = {
+          status: 403,
+          code: 1011,
+        };
+        throw err;
+      } else if (!data.newPassword) {
+        const err = {
+          status: 403,
+          code: 1012,
+        };
+        throw err;
+      } else if (data.newPassword !== data.newPasswordCf) {
+        const err = {
+          status: 403,
+          code: 1013,
+        };
+        throw err;
+      } else if (data.newPassword.length < 8 || data.newPassword.length > 20) {
+        const err = {
+          status: 403,
+          code: 1014,
+        };
+        throw err;
+      } else {
+        await updateUserPw(user_id, bcrypt.hashSync(data.newPassword, 10));
+      }
     })
     .then(() => {
       res.json({
@@ -192,8 +189,8 @@ router.patch('/password', verifyTokenMiddleware, (req, res, next) => {
     });
 });
 
-router.delete('/', verifyTokenMiddleware, (req, res) => {
-  const decodedToken = (req as any).decodedToken;
+router.delete('/', verifyTokenMiddleware, (req: AuthenticatedRequest, res) => {
+  const { decodedToken } = req;
   try {
     deleteUser(decodedToken._id)
       .then(() => {
@@ -215,11 +212,10 @@ router.delete('/', verifyTokenMiddleware, (req, res) => {
   }
 });
 
-router.get('/all', verifyTokenMiddleware, (req, res) => {
-  let offset = 0;
+router.get('/all', verifyTokenMiddleware, (req: AuthenticatedRequest, res) => {
   const ROWNUM = 20;
   // const user_id = req.decodedToken._id;
-  const decodedToken = (req as any).decodedToken;
+  const { decodedToken } = req;
   if (decodedToken.grade > 6) {
     return res.status(403).json({
       success: false,
@@ -256,74 +252,6 @@ router.get('/all', verifyTokenMiddleware, (req, res) => {
   }
 });
 
-/**
- * @deprecated
- */
-router.get('/posts', verifyTokenMiddleware, (req, res) => {
-  const decodedToken = (req as any).decodedToken;
-  const user_id = decodedToken._id;
-  retrievePostsByUser(user_id)
-    .then((info) => {
-      return res.json({
-        success: true,
-        postList: info,
-      });
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).json({
-        error: 'internal server error',
-        code: 0,
-      });
-    });
-});
-
-/**
- * @deprecated
- */
-router.get('/photos', verifyTokenMiddleware, (req, res) => {
-  const decodedToken = (req as any).decodedToken;
-  const user_id = decodedToken._id;
-  retrievePhotosByUser(user_id)
-    .then((info) => {
-      return res.json({
-        success: true,
-        photoList: info,
-      });
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).json({
-        error: 'internal server error',
-        code: 0,
-      });
-    });
-});
-
-/**
- * @deprecated
- */
-router.get('/comments', verifyTokenMiddleware, (req, res) => {
-  const decodedToken = (req as any).decodedToken;
-  const user_id = decodedToken._id;
-
-  retrieveCommentsByUser(user_id)
-    .then((info) => {
-      return res.json({
-        success: true,
-        commentList: info,
-      });
-    })
-    // .catch((err)=> console.error(err));
-    .catch((err) => {
-      console.error(err);
-      res.status(500).json({
-        error: 'internal server error',
-        code: 0,
-      });
-    });
-});
-
 router.get('/:user_uuid', verifyTokenMiddleware, (req, res) => {
   const user_uuid = req.params.user_uuid;
   retrieveUserByUserUuid(user_uuid)
@@ -331,69 +259,6 @@ router.get('/:user_uuid', verifyTokenMiddleware, (req, res) => {
       return res.json({
         success: true,
         userInfo: userInfo,
-      });
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).json({
-        error: 'internal server error',
-        code: 0,
-      });
-    });
-});
-
-/**
- * @deprecated
- */
-router.get('/:user_uuid/posts', verifyTokenMiddleware, (req, res) => {
-  const user_uuid = req.params.user_uuid;
-  retrievePostsByUserUuid(user_uuid)
-    .then((info) => {
-      return res.json({
-        success: true,
-        postList: info,
-      });
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).json({
-        error: 'internal server error',
-        code: 0,
-      });
-    });
-});
-
-/**
- * @deprecated
- */
-router.get('/:user_uuid/photos', verifyTokenMiddleware, (req, res) => {
-  const user_uuid = req.params.user_uuid;
-  retrievePhotosByUserUuid(user_uuid)
-    .then((info) => {
-      return res.json({
-        success: true,
-        photoList: info,
-      });
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).json({
-        error: 'internal server error',
-        code: 0,
-      });
-    });
-});
-
-/**
- * @deprecated
- */
-router.get('/:user_uuid/comments', verifyTokenMiddleware, (req, res) => {
-  const user_uuid = req.params.user_uuid;
-  retrieveCommentsByUserUuid(user_uuid)
-    .then((info) => {
-      return res.json({
-        success: true,
-        commentList: info,
       });
     })
     .catch((err) => {
@@ -430,7 +295,7 @@ router.get('/search/mini', verifyTokenMiddleware, (req, res) => {
 });
 
 router.post('/find/id', (req, res) => {
-  let data = req.body;
+  const data = req.body;
   retrieveUsersByEmailAndName(data.email, data.name)
     .then((users) => {
       if (users && users.length > 0) {
@@ -479,10 +344,10 @@ router.post('/find/id', (req, res) => {
 router.post('/find/pw', (req, res) => {
   const data = req.body;
   retrieveUserById(data.id)
-    .then((user: any) => {
-      if (user && user.email === data.email && user.username === data.name) {
+    .then((user: UserModel) => {
+      if (user && user.get('email') === data.email && user.get('username') === data.name) {
         const resetPw = cryptoRandomString({ length: 10 });
-        updateUserPw(user.user_id, bcrypt.hashSync(resetPw, 10))
+        updateUserPw(user.get('user_id'), bcrypt.hashSync(resetPw, 10))
           .then(() => {
             const text = `임시비밀번호는 ${resetPw}입니다.\n
                 로그인 하신 후 원하시는 비밀번호로 변경해주세요.`;

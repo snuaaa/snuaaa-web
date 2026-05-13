@@ -2,37 +2,38 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import multer from 'multer';
 
-import { verifyTokenMiddleware } from '../middlewares/auth';
+import { verifyTokenMiddleware, AuthenticatedRequest } from '../middlewares/auth';
 import { retrieveUser, retrieveUserById, updateLoginDate } from '../controllers/user.controller';
 import { createStatsLogin } from '../controllers/statsLogin.controller';
 import { createUser, checkDupId } from '../controllers/user.controller';
 import { resize } from '../utils/resize';
 
 import { createToken } from '../utils/token';
+import { AuthenticatedRequestWithFile } from '../middlewares/upload';
 
 const router = express.Router();
 
 const storage = multer.diskStorage({
   destination: './upload/profile',
   filename(req, file, cb) {
-    let timestamp = new Date().valueOf();
+    const timestamp = new Date().valueOf();
     cb(null, timestamp + '_' + file.originalname);
   },
 });
 
 const upload = multer({ storage });
 
-router.get('/check', verifyTokenMiddleware, (req, res) => {
+router.get('/check', verifyTokenMiddleware, (req: AuthenticatedRequest, res) => {
   try {
-    let user = {} as any;
-    const decodedToken = (req as any).decodedToken;
+    let user: Record<string, unknown> = {};
+    const decodedToken = req.decodedToken;
 
     retrieveUser(decodedToken._id)
-      .then((userInfo: any) => {
+      .then((userInfo) => {
         user = userInfo;
         if (userInfo.login_at) {
-          let recentLogin = new Date(userInfo.login_at).getTime();
-          let current = new Date().getTime();
+          const recentLogin = new Date(userInfo.login_at).getTime();
+          const current = new Date().getTime();
           // Update login history only after later than 1hours from last history.
           if (current - recentLogin > 60 * 60 * 1000) {
             return Promise.all([
@@ -88,25 +89,22 @@ router.post('/login', (req, res) => {
       });
     }
 
-    let userInfo = {} as any;
+    let userInfo: Record<string, unknown> = {};
 
     retrieveUserById(req.body.id)
-      .then((user: any) => {
-        return new Promise<void>((resolve, reject) => {
-          if (!user) {
-            reject('id is not correct');
-          } else if (bcrypt.compareSync(req.body.password, user.password)) {
-            userInfo = user;
-            resolve();
-          } else {
-            reject('password is not correct');
-          }
-        });
+      .then((user) => {
+        if (!user) {
+          throw new Error('id is not correct');
+        } else if (bcrypt.compareSync(req.body.password, user.password)) {
+          userInfo = user;
+        } else {
+          throw new Error('password is not correct');
+        }
       })
       .then(() => {
         if (userInfo.login_at) {
-          let recentLogin = new Date(userInfo.login_at).getTime();
-          let current = new Date().getTime();
+          const recentLogin = new Date(userInfo.login_at as string).getTime();
+          const current = new Date().getTime();
           // Update login history only after later than 1hours from last history.
           if (current - recentLogin > 60 * 60 * 1000) {
             return Promise.all([
@@ -209,9 +207,9 @@ router.get('/login/guest', (req, res) => {
   }
 });
 
-router.post('/signup', upload.single('profile'), (req, res) => {
+router.post('/signup', upload.single('profile'), (req: AuthenticatedRequestWithFile, res) => {
   try {
-    let usernameRegex = /^[a-zA-Z0-9]+$/;
+    const usernameRegex = /^[a-zA-Z0-9]+$/;
 
     if (!usernameRegex.test(req.body.id)) {
       return res.status(400).json({
@@ -253,11 +251,11 @@ router.post('/signup', upload.single('profile'), (req, res) => {
       req.body.aaaNum = null;
     }
 
-    let grade = req.body.aaaNum ? 8 : 9;
-    let profilePath;
-    if ((req as any).file) {
-      profilePath = '/profile/' + (req as any).file.filename;
-      resize((req as any).file.path);
+    const grade = req.body.aaaNum ? 8 : 9;
+    let profilePath: string | undefined;
+    if (req.file) {
+      profilePath = '/profile/' + req.file.filename;
+      resize(req.file.path);
     }
 
     const userData = {

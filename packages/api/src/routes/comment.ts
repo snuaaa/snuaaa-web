@@ -1,11 +1,12 @@
 import express from 'express';
 
-import { verifyTokenMiddleware } from '../middlewares/auth';
+import { AuthenticatedRequest, verifyTokenMiddleware } from '../middlewares/auth';
 
 import {
   updateComment,
   deleteComment,
   retrieveCommentsWithFilter,
+  CommentFilter,
 } from '../controllers/comment.controller';
 import {
   checkCommentLike,
@@ -16,11 +17,11 @@ import { retrieveUserByUserUuid } from '../controllers/user.controller';
 
 const router = express.Router();
 
-router.get('/list', verifyTokenMiddleware, async (req, res) => {
-  const decodedToken = (req as any).decodedToken;
+router.get('/list', verifyTokenMiddleware, async (req: AuthenticatedRequest, res) => {
+  const decodedToken = req.decodedToken;
   const userUuid = req.query.user_uuid as string;
 
-  const filter = {
+  const filter: CommentFilter = {
     read_grade: decodedToken.grade,
     limit: Number(req.query.limit) || undefined,
     offset: Number(req.query.offset) || undefined,
@@ -78,8 +79,8 @@ router.delete('/:comment_id', verifyTokenMiddleware, (req, res) => {
     });
 });
 
-router.post('/:comment_id/like', verifyTokenMiddleware, (req, res) => {
-  const { decodedToken } = req as any;
+router.post('/:comment_id/like', verifyTokenMiddleware, (req: AuthenticatedRequest, res) => {
+  const { decodedToken } = req;
   const comment_id = req.params.comment_id;
   const user_id = decodedToken._id;
 

@@ -1,8 +1,8 @@
 import express from 'express';
 import path from 'path';
 
-import { verifyTokenMiddleware } from '../middlewares/auth';
-import uploadMiddleware from '../middlewares/upload';
+import { AuthenticatedRequest, verifyTokenMiddleware } from '../middlewares/auth';
+import uploadMiddleware, { AuthenticatedRequestWithFile } from '../middlewares/upload';
 
 import { checkLike, likeContent, dislikeContent } from '../controllers/contentLike.controller';
 import { retrieveComments, createComment } from '../controllers/comment.controller';
@@ -14,8 +14,8 @@ import {
 
 const router = express.Router();
 
-router.get('/:content_id/comments', verifyTokenMiddleware, (req, res) => {
-  const { decodedToken } = req as any;
+router.get('/:content_id/comments', verifyTokenMiddleware, (req: AuthenticatedRequest, res) => {
+  const { decodedToken } = req;
 
   retrieveComments(req.params.content_id, decodedToken._id)
     .then((comments) => {
@@ -32,9 +32,15 @@ router.get('/:content_id/comments', verifyTokenMiddleware, (req, res) => {
 
 router.get('/:content_id/file/:file_id', (req, res) => {
   retrieveAttachedFile(req.params.file_id)
-    .then((file: any) => {
+    .then((file) => {
+      if (!file) {
+        return res.status(404).json({
+          success: false,
+          message: 'FILE NOT FOUND',
+        });
+      }
       increaseDownloadCount(req.params.file_id);
-      res.download(file.file_path, file.original_name);
+      res.download(file.get('file_path') as string, file.get('original_name') as string);
     })
     .catch((err) => {
       console.error(err);
@@ -49,8 +55,8 @@ router.post(
   '/:content_id/file',
   verifyTokenMiddleware,
   uploadMiddleware('AF').single('attachedFile'),
-  (req, res) => {
-    const { file } = req as any;
+  (req: AuthenticatedRequestWithFile, res) => {
+    const { file } = req;
 
     try {
       if (!file) {
@@ -60,7 +66,7 @@ router.post(
         });
       } else {
         let file_type = '';
-        let extention = path.extname(file.path).substr(1);
+        const extention = path.extname(file.path).substr(1);
         if (['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG'].includes(extention)) {
           file_type = 'IMG';
         } else if (['doc', 'DOC', 'docx', 'DOCX'].includes(extention)) {
@@ -79,8 +85,8 @@ router.post(
           file_type = 'N';
           console.error(extention);
         }
-        let data = {
-          original_name: file.originalname,
+        const data = {
+          original_name: file.filename,
           file_path: file.path,
           file_type: file_type,
         };
@@ -99,8 +105,8 @@ router.post(
   },
 );
 
-router.post('/:content_id/comment', verifyTokenMiddleware, (req, res) => {
-  const { decodedToken } = req as any;
+router.post('/:content_id/comment', verifyTokenMiddleware, (req: AuthenticatedRequest, res) => {
+  const { decodedToken } = req;
 
   createComment(decodedToken._id, req.params.content_id, req.body)
     .then(() => {
@@ -115,10 +121,10 @@ router.post('/:content_id/comment', verifyTokenMiddleware, (req, res) => {
     });
 });
 
-router.post('/:content_id/like', verifyTokenMiddleware, (req, res) => {
-  const { decodedToken } = req as any;
+router.post('/:content_id/like', verifyTokenMiddleware, (req: AuthenticatedRequest, res) => {
+  const { decodedToken } = req;
   const content_id = req.params.content_id;
-  let user_id = decodedToken._id;
+  const user_id = decodedToken._id;
 
   checkLike(content_id, user_id)
     .then((isLiked) => {

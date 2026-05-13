@@ -1,6 +1,19 @@
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import { AuthenticatedRequest } from './auth';
+
+/**
+ * NOTE: temporary type
+ * Have to refactor to use the upload API splitly and only send imgUrl
+ */
+export type AuthenticatedRequestWithFile = AuthenticatedRequest & {
+  file?: {
+    filename: string;
+    path: string;
+    buffer: Buffer;
+  };
+};
 
 const uploadMiddleware = function (type) {
   const storage = multer.diskStorage({
@@ -47,7 +60,7 @@ const uploadMiddleware = function (type) {
       }
     },
     filename(req, file, cb) {
-      let timestamp = new Date().valueOf();
+      const timestamp = new Date().valueOf();
       cb(null, timestamp + '_' + file.originalname);
     },
   });

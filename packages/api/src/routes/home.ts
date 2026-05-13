@@ -2,11 +2,12 @@ import express from 'express';
 import request from 'request';
 import fs from 'fs';
 import path from 'path';
-
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const xmlParser = require('fast-xml-parser');
-require('dotenv').config();
 
-import { verifyTokenMiddleware } from '../middlewares/auth';
+import 'dotenv/config';
+
+import { AuthenticatedRequest, verifyTokenMiddleware } from '../middlewares/auth';
 import {
   retrieveSoundBox,
   retrieveRecentPosts,
@@ -31,8 +32,8 @@ router.get('/soundbox', verifyTokenMiddleware, (req, res) => {
     });
 });
 
-router.get('/posts', verifyTokenMiddleware, (req, res) => {
-  const { decodedToken } = req as any;
+router.get('/posts', verifyTokenMiddleware, (req: AuthenticatedRequest, res) => {
+  const { decodedToken } = req;
 
   retrieveRecentPosts(decodedToken.grade)
     .then((posts) => {
@@ -46,19 +47,19 @@ router.get('/posts', verifyTokenMiddleware, (req, res) => {
     });
 });
 
-router.get('/posts/all', verifyTokenMiddleware, (req, res) => {
+router.get('/posts/all', verifyTokenMiddleware, (req: AuthenticatedRequest, res) => {
   const ROWNUM = 10;
   let offset = 0;
-  const { query, decodedToken } = req as any;
+  const { query, decodedToken } = req;
 
-  if (query.page > 0) {
-    offset = ROWNUM * (query.page - 1);
+  if (Number(query.page) > 0) {
+    offset = ROWNUM * (Number(query.page) - 1);
   }
   retrieveAllPosts(decodedToken.grade, ROWNUM, offset)
-    .then((postInfo) => {
+    .then((postInfo: { count: number; rows: unknown[] }) => {
       res.json({
-        postCount: (postInfo as any).count,
-        postInfo: (postInfo as any).rows,
+        postCount: postInfo.count,
+        postInfo: postInfo.rows,
       });
     })
     .catch((err) => {
@@ -108,16 +109,16 @@ router.get('/comments', verifyTokenMiddleware, (req, res) => {
     });
 });
 
-router.get('/comments/all', verifyTokenMiddleware, (req, res) => {
+router.get('/comments/all', verifyTokenMiddleware, (req: AuthenticatedRequest, res) => {
   const ROWNUM = 10;
   let offset = 0;
-  const { query, decodedToken } = req as any;
+  const { query, decodedToken } = req;
 
-  if (query.page > 0) {
-    offset = ROWNUM * (query.page - 1);
+  if (Number(query.page) > 0) {
+    offset = ROWNUM * (Number(query.page) - 1);
   }
   retrieveAllComments(decodedToken.grade, ROWNUM, offset)
-    .then((commentInfo: any) => {
+    .then((commentInfo: { count: number; rows: unknown[] }) => {
       res.json({
         commentCount: commentInfo.count,
         commentInfo: commentInfo.rows,
@@ -131,15 +132,38 @@ router.get('/comments/all', verifyTokenMiddleware, (req, res) => {
     });
 });
 
+interface RiseSetItem {
+  sunrise?: number;
+  sunset?: number;
+  moonrise?: number;
+  moonset?: number;
+  astm?: number;
+  aste?: number;
+}
+
+interface MoonPhaseItem {
+  lunAge?: number;
+}
+
+interface ApiResponse {
+  response?: {
+    body?: {
+      items?: {
+        item?: RiseSetItem | MoonPhaseItem;
+      };
+    };
+  };
+}
+
 router.get('/riseset', verifyTokenMiddleware, (req, res) => {
   const today = new Date();
-  let year = today.getFullYear().toString();
-  let month: any = today.getMonth() + 1;
-  let day: any = today.getDate();
+  const year = today.getFullYear().toString();
+  let month: string | number = today.getMonth() + 1;
+  let day: string | number = today.getDate();
   month = month < 10 ? '0' + month : month;
   day = day < 10 ? '0' + day : day;
 
-  let dayformat = `${year}${month}${day}`;
+  const dayformat = `${year}${month}${day}`;
 
   try {
     if (!fs.existsSync(path.join('.', 'riseset'))) {
@@ -153,10 +177,10 @@ router.get('/riseset', verifyTokenMiddleware, (req, res) => {
     const riseSetJsonPath = path.join('.', 'riseset', `${dayformat}.json`);
 
     if (fs.existsSync(riseSetJsonPath)) {
-      let riseSetInfo = fs.readFileSync(riseSetJsonPath, 'utf8');
+      const riseSetInfo = fs.readFileSync(riseSetJsonPath, 'utf8');
       res.json(JSON.parse(riseSetInfo));
     } else {
-      let riseSetUrl =
+      const riseSetUrl =
         'http://apis.data.go.kr/B090041/openapi/service/RiseSetInfoService/getAreaRiseSetInfo';
       let riseSetQueryParams =
         '?' + encodeURIComponent('ServiceKey') + '=' + process.env.RISESET_SERVICE_KEY;
@@ -178,15 +202,15 @@ router.get('/riseset', verifyTokenMiddleware, (req, res) => {
             code: 0,
           });
         } else {
-          let riseSetData = xmlParser.parse(body);
-          let riseSetItem = {} as any;
+          const riseSetData: ApiResponse = xmlParser.parse(body);
+          let riseSetItem: RiseSetItem = {};
           if (
             riseSetData.response &&
             riseSetData.response.body &&
             riseSetData.response.body.items &&
             riseSetData.response.body.items.item
           ) {
-            riseSetItem = riseSetData.response.body.items.item;
+            riseSetItem = riseSetData.response.body.items.item as RiseSetItem;
           } else {
             console.error('api error');
             return res.status(500).json({
@@ -195,16 +219,16 @@ router.get('/riseset', verifyTokenMiddleware, (req, res) => {
             });
           }
 
-          let moonPhaseUrl =
+          const moonPhaseUrl =
             'http://apis.data.go.kr/B090041/openapi/service/LunPhInfoService/getLunPhInfo';
           let moonPhaseQueryParams =
             '?' + encodeURIComponent('ServiceKey') + '=' + process.env.RISESET_SERVICE_KEY;
           moonPhaseQueryParams +=
             '&' + encodeURIComponent('solYear') + '=' + encodeURIComponent(year);
           moonPhaseQueryParams +=
-            '&' + encodeURIComponent('solMonth') + '=' + encodeURIComponent(month);
+            '&' + encodeURIComponent('solMonth') + '=' + encodeURIComponent(String(month));
           moonPhaseQueryParams +=
-            '&' + encodeURIComponent('solDay') + '=' + encodeURIComponent(day);
+            '&' + encodeURIComponent('solDay') + '=' + encodeURIComponent(String(day));
 
           request.get(moonPhaseUrl + moonPhaseQueryParams, (err, response, body) => {
             if (err) {
@@ -220,15 +244,15 @@ router.get('/riseset', verifyTokenMiddleware, (req, res) => {
                 code: 0,
               });
             } else {
-              let moonPhaseData = xmlParser.parse(body);
-              let moonPhaseItem = {} as any;
+              const moonPhaseData: ApiResponse = xmlParser.parse(body);
+              let moonPhaseItem: MoonPhaseItem = {};
               if (
                 moonPhaseData.response &&
                 moonPhaseData.response.body &&
                 moonPhaseData.response.body.items &&
                 moonPhaseData.response.body.items.item
               ) {
-                moonPhaseItem = moonPhaseData.response.body.items.item;
+                moonPhaseItem = moonPhaseData.response.body.items.item as MoonPhaseItem;
               } else {
                 console.error('api error');
                 return res.status(500).json({

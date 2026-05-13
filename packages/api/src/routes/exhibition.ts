@@ -1,8 +1,8 @@
 import express from 'express';
 import path from 'path';
-const uuid4 = require('uuid4');
-import uploadMiddleware from '../middlewares/upload';
-import { verifyTokenMiddleware } from '../middlewares/auth';
+import uuid4 from 'uuid4';
+import uploadMiddleware, { AuthenticatedRequestWithFile } from '../middlewares/upload';
+import { AuthenticatedRequest, verifyTokenMiddleware } from '../middlewares/auth';
 
 import { retrieveExhibition } from '../controllers/exhibition.controller';
 import {
@@ -12,6 +12,7 @@ import {
 import { resizeForThumbnail } from '../utils/resize';
 import { retrieveUserByUserUuid } from '../controllers/user.controller';
 import { deleteContent } from '../controllers/content.controller';
+import { UserModel } from '../models';
 
 const router = express.Router();
 
@@ -31,7 +32,8 @@ router.get('/:exhibition_id', verifyTokenMiddleware, (req, res) => {
     });
 });
 
-router.patch('/:exhibition_id', verifyTokenMiddleware, (req, res) => {});
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+router.patch('/:exhibition_id', verifyTokenMiddleware, (_req: AuthenticatedRequest, _res) => {});
 
 router.delete('/:exhibition_id', verifyTokenMiddleware, (req, res) => {
   deleteContent(req.params.exhibition_id)
@@ -67,8 +69,8 @@ router.post(
   '/:exhibition_id/exhibitPhoto',
   verifyTokenMiddleware,
   uploadMiddleware('EH').single('exhibitPhoto'),
-  (req, res) => {
-    const { file, decodedToken } = req as any;
+  (req: AuthenticatedRequestWithFile, res) => {
+    const { file, decodedToken } = req;
 
     if (!file) {
       res.status(409).json({
@@ -76,7 +78,7 @@ router.post(
         code: 1,
       });
     } else {
-      let basename = path.basename(file.filename, path.extname(file.filename));
+      const basename = path.basename(file.filename, path.extname(file.filename));
       const photoInfo = JSON.parse(req.body.photoInfo);
 
       resizeForThumbnail(file.path, null)
@@ -85,10 +87,10 @@ router.post(
             return retrieveUserByUserUuid(photoInfo.photographer.user_uuid);
           }
         })
-        .then((photographer: any) => {
+        .then((photographer?: UserModel) => {
           // console.log(photographer)
 
-          let data = {
+          const data = {
             content_uuid: uuid4(),
             author_id: decodedToken._id,
             board_id: req.body.board_id,
@@ -98,7 +100,7 @@ router.post(
             type: 'EP',
             parent_id: req.params.exhibition_id,
             order: photoInfo.order,
-            photographer_id: photographer ? photographer.user_id : null,
+            photographer_id: photographer ? photographer.get('user_id') : null,
             photographer_alt: photographer ? null : photoInfo.photographer_alt,
             file_path: `/exhibition/${req.body.exhibition_no}/${file.filename}`,
             thumbnail_path: `/exhibition/${req.body.exhibition_no}/${basename}_thumb.jpeg`,

@@ -27,25 +27,24 @@ const router = express.Router();
 const EQUIP_RENT_GRADE = 7;
 const EQUIP_ADMIN_GRADE = 6;
 
+interface EquipmentRow {
+  get: (opts: { plain: boolean }) => Record<string, unknown>;
+}
+
 router.get('/', verifyTokenMiddleware, async (req, res) => {
-  const ROWNUM = 10;
-  let offset = 0;
-  const query = (req as any).query;
-  if (query.page > 0) {
-    offset = ROWNUM * (query.page - 1);
-  }
-  retrieveEquipmentList(ROWNUM, offset)
+  retrieveEquipmentList()
     .then(({ rows, count }) => {
       res.json({
         equipCount: count,
-        equipInfo: rows.map((row: any) => {
+        equipInfo: rows.map((row: EquipmentRow) => {
           const { rents, ..._row } = row.get({ plain: true });
           // rents must have length <= 1
+          const rentArray = rents as Array<Record<string, unknown>> | undefined;
           return {
             ..._row,
-            renter: rents?.[0]?.user ?? undefined,
-            start_date: rents?.[0]?.start_date ?? undefined,
-            end_date: rents?.[0]?.end_date ?? undefined,
+            renter: rentArray?.[0]?.user ?? undefined,
+            start_date: rentArray?.[0]?.start_date ?? undefined,
+            end_date: rentArray?.[0]?.end_date ?? undefined,
           };
         }),
       });
@@ -66,24 +65,19 @@ router.get('/category', verifyTokenMiddleware, async (req, res) => {
 });
 
 router.get('/search', verifyTokenMiddleware, async (req, res) => {
-  const ROWNUM = 10;
-  let offset = 0;
-  const query = (req as any).query;
-  if (query.page > 0) {
-    offset = ROWNUM * (query.page - 1);
-  }
   const { category_id, status, keyword } = req.query;
-  searchEquipmentList(category_id, status, keyword, ROWNUM, offset)
+  searchEquipmentList(category_id, status, keyword)
     .then(({ rows, count }) => {
       res.json({
         equipCount: count,
-        equipInfo: rows.map((row: any) => {
+        equipInfo: rows.map((row: EquipmentRow) => {
           const { rents, ..._row } = row.get({ plain: true });
+          const rentArray = rents as Array<Record<string, unknown>> | undefined;
           return {
             ..._row,
-            renter: rents?.[0]?.user ?? undefined,
-            start_date: rents?.[0]?.start_date ?? undefined,
-            end_date: rents?.[0]?.end_date ?? undefined,
+            renter: rentArray?.[0]?.user ?? undefined,
+            start_date: rentArray?.[0]?.start_date ?? undefined,
+            end_date: rentArray?.[0]?.end_date ?? undefined,
           };
         }),
       });
@@ -98,8 +92,8 @@ router.get('/search', verifyTokenMiddleware, async (req, res) => {
     });
 });
 
-router.post('/', verifyTokenMiddleware, async (req, res) => {
-  const { decodedToken } = req as AuthenticatedRequest;
+router.post('/', verifyTokenMiddleware, async (req: AuthenticatedRequest, res) => {
+  const { decodedToken } = req;
 
   if (decodedToken.grade > EQUIP_ADMIN_GRADE) {
     res.status(403).json({
@@ -133,8 +127,8 @@ router.post('/', verifyTokenMiddleware, async (req, res) => {
   }
 });
 
-router.patch('/', verifyTokenMiddleware, async (req, res) => {
-  const { decodedToken } = req as AuthenticatedRequest;
+router.patch('/', verifyTokenMiddleware, async (req: AuthenticatedRequest, res) => {
+  const { decodedToken } = req;
 
   if (decodedToken.grade > EQUIP_ADMIN_GRADE) {
     res.status(403).json({
@@ -176,8 +170,8 @@ router.patch('/', verifyTokenMiddleware, async (req, res) => {
   }
 });
 
-router.delete('/:id', verifyTokenMiddleware, async (req, res) => {
-  const { decodedToken } = req as AuthenticatedRequest;
+router.delete('/:id', verifyTokenMiddleware, async (req: AuthenticatedRequest, res) => {
+  const { decodedToken } = req;
 
   if (decodedToken.grade > EQUIP_ADMIN_GRADE) {
     return res.status(403).json({
@@ -213,8 +207,8 @@ router.delete('/:id', verifyTokenMiddleware, async (req, res) => {
 });
 
 // TODO: check if the user has permission
-router.post('/category', verifyTokenMiddleware, async (req, res) => {
-  const { decodedToken } = req as AuthenticatedRequest;
+router.post('/category', verifyTokenMiddleware, async (req: AuthenticatedRequest, res) => {
+  const { decodedToken } = req;
 
   if (decodedToken.grade > EQUIP_ADMIN_GRADE) {
     res.status(403).json({
@@ -230,8 +224,8 @@ router.post('/category', verifyTokenMiddleware, async (req, res) => {
   res.json(category);
 });
 
-router.patch('/category', verifyTokenMiddleware, async (req, res) => {
-  const { decodedToken } = req as AuthenticatedRequest;
+router.patch('/category', verifyTokenMiddleware, async (req: AuthenticatedRequest, res) => {
+  const { decodedToken } = req;
 
   if (decodedToken.grade > EQUIP_ADMIN_GRADE) {
     res.status(403).json({
@@ -248,46 +242,50 @@ router.patch('/category', verifyTokenMiddleware, async (req, res) => {
   });
 });
 
-router.delete('/category/:categoryId', verifyTokenMiddleware, async (req, res) => {
-  const { decodedToken } = req as AuthenticatedRequest;
+router.delete(
+  '/category/:categoryId',
+  verifyTokenMiddleware,
+  async (req: AuthenticatedRequest, res) => {
+    const { decodedToken } = req;
 
-  if (decodedToken.grade > EQUIP_ADMIN_GRADE) {
-    return res.status(403).json({
-      success: false,
-      error: 'PERMISSION DENIED',
-      code: 1,
-    });
-  }
+    if (decodedToken.grade > EQUIP_ADMIN_GRADE) {
+      return res.status(403).json({
+        success: false,
+        error: 'PERMISSION DENIED',
+        code: 1,
+      });
+    }
 
-  const { categoryId } = req.params;
+    const { categoryId } = req.params;
 
-  const equipment = await retrieveEquipmentsByCategory(Number(categoryId));
+    const equipment = await retrieveEquipmentsByCategory(Number(categoryId));
 
-  if (equipment.length > 0) {
-    return res.status(400).json({
-      success: false,
-      error: 'EQUIPMENT EXISTS IN CATEGORY',
-    });
-  }
+    if (equipment.length > 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'EQUIPMENT EXISTS IN CATEGORY',
+      });
+    }
 
-  try {
-    await deleteEquipmentCategory(Number(categoryId));
-    res.json({
-      success: true,
-      id: Number(categoryId),
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      success: false,
-      error: 'DELETE EQUIPMENT CATEGORY FAIL',
-      code: 1,
-    });
-  }
-});
+    try {
+      await deleteEquipmentCategory(Number(categoryId));
+      res.json({
+        success: true,
+        id: Number(categoryId),
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({
+        success: false,
+        error: 'DELETE EQUIPMENT CATEGORY FAIL',
+        code: 1,
+      });
+    }
+  },
+);
 
-router.post('/rent', verifyTokenMiddleware, async (req, res) => {
-  const { decodedToken } = req as AuthenticatedRequest;
+router.post('/rent', verifyTokenMiddleware, async (req: AuthenticatedRequest, res) => {
+  const { decodedToken } = req;
 
   if (decodedToken.grade > EQUIP_RENT_GRADE) {
     res.status(403).json({
@@ -304,17 +302,21 @@ router.post('/rent', verifyTokenMiddleware, async (req, res) => {
     equipmentIds.map((equipmentId: number) => rentEquipment(equipmentId, decodedToken._id)),
   ).then((results) => {
     const successEquipmentIds = results
-      .filter((result): result is PromiseFulfilledResult<any> => result.status === 'fulfilled')
+      .filter(
+        (result): result is PromiseFulfilledResult<number> => result.status === 'fulfilled',
+      )
       .map((result) => result.value);
     res.json({
       successEquipmentIds,
-      failedEquipmentIds: equipmentIds.filter((id) => !successEquipmentIds.includes(id)),
+      failedEquipmentIds: equipmentIds.filter(
+        (id: number) => !successEquipmentIds.includes(id),
+      ),
     });
   });
 });
 
-router.post('/rent/:rentId/return', verifyTokenMiddleware, async (req, res) => {
-  const { decodedToken } = req as AuthenticatedRequest;
+router.post('/rent/:rentId/return', verifyTokenMiddleware, async (req: AuthenticatedRequest, res) => {
+  const { decodedToken } = req;
 
   if (decodedToken.grade > EQUIP_RENT_GRADE) {
     res.status(403).json({
@@ -341,15 +343,15 @@ router.post('/rent/:rentId/return', verifyTokenMiddleware, async (req, res) => {
     });
 });
 
-router.get('/rent/me', verifyTokenMiddleware, async (req, res) => {
-  const { decodedToken } = req as AuthenticatedRequest;
+router.get('/rent/me', verifyTokenMiddleware, async (req: AuthenticatedRequest, res) => {
+  const { decodedToken } = req;
 
   const equipmentList = await retrieveRentedEquipmentListByUserId(decodedToken._id);
   res.json(equipmentList);
 });
 
-router.get('/rent/records', verifyTokenMiddleware, async (req, res) => {
-  const { decodedToken } = req as AuthenticatedRequest;
+router.get('/rent/records', verifyTokenMiddleware, async (req: AuthenticatedRequest, res) => {
+  const { decodedToken } = req;
 
   if (decodedToken.grade > EQUIP_ADMIN_GRADE) {
     res.status(403).json({
@@ -362,9 +364,9 @@ router.get('/rent/records', verifyTokenMiddleware, async (req, res) => {
 
   const ROWNUM = 10;
   let offset = 0;
-  const query = (req as any).query;
-  if (query.page > 0) {
-    offset = ROWNUM * (query.page - 1);
+  const { query } = req;
+  if (Number(query.page) > 0) {
+    offset = ROWNUM * (Number(query.page) - 1);
   }
 
   const dateFields: { key: string; value: string | undefined }[] = [
@@ -410,56 +412,61 @@ router.get('/rent/records', verifyTokenMiddleware, async (req, res) => {
     });
 });
 
-router.patch('/rent/:rentId/penalty', verifyTokenMiddleware, async (req, res) => {
-  const { decodedToken } = req as AuthenticatedRequest;
+router.patch(
+  '/rent/:rentId/penalty',
+  verifyTokenMiddleware,
+  async (req: AuthenticatedRequest, res) => {
+    const { decodedToken } = req;
 
-  if (decodedToken.grade > EQUIP_ADMIN_GRADE) {
-    res.status(403).json({
-      success: false,
-      error: 'PERMISSION DENIED',
-      code: 1,
-    });
-    return;
-  }
+    if (decodedToken.grade > EQUIP_ADMIN_GRADE) {
+      res.status(403).json({
+        success: false,
+        error: 'PERMISSION DENIED',
+        code: 1,
+      });
+      return;
+    }
 
-  const { rentId } = req.params;
-  const { penalty_status } = req.body;
+    const { rentId } = req.params;
+    const { penalty_status } = req.body;
 
-  const parsedRentId = parseInt(rentId, 10);
-  if (isNaN(parsedRentId)) {
-    res.status(400).json({
-      success: false,
-      error: 'INVALID RENT ID',
-      code: 1,
-    });
-    return;
-  }
+    const parsedRentId = parseInt(rentId, 10);
+    if (isNaN(parsedRentId)) {
+      res.status(400).json({
+        success: false,
+        error: 'INVALID RENT ID',
+        code: 1,
+      });
+      return;
+    }
 
-  const allowedStatuses = [PenaltyStatusEnum.NEED_PAYMENT, PenaltyStatusEnum.RECEIVED_PAYMENT];
-  if (!penalty_status || !allowedStatuses.includes(penalty_status)) {
-    res.status(400).json({
-      success: false,
-      error: 'INVALID PENALTY STATUS',
-      code: 1,
-    });
-    return;
-  }
+    const allowedStatuses = [PenaltyStatusEnum.NEED_PAYMENT, PenaltyStatusEnum.RECEIVED_PAYMENT];
+    if (!penalty_status || !allowedStatuses.includes(penalty_status)) {
+      res.status(400).json({
+        success: false,
+        error: 'INVALID PENALTY STATUS',
+        code: 1,
+      });
+      return;
+    }
 
-  try {
-    const result = await updatePenaltyStatus(parsedRentId, penalty_status);
-    res.json(result);
-  } catch (err: any) {
-    console.error(err);
-    res.status(400).json({
-      success: false,
-      error: err.message || 'UPDATE PENALTY STATUS FAIL',
-      code: 1,
-    });
-  }
-});
+    try {
+      const result = await updatePenaltyStatus(parsedRentId, penalty_status);
+      res.json(result);
+    } catch (err: unknown) {
+      console.error(err);
+      const message = err instanceof Error ? err.message : 'UPDATE PENALTY STATUS FAIL';
+      res.status(400).json({
+        success: false,
+        error: message,
+        code: 1,
+      });
+    }
+  },
+);
 
-router.get('/:id/rents', verifyTokenMiddleware, async (req, res) => {
-  const { decodedToken } = req as AuthenticatedRequest;
+router.get('/:id/rents', verifyTokenMiddleware, async (req: AuthenticatedRequest, res) => {
+  const { decodedToken } = req;
 
   if (decodedToken.grade > EQUIP_ADMIN_GRADE) {
     res.status(403).json({
@@ -473,9 +480,9 @@ router.get('/:id/rents', verifyTokenMiddleware, async (req, res) => {
   const { id } = req.params;
   const ROWNUM = 10;
   let offset = 0;
-  const query = (req as any).query;
-  if (query.page > 0) {
-    offset = ROWNUM * (query.page - 1);
+  const { query } = req;
+  if (Number(query.page) > 0) {
+    offset = ROWNUM * (Number(query.page) - 1);
   }
   retrieveRentListByEquipmentId(parseInt(id), ROWNUM, offset)
     .then((rentList) => {

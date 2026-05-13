@@ -1,5 +1,5 @@
 import express from 'express';
-import { verifyTokenMiddleware } from '../middlewares/auth';
+import { AuthenticatedRequest, verifyTokenMiddleware } from '../middlewares/auth';
 
 import {
   retrieveExhibitPhoto,
@@ -10,14 +10,15 @@ import {
 import { checkLike } from '../controllers/contentLike.controller';
 import { increaseViewNum, updateContent, deleteContent } from '../controllers/content.controller';
 import { retrieveUserByUserUuid } from '../controllers/user.controller';
+import { UserModel } from '../models';
 
 const router = express.Router();
 
-router.get('/:exhibitPhoto_id', verifyTokenMiddleware, (req, res) => {
-  const { decodedToken } = req as any;
+router.get('/:exhibitPhoto_id', verifyTokenMiddleware, (req: AuthenticatedRequest, res) => {
+  const { decodedToken } = req;
 
   try {
-    let exhibitPhotoInfo: any = {};
+    let exhibitPhotoInfo: Record<string, unknown> = {};
     retrieveExhibitPhoto(req.params.exhibitPhoto_id)
       .then((info) => {
         exhibitPhotoInfo = info;
@@ -52,10 +53,10 @@ router.get('/:exhibitPhoto_id', verifyTokenMiddleware, (req, res) => {
 
 router.patch('/:exhibitPhoto_id', verifyTokenMiddleware, (req, res) => {
   try {
-    new Promise<void>((resolve, reject) => {
+    new Promise<UserModel | void>((resolve, reject) => {
       if (req.body.photographer) {
         retrieveUserByUserUuid(req.body.photographer.user_uuid)
-          .then((photographer: any) => {
+          .then((photographer) => {
             resolve(photographer);
           })
           .catch((err) => {
@@ -65,12 +66,12 @@ router.patch('/:exhibitPhoto_id', verifyTokenMiddleware, (req, res) => {
         resolve();
       }
     })
-      .then((photographer: any) => {
-        let data = {
+      .then((photographer?: UserModel) => {
+        const data = {
           title: req.body.title,
           text: req.body.text,
           order: req.body.order,
-          photographer_id: photographer ? photographer.user_id : null,
+          photographer_id: photographer ? photographer.get('user_id') : null,
           photographer_alt: photographer ? null : req.body.photographer_alt,
           location: req.body.location,
           camera: req.body.camera,

@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { verifyTokenMiddleware } from '../middlewares/auth';
+import { AuthenticatedRequest, verifyTokenMiddleware } from '../middlewares/auth';
 
 import {
   retrieveDocumentCount,
@@ -13,18 +13,18 @@ import { checkLike } from '../controllers/contentLike.controller';
 
 const router = express.Router();
 
-router.get('/', verifyTokenMiddleware, (req, res) => {
+router.get('/', verifyTokenMiddleware, (req: AuthenticatedRequest, res) => {
   let offset = 0;
   let docCount = 0;
   const ROWNUM = 10;
-  const { query } = req as any;
+  const { query } = req;
 
-  if (query.page > 0) {
-    offset = ROWNUM * (query.page - 1);
+  if (Number(query.page) > 0) {
+    offset = ROWNUM * (Number(query.page) - 1);
   }
 
   retrieveDocumentCount(req.query.category, req.query.generation)
-    .then((count: any) => {
+    .then((count: number) => {
       docCount = count;
       return retrieveDocuments(ROWNUM, offset, req.query.category, req.query.generation);
     })
@@ -43,13 +43,13 @@ router.get('/', verifyTokenMiddleware, (req, res) => {
     });
 });
 
-router.get('/:doc_id', verifyTokenMiddleware, (req, res, next) => {
-  const { decodedToken } = req as any;
+router.get('/:doc_id', verifyTokenMiddleware, (req: AuthenticatedRequest, res, next) => {
+  const { decodedToken } = req;
 
   try {
-    let resDocInfo = {};
+    let resDocInfo: Record<string, unknown> = {};
     retrieveDocument(req.params.doc_id)
-      .then((docInfo: any) => {
+      .then((docInfo) => {
         resDocInfo = docInfo;
 
         if (docInfo.board.lv_read < decodedToken.grade) {
@@ -125,7 +125,6 @@ export default router;
 // @deprecated
 // router.get('/generation/:genNum', verifyTokenMiddleware, (req, res) => {
 //
-
 //     retrieveDocuments(req.params.genNum)
 //         .then((docuInfo) => {
 //             res.json(docuInfo)
@@ -142,7 +141,6 @@ export default router;
 // @deprecated
 // router.get('/:docuId/download/:index', (req, res) => {
 //
-
 //     retrieveDocument(req.params.docuId)
 //     .then((docuInfo) => {
 //         let index = req.params.index;

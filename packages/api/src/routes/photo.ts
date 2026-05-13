@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { verifyTokenMiddleware } from '../middlewares/auth';
+import { AuthenticatedRequest, verifyTokenMiddleware } from '../middlewares/auth';
 
 import {
   retrievePhoto,
@@ -17,21 +17,16 @@ import {
 import { checkLike } from '../controllers/contentLike.controller';
 import { updateContent, deleteContent, increaseViewNum } from '../controllers/content.controller';
 import { retrieveTagsOnBoard } from '../controllers/tag.controller';
-import {
-  retrieveTagsByContent,
-  createContentTag,
-  deleteContentTag,
-  updateContentTag,
-} from '../controllers/contentTag.controller';
+import { createContentTag, updateContentTag } from '../controllers/contentTag.controller';
 import { retrieveUserByUserUuid } from '../controllers/user.controller';
 import { SearchType } from '../controllers/post.controller';
 
 const router = express.Router();
 
-router.get('/list', verifyTokenMiddleware, async (req, res) => {
-  const decodedToken = (req as any).decodedToken;
+router.get('/list', verifyTokenMiddleware, async (req: AuthenticatedRequest, res) => {
+  const decodedToken = req.decodedToken;
   const userUuid = req.query.user_uuid as string;
-  const filter = {
+  const filter: Record<string, unknown> = {
     board_id: req.query.board_id as string,
     read_grade: decodedToken.grade,
     limit: Number(req.query.limit) || undefined,
@@ -65,10 +60,9 @@ router.get('/list', verifyTokenMiddleware, async (req, res) => {
   }
 });
 
-router.get('/:photo_id', verifyTokenMiddleware, (req, res, next) => {
-  let photoInfo = {} as any;
-  let likeInfo = {} as any;
-  const { decodedToken } = req as any;
+router.get('/:photo_id', verifyTokenMiddleware, (req: AuthenticatedRequest, res, next) => {
+  let photoInfo: Record<string, unknown> = {};
+  const { decodedToken } = req;
 
   retrievePhoto(req.params.photo_id)
     .then((info) => {
@@ -117,8 +111,8 @@ router.get('/:photo_id', verifyTokenMiddleware, (req, res, next) => {
     });
 });
 
-router.post('/', verifyTokenMiddleware, async (req, res) => {
-  const decodedToken = (req as any).decodedToken;
+router.post('/', verifyTokenMiddleware, async (req: AuthenticatedRequest, res) => {
+  const decodedToken = req.decodedToken;
 
   const list = req.body.list;
   const boardId = req.body.board_id;
@@ -126,14 +120,15 @@ router.post('/', verifyTokenMiddleware, async (req, res) => {
 
   try {
     const contentIdList = await Promise.all(
-      list.map(async (photo: any) => {
+      list.map(async (photo: Record<string, unknown>) => {
         const contentId = await createPhoto({
           ...photo,
           author_id: decodedToken._id,
           board_id: boardId,
           album_id: albumId,
         });
-        await Promise.all(photo.tags.map((tag) => createContentTag(contentId, tag)));
+        const tags = photo.tags as string[];
+        await Promise.all(tags.map((tag) => createContentTag(contentId, tag)));
         return contentId;
       }),
     );

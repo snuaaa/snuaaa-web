@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { verifyTokenMiddleware } from '../middlewares/auth';
+import { AuthenticatedRequest, verifyTokenMiddleware } from '../middlewares/auth';
 
 import { updateContent, deleteContent, increaseViewNum } from '../controllers/content.controller';
 import { retrievePost, retrievePostsWithFilter, SearchType } from '../controllers/post.controller';
@@ -9,11 +9,11 @@ import { retrieveUserByUserUuid } from '../controllers/user.controller';
 
 const router = express.Router();
 
-router.get('/list', verifyTokenMiddleware, async (req, res) => {
-  const decodedToken = (req as any).decodedToken;
+router.get('/list', verifyTokenMiddleware, async (req: AuthenticatedRequest, res) => {
+  const decodedToken = req.decodedToken;
   const userUuid = req.query.user_uuid as string;
 
-  const filter = {
+  const filter: Record<string, unknown> = {
     board_id: req.query.board_id as string,
     read_grade: decodedToken.grade,
     limit: Number(req.query.limit) || undefined,
@@ -46,17 +46,17 @@ router.get('/list', verifyTokenMiddleware, async (req, res) => {
   }
 });
 
-router.get('/:post_id', verifyTokenMiddleware, (req, res, next) => {
-  const decodedToken = (req as any).decodedToken;
+router.get('/:post_id', verifyTokenMiddleware, (req: AuthenticatedRequest, res, next) => {
+  const decodedToken = req.decodedToken;
 
   try {
-    let resPostInfo = {};
+    let resPostInfo: Record<string, unknown> = {};
 
     retrievePost(req.params.post_id)
       .then((postInfo) => {
         resPostInfo = postInfo;
 
-        if ((postInfo as any).board.lv_read < decodedToken.grade) {
+        if ((postInfo as Record<string, unknown> & { board: { lv_read: number } }).board.lv_read < decodedToken.grade) {
           const err = {
             status: 403,
             code: 4001,
