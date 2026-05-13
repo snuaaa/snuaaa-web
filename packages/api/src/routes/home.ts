@@ -19,35 +19,27 @@ import { retrieveAlbumsInBoard } from '../controllers/album.controller';
 
 const router = express.Router();
 
-router.get('/soundbox', verifyTokenMiddleware, (req, res) => {
-  retrieveSoundBox()
-    .then((post) => {
-      res.json(post);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(401).json({
-        error: 'Retrieve Soundbox fail',
-      });
-    });
+router.get('/soundbox', verifyTokenMiddleware, async (req, res) => {
+  try {
+    const post = await retrieveSoundBox();
+    res.json(post);
+  } catch (err) {
+    console.error(err);
+    res.status(401).json({ error: 'Retrieve Soundbox fail' });
+  }
 });
 
-router.get('/posts', verifyTokenMiddleware, (req: AuthenticatedRequest, res) => {
-  const { decodedToken } = req;
-
-  retrieveRecentPosts(decodedToken.grade)
-    .then((posts) => {
-      res.json(posts);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(401).json({
-        error: 'Retrieve Posts fail',
-      });
-    });
+router.get('/posts', verifyTokenMiddleware, async (req: AuthenticatedRequest, res) => {
+  try {
+    const posts = await retrieveRecentPosts(req.decodedToken.grade);
+    res.json(posts);
+  } catch (err) {
+    console.error(err);
+    res.status(401).json({ error: 'Retrieve Posts fail' });
+  }
 });
 
-router.get('/posts/all', verifyTokenMiddleware, (req: AuthenticatedRequest, res) => {
+router.get('/posts/all', verifyTokenMiddleware, async (req: AuthenticatedRequest, res) => {
   const ROWNUM = 10;
   let offset = 0;
   const { query, decodedToken } = req;
@@ -55,61 +47,53 @@ router.get('/posts/all', verifyTokenMiddleware, (req: AuthenticatedRequest, res)
   if (Number(query.page) > 0) {
     offset = ROWNUM * (Number(query.page) - 1);
   }
-  retrieveAllPosts(decodedToken.grade, ROWNUM, offset)
-    .then((postInfo: { count: number; rows: unknown[] }) => {
-      res.json({
-        postCount: postInfo.count,
-        postInfo: postInfo.rows,
-      });
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(401).json({
-        error: 'Retrieve Posts fail',
-      });
+
+  try {
+    const postInfo = (await retrieveAllPosts(decodedToken.grade, ROWNUM, offset)) as {
+      count: number;
+      rows: unknown[];
+    };
+    res.json({
+      postCount: postInfo.count,
+      postInfo: postInfo.rows,
     });
+  } catch (err) {
+    console.error(err);
+    res.status(401).json({ error: 'Retrieve Posts fail' });
+  }
 });
 
-router.get('/memory', verifyTokenMiddleware, (req, res) => {
-  retrieveAlbumsInBoard('brd31', 4, 0, null)
-    .then((albums) => {
-      res.json(albums);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(401).json({
-        error: 'Retrieve Photos fail',
-      });
-    });
+router.get('/memory', verifyTokenMiddleware, async (req, res) => {
+  try {
+    const albums = await retrieveAlbumsInBoard('brd31', 4, 0, null);
+    res.json(albums);
+  } catch (err) {
+    console.error(err);
+    res.status(401).json({ error: 'Retrieve Photos fail' });
+  }
 });
 
-router.get('/astrophoto', verifyTokenMiddleware, (req, res) => {
-  retrievePhotosInBoard('brd32', 9, 0)
-    .then((photos) => {
-      res.json(photos);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(401).json({
-        error: 'Retrieve Photos fail',
-      });
-    });
+router.get('/astrophoto', verifyTokenMiddleware, async (req, res) => {
+  try {
+    const photos = await retrievePhotosInBoard('brd32', 9, 0);
+    res.json(photos);
+  } catch (err) {
+    console.error(err);
+    res.status(401).json({ error: 'Retrieve Photos fail' });
+  }
 });
 
-router.get('/comments', verifyTokenMiddleware, (req, res) => {
-  retrieveRecentComments()
-    .then((commentInfo) => {
-      res.json(commentInfo);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(401).json({
-        error: 'Retrieve Comments fail',
-      });
-    });
+router.get('/comments', verifyTokenMiddleware, async (req, res) => {
+  try {
+    const commentInfo = await retrieveRecentComments();
+    res.json(commentInfo);
+  } catch (err) {
+    console.error(err);
+    res.status(401).json({ error: 'Retrieve Comments fail' });
+  }
 });
 
-router.get('/comments/all', verifyTokenMiddleware, (req: AuthenticatedRequest, res) => {
+router.get('/comments/all', verifyTokenMiddleware, async (req: AuthenticatedRequest, res) => {
   const ROWNUM = 10;
   let offset = 0;
   const { query, decodedToken } = req;
@@ -117,19 +101,20 @@ router.get('/comments/all', verifyTokenMiddleware, (req: AuthenticatedRequest, r
   if (Number(query.page) > 0) {
     offset = ROWNUM * (Number(query.page) - 1);
   }
-  retrieveAllComments(decodedToken.grade, ROWNUM, offset)
-    .then((commentInfo: { count: number; rows: unknown[] }) => {
-      res.json({
-        commentCount: commentInfo.count,
-        commentInfo: commentInfo.rows,
-      });
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(401).json({
-        error: 'Retrieve Comments fail',
-      });
+
+  try {
+    const commentInfo = (await retrieveAllComments(decodedToken.grade, ROWNUM, offset)) as {
+      count: number;
+      rows: unknown[];
+    };
+    res.json({
+      commentCount: commentInfo.count,
+      commentInfo: commentInfo.rows,
     });
+  } catch (err) {
+    console.error(err);
+    res.status(401).json({ error: 'Retrieve Comments fail' });
+  }
 });
 
 interface RiseSetItem {
@@ -155,6 +140,8 @@ interface ApiResponse {
   };
 }
 
+// NOTE: This route uses callback-based `request.get()` which cannot be trivially
+// converted to async/await without replacing the HTTP library.
 router.get('/riseset', verifyTokenMiddleware, (req, res) => {
   const today = new Date();
   const year = today.getFullYear().toString();
@@ -191,32 +178,18 @@ router.get('/riseset', verifyTokenMiddleware, (req, res) => {
       request.get(riseSetUrl + riseSetQueryParams, (err, response, body) => {
         if (err) {
           console.error(err);
-          return res.status(500).json({
-            success: false,
-            code: 0,
-          });
+          return res.status(500).json({ success: false, code: 0 });
         } else if (!xmlParser.validate(body)) {
           console.error('xml parse error');
-          return res.status(500).json({
-            success: false,
-            code: 0,
-          });
+          return res.status(500).json({ success: false, code: 0 });
         } else {
           const riseSetData: ApiResponse = xmlParser.parse(body);
           let riseSetItem: RiseSetItem = {};
-          if (
-            riseSetData.response &&
-            riseSetData.response.body &&
-            riseSetData.response.body.items &&
-            riseSetData.response.body.items.item
-          ) {
+          if (riseSetData.response?.body?.items?.item) {
             riseSetItem = riseSetData.response.body.items.item as RiseSetItem;
           } else {
             console.error('api error');
-            return res.status(500).json({
-              success: false,
-              code: 0,
-            });
+            return res.status(500).json({ success: false, code: 0 });
           }
 
           const moonPhaseUrl =
@@ -233,32 +206,18 @@ router.get('/riseset', verifyTokenMiddleware, (req, res) => {
           request.get(moonPhaseUrl + moonPhaseQueryParams, (err, response, body) => {
             if (err) {
               console.error(err);
-              return res.status(500).json({
-                success: false,
-                code: 0,
-              });
+              return res.status(500).json({ success: false, code: 0 });
             } else if (!xmlParser.validate(body)) {
               console.error('xml parse error');
-              return res.status(500).json({
-                success: false,
-                code: 0,
-              });
+              return res.status(500).json({ success: false, code: 0 });
             } else {
               const moonPhaseData: ApiResponse = xmlParser.parse(body);
               let moonPhaseItem: MoonPhaseItem = {};
-              if (
-                moonPhaseData.response &&
-                moonPhaseData.response.body &&
-                moonPhaseData.response.body.items &&
-                moonPhaseData.response.body.items.item
-              ) {
+              if (moonPhaseData.response?.body?.items?.item) {
                 moonPhaseItem = moonPhaseData.response.body.items.item as MoonPhaseItem;
               } else {
                 console.error('api error');
-                return res.status(500).json({
-                  success: false,
-                  code: 0,
-                });
+                return res.status(500).json({ success: false, code: 0 });
               }
 
               const AstroInfo = {

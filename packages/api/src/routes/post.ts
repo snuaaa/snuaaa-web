@@ -46,70 +46,49 @@ router.get('/list', verifyTokenMiddleware, async (req: AuthenticatedRequest, res
   }
 });
 
-router.get('/:post_id', verifyTokenMiddleware, (req: AuthenticatedRequest, res, next) => {
+router.get('/:post_id', verifyTokenMiddleware, async (req: AuthenticatedRequest, res, next) => {
   const decodedToken = req.decodedToken;
 
   try {
-    let resPostInfo: Record<string, unknown> = {};
+    const postInfo = await retrievePost(req.params.post_id);
 
-    retrievePost(req.params.post_id)
-      .then((postInfo) => {
-        resPostInfo = postInfo;
+    if (
+      (postInfo as Record<string, unknown> & { board: { lv_read: number } }).board.lv_read <
+      decodedToken.grade
+    ) {
+      return next({ status: 403, code: 4001 });
+    }
 
-        if ((postInfo as Record<string, unknown> & { board: { lv_read: number } }).board.lv_read < decodedToken.grade) {
-          const err = {
-            status: 403,
-            code: 4001,
-          };
-          next(err);
-          return;
-        } else {
-          return Promise.all([
-            checkLike(req.params.post_id, decodedToken._id),
-            increaseViewNum(req.params.post_id),
-          ]);
-        }
-      })
-      .then((infos) => {
-        if (infos) {
-          res.json({ postInfo: resPostInfo, likeInfo: infos[0] });
-        } else {
-          res.status(404).json();
-        }
-      })
-      .catch((err) => {
-        console.error(err);
-        res.status(500).json();
-      });
+    const [likeInfo] = await Promise.all([
+      checkLike(req.params.post_id, decodedToken._id),
+      increaseViewNum(req.params.post_id),
+    ]);
+
+    res.json({ postInfo, likeInfo });
   } catch (err) {
     console.error(err);
-    return res.status(500).json({
-      success: false,
-      message: 'INTERNAL SERVER ERROR',
-    });
+    res.status(500).json();
   }
 });
 
-router.patch('/:post_id', verifyTokenMiddleware, (req, res) => {
-  updateContent(req.params.post_id, req.body)
-    .then(() => {
-      return res.json({ success: true });
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).json();
-    });
+router.patch('/:post_id', verifyTokenMiddleware, async (req, res) => {
+  try {
+    await updateContent(req.params.post_id, req.body);
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json();
+  }
 });
 
-router.delete('/:post_id', verifyTokenMiddleware, (req, res) => {
-  deleteContent(req.params.post_id)
-    .then(() => {
-      return res.json({ success: true });
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).json();
-    });
+router.delete('/:post_id', verifyTokenMiddleware, async (req, res) => {
+  try {
+    await deleteContent(req.params.post_id);
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json();
+  }
 });
 
 export default router;

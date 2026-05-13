@@ -10,38 +10,25 @@ import {
 import { checkLike } from '../controllers/contentLike.controller';
 import { increaseViewNum, updateContent, deleteContent } from '../controllers/content.controller';
 import { retrieveUserByUserUuid } from '../controllers/user.controller';
-import { UserModel } from '../models';
 
 const router = express.Router();
 
-router.get('/:exhibitPhoto_id', verifyTokenMiddleware, (req: AuthenticatedRequest, res) => {
+router.get('/:exhibitPhoto_id', verifyTokenMiddleware, async (req: AuthenticatedRequest, res) => {
   const { decodedToken } = req;
 
   try {
-    let exhibitPhotoInfo: Record<string, unknown> = {};
-    retrieveExhibitPhoto(req.params.exhibitPhoto_id)
-      .then((info) => {
-        exhibitPhotoInfo = info;
-        return Promise.all([
-          checkLike(req.params.exhibitPhoto_id, decodedToken._id),
-          retrieveExhibitPhotosInExhibition(exhibitPhotoInfo.parent_id),
-          increaseViewNum(req.params.exhibitPhoto_id),
-        ]);
-      })
-      .then((infos) => {
-        res.json({
-          exhibitPhotoInfo: exhibitPhotoInfo,
-          likeInfo: infos[0],
-          exhibitPhotosInfo: infos[1],
-        });
-      })
-      .catch((err) => {
-        console.error(err);
-        res.status(500).json({
-          error: 'internal server error',
-          code: 0,
-        });
-      });
+    const exhibitPhotoInfo = await retrieveExhibitPhoto(req.params.exhibitPhoto_id);
+    const [likeInfo, exhibitPhotosInfo] = await Promise.all([
+      checkLike(req.params.exhibitPhoto_id, decodedToken._id),
+      retrieveExhibitPhotosInExhibition(exhibitPhotoInfo.parent_id),
+      increaseViewNum(req.params.exhibitPhoto_id),
+    ]);
+
+    res.json({
+      exhibitPhotoInfo,
+      likeInfo,
+      exhibitPhotosInfo,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({
@@ -51,81 +38,49 @@ router.get('/:exhibitPhoto_id', verifyTokenMiddleware, (req: AuthenticatedReques
   }
 });
 
-router.patch('/:exhibitPhoto_id', verifyTokenMiddleware, (req, res) => {
+router.patch('/:exhibitPhoto_id', verifyTokenMiddleware, async (req, res) => {
   try {
-    new Promise<UserModel | void>((resolve, reject) => {
-      if (req.body.photographer) {
-        retrieveUserByUserUuid(req.body.photographer.user_uuid)
-          .then((photographer) => {
-            resolve(photographer);
-          })
-          .catch((err) => {
-            reject(err);
-          });
-      } else {
-        resolve();
-      }
-    })
-      .then((photographer?: UserModel) => {
-        const data = {
-          title: req.body.title,
-          text: req.body.text,
-          order: req.body.order,
-          photographer_id: photographer ? photographer.get('user_id') : null,
-          photographer_alt: photographer ? null : req.body.photographer_alt,
-          location: req.body.location,
-          camera: req.body.camera,
-          lens: req.body.lens,
-          exposure_time: req.body.exposure_time,
-          focal_length: req.body.focal_length,
-          f_stop: req.body.f_stop,
-          iso: req.body.iso,
-          date: req.body.date ? new Date(req.body.date) : null,
-        };
-        Promise.all([
-          updateContent(req.params.exhibitPhoto_id, data),
-          updateExhibitPhoto(req.params.exhibitPhoto_id, data),
-        ]);
-      })
-      .then(() => {
-        res.json({
-          success: true,
-        });
-      })
-      .catch((err) => {
-        console.error(err);
-        return res.status(500).json({
-          error: 'UPDATE FAIL',
-          code: 0,
-        });
-      });
+    let photographer = null;
+    if (req.body.photographer) {
+      photographer = await retrieveUserByUserUuid(req.body.photographer.user_uuid);
+    }
+
+    const data = {
+      title: req.body.title,
+      text: req.body.text,
+      order: req.body.order,
+      photographer_id: photographer ? photographer.get('user_id') : null,
+      photographer_alt: photographer ? null : req.body.photographer_alt,
+      location: req.body.location,
+      camera: req.body.camera,
+      lens: req.body.lens,
+      exposure_time: req.body.exposure_time,
+      focal_length: req.body.focal_length,
+      f_stop: req.body.f_stop,
+      iso: req.body.iso,
+      date: req.body.date ? new Date(req.body.date) : null,
+    };
+
+    await Promise.all([
+      updateContent(req.params.exhibitPhoto_id, data),
+      updateExhibitPhoto(req.params.exhibitPhoto_id, data),
+    ]);
+
+    res.json({ success: true });
   } catch (err) {
     console.error(err);
-    return res.status(500).json({
+    res.status(500).json({
       error: 'UPDATE FAIL',
       code: 0,
     });
   }
 });
 
-router.delete('/:exhibitPhoto_id', verifyTokenMiddleware, (req, res) => {
+router.delete('/:exhibitPhoto_id', verifyTokenMiddleware, async (req, res) => {
   try {
-    deleteExhibitPhoto(req.params.exhibitPhoto_id)
-      .then(() => {
-        return deleteContent(req.params.exhibitPhoto_id);
-      })
-      .then(() => {
-        res.json({
-          success: true,
-        });
-      })
-      .catch((err) => {
-        console.error(err);
-        res.status(500).json({
-          error: 'internal server error',
-          code: 0,
-        });
-      });
+    await deleteExhibitPhoto(req.params.exhibitPhoto_id);
+    await deleteContent(req.params.exhibitPhoto_id);
+    res.json({ success: true });
   } catch (err) {
     console.error(err);
     res.status(500).json({

@@ -23,64 +23,49 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-router.get('/check', verifyTokenMiddleware, (req: AuthenticatedRequest, res) => {
-  try {
-    let user: Record<string, unknown> = {};
-    const decodedToken = req.decodedToken;
+async function updateLoginHistory(userId: number) {
+  await Promise.all([createStatsLogin(userId), updateLoginDate(userId)]);
+}
 
-    retrieveUser(decodedToken._id)
-      .then((userInfo) => {
-        user = userInfo;
-        if (userInfo.login_at) {
-          const recentLogin = new Date(userInfo.login_at).getTime();
-          const current = new Date().getTime();
-          // Update login history only after later than 1hours from last history.
-          if (current - recentLogin > 60 * 60 * 1000) {
-            return Promise.all([
-              createStatsLogin(userInfo.user_id),
-              updateLoginDate(userInfo.user_id),
-            ]);
-          }
-        } else {
-          return Promise.all([
-            createStatsLogin(userInfo.user_id),
-            updateLoginDate(userInfo.user_id),
-          ]);
-        }
-      })
-      .then(() => {
-        return createToken({
-          _id: user.user_id,
-          grade: user.grade,
-          level: user.level,
-          autoLogin: decodedToken.autoLogin,
-        });
-      })
-      .then((token) => {
-        return res.status(200).json({
-          success: true,
-          userInfo: user,
-          autoLogin: decodedToken.autoLogin,
-          token,
-        });
-      })
-      .catch((err) => {
-        console.error(err);
-        return res.status(403).json({
-          success: false,
-          message: 'Token is not valid.',
-        });
-      });
+router.get('/check', verifyTokenMiddleware, async (req: AuthenticatedRequest, res) => {
+  try {
+    const decodedToken = req.decodedToken;
+    const userInfo = await retrieveUser(decodedToken._id);
+
+    if (userInfo.login_at) {
+      const recentLogin = new Date(userInfo.login_at).getTime();
+      const current = new Date().getTime();
+      // Update login history only after later than 1hours from last history.
+      if (current - recentLogin > 60 * 60 * 1000) {
+        await updateLoginHistory(userInfo.user_id);
+      }
+    } else {
+      await updateLoginHistory(userInfo.user_id);
+    }
+
+    const token = await createToken({
+      _id: userInfo.user_id,
+      grade: userInfo.grade,
+      level: userInfo.level,
+      autoLogin: decodedToken.autoLogin,
+    });
+
+    return res.status(200).json({
+      success: true,
+      userInfo,
+      autoLogin: decodedToken.autoLogin,
+      token,
+    });
   } catch (err) {
     console.error(err);
-    return res.status(500).json({
+    return res.status(403).json({
       success: false,
-      message: 'INTERNAL SERVER ERROR',
+      message: 'Token is not valid.',
     });
   }
 });
 
-router.post('/login', (req, res) => {
+router.post('/login', async (req, res) => {
   try {
     if (typeof req.body.password !== 'string') {
       return res.status(401).json({
@@ -89,114 +74,86 @@ router.post('/login', (req, res) => {
       });
     }
 
-    let userInfo: Record<string, unknown> = {};
+    const user = await retrieveUserById(req.body.id);
+    if (!user) {
+      throw new Error('id is not correct');
+    }
+    if (!bcrypt.compareSync(req.body.password, user.password)) {
+      throw new Error('password is not correct');
+    }
 
-    retrieveUserById(req.body.id)
-      .then((user) => {
-        if (!user) {
-          throw new Error('id is not correct');
-        } else if (bcrypt.compareSync(req.body.password, user.password)) {
-          userInfo = user;
-        } else {
-          throw new Error('password is not correct');
-        }
+    const userInfo = { ...user };
+
+    if (userInfo.login_at) {
+      const recentLogin = new Date(userInfo.login_at as string).getTime();
+      const current = new Date().getTime();
+      // Update login history only after later than 1hours from last history.
+      if (current - recentLogin > 60 * 60 * 1000) {
+        await updateLoginHistory(userInfo.user_id as number);
+      }
+    } else {
+      await updateLoginHistory(userInfo.user_id as number);
+    }
+
+    delete userInfo.password;
+    const token = await createToken({
+      _id: userInfo.user_id,
+      grade: userInfo.grade,
+      level: userInfo.level,
+      autoLogin: req.body.autoLogin ? true : false,
+    });
+
+    return res
+      .status(200)
+      .cookie('token', token, {
+        path: '/',
+        // domain: 'localhost:3000'
+        // httpOnly: true
       })
-      .then(() => {
-        if (userInfo.login_at) {
-          const recentLogin = new Date(userInfo.login_at as string).getTime();
-          const current = new Date().getTime();
-          // Update login history only after later than 1hours from last history.
-          if (current - recentLogin > 60 * 60 * 1000) {
-            return Promise.all([
-              createStatsLogin(userInfo.user_id),
-              updateLoginDate(userInfo.user_id),
-            ]);
-          }
-        } else {
-          return Promise.all([
-            createStatsLogin(userInfo.user_id),
-            updateLoginDate(userInfo.user_id),
-          ]);
-        }
-        return Promise.all([createStatsLogin(userInfo.user_id), updateLoginDate(userInfo.user_id)]);
-      })
-      .then(() => {
-        delete userInfo.password;
-        return createToken({
-          _id: userInfo.user_id,
-          grade: userInfo.grade,
-          level: userInfo.level,
-          autoLogin: req.body.autoLogin ? true : false,
-        });
-      })
-      .then((token) => {
-        return res
-          .status(200)
-          .cookie('token', token, {
-            path: '/',
-            // domain: 'localhost:3000'
-            // httpOnly: true
-          })
-          .json({
-            sucess: true,
-            userInfo: userInfo,
-            // user_id: userInfo.user_id,
-            // level: userInfo.level,
-            // profile_path: userInfo.profile_path,
-            // nickname: userInfo.nickname,
-            autoLogin: req.body.autoLogin ? true : false,
-            token: token,
-          });
-      })
-      .catch((err) => {
-        console.error(err);
-        return res.status(403).json({
-          sucess: false,
-          message: 'Login Info is not valid.',
-        });
+      .json({
+        sucess: true,
+        userInfo: userInfo,
+        // user_id: userInfo.user_id,
+        // level: userInfo.level,
+        // profile_path: userInfo.profile_path,
+        // nickname: userInfo.nickname,
+        autoLogin: req.body.autoLogin ? true : false,
+        token: token,
       });
   } catch (err) {
     console.error(err);
-    return res.status(500).json({
-      success: false,
-      message: 'INTERNAL SERVER ERROR',
+    return res.status(403).json({
+      sucess: false,
+      message: 'Login Info is not valid.',
     });
   }
 });
 
-router.get('/login/guest', (req, res) => {
+router.get('/login/guest', async (req, res) => {
   try {
-    createToken({
+    const token = await createToken({
       _id: -1,
       grade: 10,
       level: 0,
       autoLogin: false,
-    })
-      .then((token) => {
-        return res
-          .status(200)
-          .cookie('token', token, {
-            path: '/',
-          })
-          .json({
-            sucess: true,
-            userInfo: {
-              user_id: -1,
-              grade: 10,
-              level: 0,
-              profile_path: null,
-              nickname: 'guest',
-            },
-            autoLogin: false,
-            token: token,
-          });
+    });
+
+    return res
+      .status(200)
+      .cookie('token', token, {
+        path: '/',
       })
-      .catch((err) => {
-        console.error(err);
-        return res.status(403).json({
-          sucess: false,
-          message: 'Login Info is not valid.',
-        });
+      .json({
+        sucess: true,
+        userInfo: {
+          user_id: -1,
+          grade: 10,
+          level: 0,
+          profile_path: null,
+          nickname: 'guest',
+        },
+        autoLogin: false,
+        token: token,
       });
   } catch (err) {
     console.error(err);
@@ -207,7 +164,7 @@ router.get('/login/guest', (req, res) => {
   }
 });
 
-router.post('/signup', upload.single('profile'), (req: AuthenticatedRequestWithFile, res) => {
+router.post('/signup', upload.single('profile'), async (req: AuthenticatedRequestWithFile, res) => {
   try {
     const usernameRegex = /^[a-zA-Z0-9]+$/;
 
@@ -274,44 +231,26 @@ router.post('/signup', upload.single('profile'), (req: AuthenticatedRequestWithF
       level: 0,
     };
 
-    createUser(userData)
-      .then(() => {
-        console.log('sign Up Success  ');
-        return res.json({ success: true });
-      })
-      .catch((err) => {
-        console.error(err);
-        return res.status(400).json({
-          error: 'Internal Server ERROR',
-          code: 9,
-        });
-      });
+    await createUser(userData);
+    console.log('sign Up Success  ');
+    return res.json({ success: true });
   } catch (err) {
     console.error(err);
     return res.status(500).json({
-      success: false,
-      message: 'INTERNAL SERVER ERROR',
+      error: 'Internal Server ERROR',
+      code: 9,
     });
   }
 });
 
-router.post('/signup/dupcheck', (req, res) => {
+router.post('/signup/dupcheck', async (req, res) => {
   try {
-    checkDupId(req.body.check_id)
-      .then(() => {
-        return res.json({ success: true });
-      })
-      .catch((err) => {
-        console.error(err);
-        return res.status(403).json({
-          success: false,
-        });
-      });
+    await checkDupId(req.body.check_id);
+    return res.json({ success: true });
   } catch (err) {
     console.error(err);
-    return res.status(500).json({
+    return res.status(403).json({
       success: false,
-      message: 'INTERNAL SERVER ERROR',
     });
   }
 });

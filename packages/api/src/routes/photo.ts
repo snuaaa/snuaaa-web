@@ -60,60 +60,47 @@ router.get('/list', verifyTokenMiddleware, async (req: AuthenticatedRequest, res
   }
 });
 
-router.get('/:photo_id', verifyTokenMiddleware, (req: AuthenticatedRequest, res, next) => {
-  let photoInfo: Record<string, unknown> = {};
+router.get('/:photo_id', verifyTokenMiddleware, async (req: AuthenticatedRequest, res, next) => {
   const { decodedToken } = req;
 
-  retrievePhoto(req.params.photo_id)
-    .then((info) => {
-      photoInfo = info;
-      if (photoInfo.board.lv_read < decodedToken.grade) {
-        const err = {
-          status: 403,
-          code: 4001,
-        };
-        next(err);
-        return;
-      } else {
-        return Promise.all([
-          checkLike(req.params.photo_id, decodedToken._id),
-          retrieveTagsOnBoard(photoInfo.board_id),
-          retrievePrevPhoto(req.params.photo_id, photoInfo.parent_id),
-          retrieveNextPhoto(req.params.photo_id, photoInfo.parent_id),
-          retrievePrevAlbumPhoto(photoInfo.parent_id, photoInfo.board_id),
-          retrieveNextAlbumPhoto(photoInfo.parent_id, photoInfo.board_id),
-          increaseViewNum(req.params.photo_id),
-        ]);
-      }
-    })
-    .then((infos) => {
-      if (infos) {
-        res.json({
-          photoInfo: photoInfo,
-          likeInfo: infos[0],
-          boardTagInfo: infos[1],
-          // albumPhotosInfo: infos[],
-          prevPhoto: infos[2],
-          nextPhoto: infos[3],
-          prevAlbumPhoto: infos[4],
-          nextAlbumPhoto: infos[5],
-        });
-      } else {
-        res.status(404).json();
-      }
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).json({
-        error: 'internal server error',
-        code: 0,
-      });
+  try {
+    const photoInfo = await retrievePhoto(req.params.photo_id);
+
+    if (photoInfo.board.lv_read < decodedToken.grade) {
+      return next({ status: 403, code: 4001 });
+    }
+
+    const [likeInfo, boardTagInfo, prevPhoto, nextPhoto, prevAlbumPhoto, nextAlbumPhoto] =
+      await Promise.all([
+        checkLike(req.params.photo_id, decodedToken._id),
+        retrieveTagsOnBoard(photoInfo.board_id),
+        retrievePrevPhoto(req.params.photo_id, photoInfo.parent_id),
+        retrieveNextPhoto(req.params.photo_id, photoInfo.parent_id),
+        retrievePrevAlbumPhoto(photoInfo.parent_id, photoInfo.board_id),
+        retrieveNextAlbumPhoto(photoInfo.parent_id, photoInfo.board_id),
+        increaseViewNum(req.params.photo_id),
+      ]);
+
+    res.json({
+      photoInfo,
+      likeInfo,
+      boardTagInfo,
+      prevPhoto,
+      nextPhoto,
+      prevAlbumPhoto,
+      nextAlbumPhoto,
     });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      error: 'internal server error',
+      code: 0,
+    });
+  }
 });
 
 router.post('/', verifyTokenMiddleware, async (req: AuthenticatedRequest, res) => {
   const decodedToken = req.decodedToken;
-
   const list = req.body.list;
   const boardId = req.body.board_id;
   const albumId = req.body.album_id;
@@ -166,9 +153,7 @@ router.patch('/:photo_id', verifyTokenMiddleware, async (req, res) => {
       updatePhoto(req.params.photo_id, photoData),
       updateContentTag(Number(req.params.photo_id), tagData),
     ]);
-    res.json({
-      success: true,
-    });
+    res.json({ success: true });
   } catch (err) {
     console.error(err);
     res.status(500).json({
@@ -178,35 +163,31 @@ router.patch('/:photo_id', verifyTokenMiddleware, async (req, res) => {
   }
 });
 
-router.delete('/:photo_id', verifyTokenMiddleware, (req, res) => {
-  deletePhoto(req.params.photo_id)
-    .then(() => {
-      return deleteContent(req.params.photo_id);
-    })
-    .then(() => {
-      return res.json({ success: true });
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).json({
-        error: 'internal server error',
-        code: 0,
-      });
+router.delete('/:photo_id', verifyTokenMiddleware, async (req, res) => {
+  try {
+    await deletePhoto(req.params.photo_id);
+    await deleteContent(req.params.photo_id);
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      error: 'internal server error',
+      code: 0,
     });
+  }
 });
 
-router.post('/migrate', (req, res) => {
-  migratePhotos()
-    .then(() => {
-      res.json({ success: true });
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).json({
-        error: 'internal server error',
-        code: 0,
-      });
+router.post('/migrate', async (req, res) => {
+  try {
+    await migratePhotos();
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      error: 'internal server error',
+      code: 0,
     });
+  }
 });
 
 export default router;

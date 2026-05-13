@@ -135,74 +135,41 @@ router.patch(
   },
 );
 
-router.patch('/password', verifyTokenMiddleware, (req: AuthenticatedRequest, res, next) => {
+router.patch('/password', verifyTokenMiddleware, async (req: AuthenticatedRequest, res, next) => {
   const { decodedToken } = req;
   const user_id = decodedToken._id;
   const data = req.body;
 
-  retrieveUserPw(user_id)
-    .then(async (userInfo: UserModel) => {
-      if (!bcrypt.compareSync(data.password, userInfo.get('password'))) {
-        const err = {
-          status: 403,
-          code: 1011,
-        };
-        throw err;
-      } else if (!data.newPassword) {
-        const err = {
-          status: 403,
-          code: 1012,
-        };
-        throw err;
-      } else if (data.newPassword !== data.newPasswordCf) {
-        const err = {
-          status: 403,
-          code: 1013,
-        };
-        throw err;
-      } else if (data.newPassword.length < 8 || data.newPassword.length > 20) {
-        const err = {
-          status: 403,
-          code: 1014,
-        };
-        throw err;
-      } else {
-        await updateUserPw(user_id, bcrypt.hashSync(data.newPassword, 10));
-      }
-    })
-    .then(() => {
-      res.json({
-        success: true,
-      });
-    })
-    .catch((err) => {
-      console.error(err);
-      if (err.status) {
-        next(err);
-      } else {
-        const errCode = {
-          status: 500,
-          code: 1010,
-        };
-        next(errCode);
-      }
-    });
+  try {
+    const userInfo: UserModel = await retrieveUserPw(user_id);
+
+    if (!bcrypt.compareSync(data.password, userInfo.get('password'))) {
+      return next({ status: 403, code: 1011 });
+    }
+    if (!data.newPassword) {
+      return next({ status: 403, code: 1012 });
+    }
+    if (data.newPassword !== data.newPasswordCf) {
+      return next({ status: 403, code: 1013 });
+    }
+    if (data.newPassword.length < 8 || data.newPassword.length > 20) {
+      return next({ status: 403, code: 1014 });
+    }
+
+    await updateUserPw(user_id, bcrypt.hashSync(data.newPassword, 10));
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    next({ status: 500, code: 1010 });
+  }
 });
 
-router.delete('/', verifyTokenMiddleware, (req: AuthenticatedRequest, res) => {
+router.delete('/', verifyTokenMiddleware, async (req: AuthenticatedRequest, res) => {
   const { decodedToken } = req;
+
   try {
-    deleteUser(decodedToken._id)
-      .then(() => {
-        return res.json({ success: true });
-      })
-      .catch((err) => {
-        console.error(err);
-        res.status(500).json({
-          error: 'internal server error',
-          code: 0,
-        });
-      });
+    await deleteUser(decodedToken._id);
+    res.json({ success: true });
   } catch (err) {
     console.error(err);
     res.status(500).json({
@@ -212,178 +179,139 @@ router.delete('/', verifyTokenMiddleware, (req: AuthenticatedRequest, res) => {
   }
 });
 
-router.get('/all', verifyTokenMiddleware, (req: AuthenticatedRequest, res) => {
+router.get('/all', verifyTokenMiddleware, async (req: AuthenticatedRequest, res) => {
   const ROWNUM = 20;
-  // const user_id = req.decodedToken._id;
   const { decodedToken } = req;
+
   if (decodedToken.grade > 6) {
-    return res.status(403).json({
-      success: false,
-    });
-  } else {
-    try {
-      retrieveUsers(
-        req.query.sort,
-        req.query.order,
-        req.query.limit ? req.query.limit : ROWNUM,
-        req.query.offset ? req.query.offset : 0,
-      )
-        .then(({ count, rows }) => {
-          return res.json({
-            success: true,
-            userInfo: rows,
-            count: count,
-          });
-        })
-        .catch((err) => {
-          console.error(err);
-          res.status(500).json({
-            error: 'internal server error',
-            code: 0,
-          });
-        });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({
-        error: 'internal server error',
-        code: 0,
-      });
-    }
+    return res.status(403).json({ success: false });
   }
-});
 
-router.get('/:user_uuid', verifyTokenMiddleware, (req, res) => {
-  const user_uuid = req.params.user_uuid;
-  retrieveUserByUserUuid(user_uuid)
-    .then((userInfo) => {
-      return res.json({
-        success: true,
-        userInfo: userInfo,
-      });
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).json({
-        error: 'internal server error',
-        code: 0,
-      });
+  try {
+    const { count, rows } = await retrieveUsers(
+      req.query.sort,
+      req.query.order,
+      req.query.limit ? req.query.limit : ROWNUM,
+      req.query.offset ? req.query.offset : 0,
+    );
+    return res.json({
+      success: true,
+      userInfo: rows,
+      count,
     });
-});
-
-router.get('/search/mini', verifyTokenMiddleware, (req, res) => {
-  if (req.query.name) {
-    retrieveUsersByName(req.query.name)
-      .then((users) => {
-        res.json({
-          success: true,
-          userList: users,
-        });
-      })
-      .catch((err) => {
-        console.error(err);
-        res.status(500).json({
-          error: 'internal server error',
-          code: 0,
-        });
-      });
-  } else {
-    res.status(402).json({
-      error: 'name is required',
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      error: 'internal server error',
       code: 0,
     });
   }
 });
 
-router.post('/find/id', (req, res) => {
-  const data = req.body;
-  retrieveUsersByEmailAndName(data.email, data.name)
-    .then((users) => {
-      if (users && users.length > 0) {
-        let text = '회원님의 ID는 ';
-        users.map((user, i) => {
-          const id = user.getDataValue('id');
-          if (i === 0) {
-            text += id;
-          } else {
-            text += `, ${id}`;
-          }
-        });
-        text += '입니다.';
-
-        const mailOptions = {
-          to: data.email,
-          subject: '[SNUAAA] 회원님의 ID를 알려드립니다.',
-          text: text,
-        };
-
-        sendMail(mailOptions)
-          .then(() => {
-            res.json({
-              success: true,
-            });
-          })
-          .catch((err) => {
-            console.error(err);
-            res.status(500).send();
-          });
-      } else {
-        res.status(404).json({
-          code: 0,
-        });
-      }
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).json({
-        error: 'internal server error',
-        code: 0,
-      });
+router.get('/:user_uuid', verifyTokenMiddleware, async (req, res) => {
+  try {
+    const userInfo = await retrieveUserByUserUuid(req.params.user_uuid);
+    return res.json({
+      success: true,
+      userInfo,
     });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      error: 'internal server error',
+      code: 0,
+    });
+  }
 });
 
-router.post('/find/pw', (req, res) => {
-  const data = req.body;
-  retrieveUserById(data.id)
-    .then((user: UserModel) => {
-      if (user && user.get('email') === data.email && user.get('username') === data.name) {
-        const resetPw = cryptoRandomString({ length: 10 });
-        updateUserPw(user.get('user_id'), bcrypt.hashSync(resetPw, 10))
-          .then(() => {
-            const text = `임시비밀번호는 ${resetPw}입니다.\n
-                로그인 하신 후 원하시는 비밀번호로 변경해주세요.`;
-            const mailOptions = {
-              to: data.email,
-              subject: '[SNUAAA] 회원님의 임시 비밀번호를 알려드립니다.',
-              text: text,
-            };
-
-            sendMail(mailOptions)
-              .then(() => {
-                res.json({
-                  success: true,
-                });
-              })
-              .catch((err) => {
-                console.error(err);
-                res.status(500);
-              });
-          })
-          .catch((err) => {
-            console.error(err);
-            res.status(500);
-          });
-      } else {
-        res.status(404).json({
-          code: 0,
-        });
-      }
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).json({
-        code: 0,
-      });
+router.get('/search/mini', verifyTokenMiddleware, async (req, res) => {
+  if (!req.query.name) {
+    return res.status(402).json({
+      error: 'name is required',
+      code: 0,
     });
+  }
+
+  try {
+    const users = await retrieveUsersByName(req.query.name);
+    res.json({
+      success: true,
+      userList: users,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      error: 'internal server error',
+      code: 0,
+    });
+  }
+});
+
+router.post('/find/id', async (req, res) => {
+  const data = req.body;
+
+  try {
+    const users = await retrieveUsersByEmailAndName(data.email, data.name);
+
+    if (!users || users.length === 0) {
+      return res.status(404).json({ code: 0 });
+    }
+
+    let text = '회원님의 ID는 ';
+    users.map((user, i) => {
+      const id = user.getDataValue('id');
+      if (i === 0) {
+        text += id;
+      } else {
+        text += `, ${id}`;
+      }
+    });
+    text += '입니다.';
+
+    const mailOptions = {
+      to: data.email,
+      subject: '[SNUAAA] 회원님의 ID를 알려드립니다.',
+      text: text,
+    };
+
+    await sendMail(mailOptions);
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      error: 'internal server error',
+      code: 0,
+    });
+  }
+});
+
+router.post('/find/pw', async (req, res) => {
+  const data = req.body;
+
+  try {
+    const user: UserModel = await retrieveUserById(data.id);
+
+    if (!user || user.get('email') !== data.email || user.get('username') !== data.name) {
+      return res.status(404).json({ code: 0 });
+    }
+
+    const resetPw = cryptoRandomString({ length: 10 });
+    await updateUserPw(user.get('user_id'), bcrypt.hashSync(resetPw, 10));
+
+    const text = `임시비밀번호는 ${resetPw}입니다.\n
+                로그인 하신 후 원하시는 비밀번호로 변경해주세요.`;
+    const mailOptions = {
+      to: data.email,
+      subject: '[SNUAAA] 회원님의 임시 비밀번호를 알려드립니다.',
+      text: text,
+    };
+
+    await sendMail(mailOptions);
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ code: 0 });
+  }
 });
 
 export default router;

@@ -45,39 +45,31 @@ router.post(
   '/',
   verifyTokenMiddleware,
   upload.single('attachedImage'),
-  (req: AuthenticatedRequestWithFile, res) => {
+  async (req: AuthenticatedRequestWithFile, res) => {
     const { file } = req;
 
     try {
       if (!file) {
-        res.status(409).json({
+        return res.status(409).json({
           error: 'PHOTO IS NOT ATTACHED',
           code: 1,
         });
-      } else {
-        resizeAttatchedImg(file.path)
-          .then(() => {
-            let imgPath = '';
-            path
-              .relative('./upload/', file.path)
-              .split(path.sep)
-              .forEach((route) => {
-                imgPath += '/' + route;
-              });
-            res.json({
-              imgPath: imgPath,
-              result: 'success',
-            });
-          })
-          .catch((err) => {
-            // throw err;
-            console.error(err);
-            res.status(500).json({
-              error: 'internal server error',
-              code: 0,
-            });
-          });
       }
+
+      await resizeAttatchedImg(file.path);
+
+      let imgPath = '';
+      path
+        .relative('./upload/', file.path)
+        .split(path.sep)
+        .forEach((route) => {
+          imgPath += '/' + route;
+        });
+
+      res.json({
+        imgPath: imgPath,
+        result: 'success',
+      });
     } catch (err) {
       console.error(err);
       res.status(500).json({

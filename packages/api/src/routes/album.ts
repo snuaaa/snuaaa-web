@@ -10,39 +10,28 @@ import { retrieveCategoryByBoard } from '../controllers/category.controller';
 
 const router = express.Router();
 
-router.get('/:album_id', verifyTokenMiddleware, (req: AuthenticatedRequest, res) => {
+router.get('/:album_id', verifyTokenMiddleware, async (req: AuthenticatedRequest, res) => {
   const decodedToken = req.decodedToken;
 
   try {
-    let albumInfo = {};
-    retrieveAlbum(req.params.album_id)
-      .then((info) => {
-        if (info.board.lv_read < decodedToken.grade) {
-          res.status(403).json({
-            code: 4001,
-          });
-        } else {
-          albumInfo = info;
-          return Promise.all([
-            retrieveCategoryByBoard(albumInfo.board_id),
-            retrieveTagsOnBoard(albumInfo.board_id),
-          ]);
-        }
-      })
-      .then((infos) => {
-        res.json({
-          albumInfo: albumInfo,
-          categoryInfo: infos[0],
-          tagInfo: infos[1],
-        });
-      })
-      .catch((err) => {
-        console.error(err);
-        res.status(500).json({
-          error: 'internal server error',
-          code: 0,
-        });
+    const albumInfo = await retrieveAlbum(req.params.album_id);
+
+    if (albumInfo.getDataValue('board').lv_read < decodedToken.grade) {
+      return res.status(403).json({
+        code: 4001,
       });
+    }
+
+    const [categoryInfo, tagInfo] = await Promise.all([
+      retrieveCategoryByBoard(albumInfo.getDataValue('board_id')),
+      retrieveTagsOnBoard(albumInfo.getDataValue('board_id')),
+    ]);
+
+    res.json({
+      albumInfo,
+      categoryInfo,
+      tagInfo,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({
@@ -52,7 +41,7 @@ router.get('/:album_id', verifyTokenMiddleware, (req: AuthenticatedRequest, res)
   }
 });
 
-router.patch('/:album_id', verifyTokenMiddleware, (req, res) => {
+router.patch('/:album_id', verifyTokenMiddleware, async (req, res) => {
   try {
     const contentData = {
       title: req.body.title,
@@ -61,22 +50,52 @@ router.patch('/:album_id', verifyTokenMiddleware, (req, res) => {
     };
     const albumData = req.body.album;
 
-    Promise.all([
+    await Promise.all([
       updateContent(req.params.album_id, contentData),
       updateAlbum(req.params.album_id, albumData),
-    ])
-      .then(() => {
-        res.json({
-          success: true,
-        });
-      })
-      .catch((err) => {
-        console.error(err);
-        res.status(409).json({
-          error: 'UPDATE ALBUM FAIL',
-          code: 1,
-        });
-      });
+    ]);
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(409).json({
+      error: 'UPDATE ALBUM FAIL',
+      code: 1,
+    });
+  }
+});
+
+router.patch('/:album_id/thumbnail', verifyTokenMiddleware, async (req, res) => {
+  try {
+    const tn_photo_id = req.body.tn_photo_id;
+    await updateAlbumThumbnail(req.params.album_id, tn_photo_id);
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(409).json({
+      error: 'UPDATE ALBUM FAIL',
+      code: 1,
+    });
+  }
+});
+
+router.delete('/:album_id', verifyTokenMiddleware, async (req, res) => {
+  try {
+    await deleteContent(req.params.album_id);
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      error: 'DELETE ALBUM FAIL',
+      code: 1,
+    });
+  }
+});
+
+router.get('/:album_id/photos', verifyTokenMiddleware, async (req, res) => {
+  try {
+    const photos = await retrievePhotosInAlbum(req.params.album_id);
+    res.json(photos);
   } catch (err) {
     console.error(err);
     res.status(500).json({
@@ -84,51 +103,6 @@ router.patch('/:album_id', verifyTokenMiddleware, (req, res) => {
       code: 0,
     });
   }
-});
-
-router.patch('/:album_id/thumbnail', verifyTokenMiddleware, (req, res) => {
-  const tn_photo_id = req.body.tn_photo_id;
-  updateAlbumThumbnail(req.params.album_id, tn_photo_id)
-    .then(() => {
-      res.json({
-        success: true,
-      });
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(409).json({
-        error: 'UPDATE ALBUM FAIL',
-        code: 1,
-      });
-    });
-});
-
-router.delete('/:album_id', verifyTokenMiddleware, (req, res) => {
-  deleteContent(req.params.album_id)
-    .then(() => {
-      return res.json({ success: true });
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).json({
-        error: 'DELETE ALBUM FAIL',
-        code: 1,
-      });
-    });
-});
-
-router.get('/:album_id/photos', verifyTokenMiddleware, (req, res) => {
-  retrievePhotosInAlbum(req.params.album_id)
-    .then((photos) => {
-      res.json(photos);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).json({
-        error: 'internal server error',
-        code: 0,
-      });
-    });
 });
 
 export default router;
