@@ -157,7 +157,7 @@ export async function retrieveAllRentRecords(
   });
 }
 
-export async function updatePenaltyStatus(rentId: number, penaltyStatus: string) {
+export async function updatePenaltyStatus(rentId: number, penaltyStatus: PenaltyStatusEnum) {
   const rentReturn = await RentReturnModel.findOne({ where: { rent_id: rentId } });
   if (!rentReturn) {
     throw new Error("RentReturn record not found");
