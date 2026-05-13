@@ -1,5 +1,5 @@
 // [LOAD PACKAGES]
-const express = require('express');
+import express from 'express';
 import api from './routes';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
@@ -7,8 +7,7 @@ import * as bodyParser from 'body-parser';
 import { errorHandler } from './middlewares/errorHandler';
 import logger from './middlewares/logger';
 import helmet from 'helmet';
-
-require('dotenv').config();
+import 'dotenv/config';
 
 const app = express();
 
