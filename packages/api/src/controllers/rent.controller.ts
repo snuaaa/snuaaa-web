@@ -1,91 +1,120 @@
-import { Op, WhereOptions } from "sequelize";
-import EquipmentRentEnum from "../enums/equipmentRentEnum";
-import { EquipmentModel, RentReturnModel, UserModel } from "../models";
-import RentModel from "../models/Rent";
-import PenaltyStatusEnum from "../enums/penaltyStatusEnum";
+import { Op, WhereOptions } from 'sequelize';
+import EquipmentRentEnum from '../enums/equipmentRentEnum';
+import { EquipmentModel, RentReturnModel, UserModel } from '../models';
+import RentModel from '../models/Rent';
+import PenaltyStatusEnum from '../enums/penaltyStatusEnum';
 
 export async function rentEquipment(equipmentId: number, userId: number) {
-  const equipment = (await EquipmentModel.findOne({where: {id: equipmentId}}));
-  if(!equipment){
-    throw new Error("Equipment not found")
+  const equipment = await EquipmentModel.findOne({ where: { id: equipmentId } });
+  if (!equipment) {
+    throw new Error('Equipment not found');
   }
-  if([EquipmentRentEnum.RENTED, EquipmentRentEnum.UNRENTABLE].includes((equipment as any).rent_status)) {
-    throw new Error("Equipment not rentable")
+  if (
+    [EquipmentRentEnum.RENTED, EquipmentRentEnum.UNRENTABLE].includes(
+      (equipment as any).rent_status,
+    )
+  ) {
+    throw new Error('Equipment not rentable');
   }
   await RentModel.create({
     equipment_id: equipmentId,
-    user_id: userId, 
+    user_id: userId,
     start_date: new Date(),
     // set end_date to 2 days later
-    end_date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000)
-  })
+    end_date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
+  });
   // change equipment status to rented
-  await EquipmentModel.update({rent_status: EquipmentRentEnum.RENTED}, {
-    where: {id: equipmentId}
-  })
+  await EquipmentModel.update(
+    { rent_status: EquipmentRentEnum.RENTED },
+    {
+      where: { id: equipmentId },
+    },
+  );
   return equipmentId;
 }
 
 export async function returnEquipment(userId: number, rentId: number, photo_path: string) {
   const rent = await RentModel.findOne({
     where: {
-      id: rentId
-    }
-  })
-  if(!rent) {
-    throw new Error("Rent not found")
+      id: rentId,
+    },
+  });
+  if (!rent) {
+    throw new Error('Rent not found');
   }
-  if((rent as any).user_id !== userId) {
-    throw new Error("User mismatch: not the renter")
+  if ((rent as any).user_id !== userId) {
+    throw new Error('User mismatch: not the renter');
   }
-  if((rent as any).returned) {
-    throw new Error("Already returned")
+  if ((rent as any).returned) {
+    throw new Error('Already returned');
   }
-  rent.update({returned: true})
-  const penalty_status = (rent as any).end_date < new Date() ? 
-    PenaltyStatusEnum.NEED_PAYMENT : PenaltyStatusEnum.NO_PENALTY;
+  rent.update({ returned: true });
+  const penalty_status =
+    (rent as any).end_date < new Date()
+      ? PenaltyStatusEnum.NEED_PAYMENT
+      : PenaltyStatusEnum.NO_PENALTY;
   await RentReturnModel.create({
     rent_id: rentId,
     photo_path: photo_path,
     return_date: new Date(),
     penalty_status: penalty_status,
-  })
-  await EquipmentModel.update({rent_status: EquipmentRentEnum.RENTABLE}, {
-    where: {id: (rent as any).equipment_id, rent_status: EquipmentRentEnum.RENTED}
-  })
+  });
+  await EquipmentModel.update(
+    { rent_status: EquipmentRentEnum.RENTABLE },
+    {
+      where: { id: (rent as any).equipment_id, rent_status: EquipmentRentEnum.RENTED },
+    },
+  );
   return {
-    result: "success",
-    id: rentId
-  }
-} 
+    result: 'success',
+    id: rentId,
+  };
+}
 
 export async function retrieveRentedEquipmentListByUserId(userId: number) {
   return RentModel.findAll({
-    include: [{
-      model: EquipmentModel,
-      required: true, // ignore deleted equipment
-    }
+    include: [
+      {
+        model: EquipmentModel,
+        required: true, // ignore deleted equipment
+      },
     ],
     where: {
       user_id: userId,
       returned: false,
     },
     attributes: ['id', 'start_date', 'end_date'],
-  })
+  });
 }
 
-export async function retrieveRentListByEquipmentId(equipmentId: number, rowNum: number, offset: number) {
+export async function retrieveRentListByEquipmentId(
+  equipmentId: number,
+  rowNum: number,
+  offset: number,
+) {
   return RentModel.findAndCountAll({
-    include: [{
-      model: RentReturnModel,
-      required: false,
-    },
-    {
-      model: UserModel,
-      required: true,
-      attributes: ['user_id', 'user_uuid', 'nickname', 'introduction', 'grade', 'level', 'email', 'profile_path', 'deleted_at'],
-      paranoid: false,
-    }],
+    include: [
+      {
+        model: RentReturnModel,
+        required: false,
+      },
+      {
+        model: UserModel,
+        required: true,
+        attributes: [
+          'user_id',
+          'user_uuid',
+          'nickname',
+          'introduction',
+          'grade',
+          'level',
+          'email',
+          'profile_path',
+          'deleted_at',
+        ],
+        paranoid: false,
+      },
+    ],
     where: {
       equipment_id: equipmentId,
     },
@@ -93,7 +122,7 @@ export async function retrieveRentListByEquipmentId(equipmentId: number, rowNum:
     attributes: ['id', 'start_date', 'end_date'],
     limit: rowNum,
     offset: offset,
-  })
+  });
 }
 
 export async function retrieveAllRentRecords(
@@ -105,15 +134,21 @@ export async function retrieveAllRentRecords(
     dateToReturn?: string;
   },
   rowNum: number,
-  offset: number
+  offset: number,
 ) {
   const rentWhere: WhereOptions = { returned: true };
 
   if (filters.dateFromStart) {
-    rentWhere.start_date = { ...((rentWhere.start_date as any) || {}), [Op.gte]: new Date(filters.dateFromStart) };
+    rentWhere.start_date = {
+      ...((rentWhere.start_date as any) || {}),
+      [Op.gte]: new Date(filters.dateFromStart),
+    };
   }
   if (filters.dateToStart) {
-    rentWhere.start_date = { ...((rentWhere.start_date as any) || {}), [Op.lte]: new Date(filters.dateToStart) };
+    rentWhere.start_date = {
+      ...((rentWhere.start_date as any) || {}),
+      [Op.lte]: new Date(filters.dateToStart),
+    };
   }
 
   const rentReturnWhere: WhereOptions = {};
@@ -121,10 +156,16 @@ export async function retrieveAllRentRecords(
     rentReturnWhere.penalty_status = filters.penaltyStatus;
   }
   if (filters.dateFromReturn) {
-    rentReturnWhere.return_date = { ...((rentReturnWhere.return_date as any) || {}), [Op.gte]: new Date(filters.dateFromReturn) };
+    rentReturnWhere.return_date = {
+      ...((rentReturnWhere.return_date as any) || {}),
+      [Op.gte]: new Date(filters.dateFromReturn),
+    };
   }
   if (filters.dateToReturn) {
-    rentReturnWhere.return_date = { ...((rentReturnWhere.return_date as any) || {}), [Op.lte]: new Date(filters.dateToReturn) };
+    rentReturnWhere.return_date = {
+      ...((rentReturnWhere.return_date as any) || {}),
+      [Op.lte]: new Date(filters.dateToReturn),
+    };
   }
 
   const hasRentReturnFilter = Object.keys(rentReturnWhere).length > 0;
@@ -139,7 +180,17 @@ export async function retrieveAllRentRecords(
       {
         model: UserModel,
         required: true,
-        attributes: ['user_id', 'user_uuid', 'nickname', 'introduction', 'grade', 'level', 'email', 'profile_path', 'deleted_at'],
+        attributes: [
+          'user_id',
+          'user_uuid',
+          'nickname',
+          'introduction',
+          'grade',
+          'level',
+          'email',
+          'profile_path',
+          'deleted_at',
+        ],
         paranoid: false,
       },
       {
@@ -160,15 +211,15 @@ export async function retrieveAllRentRecords(
 export async function updatePenaltyStatus(rentId: number, penaltyStatus: PenaltyStatusEnum) {
   const rentReturn = await RentReturnModel.findOne({ where: { rent_id: rentId } });
   if (!rentReturn) {
-    throw new Error("RentReturn record not found");
+    throw new Error('RentReturn record not found');
   }
   const current = (rentReturn as any).penalty_status;
   const allowed = [PenaltyStatusEnum.NEED_PAYMENT, PenaltyStatusEnum.RECEIVED_PAYMENT];
   if (!allowed.includes(current) || !allowed.includes(penaltyStatus)) {
-    throw new Error("Transition only allowed between NEEDPAYMENT and RECEIVEDPAYMENT");
+    throw new Error('Transition only allowed between NEEDPAYMENT and RECEIVEDPAYMENT');
   }
   if (current === penaltyStatus) {
-    throw new Error("Already in the requested status");
+    throw new Error('Already in the requested status');
   }
   await rentReturn.update({ penalty_status: penaltyStatus });
   return rentReturn;

@@ -1,6 +1,24 @@
 import express from 'express';
-import { createEquipment, createEquipmentCategory, deleteEquipmentCategory, retrieveEquipmentsByCategory, retrieveEquipmentById, retrieveEquipmentCategoryList, retrieveEquipmentList, searchEquipmentList, updateEquipment, updateEquipmentCategory } from '../controllers/equipment.controller';
-import { rentEquipment, retrieveAllRentRecords, retrieveRentedEquipmentListByUserId, retrieveRentListByEquipmentId, returnEquipment, updatePenaltyStatus } from '../controllers/rent.controller';
+import {
+  createEquipment,
+  createEquipmentCategory,
+  deleteEquipmentCategory,
+  retrieveEquipmentsByCategory,
+  retrieveEquipmentById,
+  retrieveEquipmentCategoryList,
+  retrieveEquipmentList,
+  searchEquipmentList,
+  updateEquipment,
+  updateEquipmentCategory,
+} from '../controllers/equipment.controller';
+import {
+  rentEquipment,
+  retrieveAllRentRecords,
+  retrieveRentedEquipmentListByUserId,
+  retrieveRentListByEquipmentId,
+  returnEquipment,
+  updatePenaltyStatus,
+} from '../controllers/rent.controller';
 import { AuthenticatedRequest, verifyTokenMiddleware } from '../middlewares/auth';
 import PenaltyStatusEnum from '../enums/penaltyStatusEnum';
 
@@ -16,30 +34,31 @@ router.get('/', verifyTokenMiddleware, async (req, res) => {
   if (query.page > 0) {
     offset = ROWNUM * (query.page - 1);
   }
-  retrieveEquipmentList(ROWNUM, offset).then(({ rows, count }) => {
-    res.json({
-      equipCount: count,
-      equipInfo: rows.map((row: any) => {
-        const { rents, ..._row } = row.get({ plain: true });
-        // rents must have length <= 1
-        return {
-          ..._row,
-          renter: rents?.[0]?.user ?? undefined,
-          start_date: rents?.[0]?.start_date ?? undefined,
-          end_date: rents?.[0]?.end_date ?? undefined,
-        }
-      })
+  retrieveEquipmentList(ROWNUM, offset)
+    .then(({ rows, count }) => {
+      res.json({
+        equipCount: count,
+        equipInfo: rows.map((row: any) => {
+          const { rents, ..._row } = row.get({ plain: true });
+          // rents must have length <= 1
+          return {
+            ..._row,
+            renter: rents?.[0]?.user ?? undefined,
+            start_date: rents?.[0]?.start_date ?? undefined,
+            end_date: rents?.[0]?.end_date ?? undefined,
+          };
+        }),
+      });
     })
-  })
-  .catch((err) => {
-    console.error(err);
-    res.status(500).json({
-      success: false,
-      error: 'RETRIEVE EQUIPMENT FAIL',
-      code: 1
-    })
-  });
-})
+    .catch((err) => {
+      console.error(err);
+      res.status(500).json({
+        success: false,
+        error: 'RETRIEVE EQUIPMENT FAIL',
+        code: 1,
+      });
+    });
+});
 
 router.get('/category', verifyTokenMiddleware, async (req, res) => {
   const categoryList = await retrieveEquipmentCategoryList();
@@ -54,101 +73,120 @@ router.get('/search', verifyTokenMiddleware, async (req, res) => {
     offset = ROWNUM * (query.page - 1);
   }
   const { category_id, status, keyword } = req.query;
-  searchEquipmentList(category_id, status, keyword, ROWNUM, offset).then(({ rows, count }) => {
-    res.json({
-      equipCount: count,
-      equipInfo: rows.map((row: any) => {
-        const { rents, ..._row } = row.get({ plain: true });
-        return {
-          ..._row,
-          renter: rents?.[0]?.user ?? undefined,
-          start_date: rents?.[0]?.start_date ?? undefined,
-          end_date: rents?.[0]?.end_date ?? undefined,
-        }
-      })
+  searchEquipmentList(category_id, status, keyword, ROWNUM, offset)
+    .then(({ rows, count }) => {
+      res.json({
+        equipCount: count,
+        equipInfo: rows.map((row: any) => {
+          const { rents, ..._row } = row.get({ plain: true });
+          return {
+            ..._row,
+            renter: rents?.[0]?.user ?? undefined,
+            start_date: rents?.[0]?.start_date ?? undefined,
+            end_date: rents?.[0]?.end_date ?? undefined,
+          };
+        }),
+      });
     })
-  })
-  .catch((err) => {
-    console.error(err);
-    res.status(500).json({
-      success: false,
-      error: 'SEARCH EQUIPMENT FAIL',
-      code: 1
-    })
-  });
-})
+    .catch((err) => {
+      console.error(err);
+      res.status(500).json({
+        success: false,
+        error: 'SEARCH EQUIPMENT FAIL',
+        code: 1,
+      });
+    });
+});
 
 router.post('/', verifyTokenMiddleware, async (req, res) => {
   const { decodedToken } = req as AuthenticatedRequest;
 
-  if(decodedToken.grade > EQUIP_ADMIN_GRADE) {
+  if (decodedToken.grade > EQUIP_ADMIN_GRADE) {
     res.status(403).json({
       success: false,
       error: 'PERMISSION DENIED',
-      code: 1
-    })
+      code: 1,
+    });
     return;
   }
-  
+
   const { category_id, name, nickname, description, location, maker, status, img_path } = req.body;
-  try{
-    const equipment = await createEquipment({ category_id, name, nickname, description, location, maker, status, img_path });
+  try {
+    const equipment = await createEquipment({
+      category_id,
+      name,
+      nickname,
+      description,
+      location,
+      maker,
+      status,
+      img_path,
+    });
     res.json(equipment);
-  }
-  catch(err) {
+  } catch (err) {
     console.error(err);
     res.status(500).json({
       success: false,
       error: 'CREATE EQUIPMENT FAIL',
-      code: 1
-    })
+      code: 1,
+    });
   }
-})
+});
 
 router.patch('/', verifyTokenMiddleware, async (req, res) => {
   const { decodedToken } = req as AuthenticatedRequest;
 
-  if(decodedToken.grade > EQUIP_ADMIN_GRADE) {
+  if (decodedToken.grade > EQUIP_ADMIN_GRADE) {
     res.status(403).json({
       success: false,
       error: 'PERMISSION DENIED',
-      code: 1
-    })
+      code: 1,
+    });
     return;
   }
- 
-  const { id, category_id, name, nickname, description, location, maker, status, img_path } = req.body;
+
+  const { id, category_id, name, nickname, description, location, maker, status, img_path } =
+    req.body;
   try {
     const equipment = await retrieveEquipmentById(id);
     if (!equipment) {
       return res.status(404).json({
         success: false,
         error: 'EQUIPMENT NOT FOUND',
-      })
+      });
     }
-    const updatedEquipment =  await updateEquipment(id, { category_id, name, nickname, description, location, maker, status, img_path });
-    return res.json(updatedEquipment)
+    const updatedEquipment = await updateEquipment(id, {
+      category_id,
+      name,
+      nickname,
+      description,
+      location,
+      maker,
+      status,
+      img_path,
+    });
+    return res.json(updatedEquipment);
   } catch (err) {
     console.error(err);
     res.status(500).json({
       success: false,
       error: 'UPDATE EQUIPMENT FAIL',
-      code: 1
-    })
+      code: 1,
+    });
   }
-})
+});
 
 router.delete('/:id', verifyTokenMiddleware, async (req, res) => {
   const { decodedToken } = req as AuthenticatedRequest;
 
-  if(decodedToken.grade > EQUIP_ADMIN_GRADE) {
+  if (decodedToken.grade > EQUIP_ADMIN_GRADE) {
     return res.status(403).json({
       success: false,
       error: 'PERMISSION DENIED',
-      code: 1
-    })
+      code: 1,
+    });
   }
-  
+
   const { id } = req.params;
   try {
     const equipment = await retrieveEquipmentById(Number(id));
@@ -156,37 +194,37 @@ router.delete('/:id', verifyTokenMiddleware, async (req, res) => {
       return res.status(404).json({
         success: false,
         error: 'EQUIPMENT NOT FOUND',
-      })
+      });
     }
 
     await equipment.destroy();
     res.json({
       success: true,
-      id: id
-    })
+      id: id,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({
       success: false,
       error: 'DELETE EQUIPMENT FAIL',
-      code: 1
-    })
+      code: 1,
+    });
   }
-})
+});
 
 // TODO: check if the user has permission
 router.post('/category', verifyTokenMiddleware, async (req, res) => {
   const { decodedToken } = req as AuthenticatedRequest;
 
-  if(decodedToken.grade > EQUIP_ADMIN_GRADE) {
+  if (decodedToken.grade > EQUIP_ADMIN_GRADE) {
     res.status(403).json({
       success: false,
       error: 'PERMISSION DENIED',
-      code: 1
-    })
+      code: 1,
+    });
     return;
   }
- 
+
   const { name } = req.body;
   const category = await createEquipmentCategory({ name });
   res.json(category);
@@ -195,32 +233,32 @@ router.post('/category', verifyTokenMiddleware, async (req, res) => {
 router.patch('/category', verifyTokenMiddleware, async (req, res) => {
   const { decodedToken } = req as AuthenticatedRequest;
 
-  if(decodedToken.grade > EQUIP_ADMIN_GRADE) {
+  if (decodedToken.grade > EQUIP_ADMIN_GRADE) {
     res.status(403).json({
       success: false,
       error: 'PERMISSION DENIED',
-      code: 1
-    })
+      code: 1,
+    });
     return;
   }
- 
+
   const { id, name } = req.body;
   updateEquipmentCategory(id, { name }).then((category) => {
-    res.json(category)
+    res.json(category);
   });
 });
 
 router.delete('/category/:categoryId', verifyTokenMiddleware, async (req, res) => {
   const { decodedToken } = req as AuthenticatedRequest;
 
-  if(decodedToken.grade > EQUIP_ADMIN_GRADE) {
+  if (decodedToken.grade > EQUIP_ADMIN_GRADE) {
     return res.status(403).json({
       success: false,
       error: 'PERMISSION DENIED',
-      code: 1
-    })
+      code: 1,
+    });
   }
- 
+
   const { categoryId } = req.params;
 
   const equipment = await retrieveEquipmentsByCategory(Number(categoryId));
@@ -229,59 +267,64 @@ router.delete('/category/:categoryId', verifyTokenMiddleware, async (req, res) =
     return res.status(400).json({
       success: false,
       error: 'EQUIPMENT EXISTS IN CATEGORY',
-    })
+    });
   }
 
   try {
     await deleteEquipmentCategory(Number(categoryId));
     res.json({
       success: true,
-      id: Number(categoryId)
-    })
+      id: Number(categoryId),
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({
       success: false,
       error: 'DELETE EQUIPMENT CATEGORY FAIL',
-      code: 1
-    })
+      code: 1,
+    });
   }
-})
-
+});
 
 router.post('/rent', verifyTokenMiddleware, async (req, res) => {
   const { decodedToken } = req as AuthenticatedRequest;
 
-  if(decodedToken.grade > EQUIP_RENT_GRADE) {
+  if (decodedToken.grade > EQUIP_RENT_GRADE) {
     res.status(403).json({
       success: false,
       error: 'PERMISSION DENIED',
-      code: 1
-    })
+      code: 1,
+    });
     return;
   }
- 
+
   const { equipmentIds } = req.body;
 
-  Promise.allSettled(equipmentIds.map((equipmentId: number) =>  rentEquipment(equipmentId, decodedToken._id))).then((results) => {
+  Promise.allSettled(
+    equipmentIds.map((equipmentId: number) => rentEquipment(equipmentId, decodedToken._id)),
+  ).then((results) => {
     const successEquipmentIds = results
-        .filter((result): result is PromiseFulfilledResult<any> => result.status === 'fulfilled').map((result) => result.value)
-    res.json({ successEquipmentIds, failedEquipmentIds: equipmentIds.filter((id) => !successEquipmentIds.includes(id)) });
-  })
-})
+      .filter((result): result is PromiseFulfilledResult<any> => result.status === 'fulfilled')
+      .map((result) => result.value);
+    res.json({
+      successEquipmentIds,
+      failedEquipmentIds: equipmentIds.filter((id) => !successEquipmentIds.includes(id)),
+    });
+  });
+});
 
 router.post('/rent/:rentId/return', verifyTokenMiddleware, async (req, res) => {
   const { decodedToken } = req as AuthenticatedRequest;
 
-  if(decodedToken.grade > EQUIP_RENT_GRADE) {
+  if (decodedToken.grade > EQUIP_RENT_GRADE) {
     res.status(403).json({
       success: false,
       error: 'PERMISSION DENIED',
-      code: 1
-    })
+      code: 1,
+    });
     return;
   }
- 
+
   const { rentId } = req.params;
   const { photo_path } = req.body;
   returnEquipment(decodedToken._id, parseInt(rentId), photo_path)
@@ -293,28 +336,27 @@ router.post('/rent/:rentId/return', verifyTokenMiddleware, async (req, res) => {
       res.status(500).json({
         success: false,
         error: 'RETURN EQUIPMENT FAIL',
-        code: 1
-      })
+        code: 1,
+      });
     });
-})
+});
 
-  
 router.get('/rent/me', verifyTokenMiddleware, async (req, res) => {
   const { decodedToken } = req as AuthenticatedRequest;
 
   const equipmentList = await retrieveRentedEquipmentListByUserId(decodedToken._id);
   res.json(equipmentList);
-})
+});
 
 router.get('/rent/records', verifyTokenMiddleware, async (req, res) => {
   const { decodedToken } = req as AuthenticatedRequest;
 
-  if(decodedToken.grade > EQUIP_ADMIN_GRADE) {
+  if (decodedToken.grade > EQUIP_ADMIN_GRADE) {
     res.status(403).json({
       success: false,
       error: 'PERMISSION DENIED',
-      code: 1
-    })
+      code: 1,
+    });
     return;
   }
 
@@ -339,7 +381,7 @@ router.get('/rent/records', verifyTokenMiddleware, async (req, res) => {
         res.status(400).json({
           success: false,
           error: `INVALID DATE FORMAT: ${key}`,
-          code: 1
+          code: 1,
         });
         return;
       }
@@ -354,27 +396,29 @@ router.get('/rent/records', verifyTokenMiddleware, async (req, res) => {
     dateToReturn: query.date_to_return as string | undefined,
   };
 
-  retrieveAllRentRecords(filters, ROWNUM, offset).then((result) => {
-    res.json(result);
-  }).catch((err) => {
-    console.error(err);
-    res.status(500).json({
-      success: false,
-      error: 'RETRIEVE ALL RENT RECORDS FAIL',
-      code: 1
+  retrieveAllRentRecords(filters, ROWNUM, offset)
+    .then((result) => {
+      res.json(result);
     })
-  });
+    .catch((err) => {
+      console.error(err);
+      res.status(500).json({
+        success: false,
+        error: 'RETRIEVE ALL RENT RECORDS FAIL',
+        code: 1,
+      });
+    });
 });
 
 router.patch('/rent/:rentId/penalty', verifyTokenMiddleware, async (req, res) => {
   const { decodedToken } = req as AuthenticatedRequest;
 
-  if(decodedToken.grade > EQUIP_ADMIN_GRADE) {
+  if (decodedToken.grade > EQUIP_ADMIN_GRADE) {
     res.status(403).json({
       success: false,
       error: 'PERMISSION DENIED',
-      code: 1
-    })
+      code: 1,
+    });
     return;
   }
 
@@ -386,7 +430,7 @@ router.patch('/rent/:rentId/penalty', verifyTokenMiddleware, async (req, res) =>
     res.status(400).json({
       success: false,
       error: 'INVALID RENT ID',
-      code: 1
+      code: 1,
     });
     return;
   }
@@ -396,7 +440,7 @@ router.patch('/rent/:rentId/penalty', verifyTokenMiddleware, async (req, res) =>
     res.status(400).json({
       success: false,
       error: 'INVALID PENALTY STATUS',
-      code: 1
+      code: 1,
     });
     return;
   }
@@ -409,23 +453,23 @@ router.patch('/rent/:rentId/penalty', verifyTokenMiddleware, async (req, res) =>
     res.status(400).json({
       success: false,
       error: err.message || 'UPDATE PENALTY STATUS FAIL',
-      code: 1
-    })
+      code: 1,
+    });
   }
 });
 
 router.get('/:id/rents', verifyTokenMiddleware, async (req, res) => {
   const { decodedToken } = req as AuthenticatedRequest;
 
-  if(decodedToken.grade > EQUIP_ADMIN_GRADE) {
+  if (decodedToken.grade > EQUIP_ADMIN_GRADE) {
     res.status(403).json({
       success: false,
       error: 'PERMISSION DENIED',
-      code: 1
-    })
+      code: 1,
+    });
     return;
   }
- 
+
   const { id } = req.params;
   const ROWNUM = 10;
   let offset = 0;
@@ -433,16 +477,18 @@ router.get('/:id/rents', verifyTokenMiddleware, async (req, res) => {
   if (query.page > 0) {
     offset = ROWNUM * (query.page - 1);
   }
-  retrieveRentListByEquipmentId(parseInt(id), ROWNUM, offset).then((rentList) => {
-    res.json(rentList);
-  }).catch((err) => {
-    console.error(err);
-    res.status(500).json({
-      success: false,
-      error: 'RETRIEVE RENT LIST FAIL',
-      code: 1
+  retrieveRentListByEquipmentId(parseInt(id), ROWNUM, offset)
+    .then((rentList) => {
+      res.json(rentList);
     })
-  });
+    .catch((err) => {
+      console.error(err);
+      res.status(500).json({
+        success: false,
+        error: 'RETRIEVE RENT LIST FAIL',
+        code: 1,
+      });
+    });
 });
 
 export default router;

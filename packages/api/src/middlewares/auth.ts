@@ -1,72 +1,75 @@
 import { Request, Response, NextFunction } from 'express';
-import { JWTPayload } from '../lib/token';
+import { JWTPayload } from '../utils/token';
 const jwt = require('jsonwebtoken');
 
 export type AuthenticatedRequest = Request & { decodedToken: JWTPayload };
 
-export function verifyTokenMiddleware(req: AuthenticatedRequest, res: Response, next: NextFunction) {
-    if (!req.headers.authorization) {
-        return res.status(403).json({
-            success: false,
-            message: 'Authorization does not exist.'
-        });
-    }
-
-    const auth = req.headers.authorization.split(" ");
-
-    if (auth[0] !== 'Bearer') {
-        return res.status(403).json({
-            success: false,
-            message: 'Token Type Error.'
-        });
-    }
-
-    const token = auth[1]
-    
-    if (!token) {
-        return res.status(403).json({
-            success: false,
-            message: 'Token does not exist.'
-        });
-    }
-
-    jwt.verify(token, process.env.JWT_SECRET, (error, decoded) => {
-        if (error) {
-            return res.status(403).json({
-                success: false,
-                CODE: 102
-            });
-        };
-        req.decodedToken = decoded;
-        next();
+export function verifyTokenMiddleware(
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction,
+) {
+  if (!req.headers.authorization) {
+    return res.status(403).json({
+      success: false,
+      message: 'Authorization does not exist.',
     });
-};
+  }
+
+  const auth = req.headers.authorization.split(' ');
+
+  if (auth[0] !== 'Bearer') {
+    return res.status(403).json({
+      success: false,
+      message: 'Token Type Error.',
+    });
+  }
+
+  const token = auth[1];
+
+  if (!token) {
+    return res.status(403).json({
+      success: false,
+      message: 'Token does not exist.',
+    });
+  }
+
+  jwt.verify(token, process.env.JWT_SECRET, (error, decoded) => {
+    if (error) {
+      return res.status(403).json({
+        success: false,
+        CODE: 102,
+      });
+    }
+    req.decodedToken = decoded;
+    next();
+  });
+}
 
 // TODO: Implement verification using cookies
 export function authMiddleware(req, res, next) {
-    // 토큰 취득
-    const token = req.cookies.token
+  // 토큰 취득
+  const token = req.cookies.token;
 
-    // 토큰 미존재: 로그인하지 않은 사용자
-    if (!token) {
-        return res.status(403).json({
-            success: false,
-            CODE: 101
-        });
+  // 토큰 미존재: 로그인하지 않은 사용자
+  if (!token) {
+    return res.status(403).json({
+      success: false,
+      CODE: 101,
+    });
+  }
+
+  jwt.verify(token, process.env.JWT_SECRET, (error, decoded) => {
+    if (error) {
+      return res.status(403).json({
+        success: false,
+        CODE: 102,
+      });
     }
-
-    jwt.verify(token, process.env.JWT_SECRET, (error, decoded) => {
-        if (error) {
-            return res.status(403).json({
-                success: false,
-                CODE: 102
-            });
-        }
-        req.decodedToken = decoded;
-        next();
-    })
-};
-
+    req.decodedToken = decoded;
+    next();
+  });
+}
 
 /* const jwt = require('jsonwebtoken')
 
@@ -108,7 +111,3 @@ const authMiddleware = (req, res, next) => {
 }
 
 module.exports = authMiddleware */
-
-
-
-

@@ -2,45 +2,46 @@ import { Model, DataTypes } from 'sequelize';
 import { CategoryModel, TagModel } from '.';
 import { sequelize } from './sequelize';
 
-export default class BoardModel extends Model {
+export default class BoardModel extends Model {}
 
-}
-
-BoardModel.init({
+BoardModel.init(
+  {
     board_id: {
-        type: DataTypes.STRING(16),
-        allowNull: false,
-        primaryKey: true,
+      type: DataTypes.STRING(16),
+      allowNull: false,
+      primaryKey: true,
     },
     board_name: {
-        type: DataTypes.STRING(32),
-        allowNull: false,
+      type: DataTypes.STRING(32),
+      allowNull: false,
     },
     board_type: {
-        type: DataTypes.STRING(16),
+      type: DataTypes.STRING(16),
     },
     board_desc: {
-        type: DataTypes.TEXT,
+      type: DataTypes.TEXT,
     },
     menu: {
-        type: DataTypes.INTEGER,
+      type: DataTypes.INTEGER,
     },
     order: {
-        type: DataTypes.INTEGER,
+      type: DataTypes.INTEGER,
     },
     lv_read: {
-        type: DataTypes.INTEGER,
+      type: DataTypes.INTEGER,
     },
     lv_write: {
-        type: DataTypes.INTEGER,
+      type: DataTypes.INTEGER,
     },
     lv_edit: {
-        type: DataTypes.INTEGER,
-    }
-}, {
+      type: DataTypes.INTEGER,
+    },
+  },
+  {
     sequelize,
     modelName: 'board',
     tableName: 'tb_board',
     timestamps: false,
-    underscored: true
-});
+    underscored: true,
+  },
+);

@@ -1,5 +1,5 @@
 // [LOAD PACKAGES]
-const express = require('express')
+const express = require('express');
 import api from './routes';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
@@ -12,7 +12,6 @@ require('dotenv').config();
 
 const app = express();
 
-
 // [CONFIGURE APP TO USE bodyParser]
 app.use(helmet());
 app.use(logger);
@@ -20,7 +19,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cookieParser());
 
-const devServerOrigins = ['https://dev.snuaaa.net', 'https://develop.snuaaa-web.pages.dev', 'http://localhost:3000'];
+const devServerOrigins = [
+  'https://dev.snuaaa.net',
+  'https://develop.snuaaa-web.pages.dev',
+  'http://localhost:3000',
+];
 const prodServerOrigins = ['https://www.snuaaa.net', 'https://our.snuaaa.net'];
 
 const origin = process.env.NODE_ENV == 'develop' ? devServerOrigins : prodServerOrigins;

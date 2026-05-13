@@ -1,31 +1,29 @@
 const jwt = require('jsonwebtoken');
 
 export type JWTPayload = {
-    _id: number;
-    grade: number;
-    level: number;
-    autoLogin: boolean;
-}
+  _id: number;
+  grade: number;
+  level: number;
+  autoLogin: boolean;
+};
 // JWT 토큰 생성
 export function createToken(payload: JWTPayload) {
+  let expiresIn;
+  if (payload.autoLogin) {
+    expiresIn = '14d';
+  } else {
+    expiresIn = '1d';
+  }
 
-    let expiresIn;
-    if (payload.autoLogin) {
-        expiresIn = '14d';
-    }
-    else {
-        expiresIn = '1d';
-    }
+  const jwtOption = { expiresIn };
 
-    const jwtOption = { expiresIn };
-
-    return new Promise((resolve, reject) => {
-        jwt.sign(payload, process.env.JWT_SECRET, jwtOption, (error, token) => {
-            if (error) reject(error);
-            resolve(token);
-        });
+  return new Promise((resolve, reject) => {
+    jwt.sign(payload, process.env.JWT_SECRET, jwtOption, (error, token) => {
+      if (error) reject(error);
+      resolve(token);
     });
-};
+  });
+}
 
 // JWT 토큰 검증
 // export function verifyTokenUseReq = req => {
@@ -58,10 +56,9 @@ export function createToken(payload: JWTPayload) {
 //   });
 // };
 
-
 // router.get('/', (req, res) => {
 
-//     // read the token from header or url 
+//     // read the token from header or url
 //     const token = req.headers['x-access-token'] || req.query.token
 
 //     // token does not exist
