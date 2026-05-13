@@ -1,5 +1,5 @@
+import 'dotenv/config';
 import { Sequelize } from 'sequelize';
-require('dotenv').config();
 
 const sequelize = (function () {
   const seq = new Sequelize(

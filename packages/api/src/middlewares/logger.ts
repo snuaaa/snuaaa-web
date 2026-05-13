@@ -11,10 +11,10 @@ function pad(num) {
 function generator(time, index) {
   if (!time) return 'snuaaa.log';
 
-  var month = time.getFullYear() + '' + pad(time.getMonth() + 1);
-  var day = pad(time.getDate());
-  var hour = pad(time.getHours());
-  var minute = pad(time.getMinutes());
+  const month = time.getFullYear() + '' + pad(time.getMonth() + 1);
+  const day = pad(time.getDate());
+  const hour = pad(time.getHours());
+  const minute = pad(time.getMinutes());
 
   return month + '/' + month + day + '-' + hour + minute + '-' + index + '-file.log';
 }

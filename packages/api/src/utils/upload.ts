@@ -1,7 +1,6 @@
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
-
-require('dotenv').config();
-const uuid4 = require('uuid4');
+import uuid4 from 'uuid4';
+import 'dotenv/config';
 
 const getDateString = () => {
   const date = new Date();

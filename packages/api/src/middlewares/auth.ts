@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { JWTPayload } from '../utils/token';
-const jwt = require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
 
 export type AuthenticatedRequest = Request & { decodedToken: JWTPayload };
 
