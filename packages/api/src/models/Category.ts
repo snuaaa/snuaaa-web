@@ -1,5 +1,4 @@
 import { Model, DataTypes } from 'sequelize';
-import { BoardModel } from '.';
 import { sequelize } from './sequelize';
 
 export default class CategoryModel extends Model {}

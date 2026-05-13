@@ -1,18 +1,4 @@
 import { Model, DataTypes } from 'sequelize';
-import {
-  AlbumModel,
-  AttachedFileModel,
-  BoardModel,
-  CategoryModel,
-  ContentTagModel,
-  DocumentModel,
-  ExhibitionModel,
-  ExhibitPhotoModel,
-  PhotoModel,
-  PostModel,
-  TagModel,
-  UserModel,
-} from '.';
 import { sequelize } from './sequelize';
 
 export default class ContentModel extends Model {}

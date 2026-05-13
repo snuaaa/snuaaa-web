@@ -1,6 +1,5 @@
 import { Model, DataTypes } from 'sequelize';
 import { sequelize } from './sequelize';
-import PenaltyStatusEnum from '../enums/penaltyStatusEnum';
 
 export default class RentReturnModel extends Model {}
 

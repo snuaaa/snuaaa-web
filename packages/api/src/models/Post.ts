@@ -1,5 +1,4 @@
 import { Model, DataTypes } from 'sequelize';
-import { ContentModel } from '.';
 import { sequelize } from './sequelize';
 
 export default class PostModel extends Model {}

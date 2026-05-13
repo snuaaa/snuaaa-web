@@ -1,5 +1,4 @@
 import { Model, DataTypes } from 'sequelize';
-import { UserModel } from '.';
 import { sequelize } from './sequelize';
 
 export default class ExhibitPhotoModel extends Model {}
