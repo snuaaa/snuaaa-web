@@ -11,7 +11,7 @@ export async function rentEquipment(equipmentId: number, userId: number) {
   }
   if (
     [EquipmentRentEnum.RENTED, EquipmentRentEnum.UNRENTABLE].includes(
-      (equipment as any).rent_status,
+      equipment.get('rent_status') as EquipmentRentEnum,
     )
   ) {
     throw new Error('Equipment not rentable');
@@ -42,15 +42,15 @@ export async function returnEquipment(userId: number, rentId: number, photo_path
   if (!rent) {
     throw new Error('Rent not found');
   }
-  if ((rent as any).user_id !== userId) {
+  if (rent.get('user_id') !== userId) {
     throw new Error('User mismatch: not the renter');
   }
-  if ((rent as any).returned) {
+  if (rent.get('returned')) {
     throw new Error('Already returned');
   }
   rent.update({ returned: true });
   const penalty_status =
-    (rent as any).end_date < new Date()
+    rent.get('end_date') < new Date()
       ? PenaltyStatusEnum.NEED_PAYMENT
       : PenaltyStatusEnum.NO_PENALTY;
   await RentReturnModel.create({
@@ -62,7 +62,7 @@ export async function returnEquipment(userId: number, rentId: number, photo_path
   await EquipmentModel.update(
     { rent_status: EquipmentRentEnum.RENTABLE },
     {
-      where: { id: (rent as any).equipment_id, rent_status: EquipmentRentEnum.RENTED },
+      where: { id: rent.get('equipment_id'), rent_status: EquipmentRentEnum.RENTED },
     },
   );
   return {
@@ -140,13 +140,13 @@ export async function retrieveAllRentRecords(
 
   if (filters.dateFromStart) {
     rentWhere.start_date = {
-      ...((rentWhere.start_date as any) || {}),
+      ...(rentWhere.get('start_date') || {}),
       [Op.gte]: new Date(filters.dateFromStart),
     };
   }
   if (filters.dateToStart) {
     rentWhere.start_date = {
-      ...((rentWhere.start_date as any) || {}),
+      ...(rentWhere.get('start_date') || {}),
       [Op.lte]: new Date(filters.dateToStart),
     };
   }
@@ -157,13 +157,13 @@ export async function retrieveAllRentRecords(
   }
   if (filters.dateFromReturn) {
     rentReturnWhere.return_date = {
-      ...((rentReturnWhere.return_date as any) || {}),
+      ...(rentReturnWhere.get('return_date') || {}),
       [Op.gte]: new Date(filters.dateFromReturn),
     };
   }
   if (filters.dateToReturn) {
     rentReturnWhere.return_date = {
-      ...((rentReturnWhere.return_date as any) || {}),
+      ...(rentReturnWhere.get('return_date') || {}),
       [Op.lte]: new Date(filters.dateToReturn),
     };
   }
@@ -213,7 +213,7 @@ export async function updatePenaltyStatus(rentId: number, penaltyStatus: Penalty
   if (!rentReturn) {
     throw new Error('RentReturn record not found');
   }
-  const current = (rentReturn as any).penalty_status;
+  const current = rentReturn.get('penalty_status') as PenaltyStatusEnum;
   const allowed = [PenaltyStatusEnum.NEED_PAYMENT, PenaltyStatusEnum.RECEIVED_PAYMENT];
   if (!allowed.includes(current) || !allowed.includes(penaltyStatus)) {
     throw new Error('Transition only allowed between NEEDPAYMENT and RECEIVEDPAYMENT');

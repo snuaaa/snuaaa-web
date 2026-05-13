@@ -1,7 +1,7 @@
-const EquipmentRentEnum = Object.freeze({
-  RENTABLE: 'RENTABLE',
-  RENTED: 'RENTED',
-  UNRENTABLE: 'UNRENTABLE',
-});
+enum EquipmentRentEnum {
+  RENTABLE = 'RENTABLE',
+  RENTED = 'RENTED',
+  UNRENTABLE = 'UNRENTABLE',
+}
 
 export default EquipmentRentEnum;
