@@ -1,5 +1,4 @@
 import { Model, DataTypes } from 'sequelize';
-import { CommentModel, ContentModel, StatsLoginModel } from '.';
 import { sequelize } from './sequelize';
 
 export default class UserModel extends Model {}

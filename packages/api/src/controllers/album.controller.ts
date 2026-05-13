@@ -8,7 +8,7 @@ import {
 } from '../models';
 import { Op } from 'sequelize';
 
-export async function retrieveAlbum(content_id: number) {
+export async function retrieveAlbum(content_id) {
   return ContentModel.findOne({
     include: [
       {
@@ -32,232 +32,173 @@ export async function retrieveAlbum(content_id: number) {
   });
 }
 
-export function retrievePrevAlbum(album_id, board_id) {
-  return new Promise((resolve, reject) => {
-    if (!board_id) {
-      reject('board_id can not be null');
-    } else {
-      ContentModel.findOne({
-        include: [
-          {
-            model: AlbumModel,
-            as: 'album',
-            required: true,
-          },
-        ],
-        where: {
-          content_id: {
-            [Op.lt]: album_id,
-          },
-          board_id: board_id,
-        },
-        order: [['content_id', 'DESC']],
-      })
-        .then((album) => {
-          resolve(album);
-        })
-        .catch((err) => {
-          reject(err);
-        });
-    }
-  });
-}
+export async function retrievePrevAlbum(album_id, board_id) {
+  if (!board_id) {
+    throw new Error('board_id can not be null');
+  }
 
-export function retrieveNextAlbum(album_id, board_id) {
-  return new Promise((resolve, reject) => {
-    if (!board_id) {
-      reject('board_id can not be null');
-    } else {
-      ContentModel.findOne({
-        include: [
-          {
-            model: AlbumModel,
-            as: 'album',
-            required: true,
-          },
-        ],
-        where: {
-          content_id: {
-            [Op.gt]: album_id,
-          },
-          board_id: board_id,
-        },
-        order: [['content_id', 'ASC']],
-      })
-        .then((album) => {
-          resolve(album);
-        })
-        .catch((err) => {
-          reject(err);
-        });
-    }
-  });
-}
-
-export function retrieveAlbumCount(board_id, category_id) {
-  return new Promise((resolve, reject) => {
-    if (!board_id) {
-      reject('id can not be null');
-    }
-
-    let condition: any = {};
-    board_id && (condition.board_id = board_id);
-    category_id && (condition.category_id = category_id);
-
-    ContentModel.count({
-      include: [
-        {
-          model: AlbumModel,
-          as: 'album',
-          required: true,
-        },
-      ],
-      where: condition,
-    })
-      .then((count) => {
-        resolve(count);
-      })
-      .catch((err) => {
-        reject(err);
-      });
-  });
-}
-
-export function retrieveAlbumsInBoard(board_id, rowNum, offset, category_id) {
-  return new Promise((resolve, reject) => {
-    if (!board_id) {
-      reject('board_id can not be null');
-    }
-
-    let condition: any = {
+  return ContentModel.findOne({
+    include: [
+      {
+        model: AlbumModel,
+        as: 'album',
+        required: true,
+      },
+    ],
+    where: {
+      content_id: {
+        [Op.lt]: album_id,
+      },
       board_id: board_id,
-    };
-    category_id && (condition.category_id = category_id);
-
-    ContentModel.findAll({
-      include: [
-        {
-          model: AlbumModel,
-          as: 'album',
-          required: true,
-          include: [
-            {
-              model: ContentModel,
-              as: 'thumbnail',
-              include: [
-                {
-                  model: PhotoModel,
-                  as: 'photo',
-                  required: true,
-                },
-              ],
-            },
-          ],
-        },
-        {
-          model: UserModel,
-          required: true,
-          attributes: ['nickname', 'deleted_at'],
-          paranoid: false,
-        },
-        {
-          model: CategoryModel,
-        },
-        {
-          model: ContentModel,
-          as: 'children',
-          required: false,
-          separate: true,
-          limit: 1,
-          order: [['content_id', 'DESC']],
-          include: [
-            {
-              model: PhotoModel,
-              as: 'photo',
-              required: true,
-            },
-          ],
-        },
-      ],
-      where: condition,
-      order: [['created_at', 'DESC']],
-      limit: rowNum,
-      offset: offset,
-    })
-      .then((albums) => {
-        resolve(albums);
-      })
-      .catch((err) => {
-        reject(err);
-      });
+    },
+    order: [['content_id', 'DESC']],
   });
 }
 
-export function createAlbum(content_id, data) {
-  return new Promise<void>((resolve, reject) => {
-    if (!content_id) {
-      reject('id can not be null');
-    }
+export async function retrieveNextAlbum(album_id, board_id) {
+  if (!board_id) {
+    throw new Error('board_id can not be null');
+  }
 
-    AlbumModel.create({
-      content_id: content_id,
+  return ContentModel.findOne({
+    include: [
+      {
+        model: AlbumModel,
+        as: 'album',
+        required: true,
+      },
+    ],
+    where: {
+      content_id: {
+        [Op.gt]: album_id,
+      },
+      board_id: board_id,
+    },
+    order: [['content_id', 'ASC']],
+  });
+}
+
+export async function retrieveAlbumCount(board_id, category_id) {
+  if (!board_id) {
+    throw new Error('id can not be null');
+  }
+
+  return ContentModel.count({
+    include: [
+      {
+        model: AlbumModel,
+        as: 'album',
+        required: true,
+      },
+    ],
+    where: {
+      ...(board_id && { board_id: board_id }),
+      ...(category_id && { category_id: category_id }),
+    },
+  });
+}
+
+export async function retrieveAlbumsInBoard(board_id, rowNum, offset, category_id) {
+  if (!board_id) {
+    throw new Error('board_id can not be null');
+  }
+
+  return ContentModel.findAll({
+    include: [
+      {
+        model: AlbumModel,
+        as: 'album',
+        required: true,
+        include: [
+          {
+            model: ContentModel,
+            as: 'thumbnail',
+            include: [
+              {
+                model: PhotoModel,
+                as: 'photo',
+                required: true,
+              },
+            ],
+          },
+        ],
+      },
+      {
+        model: UserModel,
+        required: true,
+        attributes: ['nickname', 'deleted_at'],
+        paranoid: false,
+      },
+      {
+        model: CategoryModel,
+      },
+      {
+        model: ContentModel,
+        as: 'children',
+        required: false,
+        separate: true,
+        limit: 1,
+        order: [['content_id', 'DESC']],
+        include: [
+          {
+            model: PhotoModel,
+            as: 'photo',
+            required: true,
+          },
+        ],
+      },
+    ],
+    where: {
+      board_id: board_id,
+      ...(category_id && { category_id: category_id }),
+    },
+    order: [['created_at', 'DESC']],
+    limit: rowNum,
+    offset: offset,
+  });
+}
+
+export async function createAlbum(content_id, data) {
+  if (!content_id) {
+    throw new Error('id can not be null');
+  }
+
+  await AlbumModel.create({
+    content_id: content_id,
+    is_private: data.is_private,
+  });
+}
+
+export async function updateAlbum(album_id, data) {
+  if (!album_id) {
+    throw new Error('album_id can not be null');
+  }
+
+  await AlbumModel.update(
+    {
       is_private: data.is_private,
-    })
-      .then(() => {
-        resolve();
-      })
-      .catch((err) => {
-        reject(err);
-      });
-  });
+    },
+    {
+      where: {
+        content_id: album_id,
+      },
+    },
+  );
 }
 
-export function updateAlbum(album_id, data) {
-  return new Promise<void>((resolve, reject) => {
-    if (!album_id) {
-      reject('album_id can not be null');
-    }
+export async function updateAlbumThumbnail(album_id, photo_id) {
+  if (!album_id) {
+    throw new Error('album_id can not be null');
+  }
 
-    AlbumModel.update(
-      {
-        is_private: data.is_private,
+  await AlbumModel.update(
+    {
+      tn_photo_id: photo_id,
+    },
+    {
+      where: {
+        content_id: album_id,
       },
-      {
-        where: {
-          content_id: album_id,
-        },
-      },
-    )
-      .then(() => {
-        resolve();
-      })
-      .catch((err) => {
-        reject(err);
-      });
-  });
-}
-
-export function updateAlbumThumbnail(album_id, photo_id) {
-  return new Promise<void>((resolve, reject) => {
-    if (!album_id) {
-      reject('album_id can not be null');
-    }
-
-    AlbumModel.update(
-      {
-        tn_photo_id: photo_id,
-      },
-      {
-        where: {
-          content_id: album_id,
-        },
-      },
-    )
-      .then(() => {
-        resolve();
-      })
-      .catch((err) => {
-        reject(err);
-      });
-  });
+    },
+  );
 }

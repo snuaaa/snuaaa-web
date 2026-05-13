@@ -1,4 +1,4 @@
-import { CreationAttributes, Op, Sequelize } from 'sequelize';
+import { CreationAttributes, Op } from 'sequelize';
 import {
   EquipmentModel,
   EquipmentCategoryModel,
@@ -25,7 +25,7 @@ export async function retrieveEquipmentsByCategory(categoryId: number) {
   });
 }
 
-export async function retrieveEquipmentList(rowNum, offset) {
+export async function retrieveEquipmentList() {
   return EquipmentModel.findAndCountAll({
     include: [
       {
@@ -60,15 +60,17 @@ export async function retrieveEquipmentList(rowNum, offset) {
   });
 }
 
-export async function searchEquipmentList(category_id, status, keyword, rowNum, offset) {
-  let equipmentCondition: any = {};
-  category_id && (equipmentCondition.category_id = category_id);
-  status && (equipmentCondition.status = status);
-  keyword &&
-    keyword != '' &&
-    (equipmentCondition.name = {
-      [Op.like]: `%${keyword}%`,
-    });
+export async function searchEquipmentList(category_id, status, keyword) {
+  const equipmentCondition = {
+    ...(category_id && { category_id: category_id }),
+    ...(status && { status: status }),
+    ...(keyword &&
+      keyword != '' && {
+        name: {
+          [Op.like]: `%${keyword}%`,
+        },
+      }),
+  };
 
   return EquipmentModel.findAndCountAll({
     include: [

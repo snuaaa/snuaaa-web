@@ -1,88 +1,54 @@
 import { ContentTagModel } from '../models';
 
-export function retrieveTagsByContent(content_id) {
-  return new Promise((resolve, reject) => {
-    if (!content_id) {
-      reject('id can not be null');
-    }
+export async function retrieveTagsByContent(content_id) {
+  if (!content_id) {
+    throw new Error('id can not be null');
+  }
 
-    ContentTagModel.findAll({
-      where: {
-        content_id: content_id,
-      },
-    })
-      .then((tags) => {
-        resolve(tags);
-      })
-      .catch((err) => {
-        reject(err);
-      });
+  return ContentTagModel.findAll({
+    where: {
+      content_id: content_id,
+    },
   });
 }
 
-export function createContentTag(content_id, tag_id) {
-  return new Promise<void>((resolve, reject) => {
-    if (!content_id || !tag_id) {
-      reject('id can not be null');
-    }
+export async function createContentTag(content_id, tag_id) {
+  if (!content_id || !tag_id) {
+    throw new Error('id can not be null');
+  }
 
-    ContentTagModel.create({
+  await ContentTagModel.create({
+    content_id: content_id,
+    tag_id: tag_id,
+  });
+}
+
+export async function deleteContentTag(content_id, tag_id) {
+  if (!content_id || !tag_id) {
+    throw new Error('id can not be null');
+  }
+
+  await ContentTagModel.destroy({
+    where: {
       content_id: content_id,
       tag_id: tag_id,
-    })
-      .then(() => {
-        resolve();
-      })
-      .catch((err) => {
-        reject(err);
-      });
+    },
   });
 }
 
-export function deleteContentTag(content_id, tag_id) {
-  return new Promise<void>((resolve, reject) => {
-    if (!content_id || !tag_id) {
-      reject('id can not be null');
-    }
+export async function checkContentTag(content_id, tag_id) {
+  if (!content_id || !tag_id) {
+    throw new Error('id can not be null');
+  }
 
-    ContentTagModel.destroy({
-      where: {
-        content_id: content_id,
-        tag_id: tag_id,
-      },
-    })
-      .then(() => {
-        resolve();
-      })
-      .catch((err) => {
-        reject(err);
-      });
+  const isExist = await ContentTagModel.findOne({
+    where: {
+      content_id: content_id,
+      tag_id: tag_id,
+    },
   });
-}
 
-export function checkContentTag(content_id, tag_id) {
-  return new Promise((resolve, reject) => {
-    if (!content_id || !tag_id) {
-      reject('id can not be null');
-    }
-
-    ContentTagModel.findOne({
-      where: {
-        content_id: content_id,
-        tag_id: tag_id,
-      },
-    })
-      .then((isExist) => {
-        if (isExist) {
-          resolve(true);
-        } else {
-          resolve(false);
-        }
-      })
-      .catch((err) => {
-        reject(err);
-      });
-  });
+  return !!isExist;
 }
 
 export async function updateContentTag(content_id: number, tagList: string[]) {
