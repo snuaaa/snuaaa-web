@@ -1,111 +1,69 @@
 import { ContentTagModel } from '../models';
 
-export function retrieveTagsByContent(content_id) {
+export async function retrieveTagsByContent(content_id) {
+  if (!content_id) {
+    throw new Error('id can not be null');
+  }
 
-    return new Promise((resolve, reject) => {
-        if (!content_id) {
-            reject('id can not be null')
-        }
-
-        ContentTagModel.findAll({
-            where: {
-                content_id: content_id
-            }
-        })
-            .then((tags) => {
-                resolve(tags);
-            })
-            .catch((err) => {
-                reject(err);
-            })
-    })
+  return ContentTagModel.findAll({
+    where: {
+      content_id: content_id,
+    },
+  });
 }
 
-export function createContentTag(content_id, tag_id) {
+export async function createContentTag(content_id, tag_id) {
+  if (!content_id || !tag_id) {
+    throw new Error('id can not be null');
+  }
 
-    return new Promise<void>((resolve, reject) => {
-        if (!content_id || !tag_id) {
-            reject('id can not be null')
-        }
-
-        ContentTagModel.create({
-            content_id: content_id,
-            tag_id: tag_id
-        })
-            .then(() => {
-                resolve()
-            })
-            .catch((err) => {
-                reject(err);
-            })
-    })
+  await ContentTagModel.create({
+    content_id: content_id,
+    tag_id: tag_id,
+  });
 }
 
-export function deleteContentTag(content_id, tag_id) {
+export async function deleteContentTag(content_id, tag_id) {
+  if (!content_id || !tag_id) {
+    throw new Error('id can not be null');
+  }
 
-    return new Promise<void>((resolve, reject) => {
-        if (!content_id || !tag_id) {
-            reject('id can not be null')
-        }
-
-        ContentTagModel.destroy({
-            where: {
-                content_id: content_id,
-                tag_id: tag_id
-            }
-        })
-            .then(() => {
-                resolve()
-            })
-            .catch((err) => {
-                reject(err);
-            })
-    })
+  await ContentTagModel.destroy({
+    where: {
+      content_id: content_id,
+      tag_id: tag_id,
+    },
+  });
 }
 
-export function checkContentTag(content_id, tag_id) {
+export async function checkContentTag(content_id, tag_id) {
+  if (!content_id || !tag_id) {
+    throw new Error('id can not be null');
+  }
 
-    return new Promise((resolve, reject) => {
-        if (!content_id || !tag_id) {
-            reject('id can not be null')
-        }
+  const isExist = await ContentTagModel.findOne({
+    where: {
+      content_id: content_id,
+      tag_id: tag_id,
+    },
+  });
 
-        ContentTagModel.findOne({
-            where: {
-                content_id: content_id,
-                tag_id: tag_id
-            }
-        })
-            .then((isExist) => {
-                if (isExist) {
-                    resolve(true);
-                }
-                else {
-                    resolve(false);
-                }
-            })
-            .catch((err) => {
-                reject(err);
-            })
-
-    })
+  return !!isExist;
 }
 
 export async function updateContentTag(content_id: number, tagList: string[]) {
+  const prevTags = await ContentTagModel.findAll({
+    where: {
+      content_id: content_id,
+    },
+  });
+  const prevTagIds = prevTags.map((tag) => tag.get('tag_id') as string);
 
-    const prevTags = await ContentTagModel.findAll({
-        where: {
-            content_id: content_id
-        }
-    });
-    const prevTagIds = prevTags.map((tag) => tag.get('tag_id') as string);
+  const tagsToAdd = tagList.filter((tagId) => !prevTagIds.includes(tagId));
+  const tagsToRemove = prevTagIds.filter((tagId) => !tagList.includes(tagId));
 
-    const tagsToAdd = tagList.filter((tagId) => !prevTagIds.includes(tagId));
-    const tagsToRemove = prevTagIds.filter((tagId) => !tagList.includes(tagId));
-
-    await Promise.all([
-        ...tagsToAdd.map((tagId) => createContentTag(content_id, tagId)),
-        ...tagsToRemove.map((tagId) => deleteContentTag(content_id, tagId))
-    ]);
-
+  await Promise.all([
+    ...tagsToAdd.map((tagId) => createContentTag(content_id, tagId)),
+    ...tagsToRemove.map((tagId) => deleteContentTag(content_id, tagId)),
+  ]);
 }

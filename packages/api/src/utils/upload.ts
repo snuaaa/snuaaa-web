@@ -1,15 +1,14 @@
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
-
-require("dotenv").config();
-const uuid4 = require('uuid4');
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import uuid4 from 'uuid4';
+import 'dotenv/config';
 
 const getDateString = () => {
   const date = new Date();
   const year = date.getFullYear();
-  const month = (date.getMonth() + 1).toString().padStart(2, "0");
-  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
   return `${year}${month}${day}`;
-}
+};
 
 export async function uploadImageToS3(buffer: Buffer): Promise<string> {
   // AWS S3 설정
@@ -23,17 +22,17 @@ export async function uploadImageToS3(buffer: Buffer): Promise<string> {
 
   const uuid = uuid4();
 
-    // S3 업로드 설정
-    const bucketName = process.env.S3_BUCKET_NAME;
-    const key = `image/${getDateString()}/${uuid}`; // 파일 이름
-    const params = {
-      Bucket: bucketName,
-      Key: key,
-      Body: buffer,
-      ContentType: "image/jpeg",
-      ACL: "public-read" as const,
-    };
-  
+  // S3 업로드 설정
+  const bucketName = process.env.S3_BUCKET_NAME;
+  const key = `image/${getDateString()}/${uuid}`; // 파일 이름
+  const params = {
+    Bucket: bucketName,
+    Key: key,
+    Body: buffer,
+    ContentType: 'image/jpeg',
+    ACL: 'public-read' as const,
+  };
+
   // S3에 업로드
   const command = new PutObjectCommand(params);
   await s3.send(command);

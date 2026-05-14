@@ -1,41 +1,22 @@
-import {
-    StatsLoginModel,
-} from '../models';
-export function createStatsLogin(user_id) {
+import { StatsLoginModel } from '../models';
 
-    return new Promise<void>((resolve, reject) => {
-        if (!user_id) {
-            reject('user_id can not be null')
-        }
+export async function createStatsLogin(user_id) {
+  if (!user_id) {
+    throw new Error('user_id can not be null');
+  }
 
-        StatsLoginModel.create({
-            user_id: user_id,
-            login_at: new Date()
-        })
-            .then(() => {
-                resolve()
-            })
-            .catch((err) => {
-                reject(err);
-            })
-    })
+  await StatsLoginModel.create({
+    user_id: user_id,
+    login_at: new Date(),
+  });
 }
 
-export function retrieveRecentLogin(user_id) {
+export async function retrieveRecentLogin(user_id) {
+  if (!user_id) {
+    throw new Error('user_id can not be null');
+  }
 
-    return new Promise<void>((resolve, reject) => {
-        if (!user_id) {
-            reject('user_id can not be null')
-        }
-
-        StatsLoginModel.max('login_at', {
-            where: { user_id: user_id }
-        })
-            .then(() => {
-                resolve()
-            })
-            .catch((err) => {
-                reject(err);
-            })
-    })
+  await StatsLoginModel.max('login_at', {
+    where: { user_id: user_id },
+  });
 }

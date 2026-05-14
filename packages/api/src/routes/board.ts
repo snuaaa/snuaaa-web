@@ -1,292 +1,243 @@
 import express from 'express';
-import fs from 'fs';
 import path from 'path';
-import multer from 'multer';
-import uploadMiddleware from '../middlewares/upload';
+import uploadMiddleware, {
+  AuthenticatedRequestWithFile,
+} from '../middlewares/upload';
 import { verifyTokenMiddleware } from '../middlewares/auth';
-import { retrieveBoard, retrieveBoardsCanAccess } from '../controllers/board.controller';
-import { retrieveCategoryByBoard } from '../controllers/category.controller';
+import {
+  retrieveBoard,
+  retrieveBoardsCanAccess,
+} from '../controllers/board.controller';
 import { createContent } from '../controllers/content.controller';
-import { retrievePostsInBoard, createPost, searchPostsInBoard } from '../controllers/post.controller';
+import {
+  retrievePostsInBoard,
+  createPost,
+} from '../controllers/post.controller';
 import { retrieveTagsOnBoard } from '../controllers/tag.controller';
 import { createDocument } from '../controllers/document.controller';
-import { createAttachedFile } from '../controllers/attachedFile.controller';
-import { retrieveExhibitions, createExhibition } from '../controllers/exhibition.controller';
-import { resizeForThumbnail } from '../lib/resize';
-const uuid4 = require('uuid4');
+import {
+  retrieveExhibitions,
+  createExhibition,
+} from '../controllers/exhibition.controller';
+import { resizeForThumbnail } from '../utils/resize';
+import uuid4 from 'uuid4';
+import type { AuthenticatedRequest } from '../middlewares/auth';
 
 const router = express.Router();
 
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        if (!(fs.existsSync('./upload/file'))) {
-            fs.mkdirSync('./upload/file')
-        }
-        cb(null, './upload/file/')
-    },
-    filename(req, file, cb) {
-        let timestamp = (new Date).valueOf()
-        cb(null, timestamp + '_' + file.originalname);
-    },
-});
+router.get(
+  '/',
+  verifyTokenMiddleware,
+  async (req: AuthenticatedRequest, res) => {
+    try {
+      const decodedToken = req.decodedToken;
+      const boardInfo = await retrieveBoardsCanAccess(decodedToken.grade);
+      return res.json(boardInfo);
+    } catch (err) {
+      console.error(err);
+      return res.status(403).json({
+        success: false,
+      });
+    }
+  },
+);
 
-const upload = multer({ storage })
-
-router.get('/', verifyTokenMiddleware, (req, res) => {
-    
-    const decodedToken = (req as any).decodedToken;
-    retrieveBoardsCanAccess(decodedToken.grade)
-        .then((boardInfo) => {
-            return res.json(boardInfo)
-        })
-        .catch((err) => {
-            console.error(err);
-            return res.status(403).json({
-                success: false
-            })
-        })
-})
-
-router.get('/:board_id', verifyTokenMiddleware, (req, res, next) => {
-
-    const decodedToken = (req as any).decodedToken;
+router.get(
+  '/:board_id',
+  verifyTokenMiddleware,
+  async (req: AuthenticatedRequest, res, next) => {
+    const decodedToken = req.decodedToken;
 
     try {
-        retrieveBoard(req.params.board_id)
-            .then((boardInfo: any) => {
-                if (boardInfo.lv_read < decodedToken.grade) {
-                    const err = {
-                        status: 403,
-                        code: 4001
-                    }
-                    next(err);
-                }
-                else {
-                    res.json({
-                        boardInfo: boardInfo
-                    })
-                }
-            })
-            .catch((err) => {
-                console.error(err);
-                res.status(500).json({
-                    error: 'internal server error',
-                    code: 0
-                })
-            })
+      const boardInfo = await retrieveBoard(req.params.board_id);
+      if ((boardInfo.get('lv_read') as number) < decodedToken.grade) {
+        const err = {
+          status: 403,
+          code: 4001,
+        };
+        next(err);
+        return;
+      }
+      res.json({
+        boardInfo: boardInfo,
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({
+        error: 'internal server error',
+        code: 0,
+      });
     }
-    catch (err) {
-        console.error(err);
-        res.status(500).json({
-            error: 'internal server error',
-            code: 0
-        })
-    }
-})
+  },
+);
 
-router.get('/:board_id/posts', verifyTokenMiddleware, (req, res) => {
-    
+router.get('/:board_id/posts', verifyTokenMiddleware, async (req, res) => {
+  let offset = 0;
+  const ROWNUM = 10;
+  const query = req.query;
+  if ('page' in query && typeof query.page === 'number' && query.page > 0) {
+    offset = ROWNUM * (query.page - 1);
+  }
 
-    let offset = 0;
-    const ROWNUM = 10;
-    const query = (req as any).query;
-    if (query.page > 0) {
-        offset = ROWNUM * (query.page - 1);
-    }
-
-    retrievePostsInBoard(req.params.board_id, ROWNUM, offset)
-        .then((postInfo) => {
-            res.json({
-                postCount: (postInfo as any).count,
-                postInfo: (postInfo as any).rows
-            })
-        })
-        .catch((err) => {
-            console.error(err);
-            res.status(403).json({
-                success: false,
-                error: 'RETRIEVE POST FAIL',
-                code: 1
-            })
-        })
-})
-
-/**
- * @deprecated
- */
-router.get('/:board_id/posts/search', verifyTokenMiddleware, (req, res) => {
-    
-
-    let offset = 0;
-    const ROWNUM = 10;
-    const query = (req as any).query;
-
-    if (query.page > 0) {
-        offset = ROWNUM * (query.page - 1);
-    }
-
-    searchPostsInBoard(req.params.board_id, req.query.type, req.query.keyword, ROWNUM, offset)
-        .then((postInfo) => {
-            res.json({
-                postCount: (postInfo as any).count,
-                postInfo: (postInfo as any).rows
-            })
-        })
-        .catch((err) => {
-            console.error(err);
-            res.status(403).json({
-                success: false,
-                error: 'RETRIEVE POST FAIL',
-                code: 1
-            })
-        })
-})
-
-
-router.get('/:board_id/tags', verifyTokenMiddleware, (req, res) => {
-    
-
-    retrieveTagsOnBoard(req.params.board_id)
-        .then((tags) => {
-            res.json(tags)
-        })
-        .catch((err) => {
-            console.error(err);
-            res.status(403).json({
-                success: false,
-                error: 'RETRIEVE POST FAIL',
-                code: 1
-            })
-        })
-})
-
-
-router.post('/:board_id/post', verifyTokenMiddleware, (req, res) => {
-    
-    const decodedToken = (req as any).decodedToken;
-
-    let postData = {
-        ...req.body,
-        author_id: decodedToken._id,
-        board_id: req.params.board_id
-    }
-
-    createPost(postData)
-        .then((content_id) => {
-            res.json({
-                content_id: content_id,
-                success: true
-            })
-        })
-        .catch((err) => {
-            console.error(err);
-            res.status(403).json({
-                success: false,
-                error: 'RETRIEVE POST FAIL',
-                code: 1
-            })
-        });
-});
-
-
-router.post('/:board_id/document', verifyTokenMiddleware, (req, res) => {
-    
-    const decodedToken = (req as any).decodedToken;
-
-    try {
-        let user_id = decodedToken._id;
-
-        let data = {
-            content_uuid: uuid4(),
-            author_id: user_id,
-            board_id: req.params.board_id,
-            category_id: req.body.category_id,
-            title: req.body.title,
-            text: req.body.text,
-            type: 'DO',
-            generation: req.body.generation ? req.body.generation : null
-        }
-
-        createDocument(data)
-            .then((content_id) => {
-                return res.json({
-                    content_id: content_id,
-                    success: true
-                })
-            })
-            .catch((err) => {
-                console.error(err);
-                return res.status(403).json({
-                    success: false,
-                    error: 'RETRIEVE POST FAIL',
-                    code: 1
-                })
-            });
-
-    }
-    catch (err) {
-        console.error(err);
-        return res.status(500).json({
-            success: false,
-            error: 'INTERNAL SERVER ERROR',
-            code: 0
-        })
-    }
-})
-
-router.get('/:board_id/exhibitions', verifyTokenMiddleware, (req, res) => {
-    
-
-    retrieveExhibitions()
-        .then((exhibitionInfo) => {
-            res.json(exhibitionInfo)
-        })
-        .catch((err) => {
-            console.error(err);
-            res.status(500).json({
-                success: false,
-                error: 'RETRIEVE EXHIBITIONS FAIL',
-                code: 1
-            })
-        })
-})
-
-router.post('/:board_id/exhibition',
-    verifyTokenMiddleware,
-    uploadMiddleware('EH').single('poster'),
-    (req, res) => {
-        
-        const decodedToken = (req as any).decodedToken;
-        const file = (req as any).file;
-
-        if (!file) {
-            res.status(409).json({
-                error: 'POSTER IS NOT ATTACHED',
-                code: 1
-            });
-        }
-
-        let basename = path.basename(file.filename, path.extname(file.filename));
-        resizeForThumbnail(file.path, 'P')
-            .then(() => {
-                req.body.poster_path = `/exhibition/${req.body.exhibition_no}/${file.filename}`;
-                req.body.poster_thumbnail_path = `/exhibition/${req.body.exhibition_no}/${basename}_thumb.jpeg`;
-                return createContent(decodedToken._id, req.params.board_id, req.body, 'EH')
-            })
-            .then((content_id) => {
-                return createExhibition(content_id, req.body)
-            })
-            .then(() => {
-                res.json({ success: true })
-            })
-            .catch((err) => {
-                console.error(err);
-                res.status(500).json({
-                    success: false,
-                    error: 'CREATE EXHIBITION FAIL',
-                    code: 1
-                })
-            });
+  try {
+    const postInfo = await retrievePostsInBoard(
+      req.params.board_id,
+      ROWNUM,
+      offset,
+    );
+    res.json({
+      postCount: postInfo.count,
+      postInfo: postInfo.rows,
     });
+  } catch (err) {
+    console.error(err);
+    res.status(403).json({
+      success: false,
+      error: 'RETRIEVE POST FAIL',
+      code: 1,
+    });
+  }
+});
+
+router.get('/:board_id/tags', verifyTokenMiddleware, async (req, res) => {
+  try {
+    const tags = await retrieveTagsOnBoard(req.params.board_id);
+    res.json(tags);
+  } catch (err) {
+    console.error(err);
+    res.status(403).json({
+      success: false,
+      error: 'RETRIEVE POST FAIL',
+      code: 1,
+    });
+  }
+});
+
+router.post(
+  '/:board_id/post',
+  verifyTokenMiddleware,
+  async (req: AuthenticatedRequest, res) => {
+    const decodedToken = req.decodedToken;
+
+    const postData = {
+      ...req.body,
+      author_id: decodedToken._id,
+      board_id: req.params.board_id,
+    };
+
+    try {
+      const content_id = await createPost(postData);
+      res.json({
+        content_id: content_id,
+        success: true,
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(403).json({
+        success: false,
+        error: 'RETRIEVE POST FAIL',
+        code: 1,
+      });
+    }
+  },
+);
+
+router.post(
+  '/:board_id/document',
+  verifyTokenMiddleware,
+  async (req: AuthenticatedRequest, res) => {
+    const decodedToken = req.decodedToken;
+
+    try {
+      const user_id = decodedToken._id;
+
+      const data = {
+        content_uuid: uuid4(),
+        author_id: user_id,
+        board_id: req.params.board_id,
+        category_id: req.body.category_id,
+        title: req.body.title,
+        text: req.body.text,
+        type: 'DO',
+        generation: req.body.generation ? req.body.generation : null,
+      };
+
+      const content_id = await createDocument(data);
+      return res.json({
+        content_id: content_id,
+        success: true,
+      });
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({
+        success: false,
+        error: 'INTERNAL SERVER ERROR',
+        code: 0,
+      });
+    }
+  },
+);
+
+router.get(
+  '/:board_id/exhibitions',
+  verifyTokenMiddleware,
+  async (req, res) => {
+    try {
+      const exhibitionInfo = await retrieveExhibitions();
+      res.json(exhibitionInfo);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({
+        success: false,
+        error: 'RETRIEVE EXHIBITIONS FAIL',
+        code: 1,
+      });
+    }
+  },
+);
+
+router.post(
+  '/:board_id/exhibition',
+  verifyTokenMiddleware,
+  uploadMiddleware('EH').single('poster'),
+  async (req: AuthenticatedRequestWithFile, res) => {
+    const decodedToken = req.decodedToken;
+    const file = req.file;
+
+    if (!file) {
+      return res.status(409).json({
+        error: 'POSTER IS NOT ATTACHED',
+        code: 1,
+      });
+    }
+
+    try {
+      const basename = path.basename(
+        file.filename,
+        path.extname(file.filename),
+      );
+      await resizeForThumbnail(file.path, 'P');
+
+      req.body.poster_path = `/exhibition/${req.body.exhibition_no}/${file.filename}`;
+      req.body.poster_thumbnail_path = `/exhibition/${req.body.exhibition_no}/${basename}_thumb.jpeg`;
+
+      const content_id = await createContent(
+        decodedToken._id,
+        req.params.board_id,
+        req.body,
+        'EH',
+      );
+      await createExhibition(content_id, req.body);
+      res.json({ success: true });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({
+        success: false,
+        error: 'CREATE EXHIBITION FAIL',
+        code: 1,
+      });
+    }
+  },
+);
 
 export default router;
