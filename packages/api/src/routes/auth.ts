@@ -2,8 +2,15 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import multer from 'multer';
 
-import { verifyTokenMiddleware, AuthenticatedRequest } from '../middlewares/auth';
-import { retrieveUser, retrieveUserById, updateLoginDate } from '../controllers/user.controller';
+import {
+  verifyTokenMiddleware,
+  AuthenticatedRequest,
+} from '../middlewares/auth';
+import {
+  retrieveUser,
+  retrieveUserById,
+  updateLoginDate,
+} from '../controllers/user.controller';
 import { createStatsLogin } from '../controllers/statsLogin.controller';
 import { createUser, checkDupId } from '../controllers/user.controller';
 import { resize } from '../utils/resize';
@@ -27,46 +34,50 @@ async function updateLoginHistory(userId: number) {
   await Promise.all([createStatsLogin(userId), updateLoginDate(userId)]);
 }
 
-router.get('/check', verifyTokenMiddleware, async (req: AuthenticatedRequest, res) => {
-  try {
-    const decodedToken = req.decodedToken;
-    const userInfo = await retrieveUser(decodedToken._id);
+router.get(
+  '/check',
+  verifyTokenMiddleware,
+  async (req: AuthenticatedRequest, res) => {
+    try {
+      const decodedToken = req.decodedToken;
+      const userInfo = await retrieveUser(decodedToken._id);
 
-    const loginAt = userInfo.get('login_at') as string;
-    const userId = userInfo.get('user_id') as number;
+      const loginAt = userInfo.get('login_at') as string;
+      const userId = userInfo.get('user_id') as number;
 
-    if (loginAt) {
-      const recentLogin = new Date(loginAt).getTime();
-      const current = new Date().getTime();
-      // Update login history only after later than 1hours from last history.
-      if (current - recentLogin > 60 * 60 * 1000) {
+      if (loginAt) {
+        const recentLogin = new Date(loginAt).getTime();
+        const current = new Date().getTime();
+        // Update login history only after later than 1hours from last history.
+        if (current - recentLogin > 60 * 60 * 1000) {
+          await updateLoginHistory(userId);
+        }
+      } else {
         await updateLoginHistory(userId);
       }
-    } else {
-      await updateLoginHistory(userId);
+
+      const token = await createToken({
+        _id: userId,
+        grade: userInfo.get('grade') as number,
+        level: userInfo.get('level') as number,
+        autoLogin: decodedToken.autoLogin,
+      });
+
+      return res.status(200).json({
+        success: true,
+        userInfo,
+        autoLogin: decodedToken.autoLogin,
+        token,
+      });
+    } catch (err) {
+      console.error(err);
+      return res.status(403).json({
+        success: false,
+        message: 'Token is not valid.',
+      });
     }
-
-    const token = await createToken({
-      _id: userId,
-      grade: userInfo.get('grade') as number,
-      level: userInfo.get('level') as number,
-      autoLogin: decodedToken.autoLogin,
-    });
-
-    return res.status(200).json({
-      success: true,
-      userInfo,
-      autoLogin: decodedToken.autoLogin,
-      token,
-    });
-  } catch (err) {
-    console.error(err);
-    return res.status(403).json({
-      success: false,
-      message: 'Token is not valid.',
-    });
-  }
-});
+  },
+);
 
 router.post('/login', async (req, res) => {
   try {
@@ -81,7 +92,9 @@ router.post('/login', async (req, res) => {
     if (!user) {
       throw new Error('id is not correct');
     }
-    if (!bcrypt.compareSync(req.body.password, user.get('password') as string)) {
+    if (
+      !bcrypt.compareSync(req.body.password, user.get('password') as string)
+    ) {
       throw new Error('password is not correct');
     }
 
@@ -166,84 +179,91 @@ router.get('/login/guest', async (req, res) => {
   }
 });
 
-router.post('/signup', upload.single('profile'), async (req: AuthenticatedRequestWithFile, res) => {
-  try {
-    const usernameRegex = /^[a-zA-Z0-9]+$/;
+router.post(
+  '/signup',
+  upload.single('profile'),
+  async (req: AuthenticatedRequestWithFile, res) => {
+    try {
+      const usernameRegex = /^[a-zA-Z0-9]+$/;
 
-    if (!usernameRegex.test(req.body.id)) {
-      return res.status(400).json({
-        error: 'BAD USERNAME',
-        code: 1,
-      });
-    }
+      if (!usernameRegex.test(req.body.id)) {
+        return res.status(400).json({
+          error: 'BAD USERNAME',
+          code: 1,
+        });
+      }
 
-    // CHECK PASS LENGTH
-    if (req.body.password.length < 4 || typeof req.body.password !== 'string') {
-      return res.status(400).json({
-        error: 'BAD PASSWORD',
-        code: 2,
-      });
-    }
+      // CHECK PASS LENGTH
+      if (
+        req.body.password.length < 4 ||
+        typeof req.body.password !== 'string'
+      ) {
+        return res.status(400).json({
+          error: 'BAD PASSWORD',
+          code: 2,
+        });
+      }
 
-    if (req.body.password !== req.body.passwordCf) {
-      return res.status(400).json({
-        error: 'BAD PASSWORD CONFIRM ',
-        code: 3,
-      });
-    }
+      if (req.body.password !== req.body.passwordCf) {
+        return res.status(400).json({
+          error: 'BAD PASSWORD CONFIRM ',
+          code: 3,
+        });
+      }
 
-    let nickname = '';
+      let nickname = '';
 
-    if (req.body.aaaNum) {
-      if (/^[0-9]{2}[Aa]{3}-[0-9]{1,3}$/.test(req.body.aaaNum)) {
-        // 00AAA-000
-        nickname = req.body.aaaNum.substr(0, 2) + req.body.username;
-      } else if (/^[Aa]{3}[0-9]{2}-[0-9]{1,3}$/.test(req.body.aaaNum)) {
-        // AAA00-000
-        nickname = req.body.aaaNum.substr(3, 2) + req.body.username;
+      if (req.body.aaaNum) {
+        if (/^[0-9]{2}[Aa]{3}-[0-9]{1,3}$/.test(req.body.aaaNum)) {
+          // 00AAA-000
+          nickname = req.body.aaaNum.substr(0, 2) + req.body.username;
+        } else if (/^[Aa]{3}[0-9]{2}-[0-9]{1,3}$/.test(req.body.aaaNum)) {
+          // AAA00-000
+          nickname = req.body.aaaNum.substr(3, 2) + req.body.username;
+        } else {
+          nickname = req.body.username;
+          req.body.aaaNum = null;
+        }
       } else {
         nickname = req.body.username;
         req.body.aaaNum = null;
       }
-    } else {
-      nickname = req.body.username;
-      req.body.aaaNum = null;
+
+      const grade = req.body.aaaNum ? 8 : 9;
+      let profilePath: string | undefined;
+      if (req.file) {
+        profilePath = '/profile/' + req.file.filename;
+        resize(req.file.path);
+      }
+
+      const userData = {
+        id: req.body.id,
+        password: bcrypt.hashSync(req.body.password, 8),
+        username: req.body.username,
+        nickname: nickname,
+        aaa_no: req.body.aaaNum,
+        col_no: req.body.schoolNum,
+        major: req.body.major,
+        email: req.body.email,
+        mobile: req.body.mobile,
+        introduction: req.body.introduction,
+        profile_path: profilePath,
+        grade: grade,
+        level: 0,
+      };
+
+      await createUser(userData);
+      console.log('sign Up Success  ');
+      return res.json({ success: true });
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({
+        error: 'Internal Server ERROR',
+        code: 9,
+      });
     }
-
-    const grade = req.body.aaaNum ? 8 : 9;
-    let profilePath: string | undefined;
-    if (req.file) {
-      profilePath = '/profile/' + req.file.filename;
-      resize(req.file.path);
-    }
-
-    const userData = {
-      id: req.body.id,
-      password: bcrypt.hashSync(req.body.password, 8),
-      username: req.body.username,
-      nickname: nickname,
-      aaa_no: req.body.aaaNum,
-      col_no: req.body.schoolNum,
-      major: req.body.major,
-      email: req.body.email,
-      mobile: req.body.mobile,
-      introduction: req.body.introduction,
-      profile_path: profilePath,
-      grade: grade,
-      level: 0,
-    };
-
-    await createUser(userData);
-    console.log('sign Up Success  ');
-    return res.json({ success: true });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({
-      error: 'Internal Server ERROR',
-      code: 9,
-    });
-  }
-});
+  },
+);
 
 router.post('/signup/dupcheck', async (req, res) => {
   try {

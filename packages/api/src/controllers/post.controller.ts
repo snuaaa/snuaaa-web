@@ -24,7 +24,9 @@ export type PostResponse = ContentModel & {
   attachedFiles: AttachedFileModel[];
 };
 
-export async function retrievePost(content_id: string | number): Promise<PostResponse> {
+export async function retrievePost(
+  content_id: string | number,
+): Promise<PostResponse> {
   if (!content_id) {
     throw new Error('id can not be null');
   }
@@ -213,7 +215,13 @@ export function retrievePostsWithFilter(filter: PostFilter) {
 /**
  * @deprecated
  */
-export async function searchPostsInBoard(board_id, type, keyword, rowNum, offset) {
+export async function searchPostsInBoard(
+  board_id,
+  type,
+  keyword,
+  rowNum,
+  offset,
+) {
   if (!board_id) {
     throw new Error('id can not be null');
   }
@@ -407,7 +415,13 @@ export async function retrievePostsByUserUuid(user_uuid) {
       {
         model: UserModel,
         required: true,
-        attributes: ['user_id', 'user_uuid', 'nickname', 'introduction', 'profile_path'],
+        attributes: [
+          'user_id',
+          'user_uuid',
+          'nickname',
+          'introduction',
+          'profile_path',
+        ],
         where: {
           user_uuid: user_uuid,
         },

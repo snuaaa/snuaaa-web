@@ -1,4 +1,11 @@
-import { AlbumModel, BoardModel, ContentModel, PhotoModel, TagModel, UserModel } from '../models';
+import {
+  AlbumModel,
+  BoardModel,
+  ContentModel,
+  PhotoModel,
+  TagModel,
+  UserModel,
+} from '../models';
 import { Op } from 'sequelize';
 import fs from 'fs';
 import { uploadImageToS3 } from '../utils/upload';
@@ -70,7 +77,9 @@ export type PhotoResponse = ContentModel & {
   tags: TagModel[];
 };
 
-export async function retrievePhoto(photo_id: string | number): Promise<PhotoResponse> {
+export async function retrievePhoto(
+  photo_id: string | number,
+): Promise<PhotoResponse> {
   if (!photo_id) {
     throw new Error('id can not be null');
   }
@@ -471,7 +480,13 @@ export async function retrievePhotosByUserUuid(user_uuid) {
       {
         model: UserModel,
         required: true,
-        attributes: ['user_id', 'user_uuid', 'nickname', 'introduction', 'profile_path'],
+        attributes: [
+          'user_id',
+          'user_uuid',
+          'nickname',
+          'introduction',
+          'profile_path',
+        ],
         where: {
           user_uuid: user_uuid,
         },
@@ -577,9 +592,15 @@ export async function migratePhotos() {
   await Promise.all(
     photoModels.map(async (photo) => {
       // upload to s3 and get new url
-      const filePath = path.join('.', 'upload', photo.getDataValue('file_path'));
+      const filePath = path.join(
+        '.',
+        'upload',
+        photo.getDataValue('file_path'),
+      );
       const buffer = await fs.promises.readFile(filePath);
-      const thumbnailBuffer = await resizeImageBuffer(buffer, { shortSideSize: 360 });
+      const thumbnailBuffer = await resizeImageBuffer(buffer, {
+        shortSideSize: 360,
+      });
       const [imgUrl, thumbnailUrl] = await Promise.all([
         uploadImageToS3(buffer),
         uploadImageToS3(thumbnailBuffer),

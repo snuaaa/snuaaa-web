@@ -1,8 +1,13 @@
 import express from 'express';
 import path from 'path';
 import uuid4 from 'uuid4';
-import uploadMiddleware, { AuthenticatedRequestWithFile } from '../middlewares/upload';
-import { AuthenticatedRequest, verifyTokenMiddleware } from '../middlewares/auth';
+import uploadMiddleware, {
+  AuthenticatedRequestWithFile,
+} from '../middlewares/upload';
+import {
+  AuthenticatedRequest,
+  verifyTokenMiddleware,
+} from '../middlewares/auth';
 
 import { retrieveExhibition } from '../controllers/exhibition.controller';
 import {
@@ -29,7 +34,11 @@ router.get('/:exhibition_id', verifyTokenMiddleware, async (req, res) => {
 });
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-router.patch('/:exhibition_id', verifyTokenMiddleware, (_req: AuthenticatedRequest, _res) => {});
+router.patch(
+  '/:exhibition_id',
+  verifyTokenMiddleware,
+  (_req: AuthenticatedRequest, _res) => {},
+);
 
 router.delete('/:exhibition_id', verifyTokenMiddleware, async (req, res) => {
   try {
@@ -44,18 +53,24 @@ router.delete('/:exhibition_id', verifyTokenMiddleware, async (req, res) => {
   }
 });
 
-router.get('/:exhibition_id/exhibitPhotos', verifyTokenMiddleware, async (req, res) => {
-  try {
-    const exhibitPhotosInfo = await retrieveExhibitPhotosInExhibition(req.params.exhibition_id);
-    res.json({ exhibitPhotosInfo });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      error: 'RETRIEVE EXHIBITION FAIL',
-      code: 0,
-    });
-  }
-});
+router.get(
+  '/:exhibition_id/exhibitPhotos',
+  verifyTokenMiddleware,
+  async (req, res) => {
+    try {
+      const exhibitPhotosInfo = await retrieveExhibitPhotosInExhibition(
+        req.params.exhibition_id,
+      );
+      res.json({ exhibitPhotosInfo });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({
+        error: 'RETRIEVE EXHIBITION FAIL',
+        code: 0,
+      });
+    }
+  },
+);
 
 router.post(
   '/:exhibition_id/exhibitPhoto',
@@ -72,14 +87,19 @@ router.post(
     }
 
     try {
-      const basename = path.basename(file.filename, path.extname(file.filename));
+      const basename = path.basename(
+        file.filename,
+        path.extname(file.filename),
+      );
       const photoInfo = JSON.parse(req.body.photoInfo);
 
       await resizeForThumbnail(file.path, null);
 
       let photographer = null;
       if (photoInfo.photographer.user_uuid) {
-        photographer = await retrieveUserByUserUuid(photoInfo.photographer.user_uuid);
+        photographer = await retrieveUserByUserUuid(
+          photoInfo.photographer.user_uuid,
+        );
       }
 
       const data = {

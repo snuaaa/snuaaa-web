@@ -1,6 +1,14 @@
 import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses';
 
-const sendMail = async ({ to, subject, text }: { to: string; subject: string; text: string }) => {
+const sendMail = async ({
+  to,
+  subject,
+  text,
+}: {
+  to: string;
+  subject: string;
+  text: string;
+}) => {
   const client = new SESClient({ region: 'ap-northeast-2' });
 
   const command = new SendEmailCommand({

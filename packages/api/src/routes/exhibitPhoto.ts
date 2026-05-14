@@ -1,5 +1,8 @@
 import express from 'express';
-import { AuthenticatedRequest, verifyTokenMiddleware } from '../middlewares/auth';
+import {
+  AuthenticatedRequest,
+  verifyTokenMiddleware,
+} from '../middlewares/auth';
 
 import {
   retrieveExhibitPhoto,
@@ -8,41 +11,53 @@ import {
   retrieveExhibitPhotosInExhibition,
 } from '../controllers/exhibitPhoto.controller';
 import { checkLike } from '../controllers/contentLike.controller';
-import { increaseViewNum, updateContent, deleteContent } from '../controllers/content.controller';
+import {
+  increaseViewNum,
+  updateContent,
+  deleteContent,
+} from '../controllers/content.controller';
 import { retrieveUserByUserUuid } from '../controllers/user.controller';
 
 const router = express.Router();
 
-router.get('/:exhibitPhoto_id', verifyTokenMiddleware, async (req: AuthenticatedRequest, res) => {
-  const { decodedToken } = req;
+router.get(
+  '/:exhibitPhoto_id',
+  verifyTokenMiddleware,
+  async (req: AuthenticatedRequest, res) => {
+    const { decodedToken } = req;
 
-  try {
-    const exhibitPhotoInfo = await retrieveExhibitPhoto(req.params.exhibitPhoto_id);
-    const [likeInfo, exhibitPhotosInfo] = await Promise.all([
-      checkLike(req.params.exhibitPhoto_id, decodedToken._id),
-      retrieveExhibitPhotosInExhibition(exhibitPhotoInfo.parent_id),
-      increaseViewNum(req.params.exhibitPhoto_id),
-    ]);
+    try {
+      const exhibitPhotoInfo = await retrieveExhibitPhoto(
+        req.params.exhibitPhoto_id,
+      );
+      const [likeInfo, exhibitPhotosInfo] = await Promise.all([
+        checkLike(req.params.exhibitPhoto_id, decodedToken._id),
+        retrieveExhibitPhotosInExhibition(exhibitPhotoInfo.parent_id),
+        increaseViewNum(req.params.exhibitPhoto_id),
+      ]);
 
-    res.json({
-      exhibitPhotoInfo,
-      likeInfo,
-      exhibitPhotosInfo,
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      error: 'internal server error',
-      code: 0,
-    });
-  }
-});
+      res.json({
+        exhibitPhotoInfo,
+        likeInfo,
+        exhibitPhotosInfo,
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({
+        error: 'internal server error',
+        code: 0,
+      });
+    }
+  },
+);
 
 router.patch('/:exhibitPhoto_id', verifyTokenMiddleware, async (req, res) => {
   try {
     let photographer = null;
     if (req.body.photographer) {
-      photographer = await retrieveUserByUserUuid(req.body.photographer.user_uuid);
+      photographer = await retrieveUserByUserUuid(
+        req.body.photographer.user_uuid,
+      );
     }
 
     const data = {

@@ -46,24 +46,36 @@ export async function resizeForThumbnail(file_path, type) {
       if (metadata.height > metadata.width) {
         await Promise.all([
           image.resize({ width: 1920 }).toFile(file_path),
-          image.resize({ height: 300, width: 300 }).jpeg().toFile(`${baseName}_thumb.jpeg`),
+          image
+            .resize({ height: 300, width: 300 })
+            .jpeg()
+            .toFile(`${baseName}_thumb.jpeg`),
         ]);
       } else {
         await Promise.all([
           image.resize({ height: 1920 }).toFile(file_path),
-          image.resize({ height: 300, width: 300 }).jpeg().toFile(`${baseName}_thumb.jpeg`),
+          image
+            .resize({ height: 300, width: 300 })
+            .jpeg()
+            .toFile(`${baseName}_thumb.jpeg`),
         ]);
       }
     } else {
       if (metadata.height > metadata.width) {
         await Promise.all([
           image.resize({ height: 1920 }).toFile(file_path),
-          image.resize({ height: 300, width: 300 }).jpeg().toFile(`${baseName}_thumb.jpeg`),
+          image
+            .resize({ height: 300, width: 300 })
+            .jpeg()
+            .toFile(`${baseName}_thumb.jpeg`),
         ]);
       } else {
         await Promise.all([
           image.resize({ width: 1920 }).toFile(file_path),
-          image.resize({ height: 300, width: 300 }).jpeg().toFile(`${baseName}_thumb.jpeg`),
+          image
+            .resize({ height: 300, width: 300 })
+            .jpeg()
+            .toFile(`${baseName}_thumb.jpeg`),
         ]);
       }
     }

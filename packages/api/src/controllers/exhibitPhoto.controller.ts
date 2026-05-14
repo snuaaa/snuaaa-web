@@ -1,4 +1,9 @@
-import { ContentModel, ExhibitionModel, ExhibitPhotoModel, UserModel } from '../models';
+import {
+  ContentModel,
+  ExhibitionModel,
+  ExhibitPhotoModel,
+  UserModel,
+} from '../models';
 
 export async function createExhibitPhoto(data) {
   await ContentModel.create(
@@ -52,7 +57,13 @@ export async function retrieveExhibitPhoto(exhibitPhoto_id) {
           {
             model: UserModel,
             as: 'photographer',
-            attributes: ['user_uuid', 'nickname', 'introduction', 'profile_path', 'deleted_at'],
+            attributes: [
+              'user_uuid',
+              'nickname',
+              'introduction',
+              'profile_path',
+              'deleted_at',
+            ],
             paranoid: false,
           },
         ],
@@ -72,7 +83,13 @@ export async function retrieveExhibitPhoto(exhibitPhoto_id) {
         model: UserModel,
         as: 'user',
         required: true,
-        attributes: ['user_id', 'nickname', 'introduction', 'profile_path', 'deleted_at'],
+        attributes: [
+          'user_id',
+          'nickname',
+          'introduction',
+          'profile_path',
+          'deleted_at',
+        ],
         paranoid: false,
       },
     ],

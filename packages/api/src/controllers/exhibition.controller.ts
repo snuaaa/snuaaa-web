@@ -1,4 +1,9 @@
-import { BoardModel, ContentModel, ExhibitionModel, UserModel } from '../models';
+import {
+  BoardModel,
+  ContentModel,
+  ExhibitionModel,
+  UserModel,
+} from '../models';
 
 export async function retrieveExhibition(exhibition_id) {
   if (!exhibition_id) {
@@ -15,7 +20,13 @@ export async function retrieveExhibition(exhibition_id) {
       {
         model: UserModel,
         required: true,
-        attributes: ['user_id', 'nickname', 'introduction', 'profile_path', 'deleted_at'],
+        attributes: [
+          'user_id',
+          'nickname',
+          'introduction',
+          'profile_path',
+          'deleted_at',
+        ],
         paranoid: false,
       },
       {
@@ -39,7 +50,13 @@ export async function retrieveExhibitions() {
       {
         model: UserModel,
         required: true,
-        attributes: ['user_id', 'nickname', 'introduction', 'profile_path', 'deleted_at'],
+        attributes: [
+          'user_id',
+          'nickname',
+          'introduction',
+          'profile_path',
+          'deleted_at',
+        ],
         paranoid: false,
       },
       {

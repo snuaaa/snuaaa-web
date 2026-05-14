@@ -1,6 +1,9 @@
 import express from 'express';
 
-import { AuthenticatedRequest, verifyTokenMiddleware } from '../middlewares/auth';
+import {
+  AuthenticatedRequest,
+  verifyTokenMiddleware,
+} from '../middlewares/auth';
 
 import {
   updateComment,
@@ -17,39 +20,43 @@ import { retrieveUserByUserUuid } from '../controllers/user.controller';
 
 const router = express.Router();
 
-router.get('/list', verifyTokenMiddleware, async (req: AuthenticatedRequest, res) => {
-  const decodedToken = req.decodedToken;
-  const userUuid = req.query.user_uuid as string;
+router.get(
+  '/list',
+  verifyTokenMiddleware,
+  async (req: AuthenticatedRequest, res) => {
+    const decodedToken = req.decodedToken;
+    const userUuid = req.query.user_uuid as string;
 
-  const filter: CommentFilter = {
-    read_grade: decodedToken.grade,
-    limit: Number(req.query.limit) || undefined,
-    offset: Number(req.query.offset) || undefined,
-  };
+    const filter: CommentFilter = {
+      read_grade: decodedToken.grade,
+      limit: Number(req.query.limit) || undefined,
+      offset: Number(req.query.offset) || undefined,
+    };
 
-  try {
-    if (userUuid) {
-      const user = await retrieveUserByUserUuid(userUuid);
-      if (!user) {
-        return res.status(404).json({
-          success: false,
-          message: 'User not found',
-        });
+    try {
+      if (userUuid) {
+        const user = await retrieveUserByUserUuid(userUuid);
+        if (!user) {
+          return res.status(404).json({
+            success: false,
+            message: 'User not found',
+          });
+        }
+        const author_id = user.getDataValue('user_id');
+        filter['author_id'] = author_id;
       }
-      const author_id = user.getDataValue('user_id');
-      filter['author_id'] = author_id;
-    }
 
-    const commentList = await retrieveCommentsWithFilter(filter);
-    return res.json(commentList);
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({
-      success: false,
-      message: 'INTERNAL SERVER ERROR',
-    });
-  }
-});
+      const commentList = await retrieveCommentsWithFilter(filter);
+      return res.json(commentList);
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({
+        success: false,
+        message: 'INTERNAL SERVER ERROR',
+      });
+    }
+  },
+);
 
 router.patch('/:comment_id', verifyTokenMiddleware, async (req, res) => {
   try {
@@ -77,26 +84,30 @@ router.delete('/:comment_id', verifyTokenMiddleware, async (req, res) => {
   }
 });
 
-router.post('/:comment_id/like', verifyTokenMiddleware, async (req: AuthenticatedRequest, res) => {
-  const { decodedToken } = req;
-  const comment_id = req.params.comment_id;
-  const user_id = decodedToken._id;
+router.post(
+  '/:comment_id/like',
+  verifyTokenMiddleware,
+  async (req: AuthenticatedRequest, res) => {
+    const { decodedToken } = req;
+    const comment_id = req.params.comment_id;
+    const user_id = decodedToken._id;
 
-  try {
-    const isLiked = await checkCommentLike(comment_id, user_id);
-    if (isLiked) {
-      await dislikeComment(comment_id, user_id);
-    } else {
-      await likeComment(comment_id, user_id);
+    try {
+      const isLiked = await checkCommentLike(comment_id, user_id);
+      if (isLiked) {
+        await dislikeComment(comment_id, user_id);
+      } else {
+        await likeComment(comment_id, user_id);
+      }
+      res.json({ success: true });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({
+        error: 'internal server error',
+        code: 0,
+      });
     }
-    res.json({ success: true });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      error: 'internal server error',
-      code: 0,
-    });
-  }
-});
+  },
+);
 
 export default router;

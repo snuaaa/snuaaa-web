@@ -2,7 +2,10 @@ import express from 'express';
 import multer from 'multer';
 import bcrypt from 'bcryptjs';
 
-import { verifyTokenMiddleware, AuthenticatedRequest } from '../middlewares/auth';
+import {
+  verifyTokenMiddleware,
+  AuthenticatedRequest,
+} from '../middlewares/auth';
 import { UserModel } from '../models';
 
 import {
@@ -39,29 +42,33 @@ const upload = multer({ storage });
 import cryptoRandomString from 'crypto-random-string';
 import { AuthenticatedRequestWithFile } from '../middlewares/upload';
 
-router.get('/', verifyTokenMiddleware, async (req: AuthenticatedRequest, res) => {
-  const { decodedToken } = req;
+router.get(
+  '/',
+  verifyTokenMiddleware,
+  async (req: AuthenticatedRequest, res) => {
+    const { decodedToken } = req;
 
-  try {
-    const user = await retrieveUser(decodedToken._id);
+    try {
+      const user = await retrieveUser(decodedToken._id);
 
-    if (!user) {
-      return res.status(404).json({
-        error: 'user not found',
+      if (!user) {
+        return res.status(404).json({
+          error: 'user not found',
+        });
+      }
+
+      return res.json({
+        success: true,
+        userInfo: user,
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({
+        error: 'internal server error',
       });
     }
-
-    return res.json({
-      success: true,
-      userInfo: user,
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      error: 'internal server error',
-    });
-  }
-});
+  },
+);
 
 router.patch(
   '/',
@@ -135,78 +142,90 @@ router.patch(
   },
 );
 
-router.patch('/password', verifyTokenMiddleware, async (req: AuthenticatedRequest, res, next) => {
-  const { decodedToken } = req;
-  const user_id = decodedToken._id;
-  const data = req.body;
+router.patch(
+  '/password',
+  verifyTokenMiddleware,
+  async (req: AuthenticatedRequest, res, next) => {
+    const { decodedToken } = req;
+    const user_id = decodedToken._id;
+    const data = req.body;
 
-  try {
-    const userInfo: UserModel = await retrieveUserPw(user_id);
+    try {
+      const userInfo: UserModel = await retrieveUserPw(user_id);
 
-    if (!bcrypt.compareSync(data.password, userInfo.get('password'))) {
-      return next({ status: 403, code: 1011 });
+      if (!bcrypt.compareSync(data.password, userInfo.get('password'))) {
+        return next({ status: 403, code: 1011 });
+      }
+      if (!data.newPassword) {
+        return next({ status: 403, code: 1012 });
+      }
+      if (data.newPassword !== data.newPasswordCf) {
+        return next({ status: 403, code: 1013 });
+      }
+      if (data.newPassword.length < 8 || data.newPassword.length > 20) {
+        return next({ status: 403, code: 1014 });
+      }
+
+      await updateUserPw(user_id, bcrypt.hashSync(data.newPassword, 10));
+      res.json({ success: true });
+    } catch (err) {
+      console.error(err);
+      next({ status: 500, code: 1010 });
     }
-    if (!data.newPassword) {
-      return next({ status: 403, code: 1012 });
+  },
+);
+
+router.delete(
+  '/',
+  verifyTokenMiddleware,
+  async (req: AuthenticatedRequest, res) => {
+    const { decodedToken } = req;
+
+    try {
+      await deleteUser(decodedToken._id);
+      res.json({ success: true });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({
+        error: 'internal server error',
+        code: 0,
+      });
     }
-    if (data.newPassword !== data.newPasswordCf) {
-      return next({ status: 403, code: 1013 });
+  },
+);
+
+router.get(
+  '/all',
+  verifyTokenMiddleware,
+  async (req: AuthenticatedRequest, res) => {
+    const ROWNUM = 20;
+    const { decodedToken } = req;
+
+    if (decodedToken.grade > 6) {
+      return res.status(403).json({ success: false });
     }
-    if (data.newPassword.length < 8 || data.newPassword.length > 20) {
-      return next({ status: 403, code: 1014 });
+
+    try {
+      const { count, rows } = await retrieveUsers(
+        req.query.sort,
+        req.query.order,
+        req.query.limit ? req.query.limit : ROWNUM,
+        req.query.offset ? req.query.offset : 0,
+      );
+      return res.json({
+        success: true,
+        userInfo: rows,
+        count,
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({
+        error: 'internal server error',
+        code: 0,
+      });
     }
-
-    await updateUserPw(user_id, bcrypt.hashSync(data.newPassword, 10));
-    res.json({ success: true });
-  } catch (err) {
-    console.error(err);
-    next({ status: 500, code: 1010 });
-  }
-});
-
-router.delete('/', verifyTokenMiddleware, async (req: AuthenticatedRequest, res) => {
-  const { decodedToken } = req;
-
-  try {
-    await deleteUser(decodedToken._id);
-    res.json({ success: true });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      error: 'internal server error',
-      code: 0,
-    });
-  }
-});
-
-router.get('/all', verifyTokenMiddleware, async (req: AuthenticatedRequest, res) => {
-  const ROWNUM = 20;
-  const { decodedToken } = req;
-
-  if (decodedToken.grade > 6) {
-    return res.status(403).json({ success: false });
-  }
-
-  try {
-    const { count, rows } = await retrieveUsers(
-      req.query.sort,
-      req.query.order,
-      req.query.limit ? req.query.limit : ROWNUM,
-      req.query.offset ? req.query.offset : 0,
-    );
-    return res.json({
-      success: true,
-      userInfo: rows,
-      count,
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      error: 'internal server error',
-      code: 0,
-    });
-  }
-});
+  },
+);
 
 router.get('/:user_uuid', verifyTokenMiddleware, async (req, res) => {
   try {
@@ -291,7 +310,11 @@ router.post('/find/pw', async (req, res) => {
   try {
     const user: UserModel = await retrieveUserById(data.id);
 
-    if (!user || user.get('email') !== data.email || user.get('username') !== data.name) {
+    if (
+      !user ||
+      user.get('email') !== data.email ||
+      user.get('username') !== data.name
+    ) {
       return res.status(404).json({ code: 0 });
     }
 

@@ -25,17 +25,32 @@ const uploadMiddleware = function (type) {
         if (!fs.existsSync(path.join('.', 'upload', 'exhibition'))) {
           fs.mkdirSync(path.join('.', 'upload', 'exhibition'));
         }
-        if (!fs.existsSync(path.join('.', 'upload', 'exhibition', req.body.exhibition_no))) {
-          fs.mkdirSync(path.join('.', 'upload', 'exhibition', req.body.exhibition_no));
+        if (
+          !fs.existsSync(
+            path.join('.', 'upload', 'exhibition', req.body.exhibition_no),
+          )
+        ) {
+          fs.mkdirSync(
+            path.join('.', 'upload', 'exhibition', req.body.exhibition_no),
+          );
         }
-        cb(null, path.join('.', 'upload', 'exhibition', req.body.exhibition_no));
+        cb(
+          null,
+          path.join('.', 'upload', 'exhibition', req.body.exhibition_no),
+        );
       } else if (type === 'PH') {
         if (!fs.existsSync(path.join('.', 'upload', 'album'))) {
           fs.mkdirSync(path.join('.', 'upload', 'album'));
         }
         if (req.params.album_id) {
-          if (!fs.existsSync(path.join('.', 'upload', 'album', req.params.album_id))) {
-            fs.mkdirSync(path.join('.', 'upload', 'album', req.params.album_id));
+          if (
+            !fs.existsSync(
+              path.join('.', 'upload', 'album', req.params.album_id),
+            )
+          ) {
+            fs.mkdirSync(
+              path.join('.', 'upload', 'album', req.params.album_id),
+            );
           }
           cb(null, path.join('.', 'upload', 'album', req.params.album_id));
         } else {
@@ -48,7 +63,11 @@ const uploadMiddleware = function (type) {
         if (!fs.existsSync(path.join('.', 'upload', 'file'))) {
           fs.mkdirSync(path.join('.', 'upload', 'file'));
         }
-        if (!fs.existsSync(path.join('.', 'upload', 'file', req.params.content_id))) {
+        if (
+          !fs.existsSync(
+            path.join('.', 'upload', 'file', req.params.content_id),
+          )
+        ) {
           fs.mkdirSync(path.join('.', 'upload', 'file', req.params.content_id));
         }
         cb(null, path.join('.', 'upload', 'file', req.params.content_id));

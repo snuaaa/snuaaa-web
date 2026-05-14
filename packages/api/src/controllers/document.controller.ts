@@ -14,7 +14,9 @@ export type DocumentResponse = ContentModel & {
   attachedFiles: AttachedFileModel[];
 };
 
-export async function retrieveDocument(doc_id: string | number): Promise<DocumentResponse> {
+export async function retrieveDocument(
+  doc_id: string | number,
+): Promise<DocumentResponse> {
   if (!doc_id) {
     throw new Error('id can not be null');
   }
@@ -93,7 +95,12 @@ export async function retrieveDocumentCount(category_id, generation) {
   });
 }
 
-export async function retrieveDocuments(rowNum, offset, category_id, generation) {
+export async function retrieveDocuments(
+  rowNum,
+  offset,
+  category_id,
+  generation,
+) {
   return DocumentModel.findAll({
     include: [
       {

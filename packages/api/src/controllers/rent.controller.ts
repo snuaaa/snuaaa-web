@@ -5,7 +5,9 @@ import RentModel from '../models/Rent';
 import PenaltyStatusEnum from '../enums/penaltyStatusEnum';
 
 export async function rentEquipment(equipmentId: number, userId: number) {
-  const equipment = await EquipmentModel.findOne({ where: { id: equipmentId } });
+  const equipment = await EquipmentModel.findOne({
+    where: { id: equipmentId },
+  });
   if (!equipment) {
     throw new Error('Equipment not found');
   }
@@ -33,7 +35,11 @@ export async function rentEquipment(equipmentId: number, userId: number) {
   return equipmentId;
 }
 
-export async function returnEquipment(userId: number, rentId: number, photo_path: string) {
+export async function returnEquipment(
+  userId: number,
+  rentId: number,
+  photo_path: string,
+) {
   const rent = await RentModel.findOne({
     where: {
       id: rentId,
@@ -62,7 +68,10 @@ export async function returnEquipment(userId: number, rentId: number, photo_path
   await EquipmentModel.update(
     { rent_status: EquipmentRentEnum.RENTABLE },
     {
-      where: { id: rent.get('equipment_id'), rent_status: EquipmentRentEnum.RENTED },
+      where: {
+        id: rent.get('equipment_id'),
+        rent_status: EquipmentRentEnum.RENTED,
+      },
     },
   );
   return {
@@ -208,15 +217,25 @@ export async function retrieveAllRentRecords(
   });
 }
 
-export async function updatePenaltyStatus(rentId: number, penaltyStatus: PenaltyStatusEnum) {
-  const rentReturn = await RentReturnModel.findOne({ where: { rent_id: rentId } });
+export async function updatePenaltyStatus(
+  rentId: number,
+  penaltyStatus: PenaltyStatusEnum,
+) {
+  const rentReturn = await RentReturnModel.findOne({
+    where: { rent_id: rentId },
+  });
   if (!rentReturn) {
     throw new Error('RentReturn record not found');
   }
   const current = rentReturn.get('penalty_status') as PenaltyStatusEnum;
-  const allowed = [PenaltyStatusEnum.NEED_PAYMENT, PenaltyStatusEnum.RECEIVED_PAYMENT];
+  const allowed = [
+    PenaltyStatusEnum.NEED_PAYMENT,
+    PenaltyStatusEnum.RECEIVED_PAYMENT,
+  ];
   if (!allowed.includes(current) || !allowed.includes(penaltyStatus)) {
-    throw new Error('Transition only allowed between NEEDPAYMENT and RECEIVEDPAYMENT');
+    throw new Error(
+      'Transition only allowed between NEEDPAYMENT and RECEIVEDPAYMENT',
+    );
   }
   if (current === penaltyStatus) {
     throw new Error('Already in the requested status');

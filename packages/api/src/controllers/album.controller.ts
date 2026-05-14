@@ -14,7 +14,9 @@ export type AlbumResponse = ContentModel & {
   board: BoardModel;
 };
 
-export async function retrieveAlbum(content_id: string | number): Promise<AlbumResponse> {
+export async function retrieveAlbum(
+  content_id: string | number,
+): Promise<AlbumResponse> {
   const album = await ContentModel.findOne({
     include: [
       {
@@ -110,7 +112,12 @@ export async function retrieveAlbumCount(board_id, category_id) {
   });
 }
 
-export async function retrieveAlbumsInBoard(board_id, rowNum, offset, category_id) {
+export async function retrieveAlbumsInBoard(
+  board_id,
+  rowNum,
+  offset,
+  category_id,
+) {
   if (!board_id) {
     throw new Error('board_id can not be null');
   }

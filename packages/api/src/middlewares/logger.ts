@@ -17,7 +17,9 @@ function generator(time, index) {
   const hour = pad(time.getHours());
   const minute = pad(time.getMinutes());
 
-  return month + '/' + month + day + '-' + hour + minute + '-' + index + '-file.log';
+  return (
+    month + '/' + month + day + '-' + hour + minute + '-' + index + '-file.log'
+  );
 }
 
 // ensure log directory exists

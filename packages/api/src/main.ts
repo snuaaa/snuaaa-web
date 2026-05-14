@@ -25,7 +25,8 @@ const devServerOrigins = [
 ];
 const prodServerOrigins = ['https://www.snuaaa.net', 'https://our.snuaaa.net'];
 
-const origin = process.env.NODE_ENV == 'develop' ? devServerOrigins : prodServerOrigins;
+const origin =
+  process.env.NODE_ENV == 'develop' ? devServerOrigins : prodServerOrigins;
 
 app.use(cors({ origin, optionsSuccessStatus: 200 }));
 

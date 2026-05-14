@@ -31,7 +31,11 @@ router.post(
       const [imgUrl, thumbnailUrl] = await Promise.all([
         resizeImageBuffer(file.buffer).then(uploadImageToS3),
         ...(withThumbnail
-          ? [resizeImageBuffer(file.buffer, { shortSideSize: 360 }).then(uploadImageToS3)]
+          ? [
+              resizeImageBuffer(file.buffer, { shortSideSize: 360 }).then(
+                uploadImageToS3,
+              ),
+            ]
           : []),
       ]);
 

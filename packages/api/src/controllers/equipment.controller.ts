@@ -119,8 +119,11 @@ export async function retrieveEquipmentCategoryList() {
   });
 }
 
-export async function createEquipment(data: CreationAttributes<EquipmentModel>) {
-  if (data.status !== EquipmentStatusEnum.OK) data.rent_status = EquipmentRentEnum.UNRENTABLE;
+export async function createEquipment(
+  data: CreationAttributes<EquipmentModel>,
+) {
+  if (data.status !== EquipmentStatusEnum.OK)
+    data.rent_status = EquipmentRentEnum.UNRENTABLE;
   return EquipmentModel.create(data);
 }
 
@@ -129,7 +132,8 @@ export async function updateEquipment(
   data: CreationAttributes<EquipmentModel>,
 ) {
   // if status is not OK, rent_status must be UNRENTABLE
-  if (data.status !== EquipmentStatusEnum.OK) data.rent_status = EquipmentRentEnum.UNRENTABLE;
+  if (data.status !== EquipmentStatusEnum.OK)
+    data.rent_status = EquipmentRentEnum.UNRENTABLE;
   // if status is OK and there is no rent record, rent_status must be RENTABLE
   if (data.status === EquipmentStatusEnum.OK) {
     if (
@@ -159,7 +163,9 @@ export async function deleteEquipment(id: number) {
   });
 }
 
-export async function createEquipmentCategory(data: CreationAttributes<EquipmentCategoryModel>) {
+export async function createEquipmentCategory(
+  data: CreationAttributes<EquipmentCategoryModel>,
+) {
   return EquipmentCategoryModel.create(data);
 }
 

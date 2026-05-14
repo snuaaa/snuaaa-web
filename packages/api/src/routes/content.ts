@@ -1,11 +1,23 @@
 import express from 'express';
 import path from 'path';
 
-import { AuthenticatedRequest, verifyTokenMiddleware } from '../middlewares/auth';
-import uploadMiddleware, { AuthenticatedRequestWithFile } from '../middlewares/upload';
+import {
+  AuthenticatedRequest,
+  verifyTokenMiddleware,
+} from '../middlewares/auth';
+import uploadMiddleware, {
+  AuthenticatedRequestWithFile,
+} from '../middlewares/upload';
 
-import { checkLike, likeContent, dislikeContent } from '../controllers/contentLike.controller';
-import { retrieveComments, createComment } from '../controllers/comment.controller';
+import {
+  checkLike,
+  likeContent,
+  dislikeContent,
+} from '../controllers/contentLike.controller';
+import {
+  retrieveComments,
+  createComment,
+} from '../controllers/comment.controller';
 import {
   retrieveAttachedFile,
   increaseDownloadCount,
@@ -21,7 +33,10 @@ router.get(
     const { decodedToken } = req;
 
     try {
-      const comments = await retrieveComments(req.params.content_id, decodedToken._id);
+      const comments = await retrieveComments(
+        req.params.content_id,
+        decodedToken._id,
+      );
       res.json(comments);
     } catch (err) {
       console.error(err);
@@ -43,7 +58,10 @@ router.get('/:content_id/file/:file_id', async (req, res) => {
       });
     }
     increaseDownloadCount(req.params.file_id);
-    res.download(file.get('file_path') as string, file.get('original_name') as string);
+    res.download(
+      file.get('file_path') as string,
+      file.get('original_name') as string,
+    );
   } catch (err) {
     console.error(err);
     res.status(500).json({
@@ -126,25 +144,29 @@ router.post(
   },
 );
 
-router.post('/:content_id/like', verifyTokenMiddleware, async (req: AuthenticatedRequest, res) => {
-  const { decodedToken } = req;
-  const content_id = req.params.content_id;
-  const user_id = decodedToken._id;
+router.post(
+  '/:content_id/like',
+  verifyTokenMiddleware,
+  async (req: AuthenticatedRequest, res) => {
+    const { decodedToken } = req;
+    const content_id = req.params.content_id;
+    const user_id = decodedToken._id;
 
-  try {
-    const isLiked = await checkLike(content_id, user_id);
-    if (isLiked) {
-      await dislikeContent(content_id, user_id);
-    } else {
-      await likeContent(content_id, user_id);
+    try {
+      const isLiked = await checkLike(content_id, user_id);
+      if (isLiked) {
+        await dislikeContent(content_id, user_id);
+      } else {
+        await likeContent(content_id, user_id);
+      }
+      res.json({ success: true });
+    } catch (err) {
+      console.error(err);
+      return res.status(403).json({
+        success: false,
+      });
     }
-    res.json({ success: true });
-  } catch (err) {
-    console.error(err);
-    return res.status(403).json({
-      success: false,
-    });
-  }
-});
+  },
+);
 
 export default router;
