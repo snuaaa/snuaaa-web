@@ -32,21 +32,24 @@ router.get('/check', verifyTokenMiddleware, async (req: AuthenticatedRequest, re
     const decodedToken = req.decodedToken;
     const userInfo = await retrieveUser(decodedToken._id);
 
-    if (userInfo.login_at) {
-      const recentLogin = new Date(userInfo.login_at).getTime();
+    const loginAt = userInfo.get('login_at') as string;
+    const userId = userInfo.get('user_id') as number;
+
+    if (loginAt) {
+      const recentLogin = new Date(loginAt).getTime();
       const current = new Date().getTime();
       // Update login history only after later than 1hours from last history.
       if (current - recentLogin > 60 * 60 * 1000) {
-        await updateLoginHistory(userInfo.user_id);
+        await updateLoginHistory(userId);
       }
     } else {
-      await updateLoginHistory(userInfo.user_id);
+      await updateLoginHistory(userId);
     }
 
     const token = await createToken({
-      _id: userInfo.user_id,
-      grade: userInfo.grade,
-      level: userInfo.level,
+      _id: userId,
+      grade: userInfo.get('grade') as number,
+      level: userInfo.get('level') as number,
       autoLogin: decodedToken.autoLogin,
     });
 
@@ -78,30 +81,33 @@ router.post('/login', async (req, res) => {
     if (!user) {
       throw new Error('id is not correct');
     }
-    if (!bcrypt.compareSync(req.body.password, user.password)) {
+    if (!bcrypt.compareSync(req.body.password, user.get('password') as string)) {
       throw new Error('password is not correct');
     }
 
-    const userInfo = { ...user };
+    const loginAt = user.get('login_at') as string;
+    const userId = user.get('user_id') as number;
 
-    if (userInfo.login_at) {
-      const recentLogin = new Date(userInfo.login_at as string).getTime();
+    if (loginAt) {
+      const recentLogin = new Date(loginAt).getTime();
       const current = new Date().getTime();
       // Update login history only after later than 1hours from last history.
       if (current - recentLogin > 60 * 60 * 1000) {
-        await updateLoginHistory(userInfo.user_id as number);
+        await updateLoginHistory(userId);
       }
     } else {
-      await updateLoginHistory(userInfo.user_id as number);
+      await updateLoginHistory(userId);
     }
 
-    delete userInfo.password;
     const token = await createToken({
-      _id: userInfo.user_id,
-      grade: userInfo.grade,
-      level: userInfo.level,
+      _id: userId,
+      grade: user.get('grade') as number,
+      level: user.get('level') as number,
       autoLogin: req.body.autoLogin ? true : false,
     });
+
+    const userInfo = user.toJSON();
+    delete userInfo.password;
 
     return res
       .status(200)
@@ -112,11 +118,7 @@ router.post('/login', async (req, res) => {
       })
       .json({
         sucess: true,
-        userInfo: userInfo,
-        // user_id: userInfo.user_id,
-        // level: userInfo.level,
-        // profile_path: userInfo.profile_path,
-        // nickname: userInfo.nickname,
+        userInfo,
         autoLogin: req.body.autoLogin ? true : false,
         token: token,
       });

@@ -3,7 +3,12 @@ import express from 'express';
 import { AuthenticatedRequest, verifyTokenMiddleware } from '../middlewares/auth';
 
 import { updateContent, deleteContent, increaseViewNum } from '../controllers/content.controller';
-import { retrievePost, retrievePostsWithFilter, SearchType } from '../controllers/post.controller';
+import {
+  PostFilter,
+  retrievePost,
+  retrievePostsWithFilter,
+  SearchType,
+} from '../controllers/post.controller';
 import { checkLike } from '../controllers/contentLike.controller';
 import { retrieveUserByUserUuid } from '../controllers/user.controller';
 
@@ -13,7 +18,7 @@ router.get('/list', verifyTokenMiddleware, async (req: AuthenticatedRequest, res
   const decodedToken = req.decodedToken;
   const userUuid = req.query.user_uuid as string;
 
-  const filter: Record<string, unknown> = {
+  const filter: PostFilter = {
     board_id: req.query.board_id as string,
     read_grade: decodedToken.grade,
     limit: Number(req.query.limit) || undefined,
@@ -52,10 +57,7 @@ router.get('/:post_id', verifyTokenMiddleware, async (req: AuthenticatedRequest,
   try {
     const postInfo = await retrievePost(req.params.post_id);
 
-    if (
-      (postInfo as Record<string, unknown> & { board: { lv_read: number } }).board.lv_read <
-      decodedToken.grade
-    ) {
+    if (postInfo.board.lv_read < decodedToken.grade) {
       return next({ status: 403, code: 4001 });
     }
 

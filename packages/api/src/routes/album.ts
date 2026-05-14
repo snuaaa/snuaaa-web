@@ -16,7 +16,7 @@ router.get('/:album_id', verifyTokenMiddleware, async (req: AuthenticatedRequest
   try {
     const albumInfo = await retrieveAlbum(req.params.album_id);
 
-    if (albumInfo.getDataValue('board').lv_read < decodedToken.grade) {
+    if (albumInfo.board.lv_read < decodedToken.grade) {
       return res.status(403).json({
         code: 4001,
       });

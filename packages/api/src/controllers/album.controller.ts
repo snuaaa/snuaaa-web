@@ -8,8 +8,14 @@ import {
 } from '../models';
 import { Op } from 'sequelize';
 
-export async function retrieveAlbum(content_id) {
-  return ContentModel.findOne({
+export type AlbumResponse = ContentModel & {
+  album: AlbumModel;
+  user: UserModel;
+  board: BoardModel;
+};
+
+export async function retrieveAlbum(content_id: string | number): Promise<AlbumResponse> {
+  const album = await ContentModel.findOne({
     include: [
       {
         model: AlbumModel,
@@ -30,6 +36,12 @@ export async function retrieveAlbum(content_id) {
     ],
     where: { content_id: content_id },
   });
+
+  if (!album) {
+    throw new Error('Album not found');
+  }
+
+  return album as AlbumResponse;
 }
 
 export async function retrievePrevAlbum(album_id, board_id) {

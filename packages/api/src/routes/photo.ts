@@ -13,6 +13,7 @@ import {
   createPhoto,
   migratePhotos,
   retrievePhotosWithFilter,
+  PhotoFilter,
 } from '../controllers/photo.controller';
 import { checkLike } from '../controllers/contentLike.controller';
 import { updateContent, deleteContent, increaseViewNum } from '../controllers/content.controller';
@@ -26,7 +27,7 @@ const router = express.Router();
 router.get('/list', verifyTokenMiddleware, async (req: AuthenticatedRequest, res) => {
   const decodedToken = req.decodedToken;
   const userUuid = req.query.user_uuid as string;
-  const filter: Record<string, unknown> = {
+  const filter: PhotoFilter = {
     board_id: req.query.board_id as string,
     read_grade: decodedToken.grade,
     limit: Number(req.query.limit) || undefined,

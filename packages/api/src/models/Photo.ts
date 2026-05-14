@@ -1,7 +1,19 @@
 import { Model, DataTypes } from 'sequelize';
 import { sequelize } from './sequelize';
 
-export default class PhotoModel extends Model {}
+export default class PhotoModel extends Model {
+  declare content_id: number;
+  declare img_url: string;
+  declare thumbnail_url: string;
+  declare location: string;
+  declare camera: string;
+  declare lens: string;
+  declare exposure_time: string;
+  declare focal_length: string;
+  declare f_stop: string;
+  declare iso: string;
+  declare date: Date;
+}
 
 PhotoModel.init(
   {

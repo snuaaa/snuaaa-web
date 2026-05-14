@@ -1,7 +1,17 @@
 import { Model, DataTypes } from 'sequelize';
 import { sequelize } from './sequelize';
 
-export default class BoardModel extends Model {}
+export default class BoardModel extends Model {
+  declare board_id: string;
+  declare board_name: string;
+  declare board_type: string;
+  declare board_desc: string;
+  declare menu: number;
+  declare order: number;
+  declare lv_read: number;
+  declare lv_write: number;
+  declare lv_edit: number;
+}
 
 BoardModel.init(
   {

@@ -17,12 +17,19 @@ const SearchTypeEnum = Object.freeze({
   USER: 'U',
 });
 
-export async function retrievePost(content_id) {
+export type PostResponse = ContentModel & {
+  post: PostModel;
+  user: UserModel;
+  board: BoardModel;
+  attachedFiles: AttachedFileModel[];
+};
+
+export async function retrievePost(content_id: string | number): Promise<PostResponse> {
   if (!content_id) {
     throw new Error('id can not be null');
   }
 
-  return ContentModel.findOne({
+  const post = await ContentModel.findOne({
     include: [
       {
         model: PostModel,
@@ -56,6 +63,12 @@ export async function retrievePost(content_id) {
     ],
     where: { content_id: content_id },
   });
+
+  if (!post) {
+    throw new Error('Post not found');
+  }
+
+  return post as PostResponse;
 }
 
 export async function retrievePostsInBoard(board_id, rowNum, offset) {

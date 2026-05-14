@@ -7,12 +7,19 @@ import {
   UserModel,
 } from '../models';
 
-export async function retrieveDocument(doc_id) {
+export type DocumentResponse = ContentModel & {
+  document: DocumentModel;
+  user: UserModel;
+  board: BoardModel;
+  attachedFiles: AttachedFileModel[];
+};
+
+export async function retrieveDocument(doc_id: string | number): Promise<DocumentResponse> {
   if (!doc_id) {
     throw new Error('id can not be null');
   }
 
-  return ContentModel.findOne({
+  const doc = await ContentModel.findOne({
     include: [
       {
         model: DocumentModel,
@@ -47,6 +54,12 @@ export async function retrieveDocument(doc_id) {
     ],
     where: { content_id: doc_id },
   });
+
+  if (!doc) {
+    throw new Error('Document not found');
+  }
+
+  return doc as DocumentResponse;
 }
 
 export async function retrieveDocumentCount(category_id, generation) {

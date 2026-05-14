@@ -62,12 +62,20 @@ const getSearchCondition = (type?: SearchType, keyword?: string) => {
   }
 };
 
-export async function retrievePhoto(photo_id) {
+export type PhotoResponse = ContentModel & {
+  photo: PhotoModel;
+  parent: ContentModel & { album: AlbumModel };
+  user: UserModel;
+  board: BoardModel;
+  tags: TagModel[];
+};
+
+export async function retrievePhoto(photo_id: string | number): Promise<PhotoResponse> {
   if (!photo_id) {
     throw new Error('id can not be null');
   }
 
-  return ContentModel.findOne({
+  const photo = await ContentModel.findOne({
     include: [
       {
         model: PhotoModel,
@@ -118,6 +126,12 @@ export async function retrievePhoto(photo_id) {
       ['tags', 'tag_id', 'ASC'],
     ],
   });
+
+  if (!photo) {
+    throw new Error('Photo not found');
+  }
+
+  return photo as PhotoResponse;
 }
 
 export type PhotoFilter = {

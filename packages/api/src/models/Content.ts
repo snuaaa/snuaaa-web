@@ -1,7 +1,20 @@
 import { Model, DataTypes } from 'sequelize';
 import { sequelize } from './sequelize';
 
-export default class ContentModel extends Model {}
+export default class ContentModel extends Model {
+  declare content_id: number;
+  declare content_uuid: string;
+  declare author_id: number;
+  declare board_id: string;
+  declare category_id: string;
+  declare type: string;
+  declare parent_id: number;
+  declare title: string;
+  declare text: string;
+  declare view_num: number;
+  declare comment_num: number;
+  declare like_num: number;
+}
 
 ContentModel.init(
   {
