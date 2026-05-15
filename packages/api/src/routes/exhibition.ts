@@ -4,10 +4,7 @@ import uuid4 from 'uuid4';
 import uploadMiddleware, {
   AuthenticatedRequestWithFile,
 } from '../middlewares/upload';
-import {
-  AuthenticatedRequest,
-  verifyTokenMiddleware,
-} from '../middlewares/auth';
+import { verifyTokenMiddleware } from '../middlewares/auth';
 
 import { retrieveExhibition } from '../controllers/exhibition.controller';
 import {
@@ -33,12 +30,12 @@ router.get('/:exhibition_id', verifyTokenMiddleware, async (req, res) => {
   }
 });
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-router.patch(
-  '/:exhibition_id',
-  verifyTokenMiddleware,
-  (_req: AuthenticatedRequest, _res) => {},
-);
+// TODO: implement patch endpoint
+// router.patch(
+//   '/:exhibition_id',
+//   verifyTokenMiddleware,
+//   (_req: AuthenticatedRequest, _res) => {},
+// );
 
 router.delete('/:exhibition_id', verifyTokenMiddleware, async (req, res) => {
   try {
