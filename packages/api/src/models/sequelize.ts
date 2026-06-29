@@ -13,15 +13,17 @@ const sequelize = (function () {
     },
   );
 
-  seq
-    .authenticate()
-    .then(() => {
-      console.log('Connected to PostgreSQL server');
-      seq.sync();
-    })
-    .catch((e) => {
-      console.log('Failed to connect to PostgreSQL server >> ', e);
-    });
+  if (process.env.NODE_ENV !== 'test') {
+    seq
+      .authenticate()
+      .then(() => {
+        console.log('Connected to PostgreSQL server');
+        seq.sync();
+      })
+      .catch((e) => {
+        console.log('Failed to connect to PostgreSQL server >> ', e);
+      });
+  }
 
   return seq;
 })();
