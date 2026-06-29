@@ -17,6 +17,11 @@ RUN pnpm install --frozen-lockfile
 # api 패키지 빌드 (TypeScript 컴파일 등)
 RUN pnpm --filter @snuaaa/api run build
 
+# https://pnpm.io/cli/deploy
+# Docker 빌드 환경에만 pnpm legacy deploy 설정
+# RUN echo "force-legacy-deploy=true" >> .npmrc
+RUN echo "inject-workspace-packages=true" >> .npmrc
+
 # api 패키지와 프로덕션용 의존성만 /app/out 디렉토리로 격리(Deploy)
 RUN pnpm deploy --filter @snuaaa/api --prod /app/out
 
