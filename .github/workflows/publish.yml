@@ -43,7 +43,7 @@ jobs:
 
 
   deploy-production:
-    if: github.event_name == 'release' && github.event.action == 'published'
+    if: github.event_name == 'release' && github.event.action == 'published' && startsWith(github.event.release.tag_name, 'web-')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
