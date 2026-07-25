@@ -208,7 +208,7 @@ router.delete('/:photo_id', verifyTokenMiddleware, async (req, res) => {
   }
 });
 
-router.post('/migrate', async (req, res) => {
+router.post('/migrate', verifyTokenMiddleware, async (req, res) => {
   try {
     await migratePhotos();
     res.json({ success: true });

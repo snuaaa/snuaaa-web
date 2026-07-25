@@ -1,6 +1,10 @@
 import { UserModel } from '../models';
 import uuid4 from 'uuid4';
 import { Op } from 'sequelize';
+import fs from 'fs';
+import path from 'path';
+import { resizeImageBuffer } from '../utils/resize';
+import { uploadImageToS3 } from '../utils/upload';
 
 export async function createUser(userData) {
   await UserModel.create({
@@ -16,6 +20,7 @@ export async function createUser(userData) {
     mobile: userData.mobile,
     introduction: userData.introduction,
     profile_path: userData.profile_path,
+    profile_url: userData.profile_url,
     grade: userData.grade,
     level: userData.level,
   });
@@ -181,6 +186,7 @@ export async function updateUser(user_id, data) {
       grade: data.grade,
       level: data.level,
       profile_path: data.profile_path,
+      profile_url: data.profile_url,
     },
     {
       where: { user_id: user_id },
@@ -248,4 +254,67 @@ export async function checkDupId(id) {
   if (user) {
     throw new Error('id is duplicated');
   }
+}
+
+export async function migrateUserProfilePhotos() {
+  const users = await UserModel.findAll({
+    where: {
+      profile_path: {
+        [Op.and]: [{ [Op.ne]: null }, { [Op.like]: '/profile/%' }],
+      },
+      profile_url: {
+        [Op.is]: null,
+      },
+    },
+    limit: 20,
+    order: [['user_id', 'ASC']],
+  });
+
+  await Promise.all(
+    users.map(async (user) => {
+      const user_id = user.getDataValue('user_id');
+      const filePath = path.join(
+        '.',
+        'upload',
+        user.getDataValue('profile_path'),
+      );
+
+      let buffer: Buffer;
+      try {
+        buffer = await fs.promises.readFile(filePath);
+      } catch (err) {
+        console.error(`Local profile photo not found: ${filePath}`, err);
+        await UserModel.update(
+          {
+            profile_url: '',
+          },
+          {
+            where: { user_id: user_id },
+            silent: true,
+          },
+        );
+        return;
+      }
+
+      const resizedBuffer = await resizeImageBuffer(buffer, {
+        shortSideSize: 300,
+      });
+      const s3Url = await uploadImageToS3(resizedBuffer);
+
+      await UserModel.update(
+        {
+          profile_url: s3Url,
+          profile_path: s3Url,
+        },
+        {
+          where: { user_id: user_id },
+          silent: true,
+        },
+      );
+
+      await fs.promises.unlink(filePath).catch((err) => {
+        console.error(`Failed to delete local profile file: ${filePath}`, err);
+      });
+    }),
+  );
 }

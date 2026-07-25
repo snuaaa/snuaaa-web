@@ -70,6 +70,9 @@ router.get(
   },
 );
 
+/**
+ * @deprecated Use PATCH /user instead
+ */
 router.patch(
   '/',
   verifyTokenMiddleware,

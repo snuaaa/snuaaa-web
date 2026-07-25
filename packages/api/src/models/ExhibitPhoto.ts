@@ -22,10 +22,30 @@ ExhibitPhotoModel.init(
     photographer_alt: {
       type: DataTypes.STRING(32),
     },
+    /**
+     * @deprecated Use img_url instead
+     */
     file_path: {
       type: DataTypes.STRING(256),
+      get() {
+        const s3Url = this.getDataValue('img_url');
+        return s3Url || this.getDataValue('file_path');
+      },
     },
+    /**
+     * @deprecated Use thumbnail_url instead
+     */
     thumbnail_path: {
+      type: DataTypes.STRING(256),
+      get() {
+        const s3Url = this.getDataValue('thumbnail_url');
+        return s3Url || this.getDataValue('thumbnail_path');
+      },
+    },
+    img_url: {
+      type: DataTypes.STRING(256),
+    },
+    thumbnail_url: {
       type: DataTypes.STRING(256),
     },
     location: {
