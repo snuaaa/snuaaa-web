@@ -173,6 +173,7 @@ export interface Equipment {
   description: string;
   location: string;
   maker: string;
+  mount_spec: Record<string, unknown> | null;
   status: EquipmentStatus;
   rent_status: EquipmentRentStatus;
   renter?: Pick<User, 'nickname'>;

@@ -98,6 +98,7 @@ router.post(
       location,
       maker,
       status,
+      mount_spec,
       img_path,
     } = req.body;
     try {
@@ -109,6 +110,7 @@ router.post(
         location,
         maker,
         status,
+        mount_spec,
         img_path,
       });
       res.json(equipment);
@@ -140,6 +142,7 @@ router.patch(
       location,
       maker,
       status,
+      mount_spec,
       img_path,
     } = req.body;
     try {
@@ -157,6 +160,7 @@ router.patch(
         location,
         maker,
         status,
+        mount_spec,
         img_path,
       });
       return res.json(updatedEquipment);
