@@ -12,6 +12,8 @@ export type AuthenticatedRequestWithFile = AuthenticatedRequest & {
     filename: string;
     path: string;
     buffer: Buffer;
+    originalname: string;
+    mimetype: string;
   };
 };
 

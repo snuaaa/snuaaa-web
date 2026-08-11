@@ -26,10 +26,30 @@ ExhibitionModel.init(
     place: {
       type: DataTypes.STRING(64),
     },
+    /**
+     * @deprecated Use poster_url instead
+     */
     poster_path: {
       type: DataTypes.STRING(256),
+      get() {
+        const s3Url = this.getDataValue('poster_url');
+        return s3Url || this.getDataValue('poster_path');
+      },
     },
+    /**
+     * @deprecated Use poster_thumbnail_url instead
+     */
     poster_thumbnail_path: {
+      type: DataTypes.STRING(256),
+      get() {
+        const s3Url = this.getDataValue('poster_thumbnail_url');
+        return s3Url || this.getDataValue('poster_thumbnail_path');
+      },
+    },
+    poster_url: {
+      type: DataTypes.STRING(256),
+    },
+    poster_thumbnail_url: {
       type: DataTypes.STRING(256),
     },
   },

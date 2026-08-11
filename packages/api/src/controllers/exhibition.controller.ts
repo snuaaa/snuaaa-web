@@ -4,6 +4,11 @@ import {
   ExhibitionModel,
   UserModel,
 } from '../models';
+import { Op } from 'sequelize';
+import fs from 'fs';
+import path from 'path';
+import { resizeImageBuffer } from '../utils/resize';
+import { uploadImageToS3 } from '../utils/upload';
 
 export async function retrieveExhibition(exhibition_id) {
   if (!exhibition_id) {
@@ -83,5 +88,91 @@ export async function createExhibition(content_id, data) {
     place: data.place,
     poster_path: data.poster_path,
     poster_thumbnail_path: data.poster_thumbnail_path,
+    poster_url: data.poster_url,
+    poster_thumbnail_url: data.poster_thumbnail_url,
   });
+}
+
+export async function migrateExhibitionPosters() {
+  const exhibitions = await ExhibitionModel.findAll({
+    where: {
+      poster_path: {
+        [Op.and]: [{ [Op.ne]: null }, { [Op.like]: '/exhibition/%' }],
+      },
+      poster_url: {
+        [Op.is]: null,
+      },
+    },
+    limit: 10,
+    order: [['content_id', 'ASC']],
+  });
+
+  await Promise.all(
+    exhibitions.map(async (exhibition) => {
+      const content_id = exhibition.getDataValue('content_id');
+      const rawThumbnailPath = exhibition.getDataValue(
+        'poster_thumbnail_path',
+      );
+
+      const filePath = path.join(
+        '.',
+        'upload',
+        exhibition.getDataValue('poster_path'),
+      );
+      const thumbnailPath = rawThumbnailPath
+        ? path.join('.', 'upload', rawThumbnailPath)
+        : null;
+
+      let buffer: Buffer;
+      try {
+        buffer = await fs.promises.readFile(filePath);
+      } catch (err) {
+        console.error(`Local exhibition poster not found: ${filePath}`, err);
+        await ExhibitionModel.update(
+          {
+            poster_url: '',
+            poster_thumbnail_url: '',
+          },
+          {
+            where: { content_id: content_id },
+          },
+        );
+        return;
+      }
+
+      const resizedOriginalBuffer = await resizeImageBuffer(buffer);
+      const resizedThumbnailBuffer = await resizeImageBuffer(buffer, {
+        shortSideSize: 300,
+      });
+
+      const [posterUrl, posterThumbnailUrl] = await Promise.all([
+        uploadImageToS3(resizedOriginalBuffer),
+        uploadImageToS3(resizedThumbnailBuffer),
+      ]);
+
+      await ExhibitionModel.update(
+        {
+          poster_url: posterUrl,
+          poster_thumbnail_url: posterThumbnailUrl,
+          poster_path: posterUrl,
+          poster_thumbnail_path: posterThumbnailUrl,
+        },
+        {
+          where: { content_id: content_id },
+        },
+      );
+
+      await fs.promises.unlink(filePath).catch((err) => {
+        console.error(`Failed to delete local poster file: ${filePath}`, err);
+      });
+      if (thumbnailPath) {
+        // await fs.promises.unlink(thumbnailPath).catch((err) => {
+        //   console.error(
+        //     `Failed to delete local poster thumbnail: ${thumbnailPath}`,
+        //     err,
+        //   );
+        // });
+      }
+    }),
+  );
 }

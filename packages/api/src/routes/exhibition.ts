@@ -7,7 +7,10 @@ import {
   verifyTokenMiddleware,
 } from '../middlewares/auth';
 
-import { retrieveExhibition } from '../controllers/exhibition.controller';
+import {
+  retrieveExhibition,
+  migrateExhibitionPosters,
+} from '../controllers/exhibition.controller';
 import {
   createExhibitPhoto,
   retrieveExhibitPhotosInExhibition,
@@ -143,5 +146,15 @@ router.post(
     }
   },
 );
+
+router.post('/migrate', verifyTokenMiddleware, async (req, res) => {
+  try {
+    await migrateExhibitionPosters();
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'internal server error', code: 0 });
+  }
+});
 
 export default router;
