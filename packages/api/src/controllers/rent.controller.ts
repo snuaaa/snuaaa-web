@@ -3,6 +3,23 @@ import EquipmentRentEnum from '../enums/equipmentRentEnum';
 import { EquipmentModel, RentReturnModel, UserModel } from '../models';
 import RentModel from '../models/Rent';
 import PenaltyStatusEnum from '../enums/penaltyStatusEnum';
+import {
+  calculateLateDays,
+  calculateOutstandingLateFee,
+} from '../utils/lateFee';
+
+interface PlainRentReturn {
+  return_date?: Date | string;
+  penalty_status: PenaltyStatusEnum;
+  [key: string]: unknown;
+}
+
+interface PlainRentRecord {
+  end_date?: Date | string;
+  rentReturn?: PlainRentReturn;
+  user?: { user_id: number; nickname: string };
+  [key: string]: unknown;
+}
 
 export async function rentEquipment(equipmentId: number, userId: number) {
   const equipment = await EquipmentModel.findOne({
@@ -137,6 +154,8 @@ export async function retrieveRentListByEquipmentId(
 export async function retrieveAllRentRecords(
   filters: {
     penaltyStatus?: string;
+    userId?: number;
+    dateFromDeadline?: string;
     dateFromStart?: string;
     dateToStart?: string;
     dateFromReturn?: string;
@@ -146,6 +165,17 @@ export async function retrieveAllRentRecords(
   offset: number,
 ) {
   const rentWhere: WhereOptions = { returned: true };
+
+  // 선택한 연체자와 반납 기한 기준 집계 시작일을 대여 기록에 적용한다.
+  if (filters.userId) {
+    rentWhere.user_id = filters.userId;
+  }
+
+  if (filters.dateFromDeadline) {
+    rentWhere.end_date = {
+      [Op.gte]: new Date(filters.dateFromDeadline),
+    };
+  }
 
   if (filters.dateFromStart) {
     rentWhere.start_date = {
@@ -179,7 +209,7 @@ export async function retrieveAllRentRecords(
 
   const hasRentReturnFilter = Object.keys(rentReturnWhere).length > 0;
 
-  return RentModel.findAndCountAll({
+  const result = await RentModel.findAndCountAll({
     include: [
       {
         model: RentReturnModel,
@@ -210,11 +240,79 @@ export async function retrieveAllRentRecords(
       },
     ],
     where: rentWhere,
-    order: [['start_date', 'DESC']],
+    // 실제 반납 시각이 최근인 기록부터 보여준다.
+    order: [
+      [{ model: RentReturnModel, as: 'rentReturn' }, 'return_date', 'DESC'],
+      ['start_date', 'DESC'],
+    ],
     attributes: ['id', 'start_date', 'end_date'],
     limit: rowNum,
     offset: offset,
   });
+
+  return {
+    count: result.count,
+    rows: result.rows.map((row) => {
+      const record = row.get({ plain: true }) as PlainRentRecord;
+      const rentReturn = record.rentReturn;
+      if (!rentReturn?.return_date || !record.end_date) return record;
+
+      // 각 장비는 독립된 대여 건이므로 행마다 연체일과 미납액을 계산한다.
+      const lateDays = calculateLateDays(
+        record.end_date,
+        rentReturn.return_date,
+      );
+      return {
+        ...record,
+        rentReturn: {
+          ...rentReturn,
+          late_days: lateDays,
+          late_fee: calculateOutstandingLateFee(
+            lateDays,
+            rentReturn.penalty_status,
+          ),
+        },
+      };
+    }),
+  };
+}
+
+export async function retrievePenaltyUsers() {
+  // 정상 반납자는 제외하고 연체 이력이 있는 사용자만 선택 목록에 제공한다.
+  const records = await RentModel.findAll({
+    include: [
+      {
+        model: RentReturnModel,
+        required: true,
+        where: {
+          penalty_status: {
+            [Op.in]: [
+              PenaltyStatusEnum.NEED_PAYMENT,
+              PenaltyStatusEnum.RECEIVED_PAYMENT,
+            ],
+          },
+        },
+        attributes: [],
+      },
+      {
+        model: UserModel,
+        required: true,
+        attributes: ['user_id', 'nickname'],
+        paranoid: false,
+      },
+    ],
+    where: { returned: true },
+    attributes: ['user_id'],
+    order: [[{ model: UserModel, as: 'user' }, 'nickname', 'ASC']],
+  });
+
+  const users = new Map<number, { user_id: number; nickname: string }>();
+  // 한 사용자의 연체 기록이 여러 건이어도 선택 목록에는 한 번만 노출한다.
+  records.forEach((row) => {
+    const record = row.get({ plain: true }) as PlainRentRecord;
+    if (record.user) users.set(record.user.user_id, record.user);
+  });
+  return Array.from(users.values());
 }
 
 export async function updatePenaltyStatus(

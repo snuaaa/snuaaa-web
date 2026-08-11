@@ -198,7 +198,11 @@ export interface RentReturn {
   photo_path: string;
   return_date: string;
   penalty_status: PenaltyStatus;
+  late_days?: number;
+  late_fee?: number;
 }
+
+export type PenaltyUser = Pick<User, 'user_id' | 'nickname'>;
 
 export interface Rent {
   id: number;

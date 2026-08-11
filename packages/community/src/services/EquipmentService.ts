@@ -6,6 +6,7 @@ import {
   ListResponse,
   MyRent,
   PenaltyStatus,
+  PenaltyUser,
   Rent,
   RentWithEquipment,
 } from './types';
@@ -102,6 +103,8 @@ const EquipmentService = {
 
   retrieveAllRentRecords: function (params: {
     penaltyStatus?: PenaltyStatus;
+    userId?: number;
+    dateFromDeadline?: string;
     dateFromStart?: string;
     dateToStart?: string;
     dateFromReturn?: string;
@@ -112,12 +115,18 @@ const EquipmentService = {
       params: {
         page: params.page,
         penalty_status: params.penaltyStatus,
+        user_id: params.userId,
+        date_from_deadline: params.dateFromDeadline,
         date_from_start: params.dateFromStart,
         date_to_start: params.dateToStart,
         date_from_return: params.dateFromReturn,
         date_to_return: params.dateToReturn,
       },
     });
+  },
+
+  retrievePenaltyUsers: function () {
+    return API.get<PenaltyUser[]>(`equipment/rent/penalty-users`);
   },
 
   updatePenaltyStatus: function (rentId: number, penaltyStatus: PenaltyStatus) {

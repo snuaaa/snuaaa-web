@@ -12,6 +12,9 @@ import { Link, useNavigate, useSearch } from '@tanstack/react-router';
 import { EquipSearchLocationState } from './common';
 import { useCallback } from 'react';
 
+// API의 장비 추가·수정 권한과 동일한 기준을 사용한다.
+const EQUIP_ADMIN_GRADE = 6;
+
 const Admin = () => {
   const authContext = useAuth();
 
@@ -50,8 +53,7 @@ const Admin = () => {
       <BoardName board_id={undefined} board_name={'장비 관리'} />
       <div className="board-search-wrapper">
         <div className="text-lg font-bold">현재 보유 장비</div>
-        {authContext.authInfo.user.grade <= 8 && ( // TODO: change this to equipment authority check
-          //TODO: display modal
+        {authContext.authInfo.user.grade <= EQUIP_ADMIN_GRADE && (
           <>
             <button
               className="bg-[#A3A3A3] text-white ml-auto flex justify-center items-center text-base px-2 py-1 font-bold"

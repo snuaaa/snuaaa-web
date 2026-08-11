@@ -13,6 +13,8 @@ import { PenaltyStatus } from '~/services/types';
 
 export type AllRentRecordFilters = {
   penaltyStatus?: PenaltyStatus | '';
+  userId?: number;
+  dateFromDeadline?: string;
   dateFromStart?: string;
   dateToStart?: string;
   dateFromReturn?: string;
@@ -29,6 +31,7 @@ export const equipmentKeys = {
   categories: () => [...equipmentKeys.all, 'categories'] as const,
   allRentRecords: (filters: AllRentRecordFilters, page: number) =>
     [...equipmentKeys.all, 'allRentRecords', filters, page] as const,
+  penaltyUsers: () => [...equipmentKeys.all, 'penaltyUsers'] as const,
 };
 
 // Query options
@@ -117,6 +120,8 @@ export const allRentRecordsQueryOptions = (
     queryFn: () =>
       EquipmentService.retrieveAllRentRecords({
         penaltyStatus: filters.penaltyStatus || undefined,
+        userId: filters.userId,
+        dateFromDeadline: filters.dateFromDeadline || undefined,
         dateFromStart: filters.dateFromStart || undefined,
         dateToStart: filters.dateToStart || undefined,
         dateFromReturn: filters.dateFromReturn || undefined,
@@ -128,8 +133,20 @@ export const allRentRecordsQueryOptions = (
 export function useAllRentRecords(
   filters: AllRentRecordFilters,
   page: number,
+  enabled = true,
 ) {
-  return useQuery(allRentRecordsQueryOptions(filters, page));
+  return useQuery({
+    ...allRentRecordsQueryOptions(filters, page),
+    enabled,
+  });
+}
+
+export function usePenaltyUsers(enabled = true) {
+  return useQuery({
+    queryKey: equipmentKeys.penaltyUsers(),
+    queryFn: () => EquipmentService.retrievePenaltyUsers(),
+    enabled,
+  });
 }
 
 export function useUpdatePenaltyStatus() {

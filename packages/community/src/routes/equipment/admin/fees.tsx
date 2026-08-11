@@ -4,6 +4,8 @@ import { PenaltyStatus } from '~/services/types';
 
 export type FeeSearchState = {
   penalty_status?: PenaltyStatus;
+  user_id?: number;
+  date_from_deadline?: string;
   date_from_start?: string;
   date_to_start?: string;
   date_from_return?: string;
@@ -16,6 +18,8 @@ export const Route = createFileRoute('/equipment/admin/fees')({
   validateSearch: (search: Record<string, unknown>): FeeSearchState => {
     return {
       penalty_status: (search.penalty_status as PenaltyStatus) || undefined,
+      user_id: Number(search.user_id) || undefined,
+      date_from_deadline: (search.date_from_deadline as string) || undefined,
       date_from_start: (search.date_from_start as string) || undefined,
       date_to_start: (search.date_to_start as string) || undefined,
       date_from_return: (search.date_from_return as string) || undefined,

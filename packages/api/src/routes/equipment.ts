@@ -14,6 +14,7 @@ import {
 import {
   rentEquipment,
   retrieveAllRentRecords,
+  retrievePenaltyUsers,
   retrieveRentedEquipmentListByUserId,
   retrieveRentListByEquipmentId,
   returnEquipment,
@@ -333,6 +334,30 @@ router.get(
   },
 );
 
+// 장비 추가 권한과 동일한 관리자만 연체자 목록을 조회할 수 있다.
+router.get(
+  '/rent/penalty-users',
+  verifyTokenMiddleware,
+  async (req: AuthenticatedRequest, res) => {
+    const { decodedToken } = req;
+    if (decodedToken.grade > EQUIP_ADMIN_GRADE) {
+      return res
+        .status(403)
+        .json({ success: false, error: 'PERMISSION DENIED', code: 1 });
+    }
+    try {
+      res.json(await retrievePenaltyUsers());
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({
+        success: false,
+        error: 'RETRIEVE PENALTY USERS FAIL',
+        code: 1,
+      });
+    }
+  },
+);
+
 router.get(
   '/rent/records',
   verifyTokenMiddleware,
@@ -350,6 +375,10 @@ router.get(
       offset = ROWNUM * (Number(query.page) - 1);
     }
     const dateFields: { key: string; value: string | undefined }[] = [
+      {
+        key: 'date_from_deadline',
+        value: query.date_from_deadline as string | undefined,
+      },
       {
         key: 'date_from_start',
         value: query.date_from_start as string | undefined,
@@ -381,6 +410,8 @@ router.get(
     }
     const filters = {
       penaltyStatus: query.penalty_status as string | undefined,
+      userId: Number(query.user_id) > 0 ? Number(query.user_id) : undefined,
+      dateFromDeadline: query.date_from_deadline as string | undefined,
       dateFromStart: query.date_from_start as string | undefined,
       dateToStart: query.date_to_start as string | undefined,
       dateFromReturn: query.date_from_return as string | undefined,
