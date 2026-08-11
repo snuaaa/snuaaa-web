@@ -20,6 +20,28 @@ import { AuthenticatedRequestWithFile } from '../middlewares/upload';
 
 const router = express.Router();
 
+const GUEST_IDENTITY = {
+  _id: -1,
+  grade: 10,
+  level: 0,
+  autoLogin: false,
+};
+
+async function createGuestToken() {
+  const token = await createToken(GUEST_IDENTITY);
+  return {
+    userInfo: {
+      user_id: GUEST_IDENTITY._id,
+      grade: GUEST_IDENTITY.grade,
+      level: GUEST_IDENTITY.level,
+      profile_path: null,
+      nickname: 'guest',
+    },
+    autoLogin: GUEST_IDENTITY.autoLogin,
+    token,
+  };
+}
+
 const storage = multer.diskStorage({
   destination: './upload/profile',
   filename(req, file, cb) {
@@ -40,6 +62,17 @@ router.get(
   async (req: AuthenticatedRequest, res) => {
     try {
       const decodedToken = req.decodedToken;
+
+      if (decodedToken._id === GUEST_IDENTITY._id) {
+        const guest = await createGuestToken();
+        return res.status(200).json({
+          success: true,
+          userInfo: guest.userInfo,
+          autoLogin: guest.autoLogin,
+          token: guest.token,
+        });
+      }
+
       const userInfo = await retrieveUser(decodedToken._id);
 
       const loginAt = userInfo.get('login_at') as string;
@@ -146,12 +179,7 @@ router.post('/login', async (req, res) => {
 
 router.get('/login/guest', async (req, res) => {
   try {
-    const token = await createToken({
-      _id: -1,
-      grade: 10,
-      level: 0,
-      autoLogin: false,
-    });
+    const { userInfo, autoLogin, token } = await createGuestToken();
 
     return res
       .status(200)
@@ -160,15 +188,9 @@ router.get('/login/guest', async (req, res) => {
       })
       .json({
         sucess: true,
-        userInfo: {
-          user_id: -1,
-          grade: 10,
-          level: 0,
-          profile_path: null,
-          nickname: 'guest',
-        },
-        autoLogin: false,
-        token: token,
+        userInfo,
+        autoLogin,
+        token,
       });
   } catch (err) {
     console.error(err);
