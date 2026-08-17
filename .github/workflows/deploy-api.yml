@@ -48,7 +48,7 @@ jobs:
             source deploy.sh ${{ github.sha }}
 
   deploy-production:
-    if: github.event_name == 'release' && github.event.action == 'published'
+    if: github.event_name == 'release' && github.event.action == 'published' && startsWith(github.event.release.tag_name, 'API-')
     runs-on: ubuntu-latest
 
     steps:
