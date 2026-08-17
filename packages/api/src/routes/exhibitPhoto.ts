@@ -9,6 +9,7 @@ import {
   updateExhibitPhoto,
   deleteExhibitPhoto,
   retrieveExhibitPhotosInExhibition,
+  migrateExhibitPhotos,
 } from '../controllers/exhibitPhoto.controller';
 import { checkLike } from '../controllers/contentLike.controller';
 import {
@@ -95,6 +96,19 @@ router.delete('/:exhibitPhoto_id', verifyTokenMiddleware, async (req, res) => {
   try {
     await deleteExhibitPhoto(req.params.exhibitPhoto_id);
     await deleteContent(req.params.exhibitPhoto_id);
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      error: 'internal server error',
+      code: 0,
+    });
+  }
+});
+
+router.post('/migrate', verifyTokenMiddleware, async (req, res) => {
+  try {
+    await migrateExhibitPhotos();
     res.json({ success: true });
   } catch (err) {
     console.error(err);

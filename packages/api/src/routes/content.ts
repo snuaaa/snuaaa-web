@@ -1,13 +1,13 @@
 import express from 'express';
 import path from 'path';
+import multer from 'multer';
 
 import {
   AuthenticatedRequest,
   verifyTokenMiddleware,
 } from '../middlewares/auth';
-import uploadMiddleware, {
-  AuthenticatedRequestWithFile,
-} from '../middlewares/upload';
+import { AuthenticatedRequestWithFile } from '../middlewares/upload';
+import { uploadFileToS3 } from '../utils/upload';
 
 import {
   checkLike,
@@ -25,6 +25,7 @@ import {
 } from '../controllers/attachedFile.controller';
 
 const router = express.Router();
+const memoryUpload = multer({ storage: multer.memoryStorage() });
 
 router.get(
   '/:content_id/comments',
@@ -58,10 +59,12 @@ router.get('/:content_id/file/:file_id', async (req, res) => {
       });
     }
     increaseDownloadCount(req.params.file_id);
-    res.download(
-      file.get('file_path') as string,
-      file.get('original_name') as string,
-    );
+
+    const filePath = file.get('file_path') as string;
+    if (/^https?:\/\//i.test(filePath)) {
+      return res.redirect(filePath);
+    }
+    res.download(filePath, file.get('original_name') as string);
   } catch (err) {
     console.error(err);
     res.status(500).json({
@@ -74,7 +77,7 @@ router.get('/:content_id/file/:file_id', async (req, res) => {
 router.post(
   '/:content_id/file',
   verifyTokenMiddleware,
-  uploadMiddleware('AF').single('attachedFile'),
+  memoryUpload.single('attachedFile'),
   async (req: AuthenticatedRequestWithFile, res) => {
     const { file } = req;
 
@@ -87,7 +90,7 @@ router.post(
       }
 
       let file_type = '';
-      const extention = path.extname(file.path).substr(1);
+      const extention = path.extname(file.originalname).substr(1);
       if (['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG'].includes(extention)) {
         file_type = 'IMG';
       } else if (['doc', 'DOC', 'docx', 'DOCX'].includes(extention)) {
@@ -107,9 +110,17 @@ router.post(
         console.error(extention);
       }
 
+      const fileUrl = await uploadFileToS3(
+        file.buffer,
+        file.originalname,
+        'attached-file',
+        file.mimetype,
+      );
+
       const data = {
-        original_name: file.filename,
-        file_path: file.path,
+        original_name: file.originalname,
+        file_path: fileUrl,
+        file_url: fileUrl,
         file_type: file_type,
       };
       await createAttachedFile(req.params.content_id, data);

@@ -49,12 +49,12 @@ export function useUserList(params: UsersSearchType) {
 }
 
 // Mutations
-export function useUpdateUserInfo() {
+export function useUpdateMyUserInfo() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (data: UpdateUserInfoRequest) =>
-      UserService.updateUserInfo(data),
+      UserService.updateMyUserInfo(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: userKeys.me() });
       queryClient.invalidateQueries({ queryKey: userKeys.all });

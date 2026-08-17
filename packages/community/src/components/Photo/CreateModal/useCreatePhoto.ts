@@ -65,7 +65,7 @@ const useCreatePhoto = ({ boardId, albumId, onCreatePhoto }: Props) => {
   const uploadImage = useCallback(
     async (file: File, index: number) => {
       console.log(index);
-      const { data } = await UploadService.uploadImage(file, true);
+      const { data } = await UploadService.uploadImage(file, 'photo', true);
       form.setFieldValue(`list[${index}]`, {
         ...form.getFieldValue(`list[${index}]`),
         img_url: data.imgUrl,

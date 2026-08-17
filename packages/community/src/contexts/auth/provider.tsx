@@ -4,8 +4,10 @@ import AuthType from '~/types/AuthType';
 import { User } from '~/services/types';
 import { useCallback, useEffect, useState, PropsWithChildren } from 'react';
 import { useRouter, useLocation, Navigate } from '@tanstack/react-router';
+import { useQueryClient } from '@tanstack/react-query';
 import AuthService from '~/services/AuthService';
 import Loading from '~/components/Common/Loading';
+import { userKeys } from '~/hooks/queries/useUserQueries';
 
 const initialAuth: AuthType = {
   isLoggedIn: false,
@@ -26,6 +28,7 @@ const Provider = ({ children }: PropsWithChildren) => {
   const [isReady, setIsReady] = useState<boolean>(false);
   const router = useRouter();
   const location = useLocation();
+  const queryClient = useQueryClient();
 
   const authLogin = useCallback(
     (token: string, autoLogin: boolean, userInfo: User) => {
@@ -43,6 +46,7 @@ const Provider = ({ children }: PropsWithChildren) => {
     removeToken();
     setAuthInfo(initialAuth);
     setIsReady(true);
+    queryClient.removeQueries({ queryKey: userKeys.all });
   };
 
   const checkToken = useCallback(async () => {

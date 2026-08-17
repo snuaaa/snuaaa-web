@@ -13,7 +13,8 @@ import {
 } from '../controllers/user.controller';
 import { createStatsLogin } from '../controllers/statsLogin.controller';
 import { createUser, checkDupId } from '../controllers/user.controller';
-import { resize } from '../utils/resize';
+import { resizeImageBuffer } from '../utils/resize';
+import { uploadImageToS3 } from '../utils/upload';
 
 import { createToken } from '../utils/token';
 import { AuthenticatedRequestWithFile } from '../middlewares/upload';
@@ -42,13 +43,7 @@ async function createGuestToken() {
   };
 }
 
-const storage = multer.diskStorage({
-  destination: './upload/profile',
-  filename(req, file, cb) {
-    const timestamp = new Date().valueOf();
-    cb(null, timestamp + '_' + file.originalname);
-  },
-});
+const storage = multer.memoryStorage();
 
 const upload = multer({ storage });
 
@@ -254,8 +249,10 @@ router.post(
       const grade = req.body.aaaNum ? 8 : 9;
       let profilePath: string | undefined;
       if (req.file) {
-        profilePath = '/profile/' + req.file.filename;
-        resize(req.file.path);
+        const resizedBuffer = await resizeImageBuffer(req.file.buffer, {
+          shortSideSize: 300,
+        });
+        profilePath = await uploadImageToS3(resizedBuffer, 'profile');
       }
 
       const userData = {
@@ -270,6 +267,7 @@ router.post(
         mobile: req.body.mobile,
         introduction: req.body.introduction,
         profile_path: profilePath,
+        profile_url: profilePath,
         grade: grade,
         level: 0,
       };

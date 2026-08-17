@@ -46,8 +46,22 @@ UserModel.init(
     introduction: {
       type: DataTypes.TEXT,
     },
+    /**
+     * @deprecated Use profile_url instead
+     */
     profile_path: {
       type: DataTypes.STRING(256),
+      get() {
+        const s3Url = this.getDataValue('profile_url');
+        return s3Url || this.getDataValue('profile_path');
+      },
+    },
+    profile_url: {
+      type: DataTypes.STRING(256),
+      get() {
+        const localUrl = this.getDataValue('profile_path');
+        return this.getDataValue('profile_url') || localUrl;
+      },
     },
     grade: {
       type: DataTypes.INTEGER,

@@ -18,7 +18,17 @@ AttachedFileModel.init(
     original_name: {
       type: DataTypes.STRING(256),
     },
+    /**
+     * @deprecated Use file_url instead
+     */
     file_path: {
+      type: DataTypes.STRING(256),
+      get() {
+        const s3Url = this.getDataValue('file_url');
+        return s3Url || this.getDataValue('file_path');
+      },
+    },
+    file_url: {
       type: DataTypes.STRING(256),
     },
     file_type: {

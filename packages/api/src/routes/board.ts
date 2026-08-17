@@ -1,8 +1,6 @@
 import express from 'express';
-import path from 'path';
-import uploadMiddleware, {
-  AuthenticatedRequestWithFile,
-} from '../middlewares/upload';
+import multer from 'multer';
+import { AuthenticatedRequestWithFile } from '../middlewares/upload';
 import { verifyTokenMiddleware } from '../middlewares/auth';
 import {
   retrieveBoard,
@@ -19,11 +17,13 @@ import {
   retrieveExhibitions,
   createExhibition,
 } from '../controllers/exhibition.controller';
-import { resizeForThumbnail } from '../utils/resize';
+import { resizeImageBuffer } from '../utils/resize';
+import { uploadImageToS3 } from '../utils/upload';
 import uuid4 from 'uuid4';
 import type { AuthenticatedRequest } from '../middlewares/auth';
 
 const router = express.Router();
+const memoryUpload = multer({ storage: multer.memoryStorage() });
 
 router.get(
   '/',
@@ -199,7 +199,7 @@ router.get(
 router.post(
   '/:board_id/exhibition',
   verifyTokenMiddleware,
-  uploadMiddleware('EH').single('poster'),
+  memoryUpload.single('poster'),
   async (req: AuthenticatedRequestWithFile, res) => {
     const decodedToken = req.decodedToken;
     const file = req.file;
@@ -212,14 +212,20 @@ router.post(
     }
 
     try {
-      const basename = path.basename(
-        file.filename,
-        path.extname(file.filename),
-      );
-      await resizeForThumbnail(file.path, 'P');
+      const resizedOriginalBuffer = await resizeImageBuffer(file.buffer);
+      const resizedThumbnailBuffer = await resizeImageBuffer(file.buffer, {
+        shortSideSize: 300,
+      });
 
-      req.body.poster_path = `/exhibition/${req.body.exhibition_no}/${file.filename}`;
-      req.body.poster_thumbnail_path = `/exhibition/${req.body.exhibition_no}/${basename}_thumb.jpeg`;
+      const [posterUrl, posterThumbnailUrl] = await Promise.all([
+        uploadImageToS3(resizedOriginalBuffer, 'exhibition'),
+        uploadImageToS3(resizedThumbnailBuffer, 'exhibition'),
+      ]);
+
+      req.body.poster_path = posterUrl;
+      req.body.poster_thumbnail_path = posterThumbnailUrl;
+      req.body.poster_url = posterUrl;
+      req.body.poster_thumbnail_url = posterThumbnailUrl;
 
       const content_id = await createContent(
         decodedToken._id,

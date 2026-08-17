@@ -5,7 +5,11 @@ import { verifyTokenMiddleware } from '../middlewares/auth';
 import { AuthenticatedRequestWithFile } from '../middlewares/upload';
 
 import { resizeImageBuffer } from '../utils/resize';
-import { uploadImageToS3 } from '../utils/upload';
+import {
+  S3_RESOURCE_TYPES,
+  S3ResourceType,
+  uploadImageToS3,
+} from '../utils/upload';
 
 const router = express.Router();
 
@@ -26,14 +30,24 @@ router.post(
           error: 'Image is not attached',
         });
       }
+
+      const resourceType = req.query.type as S3ResourceType;
+      if (!S3_RESOURCE_TYPES.includes(resourceType)) {
+        return res.status(400).json({
+          error: 'Invalid or missing resource type',
+        });
+      }
+
       const withThumbnail = req.query.thumbnail === 'true';
 
       const [imgUrl, thumbnailUrl] = await Promise.all([
-        resizeImageBuffer(file.buffer).then(uploadImageToS3),
+        resizeImageBuffer(file.buffer).then((buffer) =>
+          uploadImageToS3(buffer, resourceType),
+        ),
         ...(withThumbnail
           ? [
               resizeImageBuffer(file.buffer, { shortSideSize: 360 }).then(
-                uploadImageToS3,
+                (buffer) => uploadImageToS3(buffer, resourceType),
               ),
             ]
           : []),

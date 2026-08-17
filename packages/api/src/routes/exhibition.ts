@@ -1,24 +1,27 @@
 import express from 'express';
-import path from 'path';
+import multer from 'multer';
 import uuid4 from 'uuid4';
-import uploadMiddleware, {
-  AuthenticatedRequestWithFile,
-} from '../middlewares/upload';
+import { AuthenticatedRequestWithFile } from '../middlewares/upload';
 import {
   AuthenticatedRequest,
   verifyTokenMiddleware,
 } from '../middlewares/auth';
 
-import { retrieveExhibition } from '../controllers/exhibition.controller';
+import {
+  retrieveExhibition,
+  migrateExhibitionPosters,
+} from '../controllers/exhibition.controller';
 import {
   createExhibitPhoto,
   retrieveExhibitPhotosInExhibition,
 } from '../controllers/exhibitPhoto.controller';
-import { resizeForThumbnail } from '../utils/resize';
+import { resizeImageBuffer } from '../utils/resize';
+import { uploadImageToS3 } from '../utils/upload';
 import { retrieveUserByUserUuid } from '../controllers/user.controller';
 import { deleteContent } from '../controllers/content.controller';
 
 const router = express.Router();
+const memoryUpload = multer({ storage: multer.memoryStorage() });
 
 router.get('/:exhibition_id', verifyTokenMiddleware, async (req, res) => {
   try {
@@ -75,7 +78,7 @@ router.get(
 router.post(
   '/:exhibition_id/exhibitPhoto',
   verifyTokenMiddleware,
-  uploadMiddleware('EH').single('exhibitPhoto'),
+  memoryUpload.single('exhibitPhoto'),
   async (req: AuthenticatedRequestWithFile, res) => {
     const { file, decodedToken } = req;
 
@@ -87,13 +90,17 @@ router.post(
     }
 
     try {
-      const basename = path.basename(
-        file.filename,
-        path.extname(file.filename),
-      );
       const photoInfo = JSON.parse(req.body.photoInfo);
 
-      await resizeForThumbnail(file.path, null);
+      const resizedOriginalBuffer = await resizeImageBuffer(file.buffer);
+      const resizedThumbnailBuffer = await resizeImageBuffer(file.buffer, {
+        shortSideSize: 360,
+      });
+
+      const [imgUrl, thumbnailUrl] = await Promise.all([
+        uploadImageToS3(resizedOriginalBuffer, 'exhibit-photo'),
+        uploadImageToS3(resizedThumbnailBuffer, 'exhibit-photo'),
+      ]);
 
       let photographer = null;
       if (photoInfo.photographer.user_uuid) {
@@ -114,8 +121,10 @@ router.post(
         order: photoInfo.order,
         photographer_id: photographer ? photographer.get('user_id') : null,
         photographer_alt: photographer ? null : photoInfo.photographer_alt,
-        file_path: `/exhibition/${req.body.exhibition_no}/${file.filename}`,
-        thumbnail_path: `/exhibition/${req.body.exhibition_no}/${basename}_thumb.jpeg`,
+        file_path: imgUrl,
+        thumbnail_path: thumbnailUrl,
+        img_url: imgUrl,
+        thumbnail_url: thumbnailUrl,
         location: photoInfo.location,
         camera: photoInfo.camera,
         lens: photoInfo.lens,
@@ -137,5 +146,15 @@ router.post(
     }
   },
 );
+
+router.post('/migrate', verifyTokenMiddleware, async (req, res) => {
+  try {
+    await migrateExhibitionPosters();
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'internal server error', code: 0 });
+  }
+});
 
 export default router;

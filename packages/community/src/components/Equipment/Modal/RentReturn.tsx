@@ -31,7 +31,7 @@ const RentReturn: FC<Props> = ({ rent }) => {
   const handleChangeFile = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const { data } = await UploadService.uploadImage(file, true);
+    const { data } = await UploadService.uploadImage(file, 'equipment', true);
     setImgPath(data.imgUrl);
   };
 

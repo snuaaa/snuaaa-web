@@ -4,11 +4,17 @@ import { UsersSearchType } from '../types/SearchTypes';
 
 import { User } from './types';
 
-export interface UpdateUserInfoRequest {
+// TODO: 타입 개선 필요
+export type UpdateUserInfoRequest = {
   username: string;
   aaa_no: string;
-  profileImg?: File;
-}
+  email: string;
+  mobile: string;
+  major: string;
+  col_no: string;
+  profile_url?: string;
+  introduction?: string;
+};
 export interface UpdatePasswordRequest {
   password: string;
   newPassword: string;
@@ -33,12 +39,8 @@ const UserService = {
     }>(url);
   },
 
-  updateUserInfo: function (data: UpdateUserInfoRequest) {
-    const formData = new FormData();
-    Object.entries(data).forEach(([key, value]) => {
-      formData.append(key, value);
-    });
-    return API.patch('userinfo', formData);
+  updateMyUserInfo: function (data: UpdateUserInfoRequest) {
+    return API.patch('user', data);
   },
 
   deleteUserInfo: function () {
