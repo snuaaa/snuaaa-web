@@ -602,8 +602,8 @@ export async function migratePhotos() {
         shortSideSize: 360,
       });
       const [imgUrl, thumbnailUrl] = await Promise.all([
-        uploadImageToS3(buffer),
-        uploadImageToS3(thumbnailBuffer),
+        uploadImageToS3(buffer, 'photo'),
+        uploadImageToS3(thumbnailBuffer, 'photo'),
       ]);
       await PhotoModel.update(
         {

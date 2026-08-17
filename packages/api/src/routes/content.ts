@@ -113,6 +113,7 @@ router.post(
       const fileUrl = await uploadFileToS3(
         file.buffer,
         file.originalname,
+        'attached-file',
         file.mimetype,
       );
 

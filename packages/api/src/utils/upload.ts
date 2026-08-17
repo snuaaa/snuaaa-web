@@ -11,7 +11,22 @@ const getDateString = () => {
   return `${year}${month}${day}`;
 };
 
-export async function uploadImageToS3(buffer: Buffer): Promise<string> {
+export const S3_RESOURCE_TYPES = [
+  'profile',
+  'exhibition',
+  'exhibit-photo',
+  'photo',
+  'equipment',
+  'editor',
+  'attached-file',
+] as const;
+
+export type S3ResourceType = (typeof S3_RESOURCE_TYPES)[number];
+
+export async function uploadImageToS3(
+  buffer: Buffer,
+  resourceType: S3ResourceType,
+): Promise<string> {
   // AWS S3 설정
   const s3 = new S3Client({
     region: process.env.AWS_REGION,
@@ -25,7 +40,7 @@ export async function uploadImageToS3(buffer: Buffer): Promise<string> {
 
   // S3 업로드 설정
   const bucketName = process.env.S3_BUCKET_NAME;
-  const key = `image/${getDateString()}/${uuid}`; // 파일 이름
+  const key = `image/${resourceType}/${getDateString()}/${uuid}`; // 파일 이름
   const params = {
     Bucket: bucketName,
     Key: key,
@@ -47,6 +62,7 @@ export async function uploadImageToS3(buffer: Buffer): Promise<string> {
 export async function uploadFileToS3(
   buffer: Buffer,
   originalFilename: string,
+  resourceType: S3ResourceType,
   mimeType?: string,
 ): Promise<string> {
   const s3 = new S3Client({
@@ -60,7 +76,7 @@ export async function uploadFileToS3(
   const uuid = uuid4();
   const bucketName = process.env.S3_BUCKET_NAME;
   const ext = path.extname(originalFilename);
-  const key = `file/${getDateString()}/${uuid}${ext}`;
+  const key = `file/${resourceType}/${getDateString()}/${uuid}${ext}`;
 
   const asciiFallback = originalFilename.replace(/[^\x20-\x7E]/g, '_');
   const contentDisposition = `attachment; filename="${asciiFallback}"; filename*=UTF-8''${encodeURIComponent(originalFilename)}`;

@@ -66,7 +66,7 @@ const useEditProfile = ({ initialUserInfo, onEditProfile }: Props) => {
 
   const uploadProfileImage = useCallback(
     async (file: File) => {
-      const { data } = await UploadService.uploadImage(file, true);
+      const { data } = await UploadService.uploadImage(file, 'profile', true);
       form.setFieldValue('profile_url', data.imgUrl);
     },
     [form],

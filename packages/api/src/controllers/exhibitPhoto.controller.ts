@@ -216,8 +216,8 @@ export async function migrateExhibitPhotos() {
       });
 
       const [imgUrl, thumbnailUrl] = await Promise.all([
-        uploadImageToS3(resizedOriginalBuffer),
-        uploadImageToS3(resizedThumbnailBuffer),
+        uploadImageToS3(resizedOriginalBuffer, 'exhibit-photo'),
+        uploadImageToS3(resizedThumbnailBuffer, 'exhibit-photo'),
       ]);
 
       await ExhibitPhotoModel.update(

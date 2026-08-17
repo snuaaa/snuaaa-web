@@ -230,7 +230,7 @@ router.post(
         const resizedBuffer = await resizeImageBuffer(req.file.buffer, {
           shortSideSize: 300,
         });
-        profilePath = await uploadImageToS3(resizedBuffer);
+        profilePath = await uploadImageToS3(resizedBuffer, 'profile');
       }
 
       const userData = {

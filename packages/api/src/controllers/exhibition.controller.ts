@@ -146,8 +146,8 @@ export async function migrateExhibitionPosters() {
       });
 
       const [posterUrl, posterThumbnailUrl] = await Promise.all([
-        uploadImageToS3(resizedOriginalBuffer),
-        uploadImageToS3(resizedThumbnailBuffer),
+        uploadImageToS3(resizedOriginalBuffer, 'exhibition'),
+        uploadImageToS3(resizedThumbnailBuffer, 'exhibition'),
       ]);
 
       await ExhibitionModel.update(

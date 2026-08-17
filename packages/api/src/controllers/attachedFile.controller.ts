@@ -95,7 +95,7 @@ export async function migrateAttachedFiles() {
         return;
       }
 
-      const fileUrl = await uploadFileToS3(buffer, originalName);
+      const fileUrl = await uploadFileToS3(buffer, originalName, 'attached-file');
 
       await AttachedFileModel.update(
         { file_url: fileUrl, file_path: fileUrl },

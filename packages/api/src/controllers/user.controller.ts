@@ -301,7 +301,7 @@ export async function migrateUserProfilePhotos() {
       const resizedBuffer = await resizeImageBuffer(buffer, {
         shortSideSize: 300,
       });
-      const s3Url = await uploadImageToS3(resizedBuffer);
+      const s3Url = await uploadImageToS3(resizedBuffer, 'profile');
 
       await UserModel.update(
         {

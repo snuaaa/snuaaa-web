@@ -134,7 +134,7 @@ class MyUploadAdapter {
     // Update the loader's progress.
     return this.loader.file.then((file: File) => {
       return new Promise((resolve, reject) => {
-        UploadService.uploadImage(file)
+        UploadService.uploadImage(file, 'editor')
           .then((response) => {
             resolve({
               default: response.data.imgUrl,

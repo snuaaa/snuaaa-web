@@ -98,8 +98,8 @@ router.post(
       });
 
       const [imgUrl, thumbnailUrl] = await Promise.all([
-        uploadImageToS3(resizedOriginalBuffer),
-        uploadImageToS3(resizedThumbnailBuffer),
+        uploadImageToS3(resizedOriginalBuffer, 'exhibit-photo'),
+        uploadImageToS3(resizedThumbnailBuffer, 'exhibit-photo'),
       ]);
 
       let photographer = null;

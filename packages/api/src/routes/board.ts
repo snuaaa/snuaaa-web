@@ -218,8 +218,8 @@ router.post(
       });
 
       const [posterUrl, posterThumbnailUrl] = await Promise.all([
-        uploadImageToS3(resizedOriginalBuffer),
-        uploadImageToS3(resizedThumbnailBuffer),
+        uploadImageToS3(resizedOriginalBuffer, 'exhibition'),
+        uploadImageToS3(resizedThumbnailBuffer, 'exhibition'),
       ]);
 
       req.body.poster_path = posterUrl;
