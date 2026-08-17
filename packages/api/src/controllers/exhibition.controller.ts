@@ -110,9 +110,7 @@ export async function migrateExhibitionPosters() {
   await Promise.all(
     exhibitions.map(async (exhibition) => {
       const content_id = exhibition.getDataValue('content_id');
-      const rawThumbnailPath = exhibition.getDataValue(
-        'poster_thumbnail_path',
-      );
+      const rawThumbnailPath = exhibition.getDataValue('poster_thumbnail_path');
 
       const filePath = path.join(
         '.',
@@ -162,17 +160,14 @@ export async function migrateExhibitionPosters() {
         },
       );
 
-      await fs.promises.unlink(filePath).catch((err) => {
-        console.error(`Failed to delete local poster file: ${filePath}`, err);
-      });
-      if (thumbnailPath) {
-        // await fs.promises.unlink(thumbnailPath).catch((err) => {
-        //   console.error(
-        //     `Failed to delete local poster thumbnail: ${thumbnailPath}`,
-        //     err,
-        //   );
-        // });
-      }
+      // if (thumbnailPath) {
+      //   await fs.promises.unlink(thumbnailPath).catch((err) => {
+      //     console.error(
+      //       `Failed to delete local poster thumbnail: ${thumbnailPath}`,
+      //       err,
+      //     );
+      //   });
+      // }
     }),
   );
 }

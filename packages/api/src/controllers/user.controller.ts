@@ -314,9 +314,9 @@ export async function migrateUserProfilePhotos() {
         },
       );
 
-      await fs.promises.unlink(filePath).catch((err) => {
-        console.error(`Failed to delete local profile file: ${filePath}`, err);
-      });
+      // await fs.promises.unlink(filePath).catch((err) => {
+      //   console.error(`Failed to delete local profile file: ${filePath}`, err);
+      // });
     }),
   );
 }

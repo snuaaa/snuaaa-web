@@ -232,17 +232,17 @@ export async function migrateExhibitPhotos() {
         },
       );
 
-      await fs.promises.unlink(filePath).catch((err) => {
-        console.error(`Failed to delete local original file: ${filePath}`, err);
-      });
-      if (thumbnailPath) {
-        await fs.promises.unlink(thumbnailPath).catch((err) => {
-          console.error(
-            `Failed to delete local thumbnail file: ${thumbnailPath}`,
-            err,
-          );
-        });
-      }
+      // await fs.promises.unlink(filePath).catch((err) => {
+      //   console.error(`Failed to delete local original file: ${filePath}`, err);
+      // });
+      // if (thumbnailPath) {
+      //   await fs.promises.unlink(thumbnailPath).catch((err) => {
+      //     console.error(
+      //       `Failed to delete local thumbnail file: ${thumbnailPath}`,
+      //       err,
+      //     );
+      //   });
+      // }
     }),
   );
 }
