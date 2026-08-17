@@ -80,7 +80,7 @@ function UserProfile({ userInfo, isCanEdit }: Props) {
           >
             <AaaImage
               className="profile-img"
-              imgSrc={userInfo.profile_path}
+              imgSrc={userInfo.profile_url || userInfo.profile_path}
               defaultImgSrc={imgDefaultProfile}
             />
           </div>

@@ -10,7 +10,9 @@ export interface User {
   email?: string;
   mobile?: string;
   introduction?: string;
+  /** @deprecated use profile_url instead */
   profile_path: string;
+  profile_url?: string;
   grade: number;
   level: number;
   login_at?: string;

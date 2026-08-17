@@ -12,7 +12,7 @@ type InputFieldProps = {
   maxLength?: number;
   required?: boolean;
   invalidMessage?: string;
-  handleChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  handleChange?: (e: ChangeEvent<HTMLInputElement>) => void;
   handleBlur?: (e: FocusEvent<HTMLInputElement>) => void;
 };
 
@@ -50,7 +50,7 @@ const InputField = ({
         name={name}
         className="h-8 inline-block w-11/20"
         onChange={(e) => {
-          handleChange(e);
+          handleChange?.(e);
         }}
         onBlur={(e) => {
           if (handleBlur) {

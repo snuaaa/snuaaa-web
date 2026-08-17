@@ -47,6 +47,7 @@ export async function retrieveUser(user_id) {
       'grade',
       'level',
       'profile_path',
+      'profile_url',
       'login_at',
     ],
     where: { user_id: user_id },
@@ -96,6 +97,7 @@ export async function retrieveUserByUserUuid(user_uuid: string) {
       'grade',
       'level',
       'profile_path',
+      'profile_url',
     ],
     where: { user_uuid: user_uuid },
   });
