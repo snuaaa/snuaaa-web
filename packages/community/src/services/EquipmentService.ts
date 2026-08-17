@@ -34,6 +34,7 @@ export type CreateEquipmentRequest = Pick<
   | 'location'
   | 'maker'
   | 'status'
+  | 'mount_spec'
   | 'img_path'
 >;
 

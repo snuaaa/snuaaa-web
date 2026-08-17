@@ -1,0 +1,312 @@
+.optical-train {
+  --optical-train-ink: #000e2c;
+  --optical-train-muted: #466890;
+  --optical-train-line: #cdd9ea;
+  --optical-train-surface: #ffffff;
+  --optical-train-surface-muted: #f4f8fc;
+  --optical-train-focus: #16705c;
+  --optical-train-status-compatible: #16705c;
+  --optical-train-status-incompatible: #e25d80;
+  --optical-train-status-unverified: #9a6b08;
+
+  color: var(--optical-train-ink);
+
+  &__text-muted,
+  &__status-message {
+    color: var(--optical-train-muted);
+  }
+
+  &__control,
+  &__retry-button {
+    border: 1px solid var(--optical-train-line);
+    background: var(--optical-train-surface);
+    color: var(--optical-train-ink);
+  }
+
+  &__control:focus-visible,
+  &__retry-button:focus-visible,
+  &__catalog-result:focus-visible {
+    outline: 2px solid var(--optical-train-focus);
+    outline-offset: 2px;
+  }
+
+  &__catalog-result {
+    border: 2px solid var(--optical-train-line);
+    background: var(--optical-train-surface);
+    color: var(--optical-train-ink);
+
+    &:hover {
+      border-color: var(--optical-train-focus);
+    }
+
+    &:disabled {
+      border-color: var(--optical-train-line);
+      background: var(--optical-train-surface-muted);
+      color: var(--optical-train-muted);
+    }
+  }
+
+  &__catalog-category {
+    color: var(--optical-train-muted);
+  }
+
+  &__rail-card {
+    border: 1px solid var(--optical-train-line);
+    background: var(--optical-train-surface);
+    color: var(--optical-train-ink);
+  }
+
+  &__rail-label,
+  &__rail-empty {
+    color: var(--optical-train-muted);
+  }
+
+  &__rail-destructive {
+    border-color: var(--optical-train-status-incompatible);
+    color: var(--optical-train-status-incompatible);
+  }
+
+  &__rail-flip:hover {
+    background: var(--optical-train-ink);
+    color: var(--optical-train-surface);
+  }
+
+  &__rail-port-selection {
+    border-top-color: var(--optical-train-line);
+  }
+
+  &__status-badge {
+    border: 1px solid var(--optical-train-line);
+    background: var(--optical-train-surface);
+    color: var(--optical-train-ink);
+
+    &--compatible {
+      border-color: var(--optical-train-status-compatible);
+      color: var(--optical-train-status-compatible);
+    }
+
+    &--unverified {
+      border-color: var(--optical-train-status-unverified);
+      color: var(--optical-train-status-unverified);
+    }
+  }
+
+  &__drop-zone {
+    border-color: var(--optical-train-line);
+    background: color-mix(in srgb, var(--optical-train-surface) 70%, transparent);
+
+    &--active {
+      border-color: var(--optical-train-focus);
+      background: var(--optical-train-surface);
+    }
+  }
+
+  &__error,
+  &__placement-alert {
+    border-color: var(--optical-train-status-incompatible);
+    background: var(--optical-train-surface-muted);
+    color: var(--optical-train-ink);
+  }
+
+  .rail-schematic {
+    margin: 0;
+    min-width: 0;
+    max-width: 100%;
+    color: var(--optical-train-ink);
+
+    &__scroll {
+      min-width: 0;
+      max-width: 100%;
+      overflow-x: auto;
+      border-bottom: 1px solid var(--optical-train-line);
+    }
+
+    &__svg {
+      --rail-schematic-display-scale: 3;
+      display: block;
+      width: calc(var(--rail-schematic-display-width) * var(--rail-schematic-display-scale));
+      height: calc(var(--rail-schematic-display-height) * var(--rail-schematic-display-scale));
+    }
+    .cutaway__body path {
+      fill: var(--optical-train-surface);
+      stroke: var(--optical-train-ink);
+      stroke-width: 1;
+    }
+    .cutaway__body .cutaway__estimated-body {
+      fill: none;
+      stroke-dasharray: 1 1;
+    }
+    .cutaway__interface line,
+    .cutaway__interface path,
+    .cutaway__hatch {
+      fill: none;
+      stroke: var(--optical-train-ink);
+      stroke-width: 0.5;
+    }
+    .cutaway__annotation[data-kind='facing'] {
+      display: none;
+    }
+    .cutaway__annotation[data-kind='focus'] rect {
+      fill: var(--optical-train-focus);
+      opacity: 0.22;
+    }
+    .cutaway__annotation[data-kind='terminal'] line {
+      stroke: var(--optical-train-status-incompatible);
+      stroke-width: 1;
+    }
+    .cutaway__annotation[data-kind='terminal'] text {
+      font-size: 5.5px;
+    }
+    .cutaway__annotation[data-kind='focus'] text,
+    .cutaway__annotation[data-kind='terminal'] text {
+      fill: var(--optical-train-ink);
+      font-weight: 700;
+    }
+    .cutaway__annotation[data-kind='focus'] line {
+      stroke: var(--optical-train-focus);
+      stroke-width: 1.5;
+    }
+    .cutaway__unresolved line,
+    .cutaway__unresolved path {
+      fill: none;
+      stroke: var(--optical-train-status-unverified);
+      stroke-dasharray: 1 1;
+    }
+    .cutaway__unresolved .cutaway__interface line,
+    .cutaway__unresolved .cutaway__interface path {
+      stroke: var(--optical-train-status-unverified);
+      stroke-dasharray: none;
+    }
+    .cutaway__interface[data-status] circle,
+    .cutaway__interface[data-status] path {
+      fill: var(--optical-train-surface);
+      stroke-width: 1;
+    }
+    .cutaway__interface[data-status='compatible'] circle,
+    .cutaway__interface[data-status='compatible'] path {
+      stroke: var(--optical-train-status-compatible);
+    }
+    .cutaway__interface[data-status='incompatible'] circle,
+    .cutaway__interface[data-status='incompatible'] path {
+      stroke: var(--optical-train-status-incompatible);
+    }
+    .cutaway__interface[data-status='unverified'] circle,
+    .cutaway__interface[data-status='unverified'] path {
+      stroke: var(--optical-train-status-unverified);
+    }
+    text {
+      fill: var(--optical-train-muted);
+      font-size: 11px;
+    }
+    figcaption {
+      margin-top: 0.5rem;
+      color: var(--optical-train-muted);
+      font-size: 0.75rem;
+    }
+  }
+
+  .cutaway-preview,
+  .equipment-cutaway-preview {
+    margin: 0;
+    min-width: 0;
+    max-width: 100%;
+    color: var(--optical-train-ink);
+
+    svg {
+      --cutaway-preview-display-scale: 2;
+      display: block;
+      width: calc(var(--cutaway-preview-display-width) * var(--cutaway-preview-display-scale));
+      max-width: 100%;
+      height: auto;
+    }
+    .cutaway__body path {
+      fill: none;
+      stroke: var(--optical-train-ink);
+      stroke-width: 1;
+    }
+    .cutaway__estimated-body {
+      fill: none;
+      stroke-dasharray: 4 4;
+    }
+    .cutaway__interface line,
+    .cutaway__interface path,
+    .cutaway__hatch {
+      fill: none;
+      stroke: var(--optical-train-ink);
+      stroke-width: 1;
+    }
+    .cutaway__annotation[data-kind='facing'] {
+      fill: none;
+      stroke: var(--optical-train-muted);
+    }
+    .cutaway__annotation[data-kind='plane'] line {
+      stroke: var(--optical-train-status-incompatible);
+      stroke-width: 0.8;
+    }
+    .cutaway__annotation[data-kind='plane'] text {
+      fill: var(--optical-train-ink);
+      font-size: 4px;
+      font-weight: 700;
+    }
+    .cutaway__annotation[data-kind='focus'] line {
+      stroke: var(--optical-train-focus);
+      stroke-width: 0.8;
+    }
+    .cutaway__annotation[data-kind='focus'] text {
+      fill: var(--optical-train-focus);
+      font-size: 8px;
+      font-weight: 700;
+    }
+    .cutaway__unresolved line,
+    .cutaway__unresolved path {
+      fill: none;
+      stroke: var(--optical-train-status-unverified);
+      stroke-dasharray: 2 2;
+    }
+    .cutaway__unresolved .cutaway__interface line,
+    .cutaway__unresolved .cutaway__interface path {
+      stroke: var(--optical-train-status-unverified);
+      stroke-dasharray: none;
+    }
+  }
+
+  .rail-schematic,
+  .cutaway-preview,
+  .equipment-cutaway-preview {
+    .cutaway__interface text {
+      fill: var(--optical-train-muted);
+      font-size: 8px;
+    }
+
+    .cutaway__annotation[data-kind='axis'] line {
+      fill: none;
+      stroke: var(--optical-train-muted);
+      stroke-width: 1;
+      stroke-dasharray: 3 3;
+      pointer-events: none;
+    }
+
+    .cutaway__unresolved text {
+      fill: var(--optical-train-status-unverified);
+      font-size: 9px;
+    }
+
+    .cutaway__body > text {
+      fill: var(--optical-train-muted);
+      font-size: 11px;
+    }
+  }
+
+  .equipment-cutaway-preview {
+    figcaption {
+      color: var(--optical-train-muted);
+      font-size: 0.75rem;
+    }
+
+    &--compact {
+      figcaption {
+        display: none;
+      }
+    }
+  }
+}

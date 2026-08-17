@@ -18,13 +18,14 @@ type Props = {
     | 'status'
     | 'location'
     | 'maker'
+    | 'mount_spec'
     | 'description'
     | 'img_path'
   >;
   onChangeInput: (
     key: keyof Pick<
       Equipment,
-      'name' | 'nickname' | 'location' | 'maker' | 'description' | 'img_path'
+       'name' | 'nickname' | 'location' | 'maker' | 'mount_spec' | 'description' | 'img_path'
     >,
     value: string,
   ) => void;
@@ -148,6 +149,20 @@ const EquipmentForm: React.FC<Props> = ({
           value={equipment.maker}
           onChange={(e) => onChangeInput('maker', e.target.value)}
           required
+        />
+
+        <TextArea
+          name="체결부 (JSON)"
+          placeholder='{"mount_obj":"...","mount_ocu":"..."}'
+          value={equipment.mount_spec ? JSON.stringify(equipment.mount_spec, null, 2) : ''}
+          onChange={(e) => {
+            try {
+              const parsed = e.target.value.trim() === '' ? null : JSON.parse(e.target.value);
+              onChangeInput('mount_spec', parsed);
+            } catch {
+              onChangeInput('mount_spec', e.target.value);
+            }
+          }}
         />
 
         <InputField
