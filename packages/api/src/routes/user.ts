@@ -61,6 +61,7 @@ router.patch(
         introduction: req.body.introduction,
         grade: grade,
         profile_url: req.body.profile_url,
+        profile_path: req.body.profile_path,
       };
 
       await updateUser(user_id, userData);

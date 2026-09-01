@@ -23,7 +23,13 @@ export async function retrieveAttachedFile(file_id) {
   }
 
   return AttachedFileModel.findOne({
-    attributes: ['file_id', 'original_name', 'file_path', 'file_url', 'file_type'],
+    attributes: [
+      'file_id',
+      'original_name',
+      'file_path',
+      'file_url',
+      'file_type',
+    ],
     where: { file_id: file_id },
   });
 }
@@ -95,10 +101,14 @@ export async function migrateAttachedFiles() {
         return;
       }
 
-      const fileUrl = await uploadFileToS3(buffer, originalName, 'attached-file');
+      const fileUrl = await uploadFileToS3(
+        buffer,
+        originalName,
+        'attached-file',
+      );
 
       await AttachedFileModel.update(
-        { file_url: fileUrl, file_path: fileUrl },
+        { file_url: fileUrl },
         { where: { file_id: file_id } },
       );
 

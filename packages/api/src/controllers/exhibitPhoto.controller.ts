@@ -224,8 +224,6 @@ export async function migrateExhibitPhotos() {
         {
           img_url: imgUrl,
           thumbnail_url: thumbnailUrl,
-          file_path: imgUrl,
-          thumbnail_path: thumbnailUrl,
         },
         {
           where: { content_id: content_id },
