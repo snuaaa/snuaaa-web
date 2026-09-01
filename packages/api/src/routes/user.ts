@@ -50,19 +50,6 @@ router.patch(
       const prevGrade = userInfo.get('grade') as number;
       const grade = prevGrade < 9 ? prevGrade : verified ? 8 : 9;
 
-      // profile_url returned to the client falls back to the legacy
-      // profile_path when the user hasn't migrated to S3 yet (see the
-      // getter on the User model). Only persist profile_url when it
-      // actually changed, otherwise that fallback value gets written
-      // back into the raw column and permanently excludes the user
-      // from migrateUserProfilePhotos (which only targets rows where
-      // profile_url IS NULL).
-      const rawProfileUrl = userInfo.getDataValue('profile_url');
-      const rawProfilePath = userInfo.getDataValue('profile_path');
-      const isProfileUrlUnchanged =
-        req.body.profile_url === rawProfileUrl ||
-        (!rawProfileUrl && req.body.profile_url === rawProfilePath);
-
       const userData = {
         username: req.body.username,
         nickname: nickname,
@@ -73,7 +60,8 @@ router.patch(
         mobile: req.body.mobile,
         introduction: req.body.introduction,
         grade: grade,
-        profile_url: isProfileUrlUnchanged ? undefined : req.body.profile_url,
+        profile_url: req.body.profile_url,
+        profile_path: req.body.profile_path,
       };
 
       await updateUser(user_id, userData);
