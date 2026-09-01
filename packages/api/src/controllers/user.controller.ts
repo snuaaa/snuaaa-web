@@ -306,7 +306,6 @@ export async function migrateUserProfilePhotos() {
       await UserModel.update(
         {
           profile_url: s3Url,
-          profile_path: s3Url,
         },
         {
           where: { user_id: user_id },

@@ -152,8 +152,6 @@ export async function migrateExhibitionPosters() {
         {
           poster_url: posterUrl,
           poster_thumbnail_url: posterThumbnailUrl,
-          poster_path: posterUrl,
-          poster_thumbnail_path: posterThumbnailUrl,
         },
         {
           where: { content_id: content_id },
