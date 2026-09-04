@@ -1,17 +1,16 @@
 import { useEffect } from 'react';
 import { Link } from '@tanstack/react-router';
-import Image from '../../components/Common/AaaImage';
+import Image from '../Common/AaaImage';
 import imgProfile from '../../assets/img/common/profile.png';
 import { useAuth } from '~/contexts/auth';
 
 type Props = {
-  profile_path: string;
+  profileImgUrl?: string;
   togglePopup: () => void;
   logout: () => void;
 };
 
-// TODO: rename to ProfileMenu
-function PopupUser({ profile_path, togglePopup, logout }: Props) {
+function ProfileMenu({ profileImgUrl, togglePopup, logout }: Props) {
   const authContext = useAuth();
 
   useEffect(() => {
@@ -39,7 +38,7 @@ function PopupUser({ profile_path, togglePopup, logout }: Props) {
       </div>
       <div className="md:hidden">
         <Image
-          imgSrc={profile_path}
+          imgSrc={profileImgUrl}
           defaultImgSrc={imgProfile}
           className="w-32 h-32 rounded-full object-cover"
         />
@@ -68,4 +67,4 @@ function PopupUser({ profile_path, togglePopup, logout }: Props) {
   );
 }
 
-export default PopupUser;
+export default ProfileMenu;

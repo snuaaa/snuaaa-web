@@ -2,19 +2,21 @@ import { useState } from 'react';
 import logo from '~/assets/img/logo_white.png';
 import imgProfile from '~/assets/img/common/profile.png';
 import Navigation from '~/components/Header/Navigation';
-import PopupUser from '~/components/Header/PopupUser';
+import ProfileMenu from '~/components/Header/ProfileMenu';
 import Image from '~/components/Common/AaaImage';
 import { useNavigate, useLocation } from '@tanstack/react-router';
 import { useAuth } from '~/contexts/auth';
 import { useViewportSize } from '~/contexts/viewportSize';
 import backgroundImg from '~/assets/img/header.gif';
 import MenuDrawer from './MenuDrawer';
+import { useMyUserInfo } from '~/hooks/queries/useUserQueries';
 
 function Header() {
   const [isShowPopupUser, setIsShowPopupUser] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const authContext = useAuth();
+  const { data: { userInfo: myInfo } = {} } = useMyUserInfo();
 
   const togglePopup = () => {
     setIsShowPopupUser(!isShowPopupUser);
@@ -32,8 +34,6 @@ function Header() {
 
   const viewportSize = useViewportSize();
   const isMobile = ['Tablet', 'Mobile'].includes(viewportSize);
-
-  const { profile_path } = authContext.authInfo.user;
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
@@ -73,12 +73,12 @@ function Header() {
                 <Image
                   className="w-10 h-10 md:w-[50px] md:h-[50px] rounded-full cursor-pointer object-cover"
                   onClick={togglePopup}
-                  imgSrc={profile_path}
+                  imgSrc={myInfo?.profile_url || myInfo?.profile_path}
                   defaultImgSrc={imgProfile}
                 />
                 {isShowPopupUser && (
-                  <PopupUser
-                    profile_path={profile_path}
+                  <ProfileMenu
+                    profileImgUrl={myInfo?.profile_url || myInfo?.profile_path}
                     togglePopup={togglePopup}
                     logout={authContext.authLogout}
                   />
