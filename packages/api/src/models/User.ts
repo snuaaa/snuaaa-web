@@ -1,7 +1,20 @@
-import { Model, DataTypes } from 'sequelize';
+import { Model, DataTypes, Attributes } from 'sequelize';
 import { sequelize } from './sequelize';
 
 export default class UserModel extends Model {}
+
+export const BASE_USER_FIELDS: Attributes<UserModel> = [
+  'user_id',
+  'user_uuid',
+  'nickname',
+  'introduction',
+  'grade',
+  'level',
+  'email',
+  'profile_path',
+  'profile_url',
+  'deleted_at',
+];
 
 UserModel.init(
   {

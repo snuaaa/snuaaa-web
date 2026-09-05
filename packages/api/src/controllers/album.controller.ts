@@ -7,6 +7,7 @@ import {
   UserModel,
 } from '../models';
 import { Op } from 'sequelize';
+import { BASE_USER_FIELDS } from '../models/User';
 
 export type AlbumResponse = ContentModel & {
   album: AlbumModel;
@@ -27,7 +28,7 @@ export async function retrieveAlbum(
       {
         model: UserModel,
         required: true,
-        attributes: ['user_id', 'nickname', 'introduction', 'profile_path'],
+        attributes: BASE_USER_FIELDS,
         paranoid: false,
       },
       {
@@ -145,7 +146,7 @@ export async function retrieveAlbumsInBoard(
       {
         model: UserModel,
         required: true,
-        attributes: ['nickname', 'deleted_at'],
+        attributes: BASE_USER_FIELDS,
         paranoid: false,
       },
       {

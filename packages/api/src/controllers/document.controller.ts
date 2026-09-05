@@ -6,6 +6,7 @@ import {
   DocumentModel,
   UserModel,
 } from '../models';
+import { BASE_USER_FIELDS } from '../models/User';
 
 export type DocumentResponse = ContentModel & {
   document: DocumentModel;
@@ -31,16 +32,7 @@ export async function retrieveDocument(
       {
         model: UserModel,
         required: true,
-        attributes: [
-          'user_uuid',
-          'nickname',
-          'introduction',
-          'grade',
-          'level',
-          'email',
-          'profile_path',
-          'deleted_at',
-        ],
+        attributes: BASE_USER_FIELDS,
         paranoid: false,
       },
       {

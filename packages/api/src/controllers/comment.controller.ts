@@ -1,5 +1,6 @@
 import { BoardModel, CommentModel, ContentModel, UserModel } from '../models';
 import { Op } from 'sequelize';
+import { BASE_USER_FIELDS } from '../models/User';
 
 export type CommentFilter = {
   author_id?: string;
@@ -15,16 +16,7 @@ export function retrieveCommentsWithFilter(filter: CommentFilter) {
       {
         model: UserModel,
         required: true,
-        attributes: [
-          'user_id',
-          'user_uuid',
-          'nickname',
-          'introduction',
-          'grade',
-          'level',
-          'email',
-          'profile_path',
-        ],
+        attributes: BASE_USER_FIELDS,
         paranoid: false,
       },
       {
@@ -63,34 +55,14 @@ export async function retrieveComments(parent_id, user_id) {
       {
         model: UserModel,
         required: true,
-        attributes: [
-          'user_id',
-          'user_uuid',
-          'nickname',
-          'introduction',
-          'grade',
-          'level',
-          'email',
-          'profile_path',
-          'deleted_at',
-        ],
+        attributes: BASE_USER_FIELDS,
         paranoid: false,
       },
       {
         model: UserModel,
         // through: CommentLikeModel,
         as: 'likeUsers',
-        attributes: [
-          'user_id',
-          'user_uuid',
-          'nickname',
-          'introduction',
-          'grade',
-          'level',
-          'email',
-          'profile_path',
-          'deleted_at',
-        ],
+        attributes: BASE_USER_FIELDS,
         paranoid: false,
       },
       {
@@ -100,34 +72,14 @@ export async function retrieveComments(parent_id, user_id) {
           {
             model: UserModel,
             required: true,
-            attributes: [
-              'user_id',
-              'user_uuid',
-              'nickname',
-              'introduction',
-              'grade',
-              'level',
-              'email',
-              'profile_path',
-              'deleted_at',
-            ],
+            attributes: BASE_USER_FIELDS,
             paranoid: false,
           },
           {
             model: UserModel,
             // through: CommentLikeModel,
             as: 'likeUsers',
-            attributes: [
-              'user_id',
-              'user_uuid',
-              'nickname',
-              'introduction',
-              'grade',
-              'level',
-              'email',
-              'profile_path',
-              'deleted_at',
-            ],
+            attributes: BASE_USER_FIELDS,
             paranoid: false,
           },
         ],

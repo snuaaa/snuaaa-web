@@ -9,6 +9,7 @@ import fs from 'fs';
 import path from 'path';
 import { resizeImageBuffer } from '../utils/resize';
 import { uploadImageToS3 } from '../utils/upload';
+import { BASE_USER_FIELDS } from '../models/User';
 
 export async function retrieveExhibition(exhibition_id) {
   if (!exhibition_id) {
@@ -25,13 +26,7 @@ export async function retrieveExhibition(exhibition_id) {
       {
         model: UserModel,
         required: true,
-        attributes: [
-          'user_id',
-          'nickname',
-          'introduction',
-          'profile_path',
-          'deleted_at',
-        ],
+        attributes: BASE_USER_FIELDS,
         paranoid: false,
       },
       {
@@ -55,13 +50,7 @@ export async function retrieveExhibitions() {
       {
         model: UserModel,
         required: true,
-        attributes: [
-          'user_id',
-          'nickname',
-          'introduction',
-          'profile_path',
-          'deleted_at',
-        ],
+        attributes: BASE_USER_FIELDS,
         paranoid: false,
       },
       {

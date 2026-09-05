@@ -8,6 +8,7 @@ import {
 } from '../models/index';
 import EquipmentStatusEnum from '../enums/equipmentStatusEnum';
 import EquipmentRentEnum from '../enums/equipmentRentEnum';
+import { BASE_USER_FIELDS } from '../models/User';
 
 export async function retrieveEquipmentById(equipmentId: number) {
   return EquipmentModel.findOne({
@@ -86,17 +87,7 @@ export async function searchEquipmentList(category_id, status, keyword) {
           },
           {
             model: UserModel,
-            attributes: [
-              'user_id',
-              'user_uuid',
-              'nickname',
-              'introduction',
-              'grade',
-              'level',
-              'email',
-              'profile_path',
-              'deleted_at',
-            ],
+            attributes: BASE_USER_FIELDS,
             paranoid: false,
           },
         ],
