@@ -9,6 +9,7 @@ import fs from 'fs';
 import path from 'path';
 import { resizeImageBuffer } from '../utils/resize';
 import { uploadImageToS3 } from '../utils/upload';
+import { BASE_USER_FIELDS } from '../models/User';
 
 export async function createExhibitPhoto(data) {
   await ContentModel.create(
@@ -64,13 +65,7 @@ export async function retrieveExhibitPhoto(exhibitPhoto_id) {
           {
             model: UserModel,
             as: 'photographer',
-            attributes: [
-              'user_uuid',
-              'nickname',
-              'introduction',
-              'profile_path',
-              'deleted_at',
-            ],
+            attributes: BASE_USER_FIELDS,
             paranoid: false,
           },
         ],
@@ -90,13 +85,7 @@ export async function retrieveExhibitPhoto(exhibitPhoto_id) {
         model: UserModel,
         as: 'user',
         required: true,
-        attributes: [
-          'user_id',
-          'nickname',
-          'introduction',
-          'profile_path',
-          'deleted_at',
-        ],
+        attributes: BASE_USER_FIELDS,
         paranoid: false,
       },
     ],

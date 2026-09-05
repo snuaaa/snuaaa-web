@@ -13,6 +13,7 @@ import { resizeImageBuffer } from '../utils/resize';
 import path from 'path';
 import ContentTypeEnum from '../enums/contentTypeEnum';
 import { SearchType } from './post.controller';
+import { BASE_USER_FIELDS } from '../models/User';
 
 const getSearchCondition = (type?: SearchType, keyword?: string) => {
   if (!type || !keyword || keyword.trim() === '') {
@@ -105,17 +106,7 @@ export async function retrievePhoto(
       {
         model: UserModel,
         required: true,
-        attributes: [
-          'user_id',
-          'user_uuid',
-          'nickname',
-          'introduction',
-          'grade',
-          'level',
-          'email',
-          'profile_path',
-          'deleted_at',
-        ],
+        attributes: BASE_USER_FIELDS,
         paranoid: false,
       },
       {

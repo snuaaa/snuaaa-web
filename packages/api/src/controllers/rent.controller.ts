@@ -3,6 +3,7 @@ import EquipmentRentEnum from '../enums/equipmentRentEnum';
 import { EquipmentModel, RentReturnModel, UserModel } from '../models';
 import RentModel from '../models/Rent';
 import PenaltyStatusEnum from '../enums/penaltyStatusEnum';
+import { BASE_USER_FIELDS } from '../models/User';
 
 export async function rentEquipment(equipmentId: number, userId: number) {
   const equipment = await EquipmentModel.findOne({
@@ -110,17 +111,7 @@ export async function retrieveRentListByEquipmentId(
       {
         model: UserModel,
         required: true,
-        attributes: [
-          'user_id',
-          'user_uuid',
-          'nickname',
-          'introduction',
-          'grade',
-          'level',
-          'email',
-          'profile_path',
-          'deleted_at',
-        ],
+        attributes: BASE_USER_FIELDS,
         paranoid: false,
       },
     ],
@@ -189,17 +180,7 @@ export async function retrieveAllRentRecords(
       {
         model: UserModel,
         required: true,
-        attributes: [
-          'user_id',
-          'user_uuid',
-          'nickname',
-          'introduction',
-          'grade',
-          'level',
-          'email',
-          'profile_path',
-          'deleted_at',
-        ],
+        attributes: BASE_USER_FIELDS,
         paranoid: false,
       },
       {
