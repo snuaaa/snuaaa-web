@@ -17,7 +17,7 @@ function ProfileMini({ userInfo }: { userInfo: User }) {
           <div className={`profile-img-border grade${userInfo.grade}`}>
             <Image
               className="profile-img"
-              imgSrc={userInfo.profile_path}
+              imgSrc={userInfo.profile_url || userInfo.profile_path}
               defaultImgSrc={defaultProfile}
             />
           </div>

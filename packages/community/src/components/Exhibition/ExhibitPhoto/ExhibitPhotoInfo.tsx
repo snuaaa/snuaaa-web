@@ -77,7 +77,10 @@ function ExhibitPhotoInfo({
                               <>
                                 <Image
                                   className="photo-info-profile"
-                                  imgSrc={photographerInfo.profile_path}
+                                  imgSrc={
+                                    photographerInfo.profile_url ||
+                                    photographerInfo.profile_path
+                                  }
                                   defaultImgSrc={defaultProfile}
                                 />
                                 <div>{photographerInfo.nickname}</div>
