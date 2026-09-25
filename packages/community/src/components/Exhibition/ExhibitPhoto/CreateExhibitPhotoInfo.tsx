@@ -38,7 +38,7 @@ function CreateExhibitPhotoInfo({
           >
             <Image
               className="mini-user-profile"
-              imgSrc={user.profile_path}
+              imgSrc={user.profile_url || user.profile_path}
               defaultImgSrc={imgDefaultProfile}
             />
             {user.nickname}
