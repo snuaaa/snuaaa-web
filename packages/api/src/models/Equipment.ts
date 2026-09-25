@@ -30,6 +30,10 @@ EquipmentModel.init(
     maker: {
       type: DataTypes.STRING(64),
     },
+    mount_spec: {
+      type: DataTypes.JSONB,
+      allowNull: true,
+    },
     status: {
       type: DataTypes.STRING(16),
     },
