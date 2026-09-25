@@ -12,7 +12,7 @@ function ProfilePopUp({ userInfo }: ProfilePopUpProps) {
       <div className="profile-img">
         <div className={`profile-img-border grade${userInfo.grade}`}>
           <Image
-            imgSrc={userInfo.profile_path}
+            imgSrc={userInfo.profile_url || userInfo.profile_path}
             defaultImgSrc={defaultProfile}
           />
         </div>

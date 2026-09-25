@@ -128,7 +128,7 @@ export const Comment: FC<Props> = ({ comment, parent_id }) => {
           <UserActionDrawer userInfo={comment.user} className="profile">
             <Image
               className="comment-profile-img"
-              imgSrc={comment.user.profile_path}
+              imgSrc={comment.user.profile_url || comment.user.profile_path}
               defaultImgSrc={defaultProfile}
             />
           </UserActionDrawer>
@@ -210,7 +210,7 @@ export const Comment: FC<Props> = ({ comment, parent_id }) => {
         <UserActionDrawer userInfo={user} className="profile">
           <Image
             className="comment-profile-img"
-            imgSrc={user.profile_path}
+            imgSrc={user.profile_url || user.profile_path}
             defaultImgSrc={defaultProfile}
           />
         </UserActionDrawer>

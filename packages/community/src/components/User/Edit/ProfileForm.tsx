@@ -49,7 +49,9 @@ const ProfileForm = ({ user }: ProfileFormProps) => {
             children={(field) => (
               <div className="profile-img-wrapper">
                 <Image
-                  imgSrc={field.state.value || user.profile_path}
+                  imgSrc={
+                    field.state.value || user.profile_url || user.profile_path
+                  }
                   defaultImgSrc={imgDefaultProfile}
                 />
                 <label htmlFor="profileImg">
