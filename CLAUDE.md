@@ -70,7 +70,7 @@ Each package has its own ESLint flat config (`eslint.config.*`) with Prettier (s
 
 ## Branching & Deployment
 
-- PRs target `main`, not `develop`. The remote's default branch is still `develop`, so always pass `--base main` when creating PRs.
+- PRs target `main` (the default branch), not `develop`.
 - Branch names follow `<type>/<short-description>` (e.g. `fix/profile-path`, `feat/late-fee-management`). Commit messages and PR titles use `[feat]`, `[fix]`, `[refactor]`, `[chore]` prefixes, often written in Korean. PRs are squash-merged with `(#<PR number>)` appended.
 - **Push to `main`:** deploys the web to the Cloudflare Pages preview (`develop` branch) and the API Docker image to the dev Lightsail server.
 - **Release tagged `WEB-*`:** deploys the web to production Cloudflare Pages.
