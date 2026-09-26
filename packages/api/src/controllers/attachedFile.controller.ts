@@ -96,7 +96,7 @@ export async function migrateAttachedFiles() {
         console.error(`Local attached file not found: ${filePath}`, err);
         await AttachedFileModel.update(
           { file_url: '' },
-          { where: { file_id: file_id } },
+          { where: { file_id: file_id }, silent: true },
         );
         return;
       }
@@ -109,7 +109,7 @@ export async function migrateAttachedFiles() {
 
       await AttachedFileModel.update(
         { file_url: fileUrl },
-        { where: { file_id: file_id } },
+        { where: { file_id: file_id }, silent: true },
       );
 
       // await fs.promises.unlink(filePath).catch((err) => {
