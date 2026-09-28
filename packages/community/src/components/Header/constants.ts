@@ -44,4 +44,8 @@ export const TOOLS_LINKS: MenuLink[] = [
     url: '/equipment',
     accessGrade: 7,
   },
+  {
+    name: '광학계 조립기',
+    url: '/optical-train',
+  },
 ];
