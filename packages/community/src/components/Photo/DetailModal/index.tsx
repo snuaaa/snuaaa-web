@@ -6,6 +6,7 @@ import useBlockBackgroundScroll from '~/hooks/useBlockBackgroundScroll';
 import Loading from '~/components/Common/Loading';
 import Comment from '~/components/Comment';
 import { Photo } from '~/services/types';
+import { PhotoNavigationScope } from '~/services/PhotoService';
 
 import EditPhotoInfo from './EditPhotoInfo';
 import PhotoInfo from './PhotoInfo';
@@ -19,16 +20,22 @@ import { useUpdateAlbumThumbnail } from '~/hooks/queries/useAlbumQueries';
 
 type Props = {
   photoId: number;
+  navigation?: PhotoNavigationScope;
   onClose: () => void;
   onMovePhoto: (photoId: number) => void;
 };
 
-const PhotoDetailModal = ({ photoId, onClose, onMovePhoto }: Props) => {
+const PhotoDetailModal = ({
+  photoId,
+  navigation,
+  onClose,
+  onMovePhoto,
+}: Props) => {
   const authContext = useAuth();
 
   const navigate = useNavigate();
 
-  const { data } = usePhotoDetail(photoId);
+  const { data } = usePhotoDetail(photoId, navigation);
 
   useBlockBackgroundScroll();
 
@@ -180,18 +187,22 @@ const PhotoDetailModal = ({ photoId, onClose, onMovePhoto }: Props) => {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="photo-alb-title-wrp">
-                <i
-                  className="ri-arrow-left-s-line cursor-pointer"
-                  onClick={() => moveToAlbum(-1)}
-                ></i>
+                {navigation !== 'user' && (
+                  <i
+                    className="ri-arrow-left-s-line cursor-pointer"
+                    onClick={() => moveToAlbum(-1)}
+                  ></i>
+                )}
                 <Link className="photo-alb-title" to={backLink}>
                   <i className="ri-gallery-line"></i>
                   <h5>{parentAlbum ? parentAlbum.title : '기본앨범'}</h5>
                 </Link>
-                <i
-                  className="ri-arrow-right-s-line cursor-pointer"
-                  onClick={() => moveToAlbum(1)}
-                ></i>
+                {navigation !== 'user' && (
+                  <i
+                    className="ri-arrow-right-s-line cursor-pointer"
+                    onClick={() => moveToAlbum(1)}
+                  ></i>
+                )}
                 <div className="enif-modal-close" onClick={onClose}>
                   <i className="ri-close-fill text-2xl cursor-pointer"></i>
                 </div>

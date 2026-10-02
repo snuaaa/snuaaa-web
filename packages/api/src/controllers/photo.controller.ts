@@ -250,6 +250,47 @@ export async function retrieveNextPhoto(photo_id, album_id) {
   });
 }
 
+export async function retrieveAdjacentPhotoByAuthor(
+  photo_id: string | number,
+  author_id: number,
+  read_grade: number,
+  direction: 'prev' | 'next',
+) {
+  if (!photo_id) {
+    throw new Error('photo_id can not be null');
+  }
+
+  const isPrev = direction === 'prev';
+
+  return ContentModel.findOne({
+    include: [
+      {
+        model: PhotoModel,
+        as: 'photo',
+        required: true,
+      },
+      {
+        model: BoardModel,
+        required: true,
+        attributes: [],
+        where: {
+          lv_read: {
+            [Op.gte]: read_grade,
+          },
+        },
+      },
+    ],
+    where: {
+      author_id,
+      type: ContentTypeEnum.PHOTO,
+      content_id: {
+        [isPrev ? Op.lt : Op.gt]: photo_id,
+      },
+    },
+    order: [['content_id', isPrev ? 'DESC' : 'ASC']],
+  });
+}
+
 export async function retrievePrevAlbumPhoto(album_id, board_id) {
   if (!board_id) {
     throw new Error('board_id can not be null');

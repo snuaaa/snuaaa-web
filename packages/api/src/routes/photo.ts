@@ -11,6 +11,7 @@ import {
   deletePhoto,
   retrieveNextPhoto,
   retrievePrevPhoto,
+  retrieveAdjacentPhotoByAuthor,
   retrievePrevAlbumPhoto,
   retrieveNextAlbumPhoto,
   createPhoto,
@@ -88,6 +89,24 @@ router.get(
         return next({ status: 403, code: 4001 });
       }
 
+      const isUserNavigation = req.query.navigation === 'user';
+      const prevPhotoPromise = isUserNavigation
+        ? retrieveAdjacentPhotoByAuthor(
+            req.params.photo_id,
+            photoInfo.author_id,
+            decodedToken.grade,
+            'prev',
+          )
+        : retrievePrevPhoto(req.params.photo_id, photoInfo.parent_id);
+      const nextPhotoPromise = isUserNavigation
+        ? retrieveAdjacentPhotoByAuthor(
+            req.params.photo_id,
+            photoInfo.author_id,
+            decodedToken.grade,
+            'next',
+          )
+        : retrieveNextPhoto(req.params.photo_id, photoInfo.parent_id);
+
       const [
         likeInfo,
         boardTagInfo,
@@ -98,8 +117,8 @@ router.get(
       ] = await Promise.all([
         checkLike(req.params.photo_id, decodedToken._id),
         retrieveTagsOnBoard(photoInfo.board_id),
-        retrievePrevPhoto(req.params.photo_id, photoInfo.parent_id),
-        retrieveNextPhoto(req.params.photo_id, photoInfo.parent_id),
+        prevPhotoPromise,
+        nextPhotoPromise,
         retrievePrevAlbumPhoto(photoInfo.parent_id, photoInfo.board_id),
         retrieveNextAlbumPhoto(photoInfo.parent_id, photoInfo.board_id),
         increaseViewNum(req.params.photo_id),
