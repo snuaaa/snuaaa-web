@@ -1,7 +1,2 @@
 packages:
   - 'packages/*'
-
-# Transitive dependencies pinned to patched versions (see #152).
-overrides:
-  lodash: ^4.18.0
-  lodash-es: ^4.18.0
