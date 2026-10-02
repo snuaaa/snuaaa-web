@@ -12,7 +12,9 @@ import 'dotenv/config';
 const app = express();
 
 // [CONFIGURE APP TO USE bodyParser]
-app.use(helmet());
+// The web client is served from a different origin and loads `/static` images,
+// so allow cross-origin embedding (helmet defaults to same-origin since v5).
+app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 app.use(logger);
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());

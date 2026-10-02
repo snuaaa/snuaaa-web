@@ -1,7 +1,6 @@
 import { useState, useEffect, createRef, useCallback } from 'react';
 import { useRouter, useNavigate } from '@tanstack/react-router';
 import FullScreenPortal from '~/components/Common/FullScreenPortal';
-import { RecordOf, Record } from 'immutable';
 
 import useBlockBackgroundScroll from '~/hooks/useBlockBackgroundScroll';
 import { ExhibitPhoto } from '~/services/types';
@@ -27,7 +26,7 @@ function ExhibitPhotoPage({ exhibitPhotoId }: ExhibitPhotoPageProps) {
   const [exhibitPhotosInfo, setExhibitPhotosInfo] = useState<ExhibitPhoto[]>(
     [],
   );
-  const [contentInfo, setContentInfo] = useState<RecordOf<ExhibitPhoto>>();
+  const [contentInfo, setContentInfo] = useState<ExhibitPhoto>();
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
   useBlockBackgroundScroll();
@@ -39,7 +38,7 @@ function ExhibitPhotoPage({ exhibitPhotoId }: ExhibitPhotoPageProps) {
     if (data) {
       const exhibitPhotoInfo = data.exhibitPhotoInfo;
       setExhibitPhotosInfo(data.exhibitPhotosInfo);
-      setContentInfo(Record(exhibitPhotoInfo)());
+      setContentInfo(exhibitPhotoInfo);
     }
   }, [data]);
 
