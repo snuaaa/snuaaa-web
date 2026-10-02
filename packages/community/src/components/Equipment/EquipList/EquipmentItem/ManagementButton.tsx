@@ -1,6 +1,5 @@
 import { FC } from 'react';
 import { Equipment } from '~/services/types';
-import { useEquipment } from '../../contexts';
 import EditModal from '../../Modal/Edit';
 import { useModal } from '~/contexts/modal';
 import RentRecords from '../../Modal/RentRecords';
@@ -10,11 +9,10 @@ type Props = {
 };
 
 const ManagementButton: FC<Props> = ({ equipment }) => {
-  const { refresh } = useEquipment();
   const { openModal } = useModal();
 
   const handleClickEquipmentEdit = (equipment: Equipment) => {
-    openModal(<EditModal editingEquipment={equipment} onEdit={refresh} />);
+    openModal(<EditModal editingEquipment={equipment} />);
   };
 
   return (

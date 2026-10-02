@@ -57,6 +57,7 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint",
+    "typecheck": "tsc --noEmit",
     "lint:fix": "eslint --fix"
   },
   "browserslist": [

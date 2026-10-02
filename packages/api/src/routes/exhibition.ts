@@ -36,7 +36,6 @@ router.get('/:exhibition_id', verifyTokenMiddleware, async (req, res) => {
   }
 });
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 router.patch(
   '/:exhibition_id',
   verifyTokenMiddleware,

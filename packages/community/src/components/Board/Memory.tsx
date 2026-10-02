@@ -45,7 +45,6 @@ function Memory({ boardInfo }: MemoryProps) {
   const clickAll = () => {
     navigate({
       search: (prev) => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { category: _category, ...rest } = prev;
         return { ...rest, page: 1 };
       },

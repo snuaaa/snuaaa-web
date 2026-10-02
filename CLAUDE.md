@@ -25,10 +25,10 @@ Per package, run with `pnpm --filter <name> <script>`, or run the script from in
 
 | Package | Scripts |
 | --- | --- |
-| `@snuaaa/community-web` | `dev`, `build`, `lint`, `lint:fix` |
-| `@snuaaa/api` | `dev` (nodemon + ts-node on `src/main.ts`), `build` (tsc -> `dist`), `serve`, `lint` (runs with `--fix`), `format`, `format:check` |
+| `@snuaaa/community-web` | `dev`, `build`, `lint`, `lint:fix`, `typecheck` |
+| `@snuaaa/api` | `dev` (nodemon + ts-node on `src/main.ts`), `build` (tsc -> `dist`), `serve`, `lint`, `lint:fix`, `format`, `format:check` |
 
-There is no test suite in either package. Verify changes with `lint` and `build`. The web build does not run `tsc`, so run `npx tsc --noEmit` in `packages/community` to type-check it.
+There is no test suite in either package. Verify changes with `lint` and `build`. The web build does not run `tsc`, so also run `typecheck` for the web. PRs to `main` run the same checks in `.github/workflows/ci.yml` (web: `lint`, `typecheck`, `build`; api: `lint`, `format:check`, `build`).
 
 Each package has its own ESLint flat config (`eslint.config.*`) with Prettier (single quotes). The root `.eslintrc.js` is legacy.
 

@@ -30,15 +30,18 @@ const PenaltyStatusColorMap: Record<PenaltyStatus, string> = {
   [PenaltyStatus.NO_PENALTY]: 'text-green-600',
 };
 
-const PenaltyStatusFilterOptions: { value: PenaltyStatus | ''; label: string }[] = [
+const PenaltyStatusFilterOptions: {
+  value: PenaltyStatus | '';
+  label: string;
+}[] = [
   { value: '', label: '전체' },
   { value: PenaltyStatus.NEED_PAYMENT, label: '연체료 미납' },
   { value: PenaltyStatus.RECEIVED_PAYMENT, label: '연체료 완납' },
   { value: PenaltyStatus.NO_PENALTY, label: '정상 반납' },
 ];
 
-const toDateString = (date: Date | null): string | undefined => {
-  if (!date) return undefined;
+const toDateString = (date: Date | [Date, Date] | null): string | undefined => {
+  if (!date || Array.isArray(date)) return undefined;
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, '0');
   const d = String(date.getDate()).padStart(2, '0');
@@ -224,7 +227,10 @@ const LateFees: FC = () => {
                   role="button"
                   tabIndex={0}
                   onClick={() => handleClickRecord(record.id)}
-                  onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && handleClickRecord(record.id)}
+                  onKeyDown={(e) =>
+                    (e.key === 'Enter' || e.key === ' ') &&
+                    handleClickRecord(record.id)
+                  }
                   className="flex items-center text-gray-950 border border-t-0 border-gray-300 w-full py-2 text-sm hover:bg-gray-50 cursor-pointer"
                 >
                   <div className="w-[14%] text-center truncate px-1">
@@ -248,7 +254,9 @@ const LateFees: FC = () => {
                     className={
                       'w-[14%] text-center text-xs ' +
                       (record.rentReturn
-                        ? PenaltyStatusColorMap[record.rentReturn.penalty_status]
+                        ? PenaltyStatusColorMap[
+                            record.rentReturn.penalty_status
+                          ]
                         : '')
                     }
                   >
@@ -265,7 +273,10 @@ const LateFees: FC = () => {
                       <button
                         className="bg-[#49A1AF] text-white text-xs px-2 py-1 rounded hover:bg-[#3d8a96]"
                         onClick={() =>
-                          handleTogglePenalty(record.id, PenaltyStatus.NEED_PAYMENT)
+                          handleTogglePenalty(
+                            record.id,
+                            PenaltyStatus.NEED_PAYMENT,
+                          )
                         }
                         disabled={updatePenalty.isPending}
                       >
@@ -277,7 +288,10 @@ const LateFees: FC = () => {
                       <button
                         className="bg-gray-400 text-white text-xs px-2 py-1 rounded hover:bg-gray-500"
                         onClick={() =>
-                          handleTogglePenalty(record.id, PenaltyStatus.RECEIVED_PAYMENT)
+                          handleTogglePenalty(
+                            record.id,
+                            PenaltyStatus.RECEIVED_PAYMENT,
+                          )
                         }
                         disabled={updatePenalty.isPending}
                       >
@@ -285,7 +299,7 @@ const LateFees: FC = () => {
                       </button>
                     )}
                   </div>
-                  </div>
+                </div>
                 {record.rentReturn && photoRentId === record.id && (
                   <div className="flex items-center border border-t-0 border-gray-300 w-full py-2">
                     <button

@@ -106,6 +106,7 @@ export async function migrateExhibitionPosters() {
         'upload',
         exhibition.getDataValue('poster_path'),
       );
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars -- 아래 주석 처리된 로컬 파일 삭제 코드에서 사용
       const thumbnailPath = rawThumbnailPath
         ? path.join('.', 'upload', rawThumbnailPath)
         : null;

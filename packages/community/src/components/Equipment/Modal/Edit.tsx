@@ -10,10 +10,9 @@ import {
 
 type Props = {
   editingEquipment: Equipment;
-  onEdit: () => void;
 };
 
-const EditModal: FC<Props> = ({ editingEquipment, onEdit }) => {
+const EditModal: FC<Props> = ({ editingEquipment }) => {
   const [equipment, setEquipment] = useState<UpdateEquipmentRequest>({
     ...editingEquipment,
   });
@@ -26,7 +25,6 @@ const EditModal: FC<Props> = ({ editingEquipment, onEdit }) => {
     // TODO: Implement Edit Equipment
     await mutateUpdateEquipment(equipment);
     closeModal();
-    onEdit();
   };
 
   const handleDelete = async () => {
@@ -34,7 +32,6 @@ const EditModal: FC<Props> = ({ editingEquipment, onEdit }) => {
     if (!goDrop) return;
     await mutateDeleteEquipment(equipment.id);
     closeModal();
-    onEdit();
   };
 
   const handleChangeInput = (

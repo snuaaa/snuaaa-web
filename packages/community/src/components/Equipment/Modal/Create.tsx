@@ -8,11 +8,7 @@ import {
   useCreateEquipment,
 } from '~/hooks/queries/useEquipmentQueries';
 
-type Props = {
-  onCreate: () => void;
-};
-
-const CreateModal: FC<Props> = ({ onCreate }) => {
+const CreateModal: FC = () => {
   const { data: categories = [] } = useEquipmentCategories();
   const [equipment, setEquipment] = useState<CreateEquipmentRequest>({
     name: '',
@@ -31,7 +27,6 @@ const CreateModal: FC<Props> = ({ onCreate }) => {
   const handleSubmit = async () => {
     await mutateCreateEquipment(equipment);
     closeModal();
-    onCreate();
   };
 
   const handleChangeInput = (

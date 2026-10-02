@@ -125,10 +125,7 @@ export const allRentRecordsQueryOptions = (
       }),
   });
 
-export function useAllRentRecords(
-  filters: AllRentRecordFilters,
-  page: number,
-) {
+export function useAllRentRecords(filters: AllRentRecordFilters, page: number) {
   return useQuery(allRentRecordsQueryOptions(filters, page));
 }
 

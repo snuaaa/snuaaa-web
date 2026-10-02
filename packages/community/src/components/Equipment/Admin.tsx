@@ -15,7 +15,7 @@ import { useCallback } from 'react';
 const Admin = () => {
   const authContext = useAuth();
 
-  const { data, refresh } = useEquipment();
+  const { data } = useEquipment();
   const { openModal } = useModal();
 
   const viewportSize = useViewportSize();
@@ -42,7 +42,7 @@ const Admin = () => {
   };
 
   const handleClickCreate = () => {
-    openModal(<CreateModal onCreate={refresh} />);
+    openModal(<CreateModal />);
   };
 
   return (
