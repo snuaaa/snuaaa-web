@@ -55,6 +55,7 @@ Each package has its own ESLint flat config (`eslint.config.*`) with Prettier (s
   3. `src/hooks/queries/use*Queries.ts` wraps those functions in TanStack Query hooks, each file with a `xxxKeys` query-key factory. New server calls should follow the same service → query-hook pattern, and mutations should invalidate through the key factories.
 - **Auth:** `contexts/auth` (`useAuth`). On load, the provider validates the cookie token and redirects to `/auth/login?redirect=...` unless the page is public (`/auth/login`, `/auth/signup`).
 - **Styling:** Tailwind v4 via `@tailwindcss/vite`, alongside legacy SCSS in `src/sass/` and `App.scss`.
+- **Redesign:** A UI redesign and design-system migration is in progress. Read `docs/redesign.md` before any UI work; it holds the tokens, component plan, decisions and PR order.
 - **Rich text:** CKEditor 5 v38, bundled via `@ckeditor/vite-plugin-ckeditor5`.
 - **Imports:** the `~/` alias maps to `src/`.
 
