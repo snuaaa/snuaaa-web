@@ -1,4 +1,5 @@
 // [LOAD PACKAGES]
+import './instrument';
 import express from 'express';
 import api from './routes';
 import cors from 'cors';
@@ -7,7 +8,6 @@ import * as bodyParser from 'body-parser';
 import { errorHandler } from './middlewares/errorHandler';
 import logger from './middlewares/logger';
 import helmet from 'helmet';
-import 'dotenv/config';
 
 const app = express();
 

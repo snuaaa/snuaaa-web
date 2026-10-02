@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { JWTPayload } from '../utils/token';
 import jwt from 'jsonwebtoken';
+import * as Sentry from '@sentry/node';
 
 export type AuthenticatedRequest = Request & { decodedToken: JWTPayload };
 
@@ -42,6 +43,7 @@ export function verifyTokenMiddleware(
       });
     }
     req.decodedToken = decoded;
+    Sentry.setUser({ id: req.decodedToken._id });
     next();
   });
 }
