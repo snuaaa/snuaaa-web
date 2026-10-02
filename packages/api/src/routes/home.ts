@@ -18,26 +18,24 @@ import { calcRiseSet } from '../utils/riseset';
 
 const router = express.Router();
 
-router.get('/soundbox', verifyTokenMiddleware, async (req, res) => {
+router.get('/soundbox', verifyTokenMiddleware, async (req, res, next) => {
   try {
     const post = await retrieveSoundBox();
     res.json(post);
   } catch (err) {
-    console.error(err);
-    res.status(401).json({ error: 'Retrieve Soundbox fail' });
+    next(err);
   }
 });
 
 router.get(
   '/posts',
   verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res) => {
+  async (req: AuthenticatedRequest, res, next) => {
     try {
       const posts = await retrieveRecentPosts(req.decodedToken.grade);
       res.json(posts);
     } catch (err) {
-      console.error(err);
-      res.status(401).json({ error: 'Retrieve Posts fail' });
+      next(err);
     }
   },
 );
@@ -45,7 +43,7 @@ router.get(
 router.get(
   '/posts/all',
   verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res) => {
+  async (req: AuthenticatedRequest, res, next) => {
     const ROWNUM = 10;
     let offset = 0;
     const { query, decodedToken } = req;
@@ -68,46 +66,42 @@ router.get(
         postInfo: postInfo.rows,
       });
     } catch (err) {
-      console.error(err);
-      res.status(401).json({ error: 'Retrieve Posts fail' });
+      next(err);
     }
   },
 );
 
-router.get('/memory', verifyTokenMiddleware, async (req, res) => {
+router.get('/memory', verifyTokenMiddleware, async (req, res, next) => {
   try {
     const albums = await retrieveAlbumsInBoard('brd31', 4, 0, null);
     res.json(albums);
   } catch (err) {
-    console.error(err);
-    res.status(401).json({ error: 'Retrieve Photos fail' });
+    next(err);
   }
 });
 
-router.get('/astrophoto', verifyTokenMiddleware, async (req, res) => {
+router.get('/astrophoto', verifyTokenMiddleware, async (req, res, next) => {
   try {
     const photos = await retrievePhotosInBoard('brd32', 9, 0);
     res.json(photos);
   } catch (err) {
-    console.error(err);
-    res.status(401).json({ error: 'Retrieve Photos fail' });
+    next(err);
   }
 });
 
-router.get('/comments', verifyTokenMiddleware, async (req, res) => {
+router.get('/comments', verifyTokenMiddleware, async (req, res, next) => {
   try {
     const commentInfo = await retrieveRecentComments();
     res.json(commentInfo);
   } catch (err) {
-    console.error(err);
-    res.status(401).json({ error: 'Retrieve Comments fail' });
+    next(err);
   }
 });
 
 router.get(
   '/comments/all',
   verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res) => {
+  async (req: AuthenticatedRequest, res, next) => {
     const ROWNUM = 10;
     let offset = 0;
     const { query, decodedToken } = req;
@@ -130,18 +124,16 @@ router.get(
         commentInfo: commentInfo.rows,
       });
     } catch (err) {
-      console.error(err);
-      res.status(401).json({ error: 'Retrieve Comments fail' });
+      next(err);
     }
   },
 );
 
-router.get('/riseset', verifyTokenMiddleware, (req, res) => {
+router.get('/riseset', verifyTokenMiddleware, (req, res, next) => {
   try {
     res.json(calcRiseSet());
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false, code: 0 });
+    next(err);
   }
 });
 

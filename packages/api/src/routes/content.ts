@@ -23,6 +23,7 @@ import {
   increaseDownloadCount,
   createAttachedFile,
 } from '../controllers/attachedFile.controller';
+import { BadRequestError, NotFoundError } from '../errors';
 
 const router = express.Router();
 const memoryUpload = multer({ storage: multer.memoryStorage() });
@@ -30,7 +31,7 @@ const memoryUpload = multer({ storage: multer.memoryStorage() });
 router.get(
   '/:content_id/comments',
   verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res) => {
+  async (req: AuthenticatedRequest, res, next) => {
     const { decodedToken } = req;
 
     try {
@@ -40,23 +41,16 @@ router.get(
       );
       res.json(comments);
     } catch (err) {
-      console.error(err);
-      res.status(500).json({
-        success: false,
-        message: 'INTERNAL SERVER ERROR',
-      });
+      next(err);
     }
   },
 );
 
-router.get('/:content_id/file/:file_id', async (req, res) => {
+router.get('/:content_id/file/:file_id', async (req, res, next) => {
   try {
     const file = await retrieveAttachedFile(req.params.file_id);
     if (!file) {
-      return res.status(404).json({
-        success: false,
-        message: 'FILE NOT FOUND',
-      });
+      return next(new NotFoundError('FILE NOT FOUND'));
     }
     increaseDownloadCount(req.params.file_id);
 
@@ -66,11 +60,7 @@ router.get('/:content_id/file/:file_id', async (req, res) => {
     }
     res.download(filePath, file.get('original_name') as string);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      success: false,
-      message: 'INTERNAL SERVER ERROR',
-    });
+    next(err);
   }
 });
 
@@ -78,15 +68,12 @@ router.post(
   '/:content_id/file',
   verifyTokenMiddleware,
   memoryUpload.single('attachedFile'),
-  async (req: AuthenticatedRequestWithFile, res) => {
+  async (req: AuthenticatedRequestWithFile, res, next) => {
     const { file } = req;
 
     try {
       if (!file) {
-        return res.status(409).json({
-          error: 'FILE IS NOT ATTACHED',
-          code: 1,
-        });
+        return next(new BadRequestError('FILE IS NOT ATTACHED'));
       }
 
       let file_type = '';
@@ -126,12 +113,7 @@ router.post(
       await createAttachedFile(req.params.content_id, data);
       res.json({ success: true });
     } catch (err) {
-      console.error(err);
-      return res.status(500).json({
-        success: false,
-        error: 'INTERNAL SERVER ERROR',
-        code: 0,
-      });
+      next(err);
     }
   },
 );
@@ -139,18 +121,14 @@ router.post(
 router.post(
   '/:content_id/comment',
   verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res) => {
+  async (req: AuthenticatedRequest, res, next) => {
     const { decodedToken } = req;
 
     try {
       await createComment(decodedToken._id, req.params.content_id, req.body);
       res.json({ success: true });
     } catch (err) {
-      console.error(err);
-      return res.status(403).json({
-        success: false,
-        message: err instanceof Error ? err.message : 'INTERNAL SERVER ERROR',
-      });
+      next(err);
     }
   },
 );
@@ -158,7 +136,7 @@ router.post(
 router.post(
   '/:content_id/like',
   verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res) => {
+  async (req: AuthenticatedRequest, res, next) => {
     const { decodedToken } = req;
     const content_id = req.params.content_id;
     const user_id = decodedToken._id;
@@ -172,10 +150,7 @@ router.post(
       }
       res.json({ success: true });
     } catch (err) {
-      console.error(err);
-      return res.status(403).json({
-        success: false,
-      });
+      next(err);
     }
   },
 );

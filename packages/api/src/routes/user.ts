@@ -36,7 +36,7 @@ const router = express.Router();
 router.patch(
   '/',
   verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res) => {
+  async (req: AuthenticatedRequest, res, next) => {
     const { decodedToken } = req;
     const user_id = decodedToken._id;
 
@@ -67,25 +67,17 @@ router.patch(
       await updateUser(user_id, userData);
       res.json({ success: true });
     } catch (err) {
-      console.error(err);
-      return res.status(500).json({
-        error: 'internal server error',
-        code: 0,
-      });
+      next(err);
     }
   },
 );
 
-router.post('/migrate', verifyTokenMiddleware, async (req, res) => {
+router.post('/migrate', verifyTokenMiddleware, async (req, res, next) => {
   try {
     await migrateUserProfilePhotos();
     res.json({ success: true });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      error: 'internal server error',
-      code: 0,
-    });
+    next(err);
   }
 });
 

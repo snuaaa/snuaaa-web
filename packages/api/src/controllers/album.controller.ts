@@ -8,6 +8,7 @@ import {
 } from '../models';
 import { Op } from 'sequelize';
 import { BASE_USER_FIELDS } from '../models/User';
+import { BadRequestError, NotFoundError } from '../errors';
 
 export type AlbumResponse = ContentModel & {
   album: AlbumModel;
@@ -41,7 +42,7 @@ export async function retrieveAlbum(
   });
 
   if (!album) {
-    throw new Error('Album not found');
+    throw new NotFoundError('Album not found');
   }
 
   return album as AlbumResponse;
@@ -49,7 +50,7 @@ export async function retrieveAlbum(
 
 export async function retrievePrevAlbum(album_id, board_id) {
   if (!board_id) {
-    throw new Error('board_id can not be null');
+    throw new BadRequestError('board_id can not be null');
   }
 
   return ContentModel.findOne({
@@ -72,7 +73,7 @@ export async function retrievePrevAlbum(album_id, board_id) {
 
 export async function retrieveNextAlbum(album_id, board_id) {
   if (!board_id) {
-    throw new Error('board_id can not be null');
+    throw new BadRequestError('board_id can not be null');
   }
 
   return ContentModel.findOne({
@@ -95,7 +96,7 @@ export async function retrieveNextAlbum(album_id, board_id) {
 
 export async function retrieveAlbumCount(board_id, category_id) {
   if (!board_id) {
-    throw new Error('id can not be null');
+    throw new BadRequestError('id can not be null');
   }
 
   return ContentModel.count({
@@ -120,7 +121,7 @@ export async function retrieveAlbumsInBoard(
   category_id,
 ) {
   if (!board_id) {
-    throw new Error('board_id can not be null');
+    throw new BadRequestError('board_id can not be null');
   }
 
   return ContentModel.findAll({
@@ -180,7 +181,7 @@ export async function retrieveAlbumsInBoard(
 
 export async function createAlbum(content_id, data) {
   if (!content_id) {
-    throw new Error('id can not be null');
+    throw new BadRequestError('id can not be null');
   }
 
   await AlbumModel.create({
@@ -191,7 +192,7 @@ export async function createAlbum(content_id, data) {
 
 export async function updateAlbum(album_id, data) {
   if (!album_id) {
-    throw new Error('album_id can not be null');
+    throw new BadRequestError('album_id can not be null');
   }
 
   await AlbumModel.update(
@@ -208,7 +209,7 @@ export async function updateAlbum(album_id, data) {
 
 export async function updateAlbumThumbnail(album_id, photo_id) {
   if (!album_id) {
-    throw new Error('album_id can not be null');
+    throw new BadRequestError('album_id can not be null');
   }
 
   await AlbumModel.update(

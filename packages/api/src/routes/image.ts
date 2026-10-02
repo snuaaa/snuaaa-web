@@ -7,6 +7,7 @@ import { verifyTokenMiddleware } from '../middlewares/auth';
 import { AuthenticatedRequestWithFile } from '../middlewares/upload';
 
 import { resizeAttatchedImg } from '../utils/resize';
+import { BadRequestError } from '../errors';
 
 const router = express.Router();
 
@@ -45,15 +46,12 @@ router.post(
   '/',
   verifyTokenMiddleware,
   upload.single('attachedImage'),
-  async (req: AuthenticatedRequestWithFile, res) => {
+  async (req: AuthenticatedRequestWithFile, res, next) => {
     const { file } = req;
 
     try {
       if (!file) {
-        return res.status(409).json({
-          error: 'PHOTO IS NOT ATTACHED',
-          code: 1,
-        });
+        return next(new BadRequestError('PHOTO IS NOT ATTACHED'));
       }
 
       await resizeAttatchedImg(file.path);
@@ -71,11 +69,7 @@ router.post(
         result: 'success',
       });
     } catch (err) {
-      console.error(err);
-      res.status(500).json({
-        error: 'internal server error',
-        code: 0,
-      });
+      next(err);
     }
   },
 );

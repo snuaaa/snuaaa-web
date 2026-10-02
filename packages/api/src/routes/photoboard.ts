@@ -23,7 +23,7 @@ const router = express.Router();
 router.get(
   '/:board_id/albums',
   verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res) => {
+  async (req: AuthenticatedRequest, res, next) => {
     let offset = 0;
     const ROWNUM = 12;
     const { query } = req;
@@ -45,54 +45,49 @@ router.get(
       );
       res.json({ albumCount, albumInfo });
     } catch (err) {
-      console.error(err);
-      res.status(409).json({
-        error: 'RETRIEVE ALBUM FAIL',
-        code: 1,
-      });
+      next(err);
     }
   },
 );
 
-router.get('/:board_id/photos', async (req: AuthenticatedRequest, res) => {
-  let offset = 0;
-  const ROWNUM = 12;
-  const { query } = req;
-  const tags = req.query.tags;
+router.get(
+  '/:board_id/photos',
+  async (req: AuthenticatedRequest, res, next) => {
+    let offset = 0;
+    const ROWNUM = 12;
+    const { query } = req;
+    const tags = req.query.tags;
 
-  if (Number(query.page) > 0) {
-    offset = ROWNUM * (Number(query.page) - 1);
-  }
-
-  try {
-    if (tags) {
-      const photoCount = (await retrievePhotoCountByTag(tags)) as number;
-      const photoInfo = await retrievePhotosByTag(tags, ROWNUM, offset);
-      res.json({ photoCount, photoInfo });
-    } else {
-      const photoCount = (await retrievePhotoCountInBoard(
-        req.params.board_id,
-      )) as number;
-      const photoInfo = await retrievePhotosInBoard(
-        req.params.board_id,
-        ROWNUM,
-        offset,
-      );
-      res.json({ photoCount, photoInfo });
+    if (Number(query.page) > 0) {
+      offset = ROWNUM * (Number(query.page) - 1);
     }
-  } catch (err) {
-    console.error(err);
-    res.status(409).json({
-      error: 'RETRIEVE PHOTO FAIL',
-      code: 1,
-    });
-  }
-});
+
+    try {
+      if (tags) {
+        const photoCount = (await retrievePhotoCountByTag(tags)) as number;
+        const photoInfo = await retrievePhotosByTag(tags, ROWNUM, offset);
+        res.json({ photoCount, photoInfo });
+      } else {
+        const photoCount = (await retrievePhotoCountInBoard(
+          req.params.board_id,
+        )) as number;
+        const photoInfo = await retrievePhotosInBoard(
+          req.params.board_id,
+          ROWNUM,
+          offset,
+        );
+        res.json({ photoCount, photoInfo });
+      }
+    } catch (err) {
+      next(err);
+    }
+  },
+);
 
 router.post(
   '/:board_id/album',
   verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res) => {
+  async (req: AuthenticatedRequest, res, next) => {
     const decodedToken = req.decodedToken;
     const user_id = decodedToken._id;
 
@@ -106,8 +101,7 @@ router.post(
       await createAlbum(content_id, req.body);
       res.json({ success: true });
     } catch (err) {
-      console.error(err);
-      res.status(403).json({ success: false });
+      next(err);
     }
   },
 );

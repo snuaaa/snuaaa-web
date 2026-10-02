@@ -10,6 +10,7 @@ import {
   S3ResourceType,
   uploadImageToS3,
 } from '../utils/upload';
+import { BadRequestError } from '../errors';
 
 const router = express.Router();
 
@@ -21,21 +22,17 @@ router.post(
   '/image',
   verifyTokenMiddleware,
   upload.single('image'),
-  async (req: AuthenticatedRequestWithFile, res) => {
+  async (req: AuthenticatedRequestWithFile, res, next) => {
     const { file } = req;
 
     try {
       if (!file) {
-        return res.status(409).json({
-          error: 'Image is not attached',
-        });
+        return next(new BadRequestError('Image is not attached'));
       }
 
       const resourceType = req.query.type as S3ResourceType;
       if (!S3_RESOURCE_TYPES.includes(resourceType)) {
-        return res.status(400).json({
-          error: 'Invalid or missing resource type',
-        });
+        return next(new BadRequestError('Invalid or missing resource type'));
       }
 
       const withThumbnail = req.query.thumbnail === 'true';
@@ -59,11 +56,7 @@ router.post(
         result: 'success',
       });
     } catch (err) {
-      console.error(err);
-      res.status(500).json({
-        error: 'internal server error',
-        code: 0,
-      });
+      next(err);
     }
   },
 );

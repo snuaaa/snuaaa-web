@@ -23,7 +23,7 @@ const router = express.Router();
 router.get(
   '/',
   verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res) => {
+  async (req: AuthenticatedRequest, res, next) => {
     let offset = 0;
     const ROWNUM = 10;
     const { query } = req;
@@ -48,11 +48,7 @@ router.get(
         docInfo,
       });
     } catch (err) {
-      console.error(err);
-      res.status(500).json({
-        error: 'internal server error',
-        code: 0,
-      });
+      next(err);
     }
   },
 );
@@ -84,39 +80,27 @@ router.get(
         likeInfo,
       });
     } catch (err) {
-      console.error(err);
-      res.status(500).json({
-        error: 'internal server error',
-        code: 0,
-      });
+      next(err);
     }
   },
 );
 
-router.patch('/:doc_id', verifyTokenMiddleware, async (req, res) => {
+router.patch('/:doc_id', verifyTokenMiddleware, async (req, res, next) => {
   try {
     await updateContent(req.params.doc_id, req.body);
     res.json({ success: true });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      error: 'internal server error',
-      code: 0,
-    });
+    next(err);
   }
 });
 
-router.delete('/:doc_id', verifyTokenMiddleware, async (req, res) => {
+router.delete('/:doc_id', verifyTokenMiddleware, async (req, res, next) => {
   try {
     await deleteDocument(req.params.doc_id);
     await deleteContent(req.params.doc_id);
     res.json({ success: true });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      error: 'internal server error',
-      code: 0,
-    });
+    next(err);
   }
 });
 
