@@ -28,9 +28,15 @@ jobs:
       - name: Set environment
         run: |
           echo "REACT_APP_SERVER_URL=${{ secrets.SERVER_URL_DEV }}" >> packages/community/.env
+          echo "REACT_APP_SENTRY_DSN=${{ secrets.SENTRY_DSN_WEB }}" >> packages/community/.env
+          echo "REACT_APP_SENTRY_ENVIRONMENT=develop" >> packages/community/.env
 
       - name: Build project
         run: pnpm build
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ vars.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ vars.SENTRY_PROJECT_WEB }}
 
       - name: Deploy to Cloudflare Pages (Preview)
         uses: cloudflare/wrangler-action@v3
@@ -61,9 +67,15 @@ jobs:
       - name: Set environment
         run: |
           echo "REACT_APP_SERVER_URL=${{ secrets.SERVER_URL_PROD }}" >> packages/community/.env
+          echo "REACT_APP_SENTRY_DSN=${{ secrets.SENTRY_DSN_WEB }}" >> packages/community/.env
+          echo "REACT_APP_SENTRY_ENVIRONMENT=production" >> packages/community/.env
 
       - name: Build project
         run: pnpm build
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ vars.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ vars.SENTRY_PROJECT_WEB }}
 
       - name: Deploy to Cloudflare Pages (Production)
         uses: cloudflare/wrangler-action@v3
