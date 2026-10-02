@@ -24,7 +24,7 @@ const router = express.Router();
 router.get(
   '/:exhibitPhoto_id',
   verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res) => {
+  async (req: AuthenticatedRequest, res, next) => {
     const { decodedToken } = req;
 
     try {
@@ -43,79 +43,71 @@ router.get(
         exhibitPhotosInfo,
       });
     } catch (err) {
-      console.error(err);
-      res.status(500).json({
-        error: 'internal server error',
-        code: 0,
-      });
+      next(err);
     }
   },
 );
 
-router.patch('/:exhibitPhoto_id', verifyTokenMiddleware, async (req, res) => {
-  try {
-    let photographer = null;
-    if (req.body.photographer) {
-      photographer = await retrieveUserByUserUuid(
-        req.body.photographer.user_uuid,
-      );
+router.patch(
+  '/:exhibitPhoto_id',
+  verifyTokenMiddleware,
+  async (req, res, next) => {
+    try {
+      let photographer = null;
+      if (req.body.photographer) {
+        photographer = await retrieveUserByUserUuid(
+          req.body.photographer.user_uuid,
+        );
+      }
+
+      const data = {
+        title: req.body.title,
+        text: req.body.text,
+        order: req.body.order,
+        photographer_id: photographer ? photographer.get('user_id') : null,
+        photographer_alt: photographer ? null : req.body.photographer_alt,
+        location: req.body.location,
+        camera: req.body.camera,
+        lens: req.body.lens,
+        exposure_time: req.body.exposure_time,
+        focal_length: req.body.focal_length,
+        f_stop: req.body.f_stop,
+        iso: req.body.iso,
+        date: req.body.date ? new Date(req.body.date) : null,
+      };
+
+      await Promise.all([
+        updateContent(req.params.exhibitPhoto_id, data),
+        updateExhibitPhoto(req.params.exhibitPhoto_id, data),
+      ]);
+
+      res.json({ success: true });
+    } catch (err) {
+      next(err);
     }
+  },
+);
 
-    const data = {
-      title: req.body.title,
-      text: req.body.text,
-      order: req.body.order,
-      photographer_id: photographer ? photographer.get('user_id') : null,
-      photographer_alt: photographer ? null : req.body.photographer_alt,
-      location: req.body.location,
-      camera: req.body.camera,
-      lens: req.body.lens,
-      exposure_time: req.body.exposure_time,
-      focal_length: req.body.focal_length,
-      f_stop: req.body.f_stop,
-      iso: req.body.iso,
-      date: req.body.date ? new Date(req.body.date) : null,
-    };
+router.delete(
+  '/:exhibitPhoto_id',
+  verifyTokenMiddleware,
+  async (req, res, next) => {
+    try {
+      await deleteExhibitPhoto(req.params.exhibitPhoto_id);
+      await deleteContent(req.params.exhibitPhoto_id);
+      res.json({ success: true });
+    } catch (err) {
+      next(err);
+    }
+  },
+);
 
-    await Promise.all([
-      updateContent(req.params.exhibitPhoto_id, data),
-      updateExhibitPhoto(req.params.exhibitPhoto_id, data),
-    ]);
-
-    res.json({ success: true });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      error: 'UPDATE FAIL',
-      code: 0,
-    });
-  }
-});
-
-router.delete('/:exhibitPhoto_id', verifyTokenMiddleware, async (req, res) => {
-  try {
-    await deleteExhibitPhoto(req.params.exhibitPhoto_id);
-    await deleteContent(req.params.exhibitPhoto_id);
-    res.json({ success: true });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      error: 'internal server error',
-      code: 0,
-    });
-  }
-});
-
-router.post('/migrate', verifyTokenMiddleware, async (req, res) => {
+router.post('/migrate', verifyTokenMiddleware, async (req, res, next) => {
   try {
     await migrateExhibitPhotos();
     res.json({ success: true });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      error: 'internal server error',
-      code: 0,
-    });
+    next(err);
   }
 });
 

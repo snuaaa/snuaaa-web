@@ -1,8 +1,9 @@
 import { CommentLikeModel } from '../models';
+import { BadRequestError } from '../errors';
 
 export async function checkCommentLike(comment_id, user_id) {
   if (!user_id || !comment_id) {
-    throw new Error('id can not be null');
+    throw new BadRequestError('id can not be null');
   }
 
   const commentLike = await CommentLikeModel.findOne({
@@ -17,7 +18,7 @@ export async function checkCommentLike(comment_id, user_id) {
 
 export async function likeComment(comment_id, user_id) {
   if (!user_id || !comment_id) {
-    throw new Error('id can not be null');
+    throw new BadRequestError('id can not be null');
   }
 
   await CommentLikeModel.create({
@@ -28,7 +29,7 @@ export async function likeComment(comment_id, user_id) {
 
 export async function dislikeComment(comment_id, user_id) {
   if (!user_id || !comment_id) {
-    throw new Error('id can not be null');
+    throw new BadRequestError('id can not be null');
   }
 
   await CommentLikeModel.destroy({

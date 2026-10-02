@@ -1,6 +1,7 @@
 import { BoardModel, CommentModel, ContentModel, UserModel } from '../models';
 import { Op } from 'sequelize';
 import { BASE_USER_FIELDS } from '../models/User';
+import { BadRequestError } from '../errors';
 
 export type CommentFilter = {
   author_id?: string;
@@ -47,7 +48,7 @@ export function retrieveCommentsWithFilter(filter: CommentFilter) {
 
 export async function retrieveComments(parent_id, user_id) {
   if (!parent_id || !user_id) {
-    throw new Error('id can not be null');
+    throw new BadRequestError('id can not be null');
   }
 
   return CommentModel.findAll({
@@ -147,7 +148,7 @@ export async function retrieveAllComments(grade, rowNum, offset) {
  */
 export async function retrieveCommentsByUser(user_id) {
   if (!user_id) {
-    throw new Error('id can not be null');
+    throw new BadRequestError('id can not be null');
   }
 
   return CommentModel.findAll({
@@ -177,7 +178,7 @@ export async function retrieveCommentsByUser(user_id) {
  */
 export async function retrieveCommentsByUserUuid(user_uuid) {
   if (!user_uuid) {
-    throw new Error('user_uuid can not be null');
+    throw new BadRequestError('user_uuid can not be null');
   }
 
   return CommentModel.findAll({
@@ -215,7 +216,7 @@ export async function retrieveCommentsByUserUuid(user_uuid) {
 
 export async function createComment(user_id, parent_id, data) {
   if (!user_id || !parent_id) {
-    throw new Error('id can not be null');
+    throw new BadRequestError('id can not be null');
   }
 
   const comment = await CommentModel.create({
@@ -237,7 +238,7 @@ export async function createComment(user_id, parent_id, data) {
 
 export async function updateComment(comment_id, data) {
   if (!comment_id) {
-    throw new Error('id can not be null');
+    throw new BadRequestError('id can not be null');
   }
 
   await CommentModel.update(
@@ -254,7 +255,7 @@ export async function updateComment(comment_id, data) {
 
 export async function deleteComment(comment_id) {
   if (!comment_id) {
-    throw new Error('id can not be null');
+    throw new BadRequestError('id can not be null');
   }
 
   const comment = await CommentModel.findOne({

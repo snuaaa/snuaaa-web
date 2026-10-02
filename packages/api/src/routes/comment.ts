@@ -17,13 +17,14 @@ import {
   likeComment,
 } from '../controllers/commentLike.controller';
 import { retrieveUserByUserUuid } from '../controllers/user.controller';
+import { NotFoundError } from '../errors';
 
 const router = express.Router();
 
 router.get(
   '/list',
   verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res) => {
+  async (req: AuthenticatedRequest, res, next) => {
     const decodedToken = req.decodedToken;
     const userUuid = req.query.user_uuid as string;
 
@@ -37,10 +38,7 @@ router.get(
       if (userUuid) {
         const user = await retrieveUserByUserUuid(userUuid);
         if (!user) {
-          return res.status(404).json({
-            success: false,
-            message: 'User not found',
-          });
+          return next(new NotFoundError('User not found'));
         }
         const author_id = user.getDataValue('user_id');
         filter['author_id'] = author_id;
@@ -49,45 +47,33 @@ router.get(
       const commentList = await retrieveCommentsWithFilter(filter);
       return res.json(commentList);
     } catch (err) {
-      console.error(err);
-      return res.status(500).json({
-        success: false,
-        message: 'INTERNAL SERVER ERROR',
-      });
+      next(err);
     }
   },
 );
 
-router.patch('/:comment_id', verifyTokenMiddleware, async (req, res) => {
+router.patch('/:comment_id', verifyTokenMiddleware, async (req, res, next) => {
   try {
     await updateComment(req.params.comment_id, req.body);
     res.json({ success: true });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      error: 'internal server error',
-      code: 0,
-    });
+    next(err);
   }
 });
 
-router.delete('/:comment_id', verifyTokenMiddleware, async (req, res) => {
+router.delete('/:comment_id', verifyTokenMiddleware, async (req, res, next) => {
   try {
     await deleteComment(req.params.comment_id);
     res.json({ success: true });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      error: 'internal server error',
-      code: 0,
-    });
+    next(err);
   }
 });
 
 router.post(
   '/:comment_id/like',
   verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res) => {
+  async (req: AuthenticatedRequest, res, next) => {
     const { decodedToken } = req;
     const comment_id = req.params.comment_id;
     const user_id = decodedToken._id;
@@ -101,11 +87,7 @@ router.post(
       }
       res.json({ success: true });
     } catch (err) {
-      console.error(err);
-      res.status(500).json({
-        error: 'internal server error',
-        code: 0,
-      });
+      next(err);
     }
   },
 );

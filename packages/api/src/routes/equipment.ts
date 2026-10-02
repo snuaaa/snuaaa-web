@@ -24,6 +24,12 @@ import {
   verifyTokenMiddleware,
 } from '../middlewares/auth';
 import PenaltyStatusEnum from '../enums/penaltyStatusEnum';
+import {
+  AuthorizationError,
+  BadRequestError,
+  ConflictError,
+  NotFoundError,
+} from '../errors';
 
 const router = express.Router();
 const EQUIP_RENT_GRADE = 7;
@@ -46,24 +52,25 @@ function mapEquipmentRows(rows: EquipmentRow[]) {
   });
 }
 
-router.get('/', verifyTokenMiddleware, async (req, res) => {
+router.get('/', verifyTokenMiddleware, async (req, res, next) => {
   try {
     const { rows, count } = await retrieveEquipmentList();
     res.json({ equipCount: count, equipInfo: mapEquipmentRows(rows) });
   } catch (err) {
-    console.error(err);
-    res
-      .status(500)
-      .json({ success: false, error: 'RETRIEVE EQUIPMENT FAIL', code: 1 });
+    next(err);
   }
 });
 
-router.get('/category', verifyTokenMiddleware, async (req, res) => {
-  const categoryList = await retrieveEquipmentCategoryList();
-  res.json(categoryList);
+router.get('/category', verifyTokenMiddleware, async (req, res, next) => {
+  try {
+    const categoryList = await retrieveEquipmentCategoryList();
+    res.json(categoryList);
+  } catch (err) {
+    next(err);
+  }
 });
 
-router.get('/search', verifyTokenMiddleware, async (req, res) => {
+router.get('/search', verifyTokenMiddleware, async (req, res, next) => {
   const { category_id, status, keyword } = req.query;
   try {
     const { rows, count } = await searchEquipmentList(
@@ -73,22 +80,17 @@ router.get('/search', verifyTokenMiddleware, async (req, res) => {
     );
     res.json({ equipCount: count, equipInfo: mapEquipmentRows(rows) });
   } catch (err) {
-    console.error(err);
-    res
-      .status(500)
-      .json({ success: false, error: 'SEARCH EQUIPMENT FAIL', code: 1 });
+    next(err);
   }
 });
 
 router.post(
   '/',
   verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res) => {
+  async (req: AuthenticatedRequest, res, next) => {
     const { decodedToken } = req;
     if (decodedToken.grade > EQUIP_ADMIN_GRADE) {
-      return res
-        .status(403)
-        .json({ success: false, error: 'PERMISSION DENIED', code: 1 });
+      return next(new AuthorizationError('PERMISSION DENIED'));
     }
     const {
       category_id,
@@ -113,10 +115,7 @@ router.post(
       });
       res.json(equipment);
     } catch (err) {
-      console.error(err);
-      res
-        .status(500)
-        .json({ success: false, error: 'CREATE EQUIPMENT FAIL', code: 1 });
+      next(err);
     }
   },
 );
@@ -124,12 +123,10 @@ router.post(
 router.patch(
   '/',
   verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res) => {
+  async (req: AuthenticatedRequest, res, next) => {
     const { decodedToken } = req;
     if (decodedToken.grade > EQUIP_ADMIN_GRADE) {
-      return res
-        .status(403)
-        .json({ success: false, error: 'PERMISSION DENIED', code: 1 });
+      return next(new AuthorizationError('PERMISSION DENIED'));
     }
     const {
       id,
@@ -145,9 +142,7 @@ router.patch(
     try {
       const equipment = await retrieveEquipmentById(id);
       if (!equipment) {
-        return res
-          .status(404)
-          .json({ success: false, error: 'EQUIPMENT NOT FOUND' });
+        return next(new NotFoundError('EQUIPMENT NOT FOUND'));
       }
       const updatedEquipment = await updateEquipment(id, {
         category_id,
@@ -161,10 +156,7 @@ router.patch(
       });
       return res.json(updatedEquipment);
     } catch (err) {
-      console.error(err);
-      res
-        .status(500)
-        .json({ success: false, error: 'UPDATE EQUIPMENT FAIL', code: 1 });
+      next(err);
     }
   },
 );
@@ -172,28 +164,21 @@ router.patch(
 router.delete(
   '/:id',
   verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res) => {
+  async (req: AuthenticatedRequest, res, next) => {
     const { decodedToken } = req;
     if (decodedToken.grade > EQUIP_ADMIN_GRADE) {
-      return res
-        .status(403)
-        .json({ success: false, error: 'PERMISSION DENIED', code: 1 });
+      return next(new AuthorizationError('PERMISSION DENIED'));
     }
     const { id } = req.params;
     try {
       const equipment = await retrieveEquipmentById(Number(id));
       if (!equipment) {
-        return res
-          .status(404)
-          .json({ success: false, error: 'EQUIPMENT NOT FOUND' });
+        return next(new NotFoundError('EQUIPMENT NOT FOUND'));
       }
       await equipment.destroy();
       res.json({ success: true, id });
     } catch (err) {
-      console.error(err);
-      res
-        .status(500)
-        .json({ success: false, error: 'DELETE EQUIPMENT FAIL', code: 1 });
+      next(err);
     }
   },
 );
@@ -202,62 +187,57 @@ router.delete(
 router.post(
   '/category',
   verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res) => {
+  async (req: AuthenticatedRequest, res, next) => {
     const { decodedToken } = req;
     if (decodedToken.grade > EQUIP_ADMIN_GRADE) {
-      return res
-        .status(403)
-        .json({ success: false, error: 'PERMISSION DENIED', code: 1 });
+      return next(new AuthorizationError('PERMISSION DENIED'));
     }
     const { name } = req.body;
-    const category = await createEquipmentCategory({ name });
-    res.json(category);
+    try {
+      const category = await createEquipmentCategory({ name });
+      res.json(category);
+    } catch (err) {
+      next(err);
+    }
   },
 );
 
 router.patch(
   '/category',
   verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res) => {
+  async (req: AuthenticatedRequest, res, next) => {
     const { decodedToken } = req;
     if (decodedToken.grade > EQUIP_ADMIN_GRADE) {
-      return res
-        .status(403)
-        .json({ success: false, error: 'PERMISSION DENIED', code: 1 });
+      return next(new AuthorizationError('PERMISSION DENIED'));
     }
     const { id, name } = req.body;
-    const category = await updateEquipmentCategory(id, { name });
-    res.json(category);
+    try {
+      const category = await updateEquipmentCategory(id, { name });
+      res.json(category);
+    } catch (err) {
+      next(err);
+    }
   },
 );
 
 router.delete(
   '/category/:categoryId',
   verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res) => {
+  async (req: AuthenticatedRequest, res, next) => {
     const { decodedToken } = req;
     if (decodedToken.grade > EQUIP_ADMIN_GRADE) {
-      return res
-        .status(403)
-        .json({ success: false, error: 'PERMISSION DENIED', code: 1 });
+      return next(new AuthorizationError('PERMISSION DENIED'));
     }
     const { categoryId } = req.params;
-    const equipment = await retrieveEquipmentsByCategory(Number(categoryId));
-    if (equipment.length > 0) {
-      return res
-        .status(400)
-        .json({ success: false, error: 'EQUIPMENT EXISTS IN CATEGORY' });
-    }
     try {
+      const equipment = await retrieveEquipmentsByCategory(Number(categoryId));
+      if (equipment.length > 0) {
+        return next(new ConflictError('EQUIPMENT EXISTS IN CATEGORY'));
+      }
       await deleteEquipmentCategory(Number(categoryId));
       res.json({ success: true, id: Number(categoryId) });
     } catch (err) {
-      console.error(err);
-      res.status(500).json({
-        success: false,
-        error: 'DELETE EQUIPMENT CATEGORY FAIL',
-        code: 1,
-      });
+      next(err);
     }
   },
 );
@@ -265,14 +245,15 @@ router.delete(
 router.post(
   '/rent',
   verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res) => {
+  async (req: AuthenticatedRequest, res, next) => {
     const { decodedToken } = req;
     if (decodedToken.grade > EQUIP_RENT_GRADE) {
-      return res
-        .status(403)
-        .json({ success: false, error: 'PERMISSION DENIED', code: 1 });
+      return next(new AuthorizationError('PERMISSION DENIED'));
     }
     const { equipmentIds } = req.body;
+    if (!Array.isArray(equipmentIds)) {
+      return next(new BadRequestError('equipmentIds must be an array'));
+    }
     const results = await Promise.allSettled(
       equipmentIds.map((equipmentId: number) =>
         rentEquipment(equipmentId, decodedToken._id),
@@ -296,12 +277,10 @@ router.post(
 router.post(
   '/rent/:rentId/return',
   verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res) => {
+  async (req: AuthenticatedRequest, res, next) => {
     const { decodedToken } = req;
     if (decodedToken.grade > EQUIP_RENT_GRADE) {
-      return res
-        .status(403)
-        .json({ success: false, error: 'PERMISSION DENIED', code: 1 });
+      return next(new AuthorizationError('PERMISSION DENIED'));
     }
     const { rentId } = req.params;
     const { photo_path } = req.body;
@@ -313,10 +292,7 @@ router.post(
       );
       res.json(result);
     } catch (err) {
-      console.error(err);
-      res
-        .status(500)
-        .json({ success: false, error: 'RETURN EQUIPMENT FAIL', code: 1 });
+      next(err);
     }
   },
 );
@@ -324,24 +300,26 @@ router.post(
 router.get(
   '/rent/me',
   verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res) => {
+  async (req: AuthenticatedRequest, res, next) => {
     const { decodedToken } = req;
-    const equipmentList = await retrieveRentedEquipmentListByUserId(
-      decodedToken._id,
-    );
-    res.json(equipmentList);
+    try {
+      const equipmentList = await retrieveRentedEquipmentListByUserId(
+        decodedToken._id,
+      );
+      res.json(equipmentList);
+    } catch (err) {
+      next(err);
+    }
   },
 );
 
 router.get(
   '/rent/records',
   verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res) => {
+  async (req: AuthenticatedRequest, res, next) => {
     const { decodedToken } = req;
     if (decodedToken.grade > EQUIP_ADMIN_GRADE) {
-      return res
-        .status(403)
-        .json({ success: false, error: 'PERMISSION DENIED', code: 1 });
+      return next(new AuthorizationError('PERMISSION DENIED'));
     }
     const ROWNUM = 10;
     let offset = 0;
@@ -371,11 +349,7 @@ router.get(
       if (value !== undefined) {
         const parsed = new Date(value);
         if (isNaN(parsed.getTime())) {
-          return res.status(400).json({
-            success: false,
-            error: `INVALID DATE FORMAT: ${key}`,
-            code: 1,
-          });
+          return next(new BadRequestError(`INVALID DATE FORMAT: ${key}`));
         }
       }
     }
@@ -390,12 +364,7 @@ router.get(
       const result = await retrieveAllRentRecords(filters, ROWNUM, offset);
       res.json(result);
     } catch (err) {
-      console.error(err);
-      res.status(500).json({
-        success: false,
-        error: 'RETRIEVE ALL RENT RECORDS FAIL',
-        code: 1,
-      });
+      next(err);
     }
   },
 );
@@ -403,38 +372,29 @@ router.get(
 router.patch(
   '/rent/:rentId/penalty',
   verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res) => {
+  async (req: AuthenticatedRequest, res, next) => {
     const { decodedToken } = req;
     if (decodedToken.grade > EQUIP_ADMIN_GRADE) {
-      return res
-        .status(403)
-        .json({ success: false, error: 'PERMISSION DENIED', code: 1 });
+      return next(new AuthorizationError('PERMISSION DENIED'));
     }
     const { rentId } = req.params;
     const { penalty_status } = req.body;
     const parsedRentId = parseInt(rentId, 10);
     if (isNaN(parsedRentId)) {
-      return res
-        .status(400)
-        .json({ success: false, error: 'INVALID RENT ID', code: 1 });
+      return next(new BadRequestError('INVALID RENT ID'));
     }
     const allowedStatuses = [
       PenaltyStatusEnum.NEED_PAYMENT,
       PenaltyStatusEnum.RECEIVED_PAYMENT,
     ];
     if (!penalty_status || !allowedStatuses.includes(penalty_status)) {
-      return res
-        .status(400)
-        .json({ success: false, error: 'INVALID PENALTY STATUS', code: 1 });
+      return next(new BadRequestError('INVALID PENALTY STATUS'));
     }
     try {
       const result = await updatePenaltyStatus(parsedRentId, penalty_status);
       res.json(result);
-    } catch (err: unknown) {
-      console.error(err);
-      const message =
-        err instanceof Error ? err.message : 'UPDATE PENALTY STATUS FAIL';
-      res.status(400).json({ success: false, error: message, code: 1 });
+    } catch (err) {
+      next(err);
     }
   },
 );
@@ -442,12 +402,10 @@ router.patch(
 router.get(
   '/:id/rents',
   verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res) => {
+  async (req: AuthenticatedRequest, res, next) => {
     const { decodedToken } = req;
     if (decodedToken.grade > EQUIP_ADMIN_GRADE) {
-      return res
-        .status(403)
-        .json({ success: false, error: 'PERMISSION DENIED', code: 1 });
+      return next(new AuthorizationError('PERMISSION DENIED'));
     }
     const { id } = req.params;
     const ROWNUM = 10;
@@ -464,10 +422,7 @@ router.get(
       );
       res.json(rentList);
     } catch (err) {
-      console.error(err);
-      res
-        .status(500)
-        .json({ success: false, error: 'RETRIEVE RENT LIST FAIL', code: 1 });
+      next(err);
     }
   },
 );
