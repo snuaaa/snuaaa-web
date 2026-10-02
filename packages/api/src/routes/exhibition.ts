@@ -19,20 +19,17 @@ import { resizeImageBuffer } from '../utils/resize';
 import { uploadImageToS3 } from '../utils/upload';
 import { retrieveUserByUserUuid } from '../controllers/user.controller';
 import { deleteContent } from '../controllers/content.controller';
+import { BadRequestError } from '../errors';
 
 const router = express.Router();
 const memoryUpload = multer({ storage: multer.memoryStorage() });
 
-router.get('/:exhibition_id', verifyTokenMiddleware, async (req, res) => {
+router.get('/:exhibition_id', verifyTokenMiddleware, async (req, res, next) => {
   try {
     const exhibitionInfo = await retrieveExhibition(req.params.exhibition_id);
     res.json({ exhibitionInfo });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      error: 'RETRIEVE EXHIBITION FAIL',
-      code: 0,
-    });
+    next(err);
   }
 });
 
@@ -42,34 +39,30 @@ router.patch(
   (_req: AuthenticatedRequest, _res) => {},
 );
 
-router.delete('/:exhibition_id', verifyTokenMiddleware, async (req, res) => {
-  try {
-    await deleteContent(req.params.exhibition_id);
-    res.json({ success: true });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      error: 'DELETE ALBUM FAIL',
-      code: 1,
-    });
-  }
-});
+router.delete(
+  '/:exhibition_id',
+  verifyTokenMiddleware,
+  async (req, res, next) => {
+    try {
+      await deleteContent(req.params.exhibition_id);
+      res.json({ success: true });
+    } catch (err) {
+      next(err);
+    }
+  },
+);
 
 router.get(
   '/:exhibition_id/exhibitPhotos',
   verifyTokenMiddleware,
-  async (req, res) => {
+  async (req, res, next) => {
     try {
       const exhibitPhotosInfo = await retrieveExhibitPhotosInExhibition(
         req.params.exhibition_id,
       );
       res.json({ exhibitPhotosInfo });
     } catch (err) {
-      console.error(err);
-      res.status(500).json({
-        error: 'RETRIEVE EXHIBITION FAIL',
-        code: 0,
-      });
+      next(err);
     }
   },
 );
@@ -78,14 +71,11 @@ router.post(
   '/:exhibition_id/exhibitPhoto',
   verifyTokenMiddleware,
   memoryUpload.single('exhibitPhoto'),
-  async (req: AuthenticatedRequestWithFile, res) => {
+  async (req: AuthenticatedRequestWithFile, res, next) => {
     const { file, decodedToken } = req;
 
     if (!file) {
-      return res.status(409).json({
-        error: 'EXHIBITPHOTO IS NOT ATTACHED',
-        code: 1,
-      });
+      return next(new BadRequestError('EXHIBITPHOTO IS NOT ATTACHED'));
     }
 
     try {
@@ -137,22 +127,17 @@ router.post(
       await createExhibitPhoto(data);
       res.json({ success: true });
     } catch (err) {
-      console.error(err);
-      res.status(500).json({
-        error: 'INTERNAL SERVER ERROR',
-        code: 0,
-      });
+      next(err);
     }
   },
 );
 
-router.post('/migrate', verifyTokenMiddleware, async (req, res) => {
+router.post('/migrate', verifyTokenMiddleware, async (req, res, next) => {
   try {
     await migrateExhibitionPosters();
     res.json({ success: true });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'internal server error', code: 0 });
+    next(err);
   }
 });
 

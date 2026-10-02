@@ -5,6 +5,7 @@ import fs from 'fs';
 import path from 'path';
 import { resizeImageBuffer } from '../utils/resize';
 import { uploadImageToS3 } from '../utils/upload';
+import { BadRequestError, ConflictError, NotFoundError } from '../errors';
 
 export async function createUser(userData) {
   await UserModel.create({
@@ -28,10 +29,10 @@ export async function createUser(userData) {
 
 export async function retrieveUser(user_id) {
   if (!user_id) {
-    throw new Error('user_id can not be null');
+    throw new BadRequestError('user_id can not be null');
   }
 
-  const user = UserModel.findOne({
+  const user = await UserModel.findOne({
     attributes: [
       'user_id',
       'id',
@@ -54,7 +55,7 @@ export async function retrieveUser(user_id) {
   });
 
   if (!user) {
-    throw new Error('id is not correct');
+    throw new NotFoundError('id is not correct');
   }
 
   return user;
@@ -62,7 +63,7 @@ export async function retrieveUser(user_id) {
 
 export async function retrieveUserPw(user_id) {
   if (!user_id) {
-    throw new Error('user_id can not be null');
+    throw new BadRequestError('user_id can not be null');
   }
 
   const user = await UserModel.findOne({
@@ -71,7 +72,7 @@ export async function retrieveUserPw(user_id) {
   });
 
   if (!user) {
-    throw new Error('id is not correct');
+    throw new NotFoundError('id is not correct');
   }
 
   return user;
@@ -79,7 +80,7 @@ export async function retrieveUserPw(user_id) {
 
 export async function retrieveUserByUserUuid(user_uuid: string) {
   if (!user_uuid) {
-    throw new Error('user_uuid can not be null');
+    throw new BadRequestError('user_uuid can not be null');
   }
 
   return UserModel.findOne({
@@ -124,7 +125,7 @@ export async function retrieveUsers(sort, order, rowNum, offset) {
 
 export async function retrieveUsersByEmailAndName(email, username) {
   if (!email) {
-    throw Error('email can not be null');
+    throw new BadRequestError('email can not be null');
   }
 
   return UserModel.findAll({
@@ -143,7 +144,7 @@ export async function retrieveUsersByName(username) {
 
 export async function retrieveUserById(id) {
   if (!id) {
-    throw new Error('id can not be null');
+    throw new BadRequestError('id can not be null');
   }
 
   const user = await UserModel.findOne({
@@ -164,7 +165,7 @@ export async function retrieveUserById(id) {
   });
 
   if (!user) {
-    throw new Error('id is not correct');
+    throw new NotFoundError('id is not correct');
   }
 
   return user;
@@ -172,7 +173,7 @@ export async function retrieveUserById(id) {
 
 export async function updateUser(user_id, data) {
   if (!user_id) {
-    throw new Error('user_id can not be null');
+    throw new BadRequestError('user_id can not be null');
   }
 
   await UserModel.update(
@@ -198,10 +199,10 @@ export async function updateUser(user_id, data) {
 
 export async function updateUserPw(user_id, password) {
   if (!user_id) {
-    throw new Error('user_id can not be null');
+    throw new BadRequestError('user_id can not be null');
   }
   if (!password) {
-    throw new Error('password can not be null');
+    throw new BadRequestError('password can not be null');
   }
 
   await UserModel.update(
@@ -216,7 +217,7 @@ export async function updateUserPw(user_id, password) {
 
 export async function deleteUser(user_id) {
   if (!user_id) {
-    throw new Error('id can not be null');
+    throw new BadRequestError('id can not be null');
   }
 
   await UserModel.destroy({
@@ -228,7 +229,7 @@ export async function deleteUser(user_id) {
 
 export async function updateLoginDate(user_id) {
   if (!user_id) {
-    throw new Error('id can not be null');
+    throw new BadRequestError('id can not be null');
   }
 
   await UserModel.update(
@@ -246,7 +247,7 @@ export async function updateLoginDate(user_id) {
 
 export async function checkDupId(id) {
   if (!id) {
-    throw new Error('id can not be null');
+    throw new BadRequestError('id can not be null');
   }
 
   const user = await UserModel.findOne({
@@ -254,7 +255,7 @@ export async function checkDupId(id) {
   });
 
   if (user) {
-    throw new Error('id is duplicated');
+    throw new ConflictError('id is duplicated');
   }
 }
 

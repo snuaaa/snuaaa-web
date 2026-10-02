@@ -11,9 +11,9 @@ if (process.env.SENTRY_DSN) {
     release: process.env.SENTRY_RELEASE,
     tracesSampleRate: Number(process.env.SENTRY_TRACES_SAMPLE_RATE ?? 0.1),
     integrations: [
-      // Most routes catch errors themselves and only `console.error` them
-      // before responding, so forward `console.error` calls to Sentry as well.
-      Sentry.captureConsoleIntegration({ levels: ['error'] }),
+      // Errors are reported from `middlewares/errorHandler.ts`, which knows
+      // which ones are expected 4xx (`AppError`) and which are real 500s.
+      Sentry.expressIntegration({ shouldHandleError: false }),
     ],
   });
 }

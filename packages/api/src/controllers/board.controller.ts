@@ -1,11 +1,12 @@
 import { BoardModel, CategoryModel, TagModel } from '../models';
 import { Op } from 'sequelize';
+import { BadRequestError, NotFoundError } from '../errors';
 
 export async function retrieveBoard(board_id) {
   if (!board_id) {
-    throw new Error('id can not be null');
+    throw new BadRequestError('id can not be null');
   }
-  const board = BoardModel.findOne({
+  const board = await BoardModel.findOne({
     include: [
       {
         model: TagModel,
@@ -20,7 +21,7 @@ export async function retrieveBoard(board_id) {
   });
 
   if (!board) {
-    throw new Error('id is not correct');
+    throw new NotFoundError('id is not correct');
   }
   return board;
 }

@@ -31,13 +31,14 @@ import {
 } from '../controllers/contentTag.controller';
 import { retrieveUserByUserUuid } from '../controllers/user.controller';
 import { SearchType } from '../controllers/post.controller';
+import { AuthorizationError, BadRequestError, NotFoundError } from '../errors';
 
 const router = express.Router();
 
 router.get(
   '/list',
   verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res) => {
+  async (req: AuthenticatedRequest, res, next) => {
     const decodedToken = req.decodedToken;
     const userUuid = req.query.user_uuid as string;
     const filter: PhotoFilter = {
@@ -54,10 +55,7 @@ router.get(
       if (userUuid) {
         const user = await retrieveUserByUserUuid(userUuid);
         if (!user) {
-          return res.status(404).json({
-            success: false,
-            message: 'User not found',
-          });
+          return next(new NotFoundError('User not found'));
         }
         const author_id = user.getDataValue('user_id');
         filter['author_id'] = author_id;
@@ -66,11 +64,7 @@ router.get(
       const photos = await retrievePhotosWithFilter(filter);
       return res.json(photos);
     } catch (err) {
-      console.error(err);
-      return res.status(500).json({
-        success: false,
-        message: 'INTERNAL SERVER ERROR',
-      });
+      next(err);
     }
   },
 );
@@ -85,7 +79,9 @@ router.get(
       const photoInfo = await retrievePhoto(req.params.photo_id);
 
       if (photoInfo.board.lv_read < decodedToken.grade) {
-        return next({ status: 403, code: 4001 });
+        return next(
+          new AuthorizationError('Permission denied', { code: 4001 }),
+        );
       }
 
       const [
@@ -115,11 +111,7 @@ router.get(
         nextAlbumPhoto,
       });
     } catch (err) {
-      console.error(err);
-      res.status(500).json({
-        error: 'internal server error',
-        code: 0,
-      });
+      next(err);
     }
   },
 );
@@ -127,7 +119,7 @@ router.get(
 router.post(
   '/',
   verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res) => {
+  async (req: AuthenticatedRequest, res, next) => {
     const decodedToken = req.decodedToken;
     const list = req.body.list;
     const boardId = req.body.board_id;
@@ -154,16 +146,12 @@ router.post(
         list: contentIdList,
       });
     } catch (err) {
-      console.error(err);
-      res.status(500).json({
-        error: 'internal server error',
-        code: 0,
-      });
+      next(err);
     }
   },
 );
 
-router.patch('/:photo_id', verifyTokenMiddleware, async (req, res) => {
+router.patch('/:photo_id', verifyTokenMiddleware, async (req, res, next) => {
   try {
     const contentData = {
       title: req.body.title,
@@ -173,10 +161,7 @@ router.patch('/:photo_id', verifyTokenMiddleware, async (req, res) => {
     const tagData = req.body.tags;
 
     if (!req.params.photo_id || !contentData || !photoData || !tagData) {
-      return res.status(400).json({
-        error: 'bad request',
-        code: 0,
-      });
+      return next(new BadRequestError('bad request'));
     }
 
     await Promise.all([
@@ -186,38 +171,26 @@ router.patch('/:photo_id', verifyTokenMiddleware, async (req, res) => {
     ]);
     res.json({ success: true });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      error: 'internal server error',
-      code: 0,
-    });
+    next(err);
   }
 });
 
-router.delete('/:photo_id', verifyTokenMiddleware, async (req, res) => {
+router.delete('/:photo_id', verifyTokenMiddleware, async (req, res, next) => {
   try {
     await deletePhoto(req.params.photo_id);
     await deleteContent(req.params.photo_id);
     res.json({ success: true });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      error: 'internal server error',
-      code: 0,
-    });
+    next(err);
   }
 });
 
-router.post('/migrate', verifyTokenMiddleware, async (req, res) => {
+router.post('/migrate', verifyTokenMiddleware, async (req, res, next) => {
   try {
     await migratePhotos();
     res.json({ success: true });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      error: 'internal server error',
-      code: 0,
-    });
+    next(err);
   }
 });
 

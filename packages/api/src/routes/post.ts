@@ -18,13 +18,14 @@ import {
 } from '../controllers/post.controller';
 import { checkLike } from '../controllers/contentLike.controller';
 import { retrieveUserByUserUuid } from '../controllers/user.controller';
+import { AuthorizationError, NotFoundError } from '../errors';
 
 const router = express.Router();
 
 router.get(
   '/list',
   verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res) => {
+  async (req: AuthenticatedRequest, res, next) => {
     const decodedToken = req.decodedToken;
     const userUuid = req.query.user_uuid as string;
 
@@ -41,10 +42,7 @@ router.get(
       if (userUuid) {
         const user = await retrieveUserByUserUuid(userUuid);
         if (!user) {
-          return res.status(404).json({
-            success: false,
-            message: 'User not found',
-          });
+          return next(new NotFoundError('User not found'));
         }
         const author_id = user.getDataValue('user_id');
         filter['author_id'] = author_id;
@@ -53,11 +51,7 @@ router.get(
       const postList = await retrievePostsWithFilter(filter);
       return res.json(postList);
     } catch (err) {
-      console.error(err);
-      return res.status(500).json({
-        success: false,
-        message: 'INTERNAL SERVER ERROR',
-      });
+      next(err);
     }
   },
 );
@@ -72,7 +66,9 @@ router.get(
       const postInfo = await retrievePost(req.params.post_id);
 
       if (postInfo.board.lv_read < decodedToken.grade) {
-        return next({ status: 403, code: 4001 });
+        return next(
+          new AuthorizationError('Permission denied', { code: 4001 }),
+        );
       }
 
       const [likeInfo] = await Promise.all([
@@ -82,29 +78,26 @@ router.get(
 
       res.json({ postInfo, likeInfo });
     } catch (err) {
-      console.error(err);
-      res.status(500).json();
+      next(err);
     }
   },
 );
 
-router.patch('/:post_id', verifyTokenMiddleware, async (req, res) => {
+router.patch('/:post_id', verifyTokenMiddleware, async (req, res, next) => {
   try {
     await updateContent(req.params.post_id, req.body);
     res.json({ success: true });
   } catch (err) {
-    console.error(err);
-    res.status(500).json();
+    next(err);
   }
 });
 
-router.delete('/:post_id', verifyTokenMiddleware, async (req, res) => {
+router.delete('/:post_id', verifyTokenMiddleware, async (req, res, next) => {
   try {
     await deleteContent(req.params.post_id);
     res.json({ success: true });
   } catch (err) {
-    console.error(err);
-    res.status(500).json();
+    next(err);
   }
 });
 

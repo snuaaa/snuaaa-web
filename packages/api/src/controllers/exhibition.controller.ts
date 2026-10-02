@@ -10,10 +10,11 @@ import path from 'path';
 import { resizeImageBuffer } from '../utils/resize';
 import { uploadImageToS3 } from '../utils/upload';
 import { BASE_USER_FIELDS } from '../models/User';
+import { BadRequestError } from '../errors';
 
 export async function retrieveExhibition(exhibition_id) {
   if (!exhibition_id) {
-    throw new Error('exhibition_id can not be null');
+    throw new BadRequestError('exhibition_id can not be null');
   }
 
   return ContentModel.findOne({
@@ -65,7 +66,7 @@ export async function retrieveExhibitions() {
 
 export async function createExhibition(content_id, data) {
   if (!content_id) {
-    throw new Error('content_id can not be null');
+    throw new BadRequestError('content_id can not be null');
   }
 
   await ExhibitionModel.create({

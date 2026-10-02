@@ -43,7 +43,7 @@ Each package has its own ESLint flat config (`eslint.config.*`) with Prettier (s
   `NODE_ENV=develop` switches the CORS allow-list to the dev origins, which include localhost:3000.
 - **Sentry (optional):** error monitoring is off unless a DSN is set.
   - Web: `REACT_APP_SENTRY_DSN`, `REACT_APP_SENTRY_ENVIRONMENT`. Source maps are uploaded at build time only when `SENTRY_AUTH_TOKEN`, `SENTRY_ORG` and `SENTRY_PROJECT` are set (see `deploy-web.yml`).
-  - API: `SENTRY_DSN`, `SENTRY_ENVIRONMENT`, `SENTRY_TRACES_SAMPLE_RATE`. `src/instrument.ts` must stay the first import in `main.ts`. `console.error` calls are reported too, since most routes catch errors and only log them.
+  - API: `SENTRY_DSN`, `SENTRY_ENVIRONMENT`, `SENTRY_TRACES_SAMPLE_RATE`. `src/instrument.ts` must stay the first import in `main.ts`. Only unexpected (500) errors are reported, from `middlewares/errorHandler.ts`.
 
 ## Architecture
 
@@ -65,6 +65,7 @@ Each package has its own ESLint flat config (`eslint.config.*`) with Prettier (s
 - **Entry:** `main.ts` mounts every router under `/api` (see `routes/index.ts`) and serves `/static` from `upload/`.
 - **Layering:** `routes/*.ts` handles HTTP parsing and responses, and `controllers/*.controller.ts` holds the Sequelize queries and business logic. Controllers are plain async functions, not Express handlers.
 - **Auth:** the global token middleware is commented out, so each route opts in with `verifyTokenMiddleware`. That middleware reads the `Authorization: Bearer` header and sets `req.decodedToken` (type `AuthenticatedRequest`).
+- **Errors:** expected failures are `AppError` subclasses from `src/errors` (`BadRequestError` 400, `AuthenticationError` 401, `AuthorizationError` 403, `NotFoundError` 404, `ConflictError` 409). Controllers throw them, and routes forward every error with `catch (err) { next(err); }` (or `return next(new XxxError(...))`). Express 4 does not catch rejected promises, so never leave an `await` outside `try` in a handler. `middlewares/errorHandler.ts` responds `{ success: false, error, message, code? }`. Any other error becomes a 500 and goes to Sentry. `code` is a legacy numeric code that the web still reads in some places (e.g. 1011–1014 for password changes).
 - **Permissions:** permissions depend on the user's `grade`, where a lower number means more privilege. Boards filter visibility by comparing their read level against `decodedToken.grade`.
 - **Content model:** `Content` is the polymorphic base row (`type` is one of `PO`/`DO`/`AL`/`PH`/`EH`/`EP`; see `enums/contentTypeEnum.ts`). It has a one-to-one detail table (`Post`, `Document`, `Album`, `Photo`, `Exhibition`, `ExhibitPhoto`) keyed by `content_id`. Likes, comments, tags and attached files all hang off `Content`. Associations are defined centrally in `models/index.ts`.
 - **Schema changes:** `models/sequelize.ts` calls `sequelize.sync()` on connect. There are no migration files, so schema changes come from model definitions.
