@@ -19,7 +19,10 @@ From the repo root:
 pnpm install
 pnpm dev      # community web dev server on http://localhost:3000
 pnpm build    # community web production build -> packages/community/build
+pnpm code-review [base]   # Claude reviews the diff vs base (default origin/main); needs ANTHROPIC_API_KEY
 ```
+
+`pnpm code-review` runs `script/code-review.ts` with tsx. It reviews committed and uncommitted changes since the merge-base with `base`, skipping `pnpm-lock.yaml` and `routeTree.gen.ts`, and sends `CLAUDE.md` as project context. Set `CODE_REVIEW_MODEL` to use a different model.
 
 Per package, run with `pnpm --filter <name> <script>`, or run the script from inside the package directory:
 
