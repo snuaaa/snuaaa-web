@@ -29,6 +29,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.693.0",
     "@aws-sdk/client-ses": "^3.529.1",
+    "astronomy-engine": "^2.1.19",
     "bcryptjs": "^2.4.3",
     "body-parser": "^2.2.0",
     "cookie-parser": "^1.4.5",
@@ -36,7 +37,6 @@
     "crypto-random-string": "^3.3.0",
     "dotenv": "^6.2.0",
     "express": "^4.21.2",
-    "fast-xml-parser": "^3.17.4",
     "helmet": "^3.23.3",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
@@ -44,7 +44,6 @@
     "pg": "^8.7.3",
     "pg-hstore": "^2.3.3",
     "pg-promise": "^8.7.5",
-    "request": "^2.88.2",
     "rotating-file-stream": "^1.4.6",
     "sequelize": "^6.20.1",
     "sharp": "^0.34.5",

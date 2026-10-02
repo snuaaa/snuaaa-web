@@ -39,7 +39,6 @@ Each package has its own ESLint flat config (`eslint.config.*`) with Prettier (s
   - `POSTGRESQL_DATABASE`, `POSTGRESQL_USERNAME`, `POSTGRESQL_PASSWORD`, `DB_HOST`
   - `JWT_SECRET`, `PORT` (default 8080), `NODE_ENV`
   - `AWS_REGION`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `S3_BUCKET_NAME`
-  - `RISESET_SERVICE_KEY`
 
   `NODE_ENV=develop` switches the CORS allow-list to the dev origins, which include localhost:3000.
 
@@ -66,6 +65,7 @@ Each package has its own ESLint flat config (`eslint.config.*`) with Prettier (s
 - **Permissions:** permissions depend on the user's `grade`, where a lower number means more privilege. Boards filter visibility by comparing their read level against `decodedToken.grade`.
 - **Content model:** `Content` is the polymorphic base row (`type` is one of `PO`/`DO`/`AL`/`PH`/`EH`/`EP`; see `enums/contentTypeEnum.ts`). It has a one-to-one detail table (`Post`, `Document`, `Album`, `Photo`, `Exhibition`, `ExhibitPhoto`) keyed by `content_id`. Likes, comments, tags and attached files all hang off `Content`. Associations are defined centrally in `models/index.ts`.
 - **Schema changes:** `models/sequelize.ts` calls `sequelize.sync()` on connect. There are no migration files, so schema changes come from model definitions.
+- **Rise/set info:** `/api/home/riseset` computes sunrise/sunset, moonrise/moonset, astronomical twilight and moon age for Seoul locally with `astronomy-engine` (`utils/riseset.ts`). No external API or service key is needed.
 - **Images and files:** uploads go to S3 through `utils/upload.ts` (`uploadImageToS3`, with resource types in `S3_RESOURCE_TYPES`). Images are resized with sharp. Legacy local-disk paths (`profile_path`, etc.) are deprecated in favor of `*_url` fields (e.g. `User.profile_url`). When displaying images, prefer `profile_url` and fall back to the legacy path.
 
 ## Branching & Deployment

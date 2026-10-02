@@ -1,12 +1,4 @@
 import express from 'express';
-import request from 'request';
-import fs from 'fs';
-import path from 'path';
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const xmlParser = require('fast-xml-parser');
-
-import 'dotenv/config';
-
 import {
   AuthenticatedRequest,
   verifyTokenMiddleware,
@@ -22,6 +14,7 @@ import {
   retrieveAllComments,
 } from '../controllers/comment.controller';
 import { retrieveAlbumsInBoard } from '../controllers/album.controller';
+import { calcRiseSet } from '../utils/riseset';
 
 const router = express.Router();
 
@@ -143,154 +136,12 @@ router.get(
   },
 );
 
-interface RiseSetItem {
-  sunrise?: number;
-  sunset?: number;
-  moonrise?: number;
-  moonset?: number;
-  astm?: number;
-  aste?: number;
-}
-
-interface MoonPhaseItem {
-  lunAge?: number;
-}
-
-interface ApiResponse {
-  response?: {
-    body?: {
-      items?: {
-        item?: RiseSetItem | MoonPhaseItem;
-      };
-    };
-  };
-}
-
-// NOTE: This route uses callback-based `request.get()` which cannot be trivially
-// converted to async/await without replacing the HTTP library.
 router.get('/riseset', verifyTokenMiddleware, (req, res) => {
-  const today = new Date();
-  const year = today.getFullYear().toString();
-  let month: string | number = today.getMonth() + 1;
-  let day: string | number = today.getDate();
-  month = month < 10 ? '0' + month : month;
-  day = day < 10 ? '0' + day : day;
-
-  const dayformat = `${year}${month}${day}`;
-
   try {
-    if (!fs.existsSync(path.join('.', 'riseset'))) {
-      fs.mkdirSync(path.join('.', 'riseset'));
-    }
+    res.json(calcRiseSet());
   } catch (err) {
     console.error(err);
-  }
-
-  try {
-    const riseSetJsonPath = path.join('.', 'riseset', `${dayformat}.json`);
-
-    if (fs.existsSync(riseSetJsonPath)) {
-      const riseSetInfo = fs.readFileSync(riseSetJsonPath, 'utf8');
-      res.json(JSON.parse(riseSetInfo));
-    } else {
-      const riseSetUrl =
-        'http://apis.data.go.kr/B090041/openapi/service/RiseSetInfoService/getAreaRiseSetInfo';
-      let riseSetQueryParams =
-        '?' +
-        encodeURIComponent('ServiceKey') +
-        '=' +
-        process.env.RISESET_SERVICE_KEY;
-      riseSetQueryParams +=
-        '&' +
-        encodeURIComponent('locdate') +
-        '=' +
-        encodeURIComponent(dayformat);
-      riseSetQueryParams +=
-        '&' + encodeURIComponent('location') + '=' + encodeURIComponent('서울');
-
-      request.get(riseSetUrl + riseSetQueryParams, (err, response, body) => {
-        if (err) {
-          console.error(err);
-          return res.status(500).json({ success: false, code: 0 });
-        } else if (!xmlParser.validate(body)) {
-          console.error('xml parse error');
-          return res.status(500).json({ success: false, code: 0 });
-        } else {
-          const riseSetData: ApiResponse = xmlParser.parse(body);
-          let riseSetItem: RiseSetItem = {};
-          if (riseSetData.response?.body?.items?.item) {
-            riseSetItem = riseSetData.response.body.items.item as RiseSetItem;
-          } else {
-            console.error('api error');
-            return res.status(500).json({ success: false, code: 0 });
-          }
-
-          const moonPhaseUrl =
-            'http://apis.data.go.kr/B090041/openapi/service/LunPhInfoService/getLunPhInfo';
-          let moonPhaseQueryParams =
-            '?' +
-            encodeURIComponent('ServiceKey') +
-            '=' +
-            process.env.RISESET_SERVICE_KEY;
-          moonPhaseQueryParams +=
-            '&' +
-            encodeURIComponent('solYear') +
-            '=' +
-            encodeURIComponent(year);
-          moonPhaseQueryParams +=
-            '&' +
-            encodeURIComponent('solMonth') +
-            '=' +
-            encodeURIComponent(String(month));
-          moonPhaseQueryParams +=
-            '&' +
-            encodeURIComponent('solDay') +
-            '=' +
-            encodeURIComponent(String(day));
-
-          request.get(
-            moonPhaseUrl + moonPhaseQueryParams,
-            (err, response, body) => {
-              if (err) {
-                console.error(err);
-                return res.status(500).json({ success: false, code: 0 });
-              } else if (!xmlParser.validate(body)) {
-                console.error('xml parse error');
-                return res.status(500).json({ success: false, code: 0 });
-              } else {
-                const moonPhaseData: ApiResponse = xmlParser.parse(body);
-                let moonPhaseItem: MoonPhaseItem = {};
-                if (moonPhaseData.response?.body?.items?.item) {
-                  moonPhaseItem = moonPhaseData.response.body.items
-                    .item as MoonPhaseItem;
-                } else {
-                  console.error('api error');
-                  return res.status(500).json({ success: false, code: 0 });
-                }
-
-                const AstroInfo = {
-                  sunrise: riseSetItem.sunrise,
-                  sunset: riseSetItem.sunset,
-                  moonrise: riseSetItem.moonrise,
-                  moonset: riseSetItem.moonset,
-                  astm: riseSetItem.astm,
-                  aste: riseSetItem.aste,
-                  lunAge: moonPhaseItem.lunAge,
-                };
-                fs.writeFileSync(
-                  riseSetJsonPath,
-                  JSON.stringify(AstroInfo),
-                  'utf8',
-                );
-                res.json(AstroInfo);
-              }
-            },
-          );
-        }
-      });
-    }
-  } catch (err) {
-    console.error(err);
+    res.status(500).json({ success: false, code: 0 });
   }
 });
 

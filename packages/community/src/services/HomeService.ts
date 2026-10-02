@@ -4,12 +4,12 @@ import { Content, Comment, Album, Photo } from './types';
 
 export interface RiseSet {
   lunAge: number;
-  sunrise: number;
-  sunset: number;
-  moonrise: number;
-  moonset: number;
-  astm: number;
-  aste: number;
+  sunrise?: number;
+  sunset?: number;
+  moonrise?: number;
+  moonset?: number;
+  astm?: number;
+  aste?: number;
 }
 
 export type SoundBoxResponse = Pick<Content, 'content_id' | 'title' | 'text'>;

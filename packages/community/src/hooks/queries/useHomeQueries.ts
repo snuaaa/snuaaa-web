@@ -9,6 +9,7 @@ export const homeKeys = {
   allPosts: (page: number) => [...homeKeys.all, 'allPosts', page] as const,
   allComments: (page: number) =>
     [...homeKeys.all, 'allComments', page] as const,
+  riseSet: () => [...homeKeys.all, 'riseSet'] as const,
 };
 
 // Query options
@@ -48,6 +49,13 @@ export const allCommentsQueryOptions = (pageIdx: number) =>
     queryFn: () => HomeService.retrieveAllComments(pageIdx),
   });
 
+export const riseSetQueryOptions = () =>
+  queryOptions({
+    queryKey: homeKeys.riseSet(),
+    queryFn: () => HomeService.retrieveRiseSet(),
+    staleTime: 60 * 60 * 1000,
+  });
+
 // Hooks
 export function useHomeData() {
   return useQuery(homeDataQueryOptions());
@@ -59,4 +67,8 @@ export function useAllPosts(pageIdx: number) {
 
 export function useAllComments(pageIdx: number) {
   return useQuery(allCommentsQueryOptions(pageIdx));
+}
+
+export function useRiseSet() {
+  return useQuery(riseSetQueryOptions());
 }
