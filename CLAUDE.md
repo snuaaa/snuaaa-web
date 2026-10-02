@@ -70,8 +70,18 @@ Each package has its own ESLint flat config (`eslint.config.*`) with Prettier (s
 
 ## Branching & Deployment
 
-- PRs target `main` (the default branch), not `develop`.
-- Branch names follow `<type>/<short-description>` (e.g. `fix/profile-path`, `feat/late-fee-management`). Commit messages and PR titles use `[feat]`, `[fix]`, `[refactor]`, `[chore]` prefixes, often written in Korean. PRs are squash-merged with `(#<PR number>)` appended.
+- PRs target `main` (the default branch), not `develop`. Large work can go through a long-lived `epic/<name>` branch, with feature PRs targeting the epic.
+- Branch names follow `<type>/<short-description>` (e.g. `fix/profile-path`, `feat/late-fee-management`), where `<type>` is `feat`, `fix`, `chore` or `refactor`. Commit messages and PR titles use `[feat]`, `[fix]`, `[refactor]`, `[chore]` prefixes, often written in Korean.
+- **Merging:** comment `/merge` on the PR instead of using the merge button. `.github/workflows/merge-command.yml` picks the method from the branches and titles the commit `<PR title> (#<PR number>)`:
+
+  | base ← head | method |
+  | --- | --- |
+  | `main` ← `epic/*` | merge commit |
+  | `main` ← `<type>/*` | squash |
+  | `epic/*` ← `<type>/*` | squash |
+  | `epic/*` ← `main` (sync) | merge commit |
+
+  Never squash `main` into an epic; that duplicates main's commits and breaks the later epic → `main` merge. `Closes #N` only closes issues when the PR merges into `main`, so list an epic's issues on its epic → `main` PR.
 - **Push to `main`:** deploys the web to the Cloudflare Pages preview (`develop` branch) and the API Docker image to the dev Lightsail server.
 - **Release tagged `WEB-*`:** deploys the web to production Cloudflare Pages.
 - **Release tagged `API-*`:** deploys the API to the production Lightsail server. The image is built from `packages/api/Dockerfile` with `pnpm deploy`.

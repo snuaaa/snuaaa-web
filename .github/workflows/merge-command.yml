@@ -1,0 +1,111 @@
+name: Merge Command
+
+# PR에 `/merge` 코멘트를 달면 브랜치 규칙에 맞는 방식으로 머지한다.
+#
+#   main   <- epic/*                       : merge commit
+#   main   <- feat|fix|chore|refactor/*    : squash
+#   epic/* <- feat|fix|chore|refactor/*    : squash
+#   epic/* <- main                         : merge commit (epic 동기화)
+#
+# 머지는 머지 봇 GitHub App 토큰으로 한다. 기본 GITHUB_TOKEN으로 머지하면
+# main push가 배포 워크플로를 트리거하지 않기 때문이다.
+# 필요한 secrets: MERGE_BOT_APP_ID, MERGE_BOT_PRIVATE_KEY
+#
+# 주의: issue_comment 워크플로는 기본 브랜치에 있는 버전만 실행되며,
+# PR 코드를 checkout하지 않는다.
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: merge-command-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  merge:
+    if: github.event.issue.pull_request && startsWith(github.event.comment.body, '/merge')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create merge bot token
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.MERGE_BOT_APP_ID }}
+          private-key: ${{ secrets.MERGE_BOT_PRIVATE_KEY }}
+
+      - name: Merge pull request
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ steps.app-token.outputs.token }}
+          script: |
+            const { owner, repo } = context.repo;
+            const issue_number = context.issue.number;
+            const comment_id = context.payload.comment.id;
+            const commenter = context.payload.comment.user.login;
+
+            if (context.payload.comment.body.trim() !== '/merge') return;
+
+            const react = (content) =>
+              github.rest.reactions.createForIssueComment({ owner, repo, comment_id, content });
+            const reply = (body) =>
+              github.rest.issues.createComment({ owner, repo, issue_number, body });
+            const fail = async (message) => {
+              await react('confused');
+              await reply(`❌ 머지하지 않았습니다: ${message}`);
+              core.setFailed(message);
+            };
+
+            await react('eyes');
+
+            const { data: perm } = await github.rest.repos.getCollaboratorPermissionLevel({
+              owner,
+              repo,
+              username: commenter,
+            });
+            if (!['admin', 'write'].includes(perm.permission)) {
+              return fail(`@${commenter} 님은 이 레포에 write 권한이 없습니다.`);
+            }
+
+            const { data: pr } = await github.rest.pulls.get({ owner, repo, pull_number: issue_number });
+            if (pr.state !== 'open') return fail('열려 있는 PR이 아닙니다.');
+            if (pr.draft) return fail('draft PR은 머지할 수 없습니다.');
+
+            const base = pr.base.ref;
+            const head = pr.head.ref;
+            const sameRepo = pr.head.repo?.full_name === pr.base.repo.full_name;
+            const isEpic = (ref) => /^epic\/.+/.test(ref);
+            const isWork = (ref) => /^(feat|fix|chore|refactor)\/.+/.test(ref);
+
+            let method;
+            if (base === 'main' && sameRepo && isEpic(head)) method = 'merge';
+            else if (base === 'main' && isWork(head)) method = 'squash';
+            else if (isEpic(base) && isWork(head)) method = 'squash';
+            else if (isEpic(base) && sameRepo && head === 'main') method = 'merge';
+
+            if (!method) {
+              return fail(
+                `\`${base} ← ${head}\` 조합에 대한 머지 규칙이 없습니다. ` +
+                  '브랜치 이름이 `epic/*`, `feat/*`, `fix/*`, `chore/*`, `refactor/*` 중 하나인지 확인해주세요.',
+              );
+            }
+
+            try {
+              await github.rest.pulls.merge({
+                owner,
+                repo,
+                pull_number: issue_number,
+                merge_method: method,
+                commit_title: `${pr.title} (#${issue_number})`,
+                // 코멘트 이후 새로 push된 커밋이 검증 없이 머지되지 않도록 고정
+                sha: pr.head.sha,
+              });
+            } catch (err) {
+              return fail(err.message);
+            }
+
+            await react('rocket');
+            await reply(`✅ \`${base} ← ${head}\`를 **${method === 'merge' ? 'merge commit' : 'squash'}** 방식으로 머지했습니다.`);
