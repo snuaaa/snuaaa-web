@@ -39,6 +39,7 @@ const PhotoList = ({ userUuid, page }: Props) => {
                 search={(prev) => ({
                   ...prev,
                   photo: contentInfo.content_id,
+                  photoNavigation: 'user' as const,
                 })}
               >
                 <div className="photo-cover">
