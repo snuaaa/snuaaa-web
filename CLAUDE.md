@@ -19,10 +19,7 @@ From the repo root:
 pnpm install
 pnpm dev      # community web dev server on http://localhost:3000
 pnpm build    # community web production build -> packages/community/build
-pnpm code-review [base]   # Claude reviews the diff vs base (default origin/main); needs ANTHROPIC_API_KEY
 ```
-
-`pnpm code-review` runs `script/code-review.ts` with tsx. It reviews committed and uncommitted changes since the merge-base with `base`, skipping `pnpm-lock.yaml` and `routeTree.gen.ts`, and sends `CLAUDE.md` as project context. Set `CODE_REVIEW_MODEL` to use a different model.
 
 Per package, run with `pnpm --filter <name> <script>`, or run the script from inside the package directory:
 
@@ -31,7 +28,7 @@ Per package, run with `pnpm --filter <name> <script>`, or run the script from in
 | `@snuaaa/community-web` | `dev`, `build`, `lint`, `lint:fix`, `typecheck` |
 | `@snuaaa/api` | `dev` (nodemon + ts-node on `src/main.ts`), `build` (tsc -> `dist`), `serve`, `lint`, `lint:fix`, `format`, `format:check` |
 
-There is no test suite in either package. Verify changes with `lint` and `build`. The web build does not run `tsc`, so also run `typecheck` for the web. PRs to `main` run the same checks in `.github/workflows/ci.yml` (web: `lint`, `typecheck`, `build`; api: `lint`, `format:check`, `build`).
+There is no test suite in either package. Verify changes with `lint` and `build`. The web build does not run `tsc`, so also run `typecheck` for the web. PRs to `main` run the same checks in `.github/workflows/ci.yml` (web: `lint`, `typecheck`, `build`; api: `lint`, `format:check`, `build`). Non-draft PRs from this repository also get an automatic Claude review (`.github/workflows/claude-review.yml`, authenticated with the `CLAUDE_CODE_OAUTH_TOKEN` secret from `claude setup-token`).
 
 Each package has its own ESLint flat config (`eslint.config.*`) with Prettier (single quotes). The root `.eslintrc.js` is legacy.
 
@@ -44,6 +41,9 @@ Each package has its own ESLint flat config (`eslint.config.*`) with Prettier (s
   - `AWS_REGION`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `S3_BUCKET_NAME`
 
   `NODE_ENV=develop` switches the CORS allow-list to the dev origins, which include localhost:3000.
+- **Sentry (optional):** error monitoring is off unless a DSN is set.
+  - Web: `REACT_APP_SENTRY_DSN`, `REACT_APP_SENTRY_ENVIRONMENT`. Source maps are uploaded at build time only when `SENTRY_AUTH_TOKEN`, `SENTRY_ORG` and `SENTRY_PROJECT` are set (see `deploy-web.yml`).
+  - API: `SENTRY_DSN`, `SENTRY_ENVIRONMENT`, `SENTRY_TRACES_SAMPLE_RATE`. `src/instrument.ts` must stay the first import in `main.ts`. `console.error` calls are reported too, since most routes catch errors and only log them.
 
 ## Architecture
 

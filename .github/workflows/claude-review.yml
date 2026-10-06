@@ -1,0 +1,55 @@
+name: Claude Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, ready_for_review, reopened]
+
+concurrency:
+  group: claude-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    name: Claude review
+    # Draft PR과 fork PR(secret 접근 불가)은 건너뜀
+    if: >-
+      !github.event.pull_request.draft &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          # Pro/Max 구독 토큰. 로컬에서 `claude setup-token`으로 발급해 repo secret에 등록
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
+
+            이 pull request를 리뷰해 주세요. PR 브랜치는 현재 작업 디렉터리에 checkout되어 있습니다.
+            `gh pr diff`로 변경 사항을 확인하고, 필요하면 주변 코드를 직접 읽어 맥락을 파악하세요.
+            저장소 루트의 CLAUDE.md에 있는 아키텍처와 컨벤션을 기준으로 판단합니다.
+
+            다음 문제에 집중하세요.
+            - 버그, 런타임 에러, 놓친 엣지 케이스
+            - 보안 문제 (인증/권한 누락, 입력 검증, 민감 정보 노출)
+            - 성능 문제 (불필요한 쿼리, N+1, 과도한 리렌더링)
+            - CLAUDE.md의 프로젝트 컨벤션 위반
+
+            변경된 코드에서 실제로 확인한 문제만 보고하세요. 사소한 스타일 지적은 lint가 처리하므로 생략합니다.
+
+            모든 코멘트는 한국어로 작성합니다.
+            - 특정 코드 줄의 문제는 `mcp__github_inline_comment__create_inline_comment`(`confirmed: true`)로 inline 코멘트를 답니다.
+              심각도를 🔴 Critical / 🟡 Warning / 🔵 Suggestion 중 하나로 앞에 표시합니다.
+            - 마지막에 `gh pr comment`로 변경 요약과 발견 사항 개수를 담은 코멘트를 하나 남깁니다.
+              문제가 없으면 그렇게 적습니다.
+            - GitHub 코멘트로만 결과를 남기고, 메시지로 리뷰 내용을 출력하지 마세요.
+          claude_args: |
+            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*)"
