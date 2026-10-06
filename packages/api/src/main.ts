@@ -23,6 +23,7 @@ app.use(cookieParser());
 const devServerOrigins = [
   'https://dev.snuaaa.net',
   'https://develop.snuaaa-web.pages.dev',
+  'https://redesign.snuaaa-web.pages.dev',
   'http://localhost:3000',
 ];
 const prodServerOrigins = ['https://www.snuaaa.net', 'https://our.snuaaa.net'];
