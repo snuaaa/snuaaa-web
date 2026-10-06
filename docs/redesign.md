@@ -130,7 +130,8 @@ shadcn/ui 방식을 씁니다. Radix 또는 Base UI 같은 headless 라이브러
   - 구현: 목록 쿼리 캐시에 있는 사진 ID 순서를 씁니다. 맥락은 `?photo=<id>&photoCtx=<album:id | board:id | user:uuid>`처럼 search param으로 넘깁니다.
   - 링크로 바로 들어온 경우: 앨범이 있으면 앨범, 없으면 게시판을 기준으로 넘깁니다.
   - 앨범 경계: 마지막 사진에서 멈추고 "다음 앨범" 버튼을 따로 보여주는 방식이 제안 상태입니다.
-  - 지금은 서버가 `prevPhoto` / `nextPhoto` / `prevAlbumPhoto` / `nextAlbumPhoto`로 이전·다음을 정합니다.
+  - 현재 구현: 서버가 `prevPhoto` / `nextPhoto` / `prevAlbumPhoto` / `nextAlbumPhoto`로 이전·다음을 정합니다. #162에서 유저 기준 이동이 서버 방식으로 먼저 들어갔습니다. 유저페이지에서 열면 `?photoNavigation=user`가 붙고, API는 `navigation=user`일 때 작성자 기준으로 이전·다음을 계산합니다.
+  - A 방식으로 옮길 때: search param 이름은 새로 만들지 않고 `photoNavigation`을 넓혀서 씁니다(`album` / `board` / `user`). 유저 기준은 #162의 동작과 결과가 같아야 합니다.
 - **게시판 목록 무한 스크롤 (모바일):** `usePostList`를 `useInfiniteQuery`로 바꿉니다. API는 이미 offset과 limit을 받습니다.
 - **앨범 생성 후 흐름:** 모달을 닫는 대신 새로 만든 앨범의 상세(사진 목록) 화면으로 이동합니다.
 - **장비 대여:** 한 개씩 빌리기와 일괄 대여를 합쳐, 담아서 한 번에 빌리는 흐름 하나로 만듭니다. 확인은 `window.confirm` 대신 확인 시트로 하고, 반납 기한을 크게 보여줍니다.
@@ -148,7 +149,18 @@ shadcn/ui 방식을 씁니다. Radix 또는 Base UI 같은 headless 라이브러
 - **장비 분류 이름:** 시안의 분류 이름(망원경, 가대 등)은 예시입니다. 실제 값은 API에서 받습니다.
 - **디자인하지 않은 화면:** 관리자 화면(장비 관리, 연체료, 회원 관리), 비밀번호 변경 화면, 소개 페이지는 기존 컴포넌트를 조합해 개발하면서 만듭니다.
 
-## 8. PR 순서
+## 8. 브랜치 전략
+
+리디자인은 epic 브랜치 `epic/redesign`에서 진행합니다. 프로덕션은 `main`에서 만든 `WEB-*` 태그로 배포되므로, 일부만 옮긴 UI가 버그 수정 릴리스에 섞여 나가지 않게 하기 위해서입니다.
+
+- **하위 브랜치:** 작업마다 `epic/redesign`에서 `feat/redesign-tokens`처럼 브랜치를 만들고, `epic/redesign`을 대상으로 PR을 올립니다. 하위 PR은 squash 머지합니다.
+- **main 따라가기:** 주기적으로 `main`을 `epic/redesign`에 merge합니다. 여러 사람이 쓰는 브랜치라 rebase하지 않습니다.
+- **충돌 줄이기:** 리디자인 기간에는 `main`에서 UI 파일 수정을 최소화합니다.
+- **API 변경:** 웹과 따로 배포할 수 있는 API 변경은 `main`으로 바로 보냅니다. API는 `API-*` 태그로 따로 배포됩니다.
+- **최종 머지:** `epic/redesign`에서 `main`으로는 merge commit으로 합칩니다. 화면 단위 커밋 기록을 남기기 위해서입니다.
+- **CI와 프리뷰:** epic 대상 PR의 CI와 epic 프리뷰 배포는 별도 PR로 `main`의 워크플로에 추가하고, 머지되면 epic에 반영합니다. 그 전까지 하위 PR은 로컬에서 `lint`, `typecheck`, `build`로 확인합니다.
+
+## 9. PR 순서
 
 각 PR에서 옮긴 화면의 SCSS를 함께 지웁니다. 진행 상황은 남은 SCSS 줄 수로 확인합니다.
 
