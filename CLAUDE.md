@@ -74,9 +74,16 @@ Each package has its own ESLint flat config (`eslint.config.*`) with Prettier (s
 
 ## Branching & Deployment
 
-- PRs target `main` (the default branch), not `develop`.
+- PRs target `main` (the default branch), not `develop`, unless the work belongs to an epic.
+- **Epic branches (`epic/<name>`):** large efforts that span many PRs and should not reach production half-done live on a long-lived branch cut from `main`.
+  - Work branches are cut from the epic and their PRs target the epic. They are squash-merged like any other PR, and CI runs on PRs targeting `epic/**`.
+  - Merge `main` into the epic periodically to stay current. Do not rebase an epic, since others build on it.
+  - When the epic is finished, merge it into `main` with a merge commit, not a squash, so the per-PR history survives.
+  - API changes that can ship on their own go straight to `main` instead of the epic.
+  - `<name>` must not be `develop` or `main`, because it becomes the preview alias.
+  - Each epic keeps its plan under `docs/` on the epic branch (e.g. `docs/redesign.md` on `epic/redesign`). Read it before working on that epic.
 - Branch names follow `<type>/<short-description>` (e.g. `fix/profile-path`, `feat/late-fee-management`). Commit messages and PR titles use `[feat]`, `[fix]`, `[refactor]`, `[chore]` prefixes, often written in Korean. PRs are squash-merged with `(#<PR number>)` appended.
 - **Push to `main`:** deploys the web to the Cloudflare Pages preview (`develop` branch) and the API Docker image to the dev Lightsail server.
-- **Push to `epic/redesign`:** deploys the web to the Cloudflare Pages `redesign` alias (`https://redesign.snuaaa-web.pages.dev`), pointed at the dev API. CI also runs on PRs targeting `epic/**`.
+- **Push to `epic/<name>`:** deploys the web to the Cloudflare Pages `<name>` alias (`https://<name>.snuaaa-web.pages.dev`), pointed at the dev API. The API is not deployed from epic branches.
 - **Release tagged `WEB-*`:** deploys the web to production Cloudflare Pages.
 - **Release tagged `API-*`:** deploys the API to the production Lightsail server. The image is built from `packages/api/Dockerfile` with `pnpm deploy`.

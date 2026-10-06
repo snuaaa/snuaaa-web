@@ -4,19 +4,30 @@ on:
   push:
     branches:
       - main
-      - epic/redesign
+      - 'epic/**'
   release:
     types: [published]
 
 jobs:
-  # main은 develop 별칭, epic/redesign은 redesign 별칭(redesign.snuaaa-web.pages.dev)으로 배포
+  # main은 develop 별칭, epic/<name>은 <name> 별칭(<name>.snuaaa-web.pages.dev)으로 배포
   deploy-preview:
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/epic/redesign')
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/epic/'))
     runs-on: ubuntu-latest
-    env:
-      PREVIEW_ALIAS: ${{ github.ref == 'refs/heads/main' && 'develop' || 'redesign' }}
     steps:
       - uses: actions/checkout@v3
+
+      - name: Resolve preview alias
+        run: |
+          if [ "$GITHUB_REF_NAME" = "main" ]; then
+            alias=develop
+          else
+            alias=$(echo "${GITHUB_REF_NAME#epic/}" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+/-/g; s/^-+|-+$//g')
+            if [ -z "$alias" ] || [ "$alias" = "develop" ] || [ "$alias" = "main" ]; then
+              echo "Invalid epic branch name for a preview alias: $GITHUB_REF_NAME" >&2
+              exit 1
+            fi
+          fi
+          echo "PREVIEW_ALIAS=$alias" >> "$GITHUB_ENV"
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
