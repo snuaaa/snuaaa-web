@@ -2,3 +2,5 @@ const ENV = import.meta.env;
 
 export const SERVER_URL = ENV.REACT_APP_SERVER_URL;
 export const IS_PROD = ENV.PROD;
+export const SENTRY_DSN = ENV.REACT_APP_SENTRY_DSN;
+export const SENTRY_ENVIRONMENT = ENV.REACT_APP_SENTRY_ENVIRONMENT;

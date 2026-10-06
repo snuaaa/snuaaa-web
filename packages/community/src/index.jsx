@@ -5,6 +5,9 @@ import { router } from './router';
 import './index.css';
 import 'remixicon/fonts/remixicon.css';
 import { IS_PROD } from './constants/env';
+import { initSentry } from './lib/sentry';
+
+initSentry();
 
 if (IS_PROD) {
   console.log('production mode');
