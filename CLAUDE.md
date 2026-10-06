@@ -28,7 +28,7 @@ Per package, run with `pnpm --filter <name> <script>`, or run the script from in
 | `@snuaaa/community-web` | `dev`, `build`, `lint`, `lint:fix`, `typecheck` |
 | `@snuaaa/api` | `dev` (nodemon + ts-node on `src/main.ts`), `build` (tsc -> `dist`), `serve`, `lint`, `lint:fix`, `format`, `format:check` |
 
-There is no test suite in either package. Verify changes with `lint` and `build`. The web build does not run `tsc`, so also run `typecheck` for the web. PRs to `main` run the same checks in `.github/workflows/ci.yml` (web: `lint`, `typecheck`, `build`; api: `lint`, `format:check`, `build`).
+There is no test suite in either package. Verify changes with `lint` and `build`. The web build does not run `tsc`, so also run `typecheck` for the web. PRs to `main` run the same checks in `.github/workflows/ci.yml` (web: `lint`, `typecheck`, `build`; api: `lint`, `format:check`, `build`). Non-draft PRs from this repository also get an automatic Claude review (`.github/workflows/claude-review.yml`, authenticated with the `CLAUDE_CODE_OAUTH_TOKEN` secret from `claude setup-token`).
 
 Each package has its own ESLint flat config (`eslint.config.*`) with Prettier (single quotes). The root `.eslintrc.js` is legacy.
 
