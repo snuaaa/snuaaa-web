@@ -131,7 +131,7 @@ shadcn/ui 방식을 씁니다. Radix 또는 Base UI 같은 headless 라이브러
   - 링크로 바로 들어온 경우: 앨범이 있으면 앨범, 없으면 게시판을 기준으로 넘깁니다.
   - 앨범 경계: 마지막 사진에서 멈추고 "다음 앨범" 버튼을 따로 보여주는 방식이 제안 상태입니다.
   - 현재 구현: 서버가 `prevPhoto` / `nextPhoto` / `prevAlbumPhoto` / `nextAlbumPhoto`로 이전·다음을 정합니다. #162에서 유저 기준 이동이 서버 방식으로 먼저 들어갔습니다. 유저페이지에서 열면 `?photoNavigation=user`가 붙고, API는 `navigation=user`일 때 작성자 기준으로 이전·다음을 계산합니다.
-  - A 방식으로 옮길 때: search param 이름은 새로 만들지 않고 `photoNavigation`을 넓혀서 씁니다(`album` / `board` / `user`). 유저 기준은 #162의 동작과 결과가 같아야 합니다.
+  - #162는 임시 수정입니다. A 방식으로 옮길 때 서버 계산 로직(`navigation=user`)을 포함해 자유롭게 바꿔도 됩니다. search param 이름은 기존 `photoNavigation`을 넓혀 쓰는 것(`album` / `board` / `user`)을 기본으로 합니다.
 - **게시판 목록 무한 스크롤 (모바일):** `usePostList`를 `useInfiniteQuery`로 바꿉니다. API는 이미 offset과 limit을 받습니다.
 - **앨범 생성 후 흐름:** 모달을 닫는 대신 새로 만든 앨범의 상세(사진 목록) 화면으로 이동합니다.
 - **장비 대여:** 한 개씩 빌리기와 일괄 대여를 합쳐, 담아서 한 번에 빌리는 흐름 하나로 만듭니다. 확인은 `window.confirm` 대신 확인 시트로 하고, 반납 기한을 크게 보여줍니다.
