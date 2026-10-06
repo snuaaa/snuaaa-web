@@ -151,14 +151,11 @@ shadcn/ui 방식을 씁니다. Radix 또는 Base UI 같은 headless 라이브러
 
 ## 8. 브랜치 전략
 
-리디자인은 epic 브랜치 `epic/redesign`에서 진행합니다. 프로덕션은 `main`에서 만든 `WEB-*` 태그로 배포되므로, 일부만 옮긴 UI가 버그 수정 릴리스에 섞여 나가지 않게 하기 위해서입니다.
+리디자인은 epic 브랜치 `epic/redesign`에서 진행합니다. 프로덕션은 `main`에서 만든 `WEB-*` 태그로 배포되므로, 일부만 옮긴 UI가 버그 수정 릴리스에 섞여 나가지 않게 하기 위해서입니다. epic 브랜치 공통 규칙(하위 PR, `main` 따라가기, 최종 머지 방식)은 `CLAUDE.md`의 Branching & Deployment를 따릅니다.
 
-- **하위 브랜치:** 작업마다 `epic/redesign`에서 `feat/redesign-tokens`처럼 브랜치를 만들고, `epic/redesign`을 대상으로 PR을 올립니다. 하위 PR은 squash 머지합니다.
-- **main 따라가기:** 주기적으로 `main`을 `epic/redesign`에 merge합니다. 여러 사람이 쓰는 브랜치라 rebase하지 않습니다.
-- **충돌 줄이기:** 리디자인 기간에는 `main`에서 UI 파일 수정을 최소화합니다.
-- **API 변경:** 웹과 따로 배포할 수 있는 API 변경은 `main`으로 바로 보냅니다. API는 `API-*` 태그로 따로 배포됩니다.
-- **최종 머지:** `epic/redesign`에서 `main`으로는 merge commit으로 합칩니다. 화면 단위 커밋 기록을 남기기 위해서입니다.
-- **CI와 프리뷰:** epic 대상 PR의 CI와 epic 프리뷰 배포는 별도 PR로 `main`의 워크플로에 추가하고, 머지되면 epic에 반영합니다. 그 전까지 하위 PR은 로컬에서 `lint`, `typecheck`, `build`로 확인합니다.
+- **하위 브랜치 이름:** `feat/redesign-tokens`처럼 `redesign`을 넣어 구분합니다.
+- **프리뷰:** `epic/redesign`에 푸시하면 https://redesign.snuaaa-web.pages.dev 에 배포됩니다(dev API 사용).
+- **충돌 줄이기:** 리디자인 기간에는 `main`에서 UI 파일 수정을 최소화합니다. 토큰 PR이 파일을 넓게 건드립니다.
 
 ## 9. PR 순서
 
