@@ -10,6 +10,7 @@ import uuid4 from 'uuid4';
 import { Op } from 'sequelize';
 import ContentTypeEnum from '../enums/contentTypeEnum';
 import { BASE_USER_FIELDS } from '../models/User';
+import { BadRequestError, NotFoundError } from '../errors';
 
 const SearchTypeEnum = Object.freeze({
   ALL: 'A',
@@ -29,7 +30,7 @@ export async function retrievePost(
   content_id: string | number,
 ): Promise<PostResponse> {
   if (!content_id) {
-    throw new Error('id can not be null');
+    throw new BadRequestError('id can not be null');
   }
 
   const post = await ContentModel.findOne({
@@ -59,7 +60,7 @@ export async function retrievePost(
   });
 
   if (!post) {
-    throw new Error('Post not found');
+    throw new NotFoundError('Post not found');
   }
 
   return post as PostResponse;
@@ -67,7 +68,7 @@ export async function retrievePost(
 
 export async function retrievePostsInBoard(board_id, rowNum, offset) {
   if (!board_id) {
-    throw new Error('id can not be null');
+    throw new BadRequestError('id can not be null');
   }
 
   return ContentModel.findAndCountAll({
@@ -215,7 +216,7 @@ export async function searchPostsInBoard(
   offset,
 ) {
   if (!board_id) {
-    throw new Error('id can not be null');
+    throw new BadRequestError('id can not be null');
   }
 
   let contentCondition;
@@ -360,7 +361,7 @@ export async function retrieveAllPosts(grade, rowNum, offset) {
  */
 export async function retrievePostsByUser(user_id) {
   if (!user_id) {
-    throw new Error('id can not be null');
+    throw new BadRequestError('id can not be null');
   }
 
   return ContentModel.findAll({
@@ -389,7 +390,7 @@ export async function retrievePostsByUser(user_id) {
  */
 export async function retrievePostsByUserUuid(user_uuid) {
   if (!user_uuid) {
-    throw new Error('id can not be null');
+    throw new BadRequestError('id can not be null');
   }
 
   return ContentModel.findAll({

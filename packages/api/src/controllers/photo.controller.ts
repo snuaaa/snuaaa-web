@@ -14,6 +14,7 @@ import path from 'path';
 import ContentTypeEnum from '../enums/contentTypeEnum';
 import { SearchType } from './post.controller';
 import { BASE_USER_FIELDS } from '../models/User';
+import { BadRequestError, NotFoundError } from '../errors';
 
 const getSearchCondition = (type?: SearchType, keyword?: string) => {
   if (!type || !keyword || keyword.trim() === '') {
@@ -82,7 +83,7 @@ export async function retrievePhoto(
   photo_id: string | number,
 ): Promise<PhotoResponse> {
   if (!photo_id) {
-    throw new Error('id can not be null');
+    throw new BadRequestError('id can not be null');
   }
 
   const photo = await ContentModel.findOne({
@@ -128,7 +129,7 @@ export async function retrievePhoto(
   });
 
   if (!photo) {
-    throw new Error('Photo not found');
+    throw new NotFoundError('Photo not found');
   }
 
   return photo as PhotoResponse;
@@ -206,7 +207,7 @@ export function retrievePhotosWithFilter(filter: PhotoFilter) {
 
 export async function retrievePrevPhoto(photo_id, album_id) {
   if (!photo_id) {
-    throw new Error('photo_id can not be null');
+    throw new BadRequestError('photo_id can not be null');
   }
 
   return ContentModel.findOne({
@@ -229,7 +230,7 @@ export async function retrievePrevPhoto(photo_id, album_id) {
 
 export async function retrieveNextPhoto(photo_id, album_id) {
   if (!photo_id) {
-    throw new Error('photo_id can not be null');
+    throw new BadRequestError('photo_id can not be null');
   }
 
   return ContentModel.findOne({
@@ -252,7 +253,7 @@ export async function retrieveNextPhoto(photo_id, album_id) {
 
 export async function retrievePrevAlbumPhoto(album_id, board_id) {
   if (!board_id) {
-    throw new Error('board_id can not be null');
+    throw new BadRequestError('board_id can not be null');
   }
 
   return ContentModel.findOne({
@@ -278,7 +279,7 @@ export async function retrievePrevAlbumPhoto(album_id, board_id) {
 
 export async function retrieveNextAlbumPhoto(album_id, board_id) {
   if (!board_id) {
-    throw new Error('board_id can not be null');
+    throw new BadRequestError('board_id can not be null');
   }
 
   return ContentModel.findOne({
@@ -304,7 +305,7 @@ export async function retrieveNextAlbumPhoto(album_id, board_id) {
 
 export async function retrievePhotosInAlbum(album_id) {
   if (!album_id) {
-    throw new Error('id can not be null');
+    throw new BadRequestError('id can not be null');
   }
 
   return ContentModel.findAll({
@@ -331,7 +332,7 @@ export async function retrievePhotosInAlbum(album_id) {
 
 export async function retrievePhotoCountInBoard(board_id) {
   if (!board_id) {
-    throw new Error('id can not be null');
+    throw new BadRequestError('id can not be null');
   }
 
   return ContentModel.count({
@@ -348,7 +349,7 @@ export async function retrievePhotoCountInBoard(board_id) {
 
 export async function retrievePhotosInBoard(board_id, rowNum, offset) {
   if (!board_id) {
-    throw new Error('id can not be null');
+    throw new BadRequestError('id can not be null');
   }
 
   return ContentModel.findAll({
@@ -377,7 +378,7 @@ export async function retrievePhotosInBoard(board_id, rowNum, offset) {
 
 export async function retrievePhotoCountByTag(tags) {
   if (!tags) {
-    throw new Error('tag can not be null');
+    throw new BadRequestError('tag can not be null');
   }
 
   return ContentModel.count({
@@ -401,7 +402,7 @@ export async function retrievePhotoCountByTag(tags) {
 
 export async function retrievePhotosByTag(tags, rowNum, offset) {
   if (!tags) {
-    throw new Error('tag can not be null');
+    throw new BadRequestError('tag can not be null');
   }
 
   return ContentModel.findAll({
@@ -434,7 +435,7 @@ export async function retrievePhotosByTag(tags, rowNum, offset) {
  */
 export async function retrievePhotosByUser(user_id) {
   if (!user_id) {
-    throw new Error('id can not be null');
+    throw new BadRequestError('id can not be null');
   }
 
   return ContentModel.findAll({
@@ -458,7 +459,7 @@ export async function retrievePhotosByUser(user_id) {
  */
 export async function retrievePhotosByUserUuid(user_uuid) {
   if (!user_uuid) {
-    throw new Error('user_uuid can not be null');
+    throw new BadRequestError('user_uuid can not be null');
   }
 
   return ContentModel.findAll({
@@ -529,7 +530,7 @@ export async function createPhoto(data) {
 
 export async function updatePhoto(photo_id, data) {
   if (!photo_id) {
-    throw new Error('id can not be null');
+    throw new BadRequestError('id can not be null');
   }
 
   await PhotoModel.update(
@@ -555,7 +556,7 @@ export async function updatePhoto(photo_id, data) {
 
 export async function deletePhoto(photo_id) {
   if (!photo_id) {
-    throw new Error('id can not be null');
+    throw new BadRequestError('id can not be null');
   }
 
   await PhotoModel.destroy({

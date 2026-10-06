@@ -21,6 +21,7 @@ import { resizeImageBuffer } from '../utils/resize';
 import { uploadImageToS3 } from '../utils/upload';
 import uuid4 from 'uuid4';
 import type { AuthenticatedRequest } from '../middlewares/auth';
+import { BadRequestError } from '../errors';
 
 const router = express.Router();
 const memoryUpload = multer({ storage: multer.memoryStorage() });
@@ -28,16 +29,13 @@ const memoryUpload = multer({ storage: multer.memoryStorage() });
 router.get(
   '/',
   verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res) => {
+  async (req: AuthenticatedRequest, res, next) => {
     try {
       const decodedToken = req.decodedToken;
       const boardInfo = await retrieveBoardsCanAccess(decodedToken.grade);
       return res.json(boardInfo);
     } catch (err) {
-      console.error(err);
-      return res.status(403).json({
-        success: false,
-      });
+      next(err);
     }
   },
 );
@@ -62,61 +60,51 @@ router.get(
         boardInfo: boardInfo,
       });
     } catch (err) {
-      console.error(err);
-      res.status(500).json({
-        error: 'internal server error',
-        code: 0,
-      });
+      next(err);
     }
   },
 );
 
-router.get('/:board_id/posts', verifyTokenMiddleware, async (req, res) => {
-  let offset = 0;
-  const ROWNUM = 10;
-  const query = req.query;
-  if ('page' in query && typeof query.page === 'number' && query.page > 0) {
-    offset = ROWNUM * (query.page - 1);
-  }
+router.get(
+  '/:board_id/posts',
+  verifyTokenMiddleware,
+  async (req, res, next) => {
+    let offset = 0;
+    const ROWNUM = 10;
+    const query = req.query;
+    if ('page' in query && typeof query.page === 'number' && query.page > 0) {
+      offset = ROWNUM * (query.page - 1);
+    }
 
-  try {
-    const postInfo = await retrievePostsInBoard(
-      req.params.board_id,
-      ROWNUM,
-      offset,
-    );
-    res.json({
-      postCount: postInfo.count,
-      postInfo: postInfo.rows,
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(403).json({
-      success: false,
-      error: 'RETRIEVE POST FAIL',
-      code: 1,
-    });
-  }
-});
+    try {
+      const postInfo = await retrievePostsInBoard(
+        req.params.board_id,
+        ROWNUM,
+        offset,
+      );
+      res.json({
+        postCount: postInfo.count,
+        postInfo: postInfo.rows,
+      });
+    } catch (err) {
+      next(err);
+    }
+  },
+);
 
-router.get('/:board_id/tags', verifyTokenMiddleware, async (req, res) => {
+router.get('/:board_id/tags', verifyTokenMiddleware, async (req, res, next) => {
   try {
     const tags = await retrieveTagsOnBoard(req.params.board_id);
     res.json(tags);
   } catch (err) {
-    console.error(err);
-    res.status(403).json({
-      success: false,
-      error: 'RETRIEVE POST FAIL',
-      code: 1,
-    });
+    next(err);
   }
 });
 
 router.post(
   '/:board_id/post',
   verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res) => {
+  async (req: AuthenticatedRequest, res, next) => {
     const decodedToken = req.decodedToken;
 
     const postData = {
@@ -132,12 +120,7 @@ router.post(
         success: true,
       });
     } catch (err) {
-      console.error(err);
-      res.status(403).json({
-        success: false,
-        error: 'RETRIEVE POST FAIL',
-        code: 1,
-      });
+      next(err);
     }
   },
 );
@@ -145,7 +128,7 @@ router.post(
 router.post(
   '/:board_id/document',
   verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res) => {
+  async (req: AuthenticatedRequest, res, next) => {
     const decodedToken = req.decodedToken;
 
     try {
@@ -168,12 +151,7 @@ router.post(
         success: true,
       });
     } catch (err) {
-      console.error(err);
-      return res.status(500).json({
-        success: false,
-        error: 'INTERNAL SERVER ERROR',
-        code: 0,
-      });
+      next(err);
     }
   },
 );
@@ -181,17 +159,12 @@ router.post(
 router.get(
   '/:board_id/exhibitions',
   verifyTokenMiddleware,
-  async (req, res) => {
+  async (req, res, next) => {
     try {
       const exhibitionInfo = await retrieveExhibitions();
       res.json(exhibitionInfo);
     } catch (err) {
-      console.error(err);
-      res.status(500).json({
-        success: false,
-        error: 'RETRIEVE EXHIBITIONS FAIL',
-        code: 1,
-      });
+      next(err);
     }
   },
 );
@@ -200,15 +173,12 @@ router.post(
   '/:board_id/exhibition',
   verifyTokenMiddleware,
   memoryUpload.single('poster'),
-  async (req: AuthenticatedRequestWithFile, res) => {
+  async (req: AuthenticatedRequestWithFile, res, next) => {
     const decodedToken = req.decodedToken;
     const file = req.file;
 
     if (!file) {
-      return res.status(409).json({
-        error: 'POSTER IS NOT ATTACHED',
-        code: 1,
-      });
+      return next(new BadRequestError('POSTER IS NOT ATTACHED'));
     }
 
     try {
@@ -236,12 +206,7 @@ router.post(
       await createExhibition(content_id, req.body);
       res.json({ success: true });
     } catch (err) {
-      console.error(err);
-      res.status(500).json({
-        success: false,
-        error: 'CREATE EXHIBITION FAIL',
-        code: 1,
-      });
+      next(err);
     }
   },
 );

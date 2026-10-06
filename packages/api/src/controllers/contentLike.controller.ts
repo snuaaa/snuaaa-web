@@ -1,8 +1,9 @@
 import { ContentLikeModel, ContentModel } from '../models';
+import { BadRequestError } from '../errors';
 
 export async function checkLike(content_id, user_id) {
   if (!user_id || !content_id) {
-    throw new Error('id can not be null');
+    throw new BadRequestError('id can not be null');
   }
 
   const contentLike = await ContentLikeModel.findOne({
@@ -17,7 +18,7 @@ export async function checkLike(content_id, user_id) {
 
 export async function likeContent(content_id, user_id) {
   if (!user_id || !content_id) {
-    throw new Error('id can not be null');
+    throw new BadRequestError('id can not be null');
   }
 
   await ContentLikeModel.create({
@@ -33,7 +34,7 @@ export async function likeContent(content_id, user_id) {
 
 export async function dislikeContent(content_id, user_id) {
   if (!user_id || !content_id) {
-    throw new Error('id can not be null');
+    throw new BadRequestError('id can not be null');
   }
 
   await ContentLikeModel.destroy({

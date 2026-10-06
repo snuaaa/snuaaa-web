@@ -4,20 +4,26 @@ import { EquipmentModel, RentReturnModel, UserModel } from '../models';
 import RentModel from '../models/Rent';
 import PenaltyStatusEnum from '../enums/penaltyStatusEnum';
 import { BASE_USER_FIELDS } from '../models/User';
+import {
+  AuthorizationError,
+  BadRequestError,
+  ConflictError,
+  NotFoundError,
+} from '../errors';
 
 export async function rentEquipment(equipmentId: number, userId: number) {
   const equipment = await EquipmentModel.findOne({
     where: { id: equipmentId },
   });
   if (!equipment) {
-    throw new Error('Equipment not found');
+    throw new NotFoundError('Equipment not found');
   }
   if (
     [EquipmentRentEnum.RENTED, EquipmentRentEnum.UNRENTABLE].includes(
       equipment.get('rent_status') as EquipmentRentEnum,
     )
   ) {
-    throw new Error('Equipment not rentable');
+    throw new ConflictError('Equipment not rentable');
   }
   await RentModel.create({
     equipment_id: equipmentId,
@@ -47,13 +53,13 @@ export async function returnEquipment(
     },
   });
   if (!rent) {
-    throw new Error('Rent not found');
+    throw new NotFoundError('Rent not found');
   }
   if (rent.get('user_id') !== userId) {
-    throw new Error('User mismatch: not the renter');
+    throw new AuthorizationError('User mismatch: not the renter');
   }
   if (rent.get('returned')) {
-    throw new Error('Already returned');
+    throw new ConflictError('Already returned');
   }
   rent.update({ returned: true });
   const penalty_status =
@@ -206,7 +212,7 @@ export async function updatePenaltyStatus(
     where: { rent_id: rentId },
   });
   if (!rentReturn) {
-    throw new Error('RentReturn record not found');
+    throw new NotFoundError('RentReturn record not found');
   }
   const current = rentReturn.get('penalty_status') as PenaltyStatusEnum;
   const allowed = [
@@ -214,12 +220,12 @@ export async function updatePenaltyStatus(
     PenaltyStatusEnum.RECEIVED_PAYMENT,
   ];
   if (!allowed.includes(current) || !allowed.includes(penaltyStatus)) {
-    throw new Error(
+    throw new BadRequestError(
       'Transition only allowed between NEEDPAYMENT and RECEIVEDPAYMENT',
     );
   }
   if (current === penaltyStatus) {
-    throw new Error('Already in the requested status');
+    throw new ConflictError('Already in the requested status');
   }
   await rentReturn.update({ penalty_status: penaltyStatus });
   return rentReturn;

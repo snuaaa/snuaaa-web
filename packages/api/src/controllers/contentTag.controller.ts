@@ -1,8 +1,9 @@
 import { ContentTagModel } from '../models';
+import { BadRequestError } from '../errors';
 
 export async function retrieveTagsByContent(content_id) {
   if (!content_id) {
-    throw new Error('id can not be null');
+    throw new BadRequestError('id can not be null');
   }
 
   return ContentTagModel.findAll({
@@ -14,7 +15,7 @@ export async function retrieveTagsByContent(content_id) {
 
 export async function createContentTag(content_id, tag_id) {
   if (!content_id || !tag_id) {
-    throw new Error('id can not be null');
+    throw new BadRequestError('id can not be null');
   }
 
   await ContentTagModel.create({
@@ -25,7 +26,7 @@ export async function createContentTag(content_id, tag_id) {
 
 export async function deleteContentTag(content_id, tag_id) {
   if (!content_id || !tag_id) {
-    throw new Error('id can not be null');
+    throw new BadRequestError('id can not be null');
   }
 
   await ContentTagModel.destroy({
@@ -38,7 +39,7 @@ export async function deleteContentTag(content_id, tag_id) {
 
 export async function checkContentTag(content_id, tag_id) {
   if (!content_id || !tag_id) {
-    throw new Error('id can not be null');
+    throw new BadRequestError('id can not be null');
   }
 
   const isExist = await ContentTagModel.findOne({

@@ -7,26 +7,21 @@ import {
 
 const router = express.Router();
 
-router.delete('/:file_id', verifyTokenMiddleware, async (req, res) => {
+router.delete('/:file_id', verifyTokenMiddleware, async (req, res, next) => {
   try {
     await deleteAttachedFile(req.params.file_id);
     res.json({ success: true });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      error: 'UPDATE FAIL',
-      code: 0,
-    });
+    next(err);
   }
 });
 
-router.post('/migrate', verifyTokenMiddleware, async (req, res) => {
+router.post('/migrate', verifyTokenMiddleware, async (req, res, next) => {
   try {
     await migrateAttachedFiles();
     res.json({ success: true });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'internal server error', code: 0 });
+    next(err);
   }
 });
 

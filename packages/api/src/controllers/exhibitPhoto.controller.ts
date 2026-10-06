@@ -10,6 +10,7 @@ import path from 'path';
 import { resizeImageBuffer } from '../utils/resize';
 import { uploadImageToS3 } from '../utils/upload';
 import { BASE_USER_FIELDS } from '../models/User';
+import { BadRequestError } from '../errors';
 
 export async function createExhibitPhoto(data) {
   await ContentModel.create(
@@ -113,7 +114,7 @@ export async function retrieveExhibitPhotosInExhibition(exhibition_id) {
 
 export async function updateExhibitPhoto(exhibitPhoto_id, data) {
   if (!exhibitPhoto_id) {
-    throw new Error('exhibitPhoto_id can not be null');
+    throw new BadRequestError('exhibitPhoto_id can not be null');
   }
 
   await ExhibitPhotoModel.update(
@@ -144,7 +145,7 @@ export async function updateExhibitPhoto(exhibitPhoto_id, data) {
 
 export async function deleteExhibitPhoto(exhibitPhoto_id) {
   if (!exhibitPhoto_id) {
-    throw new Error('exhibitPhoto_id can not be null');
+    throw new BadRequestError('exhibitPhoto_id can not be null');
   }
 
   await ExhibitPhotoModel.destroy({

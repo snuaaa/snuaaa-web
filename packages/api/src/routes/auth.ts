@@ -18,6 +18,7 @@ import { uploadImageToS3 } from '../utils/upload';
 
 import { createToken } from '../utils/token';
 import { AuthenticatedRequestWithFile } from '../middlewares/upload';
+import { AuthenticationError, BadRequestError, NotFoundError } from '../errors';
 
 const router = express.Router();
 
@@ -43,6 +44,8 @@ async function createGuestToken() {
   };
 }
 
+const LOGIN_FAILED_MESSAGE = 'Login Info is not valid.';
+
 const storage = multer.memoryStorage();
 
 const upload = multer({ storage });
@@ -54,7 +57,7 @@ async function updateLoginHistory(userId: number) {
 router.get(
   '/check',
   verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res) => {
+  async (req: AuthenticatedRequest, res, next) => {
     try {
       const decodedToken = req.decodedToken;
 
@@ -68,7 +71,13 @@ router.get(
         });
       }
 
-      const userInfo = await retrieveUser(decodedToken._id);
+      const userInfo = await retrieveUser(decodedToken._id).catch((err) => {
+        // The token is valid but its user no longer exists (e.g. withdrawn).
+        if (err instanceof NotFoundError) {
+          throw new AuthenticationError('Token is not valid.');
+        }
+        throw err;
+      });
 
       const loginAt = userInfo.get('login_at') as string;
       const userId = userInfo.get('user_id') as number;
@@ -98,32 +107,29 @@ router.get(
         token,
       });
     } catch (err) {
-      console.error(err);
-      return res.status(403).json({
-        success: false,
-        message: 'Token is not valid.',
-      });
+      next(err);
     }
   },
 );
 
-router.post('/login', async (req, res) => {
+router.post('/login', async (req, res, next) => {
   try {
-    if (typeof req.body.password !== 'string') {
-      return res.status(401).json({
-        error: 'LOGIN FAILED',
-        code: 1,
-      });
+    if (!req.body.id || typeof req.body.password !== 'string') {
+      return next(new AuthenticationError(LOGIN_FAILED_MESSAGE));
     }
 
-    const user = await retrieveUserById(req.body.id);
-    if (!user) {
-      throw new Error('id is not correct');
-    }
+    // Do not reveal whether the id or the password was wrong.
+    const user = await retrieveUserById(req.body.id).catch((err) => {
+      if (err instanceof NotFoundError) {
+        return null;
+      }
+      throw err;
+    });
     if (
+      !user ||
       !bcrypt.compareSync(req.body.password, user.get('password') as string)
     ) {
-      throw new Error('password is not correct');
+      return next(new AuthenticationError(LOGIN_FAILED_MESSAGE));
     }
 
     const loginAt = user.get('login_at') as string;
@@ -164,15 +170,11 @@ router.post('/login', async (req, res) => {
         token: token,
       });
   } catch (err) {
-    console.error(err);
-    return res.status(403).json({
-      sucess: false,
-      message: 'Login Info is not valid.',
-    });
+    next(err);
   }
 });
 
-router.get('/login/guest', async (req, res) => {
+router.get('/login/guest', async (req, res, next) => {
   try {
     const { userInfo, autoLogin, token } = await createGuestToken();
 
@@ -188,44 +190,31 @@ router.get('/login/guest', async (req, res) => {
         token,
       });
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({
-      success: false,
-      message: 'INTERNAL SERVER ERROR',
-    });
+    next(err);
   }
 });
 
 router.post(
   '/signup',
   upload.single('profile'),
-  async (req: AuthenticatedRequestWithFile, res) => {
+  async (req: AuthenticatedRequestWithFile, res, next) => {
     try {
       const usernameRegex = /^[a-zA-Z0-9]+$/;
 
       if (!usernameRegex.test(req.body.id)) {
-        return res.status(400).json({
-          error: 'BAD USERNAME',
-          code: 1,
-        });
+        return next(new BadRequestError('BAD USERNAME'));
       }
 
       // CHECK PASS LENGTH
       if (
-        req.body.password.length < 4 ||
-        typeof req.body.password !== 'string'
+        typeof req.body.password !== 'string' ||
+        req.body.password.length < 4
       ) {
-        return res.status(400).json({
-          error: 'BAD PASSWORD',
-          code: 2,
-        });
+        return next(new BadRequestError('BAD PASSWORD'));
       }
 
       if (req.body.password !== req.body.passwordCf) {
-        return res.status(400).json({
-          error: 'BAD PASSWORD CONFIRM ',
-          code: 3,
-        });
+        return next(new BadRequestError('BAD PASSWORD CONFIRM'));
       }
 
       let nickname = '';
@@ -276,24 +265,17 @@ router.post(
       console.log('sign Up Success  ');
       return res.json({ success: true });
     } catch (err) {
-      console.error(err);
-      return res.status(500).json({
-        error: 'Internal Server ERROR',
-        code: 9,
-      });
+      next(err);
     }
   },
 );
 
-router.post('/signup/dupcheck', async (req, res) => {
+router.post('/signup/dupcheck', async (req, res, next) => {
   try {
     await checkDupId(req.body.check_id);
     return res.json({ success: true });
   } catch (err) {
-    console.error(err);
-    return res.status(403).json({
-      success: false,
-    });
+    next(err);
   }
 });
 

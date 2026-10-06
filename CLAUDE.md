@@ -28,7 +28,7 @@ Per package, run with `pnpm --filter <name> <script>`, or run the script from in
 | `@snuaaa/community-web` | `dev`, `build`, `lint`, `lint:fix`, `typecheck` |
 | `@snuaaa/api` | `dev` (nodemon + ts-node on `src/main.ts`), `build` (tsc -> `dist`), `serve`, `lint`, `lint:fix`, `format`, `format:check` |
 
-There is no test suite in either package. Verify changes with `lint` and `build`. The web build does not run `tsc`, so also run `typecheck` for the web. PRs to `main` run the same checks in `.github/workflows/ci.yml` (web: `lint`, `typecheck`, `build`; api: `lint`, `format:check`, `build`).
+There is no test suite in either package. Verify changes with `lint` and `build`. The web build does not run `tsc`, so also run `typecheck` for the web. PRs to `main` run the same checks in `.github/workflows/ci.yml` (web: `lint`, `typecheck`, `build`; api: `lint`, `format:check`, `build`). Non-draft PRs from this repository also get an automatic Claude review (`.github/workflows/claude-review.yml`, authenticated with the `CLAUDE_CODE_OAUTH_TOKEN` secret from `claude setup-token`).
 
 Each package has its own ESLint flat config (`eslint.config.*`) with Prettier (single quotes). The root `.eslintrc.js` is legacy.
 
@@ -39,9 +39,11 @@ Each package has its own ESLint flat config (`eslint.config.*`) with Prettier (s
   - `POSTGRESQL_DATABASE`, `POSTGRESQL_USERNAME`, `POSTGRESQL_PASSWORD`, `DB_HOST`
   - `JWT_SECRET`, `PORT` (default 8080), `NODE_ENV`
   - `AWS_REGION`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `S3_BUCKET_NAME`
-  - `RISESET_SERVICE_KEY`
 
   `NODE_ENV=develop` switches the CORS allow-list to the dev origins, which include localhost:3000.
+- **Sentry (optional):** error monitoring is off unless a DSN is set.
+  - Web: `REACT_APP_SENTRY_DSN`, `REACT_APP_SENTRY_ENVIRONMENT`. Source maps are uploaded at build time only when `SENTRY_AUTH_TOKEN`, `SENTRY_ORG` and `SENTRY_PROJECT` are set (see `deploy-web.yml`).
+  - API: `SENTRY_DSN`, `SENTRY_ENVIRONMENT`, `SENTRY_TRACES_SAMPLE_RATE`. `src/instrument.ts` must stay the first import in `main.ts`. Only unexpected (500) errors are reported, from `middlewares/errorHandler.ts`.
 
 ## Architecture
 
@@ -63,9 +65,11 @@ Each package has its own ESLint flat config (`eslint.config.*`) with Prettier (s
 - **Entry:** `main.ts` mounts every router under `/api` (see `routes/index.ts`) and serves `/static` from `upload/`.
 - **Layering:** `routes/*.ts` handles HTTP parsing and responses, and `controllers/*.controller.ts` holds the Sequelize queries and business logic. Controllers are plain async functions, not Express handlers.
 - **Auth:** the global token middleware is commented out, so each route opts in with `verifyTokenMiddleware`. That middleware reads the `Authorization: Bearer` header and sets `req.decodedToken` (type `AuthenticatedRequest`).
+- **Errors:** expected failures are `AppError` subclasses from `src/errors` (`BadRequestError` 400, `AuthenticationError` 401, `AuthorizationError` 403, `NotFoundError` 404, `ConflictError` 409). Controllers throw them, and routes forward every error with `catch (err) { next(err); }` (or `return next(new XxxError(...))`). Express 4 does not catch rejected promises, so never leave an `await` outside `try` in a handler. `middlewares/errorHandler.ts` responds `{ success: false, error, message, code? }`. Any other error becomes a 500 and goes to Sentry. `code` is a legacy numeric code that the web still reads in some places (e.g. 1011–1014 for password changes).
 - **Permissions:** permissions depend on the user's `grade`, where a lower number means more privilege. Boards filter visibility by comparing their read level against `decodedToken.grade`.
 - **Content model:** `Content` is the polymorphic base row (`type` is one of `PO`/`DO`/`AL`/`PH`/`EH`/`EP`; see `enums/contentTypeEnum.ts`). It has a one-to-one detail table (`Post`, `Document`, `Album`, `Photo`, `Exhibition`, `ExhibitPhoto`) keyed by `content_id`. Likes, comments, tags and attached files all hang off `Content`. Associations are defined centrally in `models/index.ts`.
 - **Schema changes:** `models/sequelize.ts` calls `sequelize.sync()` on connect. There are no migration files, so schema changes come from model definitions.
+- **Rise/set info:** `/api/home/riseset` computes sunrise/sunset, moonrise/moonset, astronomical twilight and moon age for Seoul locally with `astronomy-engine` (`utils/riseset.ts`). No external API or service key is needed.
 - **Images and files:** uploads go to S3 through `utils/upload.ts` (`uploadImageToS3`, with resource types in `S3_RESOURCE_TYPES`). Images are resized with sharp. Legacy local-disk paths (`profile_path`, etc.) are deprecated in favor of `*_url` fields (e.g. `User.profile_url`). When displaying images, prefer `profile_url` and fall back to the legacy path.
 
 ## Branching & Deployment

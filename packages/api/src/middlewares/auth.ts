@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { JWTPayload } from '../utils/token';
 import jwt from 'jsonwebtoken';
+import * as Sentry from '@sentry/node';
+import { AuthenticationError } from '../errors';
 
 export type AuthenticatedRequest = Request & { decodedToken: JWTPayload };
 
@@ -10,61 +12,44 @@ export function verifyTokenMiddleware(
   next: NextFunction,
 ) {
   if (!req.headers.authorization) {
-    return res.status(403).json({
-      success: false,
-      message: 'Authorization does not exist.',
-    });
+    return next(new AuthenticationError('Authorization does not exist.'));
   }
 
   const auth = req.headers.authorization.split(' ');
 
   if (auth[0] !== 'Bearer') {
-    return res.status(403).json({
-      success: false,
-      message: 'Token Type Error.',
-    });
+    return next(new AuthenticationError('Token Type Error.'));
   }
 
   const token = auth[1];
 
   if (!token) {
-    return res.status(403).json({
-      success: false,
-      message: 'Token does not exist.',
-    });
+    return next(new AuthenticationError('Token does not exist.'));
   }
 
   jwt.verify(token, process.env.JWT_SECRET, (error, decoded) => {
     if (error) {
-      return res.status(403).json({
-        success: false,
-        CODE: 102,
-      });
+      return next(new AuthenticationError('Token is not valid.'));
     }
     req.decodedToken = decoded;
+    Sentry.setUser({ id: req.decodedToken._id });
     next();
   });
 }
 
 // TODO: Implement verification using cookies
-export function authMiddleware(req, res, next) {
+export function authMiddleware(req, _res, next) {
   // 토큰 취득
   const token = req.cookies.token;
 
   // 토큰 미존재: 로그인하지 않은 사용자
   if (!token) {
-    return res.status(403).json({
-      success: false,
-      CODE: 101,
-    });
+    return next(new AuthenticationError('Token does not exist.'));
   }
 
   jwt.verify(token, process.env.JWT_SECRET, (error, decoded) => {
     if (error) {
-      return res.status(403).json({
-        success: false,
-        CODE: 102,
-      });
+      return next(new AuthenticationError('Token is not valid.'));
     }
     req.decodedToken = decoded;
     next();

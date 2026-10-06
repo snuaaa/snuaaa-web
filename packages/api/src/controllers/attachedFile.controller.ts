@@ -2,10 +2,11 @@ import { AttachedFileModel } from '../models';
 import { Op } from 'sequelize';
 import fs from 'fs';
 import { uploadFileToS3 } from '../utils/upload';
+import { BadRequestError } from '../errors';
 
 export async function createAttachedFile(content_id, data) {
   if (!content_id) {
-    throw new Error('id can not be null');
+    throw new BadRequestError('id can not be null');
   }
 
   await AttachedFileModel.create({
@@ -19,7 +20,7 @@ export async function createAttachedFile(content_id, data) {
 
 export async function retrieveAttachedFile(file_id) {
   if (!file_id) {
-    throw new Error('id can not be null');
+    throw new BadRequestError('id can not be null');
   }
 
   return AttachedFileModel.findOne({
@@ -36,7 +37,7 @@ export async function retrieveAttachedFile(file_id) {
 
 export async function retrieveAttachedFilesInContent(content_id) {
   if (!content_id) {
-    throw new Error('id can not be null');
+    throw new BadRequestError('id can not be null');
   }
 
   return AttachedFileModel.findAll({
@@ -48,7 +49,7 @@ export async function retrieveAttachedFilesInContent(content_id) {
 
 export async function increaseDownloadCount(file_id) {
   if (!file_id) {
-    throw new Error('file_id can not be null');
+    throw new BadRequestError('file_id can not be null');
   }
 
   await AttachedFileModel.increment('download_count', {
@@ -59,7 +60,7 @@ export async function increaseDownloadCount(file_id) {
 
 export async function deleteAttachedFile(file_id) {
   if (!file_id) {
-    throw new Error('file_id can not be null');
+    throw new BadRequestError('file_id can not be null');
   }
 
   await AttachedFileModel.destroy({

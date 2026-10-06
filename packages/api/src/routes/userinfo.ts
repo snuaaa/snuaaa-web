@@ -41,20 +41,19 @@ const upload = multer({ storage });
 
 import cryptoRandomString from 'crypto-random-string';
 import { AuthenticatedRequestWithFile } from '../middlewares/upload';
+import { AuthorizationError, BadRequestError, NotFoundError } from '../errors';
 
 router.get(
   '/',
   verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res) => {
+  async (req: AuthenticatedRequest, res, next) => {
     const { decodedToken } = req;
 
     try {
       const user = await retrieveUser(decodedToken._id);
 
       if (!user) {
-        return res.status(404).json({
-          error: 'user not found',
-        });
+        return next(new NotFoundError('user not found'));
       }
 
       return res.json({
@@ -62,10 +61,7 @@ router.get(
         userInfo: user,
       });
     } catch (err) {
-      console.error(err);
-      res.status(500).json({
-        error: 'internal server error',
-      });
+      next(err);
     }
   },
 );
@@ -77,7 +73,7 @@ router.patch(
   '/',
   verifyTokenMiddleware,
   upload.single('profileImg'),
-  async (req: AuthenticatedRequestWithFile, res) => {
+  async (req: AuthenticatedRequestWithFile, res, next) => {
     const { decodedToken } = req;
     const user_id = decodedToken._id;
 
@@ -137,10 +133,7 @@ router.patch(
       await updateUser(user_id, userData);
       return res.json({ success: true });
     } catch (err) {
-      console.error(err);
-      return res.status(500).json({
-        error: 'internal server error',
-      });
+      next(err);
     }
   },
 );
@@ -157,23 +150,34 @@ router.patch(
       const userInfo: UserModel = await retrieveUserPw(user_id);
 
       if (!bcrypt.compareSync(data.password, userInfo.get('password'))) {
-        return next({ status: 403, code: 1011 });
+        return next(
+          new BadRequestError('Current password is incorrect', { code: 1011 }),
+        );
       }
       if (!data.newPassword) {
-        return next({ status: 403, code: 1012 });
+        return next(
+          new BadRequestError('New password is required', { code: 1012 }),
+        );
       }
       if (data.newPassword !== data.newPasswordCf) {
-        return next({ status: 403, code: 1013 });
+        return next(
+          new BadRequestError('New password confirmation does not match', {
+            code: 1013,
+          }),
+        );
       }
       if (data.newPassword.length < 8 || data.newPassword.length > 20) {
-        return next({ status: 403, code: 1014 });
+        return next(
+          new BadRequestError('New password must be 8-20 characters', {
+            code: 1014,
+          }),
+        );
       }
 
       await updateUserPw(user_id, bcrypt.hashSync(data.newPassword, 10));
       res.json({ success: true });
     } catch (err) {
-      console.error(err);
-      next({ status: 500, code: 1010 });
+      next(err);
     }
   },
 );
@@ -181,18 +185,14 @@ router.patch(
 router.delete(
   '/',
   verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res) => {
+  async (req: AuthenticatedRequest, res, next) => {
     const { decodedToken } = req;
 
     try {
       await deleteUser(decodedToken._id);
       res.json({ success: true });
     } catch (err) {
-      console.error(err);
-      res.status(500).json({
-        error: 'internal server error',
-        code: 0,
-      });
+      next(err);
     }
   },
 );
@@ -200,12 +200,12 @@ router.delete(
 router.get(
   '/all',
   verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res) => {
+  async (req: AuthenticatedRequest, res, next) => {
     const ROWNUM = 20;
     const { decodedToken } = req;
 
     if (decodedToken.grade > 6) {
-      return res.status(403).json({ success: false });
+      return next(new AuthorizationError());
     }
 
     try {
@@ -221,16 +221,12 @@ router.get(
         count,
       });
     } catch (err) {
-      console.error(err);
-      res.status(500).json({
-        error: 'internal server error',
-        code: 0,
-      });
+      next(err);
     }
   },
 );
 
-router.get('/:user_uuid', verifyTokenMiddleware, async (req, res) => {
+router.get('/:user_uuid', verifyTokenMiddleware, async (req, res, next) => {
   try {
     const userInfo = await retrieveUserByUserUuid(req.params.user_uuid);
     return res.json({
@@ -238,20 +234,13 @@ router.get('/:user_uuid', verifyTokenMiddleware, async (req, res) => {
       userInfo,
     });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      error: 'internal server error',
-      code: 0,
-    });
+    next(err);
   }
 });
 
-router.get('/search/mini', verifyTokenMiddleware, async (req, res) => {
+router.get('/search/mini', verifyTokenMiddleware, async (req, res, next) => {
   if (!req.query.name) {
-    return res.status(402).json({
-      error: 'name is required',
-      code: 0,
-    });
+    return next(new BadRequestError('name is required'));
   }
 
   try {
@@ -261,22 +250,18 @@ router.get('/search/mini', verifyTokenMiddleware, async (req, res) => {
       userList: users,
     });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      error: 'internal server error',
-      code: 0,
-    });
+    next(err);
   }
 });
 
-router.post('/find/id', async (req, res) => {
+router.post('/find/id', async (req, res, next) => {
   const data = req.body;
 
   try {
     const users = await retrieveUsersByEmailAndName(data.email, data.name);
 
     if (!users || users.length === 0) {
-      return res.status(404).json({ code: 0 });
+      return next(new NotFoundError());
     }
 
     let text = '회원님의 ID는 ';
@@ -299,15 +284,11 @@ router.post('/find/id', async (req, res) => {
     await sendMail(mailOptions);
     res.json({ success: true });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      error: 'internal server error',
-      code: 0,
-    });
+    next(err);
   }
 });
 
-router.post('/find/pw', async (req, res) => {
+router.post('/find/pw', async (req, res, next) => {
   const data = req.body;
 
   try {
@@ -318,7 +299,7 @@ router.post('/find/pw', async (req, res) => {
       user.get('email') !== data.email ||
       user.get('username') !== data.name
     ) {
-      return res.status(404).json({ code: 0 });
+      return next(new NotFoundError());
     }
 
     const resetPw = cryptoRandomString({ length: 10 });
@@ -335,8 +316,7 @@ router.post('/find/pw', async (req, res) => {
     await sendMail(mailOptions);
     res.json({ success: true });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ code: 0 });
+    next(err);
   }
 });
 

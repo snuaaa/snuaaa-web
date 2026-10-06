@@ -1,9 +1,10 @@
 import { ContentModel } from '../models';
 import uuid4 from 'uuid4';
+import { BadRequestError } from '../errors';
 
 export async function createContent(user_id, board_id, data, type) {
   if (!user_id || !board_id) {
-    throw new Error('id can not be null');
+    throw new BadRequestError('id can not be null');
   }
 
   const content = await ContentModel.create({
@@ -21,7 +22,7 @@ export async function createContent(user_id, board_id, data, type) {
 
 export async function updateContent(content_id, data) {
   if (!content_id) {
-    throw new Error('id can not be null');
+    throw new BadRequestError('id can not be null');
   }
 
   await ContentModel.update(
@@ -40,7 +41,7 @@ export async function updateContent(content_id, data) {
 
 export async function deleteContent(content_id) {
   if (!content_id) {
-    throw new Error('id can not be null');
+    throw new BadRequestError('id can not be null');
   }
 
   await ContentModel.destroy({
@@ -52,7 +53,7 @@ export async function deleteContent(content_id) {
 
 export async function increaseViewNum(content_id) {
   if (!content_id) {
-    throw new Error('id can not be null');
+    throw new BadRequestError('id can not be null');
   }
 
   await ContentModel.increment('view_num', {

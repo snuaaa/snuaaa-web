@@ -9,30 +9,35 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as CalculatorRouteImport } from './routes/calculator'
 import { Route as EquipmentRouteRouteImport } from './routes/equipment/route'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as EquipmentIndexRouteImport } from './routes/equipment/index'
-import { Route as UserpageUuidRouteImport } from './routes/userpage/$uuid'
-import { Route as PostsAllRouteImport } from './routes/posts/all'
-import { Route as PostPost_idRouteImport } from './routes/post/$post_id'
-import { Route as PhotoPhoto_idRouteImport } from './routes/photo/$photo_id'
-import { Route as MypageViewRouteImport } from './routes/mypage/$view'
-import { Route as ExhibitionExhibition_idRouteImport } from './routes/exhibition/$exhibition_id'
-import { Route as ExhibitPhotoExhibitPhoto_idRouteImport } from './routes/exhibitPhoto/$exhibitPhoto_id'
-import { Route as EquipmentRentRouteImport } from './routes/equipment/rent'
-import { Route as DocumentDoc_idRouteImport } from './routes/document/$doc_id'
-import { Route as CommentsAllRouteImport } from './routes/comments/all'
-import { Route as BoardBoard_idRouteImport } from './routes/board/$board_id'
-import { Route as AuthSignupRouteImport } from './routes/auth/signup'
-import { Route as AuthLoginRouteImport } from './routes/auth/login'
-import { Route as AlbumAlbum_idRouteImport } from './routes/album/$album_id'
-import { Route as AdminUserRouteImport } from './routes/admin/user'
 import { Route as AboutAaaRouteImport } from './routes/about/$aaa'
+import { Route as AdminUserRouteImport } from './routes/admin/user'
+import { Route as AlbumAlbum_idRouteImport } from './routes/album/$album_id'
+import { Route as AuthLoginRouteImport } from './routes/auth/login'
+import { Route as AuthSignupRouteImport } from './routes/auth/signup'
+import { Route as BoardBoard_idRouteImport } from './routes/board/$board_id'
+import { Route as CommentsAllRouteImport } from './routes/comments/all'
+import { Route as DocumentDoc_idRouteImport } from './routes/document/$doc_id'
+import { Route as EquipmentIndexRouteImport } from './routes/equipment/index'
 import { Route as EquipmentAdminRouteRouteImport } from './routes/equipment/admin/route'
+import { Route as EquipmentRentRouteImport } from './routes/equipment/rent'
+import { Route as ExhibitPhotoExhibitPhoto_idRouteImport } from './routes/exhibitPhoto/$exhibitPhoto_id'
+import { Route as ExhibitionExhibition_idRouteImport } from './routes/exhibition/$exhibition_id'
+import { Route as MypageViewRouteImport } from './routes/mypage/$view'
+import { Route as PhotoPhoto_idRouteImport } from './routes/photo/$photo_id'
+import { Route as PostPost_idRouteImport } from './routes/post/$post_id'
+import { Route as PostsAllRouteImport } from './routes/posts/all'
+import { Route as UserpageUuidRouteImport } from './routes/userpage/$uuid'
 import { Route as EquipmentAdminIndexRouteImport } from './routes/equipment/admin/index'
 import { Route as EquipmentAdminFeesRouteImport } from './routes/equipment/admin/fees'
 
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CalculatorRoute = CalculatorRouteImport.update({
   id: '/calculator',
   path: '/calculator',
@@ -43,85 +48,9 @@ const EquipmentRouteRoute = EquipmentRouteRouteImport.update({
   path: '/equipment',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EquipmentIndexRoute = EquipmentIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => EquipmentRouteRoute,
-} as any)
-const UserpageUuidRoute = UserpageUuidRouteImport.update({
-  id: '/userpage/$uuid',
-  path: '/userpage/$uuid',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PostsAllRoute = PostsAllRouteImport.update({
-  id: '/posts/all',
-  path: '/posts/all',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PostPost_idRoute = PostPost_idRouteImport.update({
-  id: '/post/$post_id',
-  path: '/post/$post_id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PhotoPhoto_idRoute = PhotoPhoto_idRouteImport.update({
-  id: '/photo/$photo_id',
-  path: '/photo/$photo_id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MypageViewRoute = MypageViewRouteImport.update({
-  id: '/mypage/$view',
-  path: '/mypage/$view',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ExhibitionExhibition_idRoute = ExhibitionExhibition_idRouteImport.update({
-  id: '/exhibition/$exhibition_id',
-  path: '/exhibition/$exhibition_id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ExhibitPhotoExhibitPhoto_idRoute =
-  ExhibitPhotoExhibitPhoto_idRouteImport.update({
-    id: '/exhibitPhoto/$exhibitPhoto_id',
-    path: '/exhibitPhoto/$exhibitPhoto_id',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const EquipmentRentRoute = EquipmentRentRouteImport.update({
-  id: '/rent',
-  path: '/rent',
-  getParentRoute: () => EquipmentRouteRoute,
-} as any)
-const DocumentDoc_idRoute = DocumentDoc_idRouteImport.update({
-  id: '/document/$doc_id',
-  path: '/document/$doc_id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CommentsAllRoute = CommentsAllRouteImport.update({
-  id: '/comments/all',
-  path: '/comments/all',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BoardBoard_idRoute = BoardBoard_idRouteImport.update({
-  id: '/board/$board_id',
-  path: '/board/$board_id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthSignupRoute = AuthSignupRouteImport.update({
-  id: '/auth/signup',
-  path: '/auth/signup',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthLoginRoute = AuthLoginRouteImport.update({
-  id: '/auth/login',
-  path: '/auth/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AlbumAlbum_idRoute = AlbumAlbum_idRouteImport.update({
-  id: '/album/$album_id',
-  path: '/album/$album_id',
+const AboutAaaRoute = AboutAaaRouteImport.update({
+  id: '/about/$aaa',
+  path: '/about/$aaa',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminUserRoute = AdminUserRouteImport.update({
@@ -129,15 +58,86 @@ const AdminUserRoute = AdminUserRouteImport.update({
   path: '/admin/user',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AboutAaaRoute = AboutAaaRouteImport.update({
-  id: '/about/$aaa',
-  path: '/about/$aaa',
+const AlbumAlbum_idRoute = AlbumAlbum_idRouteImport.update({
+  id: '/album/$album_id',
+  path: '/album/$album_id',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthLoginRoute = AuthLoginRouteImport.update({
+  id: '/auth/login',
+  path: '/auth/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthSignupRoute = AuthSignupRouteImport.update({
+  id: '/auth/signup',
+  path: '/auth/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BoardBoard_idRoute = BoardBoard_idRouteImport.update({
+  id: '/board/$board_id',
+  path: '/board/$board_id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommentsAllRoute = CommentsAllRouteImport.update({
+  id: '/comments/all',
+  path: '/comments/all',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocumentDoc_idRoute = DocumentDoc_idRouteImport.update({
+  id: '/document/$doc_id',
+  path: '/document/$doc_id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EquipmentIndexRoute = EquipmentIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => EquipmentRouteRoute,
 } as any)
 const EquipmentAdminRouteRoute = EquipmentAdminRouteRouteImport.update({
   id: '/admin',
   path: '/admin',
   getParentRoute: () => EquipmentRouteRoute,
+} as any)
+const EquipmentRentRoute = EquipmentRentRouteImport.update({
+  id: '/rent',
+  path: '/rent',
+  getParentRoute: () => EquipmentRouteRoute,
+} as any)
+const ExhibitPhotoExhibitPhoto_idRoute =
+  ExhibitPhotoExhibitPhoto_idRouteImport.update({
+    id: '/exhibitPhoto/$exhibitPhoto_id',
+    path: '/exhibitPhoto/$exhibitPhoto_id',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ExhibitionExhibition_idRoute = ExhibitionExhibition_idRouteImport.update({
+  id: '/exhibition/$exhibition_id',
+  path: '/exhibition/$exhibition_id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MypageViewRoute = MypageViewRouteImport.update({
+  id: '/mypage/$view',
+  path: '/mypage/$view',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PhotoPhoto_idRoute = PhotoPhoto_idRouteImport.update({
+  id: '/photo/$photo_id',
+  path: '/photo/$photo_id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PostPost_idRoute = PostPost_idRouteImport.update({
+  id: '/post/$post_id',
+  path: '/post/$post_id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PostsAllRoute = PostsAllRouteImport.update({
+  id: '/posts/all',
+  path: '/posts/all',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UserpageUuidRoute = UserpageUuidRouteImport.update({
+  id: '/userpage/$uuid',
+  path: '/userpage/$uuid',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const EquipmentAdminIndexRoute = EquipmentAdminIndexRouteImport.update({
   id: '/',
@@ -323,6 +323,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/calculator': {
       id: '/calculator'
       path: '/calculator'
@@ -337,116 +344,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EquipmentRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/equipment/': {
-      id: '/equipment/'
-      path: '/'
-      fullPath: '/equipment/'
-      preLoaderRoute: typeof EquipmentIndexRouteImport
-      parentRoute: typeof EquipmentRouteRoute
-    }
-    '/userpage/$uuid': {
-      id: '/userpage/$uuid'
-      path: '/userpage/$uuid'
-      fullPath: '/userpage/$uuid'
-      preLoaderRoute: typeof UserpageUuidRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/posts/all': {
-      id: '/posts/all'
-      path: '/posts/all'
-      fullPath: '/posts/all'
-      preLoaderRoute: typeof PostsAllRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/post/$post_id': {
-      id: '/post/$post_id'
-      path: '/post/$post_id'
-      fullPath: '/post/$post_id'
-      preLoaderRoute: typeof PostPost_idRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/photo/$photo_id': {
-      id: '/photo/$photo_id'
-      path: '/photo/$photo_id'
-      fullPath: '/photo/$photo_id'
-      preLoaderRoute: typeof PhotoPhoto_idRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/mypage/$view': {
-      id: '/mypage/$view'
-      path: '/mypage/$view'
-      fullPath: '/mypage/$view'
-      preLoaderRoute: typeof MypageViewRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/exhibition/$exhibition_id': {
-      id: '/exhibition/$exhibition_id'
-      path: '/exhibition/$exhibition_id'
-      fullPath: '/exhibition/$exhibition_id'
-      preLoaderRoute: typeof ExhibitionExhibition_idRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/exhibitPhoto/$exhibitPhoto_id': {
-      id: '/exhibitPhoto/$exhibitPhoto_id'
-      path: '/exhibitPhoto/$exhibitPhoto_id'
-      fullPath: '/exhibitPhoto/$exhibitPhoto_id'
-      preLoaderRoute: typeof ExhibitPhotoExhibitPhoto_idRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/equipment/rent': {
-      id: '/equipment/rent'
-      path: '/rent'
-      fullPath: '/equipment/rent'
-      preLoaderRoute: typeof EquipmentRentRouteImport
-      parentRoute: typeof EquipmentRouteRoute
-    }
-    '/document/$doc_id': {
-      id: '/document/$doc_id'
-      path: '/document/$doc_id'
-      fullPath: '/document/$doc_id'
-      preLoaderRoute: typeof DocumentDoc_idRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/comments/all': {
-      id: '/comments/all'
-      path: '/comments/all'
-      fullPath: '/comments/all'
-      preLoaderRoute: typeof CommentsAllRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/board/$board_id': {
-      id: '/board/$board_id'
-      path: '/board/$board_id'
-      fullPath: '/board/$board_id'
-      preLoaderRoute: typeof BoardBoard_idRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth/signup': {
-      id: '/auth/signup'
-      path: '/auth/signup'
-      fullPath: '/auth/signup'
-      preLoaderRoute: typeof AuthSignupRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth/login': {
-      id: '/auth/login'
-      path: '/auth/login'
-      fullPath: '/auth/login'
-      preLoaderRoute: typeof AuthLoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/album/$album_id': {
-      id: '/album/$album_id'
-      path: '/album/$album_id'
-      fullPath: '/album/$album_id'
-      preLoaderRoute: typeof AlbumAlbum_idRouteImport
+    '/about/$aaa': {
+      id: '/about/$aaa'
+      path: '/about/$aaa'
+      fullPath: '/about/$aaa'
+      preLoaderRoute: typeof AboutAaaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/user': {
@@ -456,12 +358,54 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminUserRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/about/$aaa': {
-      id: '/about/$aaa'
-      path: '/about/$aaa'
-      fullPath: '/about/$aaa'
-      preLoaderRoute: typeof AboutAaaRouteImport
+    '/album/$album_id': {
+      id: '/album/$album_id'
+      path: '/album/$album_id'
+      fullPath: '/album/$album_id'
+      preLoaderRoute: typeof AlbumAlbum_idRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/auth/login': {
+      id: '/auth/login'
+      path: '/auth/login'
+      fullPath: '/auth/login'
+      preLoaderRoute: typeof AuthLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/signup': {
+      id: '/auth/signup'
+      path: '/auth/signup'
+      fullPath: '/auth/signup'
+      preLoaderRoute: typeof AuthSignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/board/$board_id': {
+      id: '/board/$board_id'
+      path: '/board/$board_id'
+      fullPath: '/board/$board_id'
+      preLoaderRoute: typeof BoardBoard_idRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/comments/all': {
+      id: '/comments/all'
+      path: '/comments/all'
+      fullPath: '/comments/all'
+      preLoaderRoute: typeof CommentsAllRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/document/$doc_id': {
+      id: '/document/$doc_id'
+      path: '/document/$doc_id'
+      fullPath: '/document/$doc_id'
+      preLoaderRoute: typeof DocumentDoc_idRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/equipment/': {
+      id: '/equipment/'
+      path: '/'
+      fullPath: '/equipment/'
+      preLoaderRoute: typeof EquipmentIndexRouteImport
+      parentRoute: typeof EquipmentRouteRoute
     }
     '/equipment/admin': {
       id: '/equipment/admin'
@@ -469,6 +413,62 @@ declare module '@tanstack/react-router' {
       fullPath: '/equipment/admin'
       preLoaderRoute: typeof EquipmentAdminRouteRouteImport
       parentRoute: typeof EquipmentRouteRoute
+    }
+    '/equipment/rent': {
+      id: '/equipment/rent'
+      path: '/rent'
+      fullPath: '/equipment/rent'
+      preLoaderRoute: typeof EquipmentRentRouteImport
+      parentRoute: typeof EquipmentRouteRoute
+    }
+    '/exhibitPhoto/$exhibitPhoto_id': {
+      id: '/exhibitPhoto/$exhibitPhoto_id'
+      path: '/exhibitPhoto/$exhibitPhoto_id'
+      fullPath: '/exhibitPhoto/$exhibitPhoto_id'
+      preLoaderRoute: typeof ExhibitPhotoExhibitPhoto_idRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/exhibition/$exhibition_id': {
+      id: '/exhibition/$exhibition_id'
+      path: '/exhibition/$exhibition_id'
+      fullPath: '/exhibition/$exhibition_id'
+      preLoaderRoute: typeof ExhibitionExhibition_idRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mypage/$view': {
+      id: '/mypage/$view'
+      path: '/mypage/$view'
+      fullPath: '/mypage/$view'
+      preLoaderRoute: typeof MypageViewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/photo/$photo_id': {
+      id: '/photo/$photo_id'
+      path: '/photo/$photo_id'
+      fullPath: '/photo/$photo_id'
+      preLoaderRoute: typeof PhotoPhoto_idRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/post/$post_id': {
+      id: '/post/$post_id'
+      path: '/post/$post_id'
+      fullPath: '/post/$post_id'
+      preLoaderRoute: typeof PostPost_idRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/posts/all': {
+      id: '/posts/all'
+      path: '/posts/all'
+      fullPath: '/posts/all'
+      preLoaderRoute: typeof PostsAllRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/userpage/$uuid': {
+      id: '/userpage/$uuid'
+      path: '/userpage/$uuid'
+      fullPath: '/userpage/$uuid'
+      preLoaderRoute: typeof UserpageUuidRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/equipment/admin/': {
       id: '/equipment/admin/'

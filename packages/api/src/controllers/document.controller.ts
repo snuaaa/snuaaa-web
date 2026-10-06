@@ -7,6 +7,7 @@ import {
   UserModel,
 } from '../models';
 import { BASE_USER_FIELDS } from '../models/User';
+import { BadRequestError, NotFoundError } from '../errors';
 
 export type DocumentResponse = ContentModel & {
   document: DocumentModel;
@@ -19,7 +20,7 @@ export async function retrieveDocument(
   doc_id: string | number,
 ): Promise<DocumentResponse> {
   if (!doc_id) {
-    throw new Error('id can not be null');
+    throw new BadRequestError('id can not be null');
   }
 
   const doc = await ContentModel.findOne({
@@ -50,7 +51,7 @@ export async function retrieveDocument(
   });
 
   if (!doc) {
-    throw new Error('Document not found');
+    throw new NotFoundError('Document not found');
   }
 
   return doc as DocumentResponse;
@@ -171,7 +172,7 @@ export async function createDocument(data) {
 
 export async function deleteDocument(doc_id) {
   if (!doc_id) {
-    throw new Error('id can not be null');
+    throw new BadRequestError('id can not be null');
   }
 
   await DocumentModel.destroy({

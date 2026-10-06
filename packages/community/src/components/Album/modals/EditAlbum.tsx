@@ -1,7 +1,5 @@
 import { ChangeEvent, FC, useCallback, useState } from 'react';
 
-import { Record } from 'immutable';
-
 import { Album, Category } from '~/services/types';
 import AlbumForm from './AlbumForm';
 import { useUpdateAlbum } from '~/hooks/queries/useAlbumQueries';
@@ -19,14 +17,14 @@ export const EditAlbum: FC<EditAlbumProps> = ({
   onUpdateAlbum,
   onCancel,
 }) => {
-  const [albumInfo, setAlbumInfo] = useState(Record(albumInfoProps)());
+  const [albumInfo, setAlbumInfo] = useState<Album>(albumInfoProps);
 
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const name: string = e.target.name;
 
       if (name === 'title' || name === 'text') {
-        setAlbumInfo(albumInfo.set(name, e.target.value));
+        setAlbumInfo({ ...albumInfo, [name]: e.target.value });
       }
     },
     [albumInfo],
@@ -34,14 +32,17 @@ export const EditAlbum: FC<EditAlbumProps> = ({
 
   const setIsPrivate = useCallback(
     (isPrivate: boolean) => {
-      setAlbumInfo(albumInfo.setIn(['album', 'is_private'], isPrivate));
+      setAlbumInfo({
+        ...albumInfo,
+        album: { ...albumInfo.album, is_private: isPrivate },
+      });
     },
     [albumInfo],
   );
 
   const handleCategoryChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
-      setAlbumInfo(albumInfo.set('category_id', e.target.value));
+      setAlbumInfo({ ...albumInfo, category_id: e.target.value });
     },
     [albumInfo],
   );
@@ -63,7 +64,7 @@ export const EditAlbum: FC<EditAlbumProps> = ({
       try {
         await mutateUpdateAlbum({
           album_id: albumInfo.content_id,
-          data: albumInfo.toJSON(),
+          data: albumInfo,
         });
         onUpdateAlbum();
       } catch (err) {

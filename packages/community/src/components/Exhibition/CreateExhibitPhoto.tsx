@@ -1,7 +1,6 @@
 import { useState, ChangeEvent } from 'react';
 import CreateExhibitPhotoComponent from './ExhibitPhoto/CreateExhibitPhotoComponent';
 import useBlockBackgroundScroll from '~/hooks/useBlockBackgroundScroll';
-import { List } from 'immutable';
 import { User } from '~/services/types';
 import { ExhibitPhotoInfo } from '~/services/ExhibitPhotoService';
 import { useSearchMini } from '~/hooks/queries/useUserQueries';
@@ -32,6 +31,9 @@ type CreateExhibitPhotoProps = {
   onCancel: () => void;
 };
 
+const replaceAt = <T,>(list: T[], index: number, value: T): T[] =>
+  list.map((item, idx) => (idx === index ? value : item));
+
 function CreateExhibitPhoto({
   board_id,
   exhibition_id,
@@ -42,8 +44,7 @@ function CreateExhibitPhoto({
   useBlockBackgroundScroll();
   const [currentSize, setCurrentSize] = useState<number>(0);
   const [imgUrls, setImgUrls] = useState<string[]>([]);
-  const [photoInfos, setPhotoInfos] =
-    useState<List<ExhibitPhotoInfo>>(List<ExhibitPhotoInfo>());
+  const [photoInfos, setPhotoInfos] = useState<ExhibitPhotoInfo[]>([]);
   const [uploadPhotos, setUploadPhotos] = useState<File[]>([]);
   const [imgIdx, setImgIdx] = useState<number>(-1);
   const [searchUsers, setSearchUsers] = useState<User[]>([]);
@@ -56,10 +57,10 @@ function CreateExhibitPhoto({
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const name: string = e.target.name;
-    const photoInfo = photoInfos.get(imgIdx);
+    const photoInfo = photoInfos[imgIdx];
     if (photoInfo) {
       setPhotoInfos(
-        photoInfos.set(imgIdx, {
+        replaceAt(photoInfos, imgIdx, {
           ...photoInfo,
           [name]: e.target.value,
         }),
@@ -68,10 +69,10 @@ function CreateExhibitPhoto({
   };
 
   const handleDate = (date: Date) => {
-    const photoInfo = photoInfos.get(imgIdx);
+    const photoInfo = photoInfos[imgIdx];
     if (photoInfo) {
       setPhotoInfos(
-        photoInfos.set(imgIdx, {
+        replaceAt(photoInfos, imgIdx, {
           ...photoInfo,
           date: date,
         }),
@@ -80,10 +81,10 @@ function CreateExhibitPhoto({
   };
 
   const handlePhotographer = (e: ChangeEvent<HTMLInputElement>) => {
-    const photoInfo = photoInfos.get(imgIdx);
+    const photoInfo = photoInfos[imgIdx];
     if (photoInfo) {
       setPhotoInfos(
-        photoInfos.set(imgIdx, {
+        replaceAt(photoInfos, imgIdx, {
           ...photoInfo,
           photographer_alt: e.target.value,
         }),
@@ -105,10 +106,10 @@ function CreateExhibitPhoto({
   };
 
   const selectPhotographer = (index: number) => {
-    const photoInfo = photoInfos.get(imgIdx);
+    const photoInfo = photoInfos[imgIdx];
     if (photoInfo) {
       setPhotoInfos(
-        photoInfos.set(imgIdx, {
+        replaceAt(photoInfos, imgIdx, {
           ...photoInfo,
           photographer_alt: '',
           photographer: searchUsers[index],
@@ -119,10 +120,10 @@ function CreateExhibitPhoto({
   };
 
   const removePhotographer = () => {
-    const photoInfo = photoInfos.get(imgIdx);
+    const photoInfo = photoInfos[imgIdx];
     if (photoInfo) {
       setPhotoInfos(
-        photoInfos.set(imgIdx, {
+        replaceAt(photoInfos, imgIdx, {
           ...photoInfo,
           photographer: undefined,
         }),
@@ -197,7 +198,7 @@ function CreateExhibitPhoto({
       try {
         for (let i = 0; i < uploadPhotos.length; i++) {
           try {
-            const photoInfo = photoInfos.get(i);
+            const photoInfo = photoInfos[i];
             if (photoInfo) {
               await mutateCreateExhibitPhoto({
                 exhibition_id,
@@ -237,7 +238,7 @@ function CreateExhibitPhoto({
       checkForm={submit}
       onCancel={onCancel}
       imgIdx={imgIdx}
-      photoInfos={photoInfos.toJS() as ExhibitPhotoInfo[]}
+      photoInfos={photoInfos}
       searchUsers={searchUsers}
       btnDisabled={btnDisabled}
     />

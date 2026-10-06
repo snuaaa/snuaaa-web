@@ -1,8 +1,9 @@
 import { TagModel } from '../models';
+import { BadRequestError } from '../errors';
 
 export async function retrieveTagsOnBoard(board_id) {
   if (!board_id) {
-    throw new Error('id can not be null');
+    throw new BadRequestError('id can not be null');
   }
 
   return TagModel.findAll({
