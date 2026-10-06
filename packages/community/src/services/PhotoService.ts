@@ -2,6 +2,8 @@ import { API } from './index';
 
 import { Content, ListResponse, Photo, Tag } from './types';
 
+export type PhotoNavigationScope = 'user';
+
 export type CreatePhotoInfo = Pick<Content, 'title' | 'text'> &
   Pick<
     Photo['photo'],
@@ -50,7 +52,10 @@ type RetrievePhotoListParams = {
 };
 
 const PhotoService = {
-  retrievePhoto: function (photo_id: number) {
+  retrievePhoto: function (
+    photo_id: number,
+    navigation?: PhotoNavigationScope,
+  ) {
     return API.get<{
       photoInfo: Photo;
       likeInfo: boolean;
@@ -59,7 +64,9 @@ const PhotoService = {
       nextPhoto: Photo;
       prevAlbumPhoto: Photo;
       nextAlbumPhoto: Photo;
-    }>(`photo/${photo_id}`);
+    }>(`photo/${photo_id}`, {
+      params: { navigation },
+    });
   },
 
   retrievePhotoList: (params: RetrievePhotoListParams) => {

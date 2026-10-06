@@ -21,6 +21,7 @@ import SideBar from '~/components/Home/SideBar';
 import FullScreenPortal from '~/components/Common/FullScreenPortal';
 import PhotoDetailModal from '~/components/Photo/DetailModal';
 import { queryClient } from '~/lib/queryClient';
+import { PhotoNavigationScope } from '~/services/PhotoService';
 
 const ExhibitPhotoPage = React.lazy(() => import('~/pages/ExhibitPhoto'));
 
@@ -35,18 +36,27 @@ const TanStackRouterDevtools =
 
 type SearchParams = {
   photo?: number;
+  photoNavigation?: PhotoNavigationScope;
   exhibitPhoto?: number;
 };
 
 export const Route = createRootRoute({
   validateSearch: (search: Record<string, unknown>): SearchParams => ({
     photo: search.photo ? Number(search.photo) : undefined,
+    photoNavigation:
+      search.photoNavigation === 'user' ? search.photoNavigation : undefined,
     exhibitPhoto: search.exhibitPhoto ? Number(search.exhibitPhoto) : undefined,
   }),
   component: RootComponent,
 });
 
-function PhotoModal({ photoId }: { photoId: number }) {
+function PhotoModal({
+  photoId,
+  navigation,
+}: {
+  photoId: number;
+  navigation?: PhotoNavigationScope;
+}) {
   const router = useRouter();
   const navigate = useNavigate();
 
@@ -76,6 +86,7 @@ function PhotoModal({ photoId }: { photoId: number }) {
     <FullScreenPortal>
       <PhotoDetailModal
         photoId={photoId}
+        navigation={navigation}
         onClose={handleClosePhoto}
         onMovePhoto={handleMovePhoto}
       />
@@ -93,7 +104,7 @@ function ExhibitPhotoModal({ exhibitPhotoId }: { exhibitPhotoId: number }) {
 
 function RootComponent() {
   const location = useLocation();
-  const { photo, exhibitPhoto } = Route.useSearch();
+  const { photo, photoNavigation, exhibitPhoto } = Route.useSearch();
 
   // Check if the current path is an auth path (login or signup)
   const isAuthPage = location.pathname.startsWith('/auth');
@@ -120,7 +131,9 @@ function RootComponent() {
                 <Footer />
               </>
             )}
-            {photo && <PhotoModal photoId={photo} />}
+            {photo && (
+              <PhotoModal photoId={photo} navigation={photoNavigation} />
+            )}
             {exhibitPhoto && (
               <ExhibitPhotoModal exhibitPhotoId={exhibitPhoto} />
             )}
