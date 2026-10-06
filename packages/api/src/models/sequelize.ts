@@ -16,8 +16,8 @@ const sequelize = (function () {
   seq
     .authenticate()
     .then(() => {
+      // The schema is managed by migrations in `drizzle/` (see `db/migrate.ts`).
       console.log('Connected to PostgreSQL server');
-      seq.sync();
     })
     .catch((e) => {
       console.log('Failed to connect to PostgreSQL server >> ', e);

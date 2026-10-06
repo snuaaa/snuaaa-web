@@ -57,6 +57,8 @@ pnpm dev
 
 ### 4. Run API server
 
+Create an empty PostgreSQL database for `POSTGRESQL_DATABASE`. The API runs the migrations in `packages/api/drizzle/` on startup, so the tables are created the first time it starts.
+
 ```bash
 pnpm --filter @snuaaa/api dev
 ```
@@ -70,6 +72,8 @@ pnpm --filter @snuaaa/api dev
 | `pnpm --filter @snuaaa/api build` | Compile the API server (`packages/api/dist`) |
 | `pnpm --filter @snuaaa/api lint` | Lint the API server |
 | `pnpm --filter @snuaaa/api format` | Format the API server with Prettier |
+| `pnpm --filter @snuaaa/api db:migrate` | Apply pending DB migrations ([details](packages/api/drizzle/README.md)) |
+| `pnpm --filter @snuaaa/api db:generate --name <name>` | Add an empty SQL migration |
 
 ## Deployment
 
@@ -95,5 +99,6 @@ pnpm --filter @snuaaa/api dev
 
 - [Express](https://expressjs.com/)
 - [Sequelize](https://sequelize.org/) + [PostgreSQL](https://www.postgresql.org/)
+- [drizzle-kit](https://orm.drizzle.team/docs/kit-overview) migrations
 - [JWT](https://jwt.io/)
 - [AWS S3](https://aws.amazon.com/s3/)

@@ -1,5 +1,6 @@
 // [LOAD PACKAGES]
 import './instrument';
+import * as Sentry from '@sentry/node';
 import express from 'express';
 import api from './routes';
 import cors from 'cors';
@@ -8,6 +9,7 @@ import * as bodyParser from 'body-parser';
 import { errorHandler } from './middlewares/errorHandler';
 import logger from './middlewares/logger';
 import helmet from 'helmet';
+import { runMigrations } from './db/migrate';
 
 const app = express();
 
@@ -38,7 +40,17 @@ app.use('/static', express.static(__dirname + '/../upload'));
 const port = process.env.PORT || 8080;
 
 // [RUN SERVER]
-app.listen(port, () => console.log(`Server listening on port ${port}`));
+// Bring the DB schema up to date before serving any request.
+runMigrations()
+  .then(() => {
+    app.listen(port, () => console.log(`Server listening on port ${port}`));
+  })
+  .catch(async (e) => {
+    console.error('Failed to run database migrations >> ', e);
+    Sentry.captureException(e);
+    await Sentry.flush(2000);
+    process.exit(1);
+  });
 
 // [CONFIGURE ROUTER]
 app.use('/api', api);
