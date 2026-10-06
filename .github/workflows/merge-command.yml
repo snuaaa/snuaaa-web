@@ -10,6 +10,7 @@ name: Merge Command
 # 머지는 머지 봇 GitHub App 토큰으로 한다. 기본 GITHUB_TOKEN으로 머지하면
 # main push가 배포 워크플로를 트리거하지 않기 때문이다.
 # 필요한 secrets: MERGE_BOT_APP_ID, MERGE_BOT_PRIVATE_KEY
+# App 권한: Contents, Pull requests, Issues (Read & write), Checks, Commit statuses (Read)
 #
 # 주의: issue_comment 워크플로는 기본 브랜치에 있는 버전만 실행되며,
 # PR 코드를 checkout하지 않는다.
@@ -91,6 +92,33 @@ jobs:
                 `\`${base} ← ${head}\` 조합에 대한 머지 규칙이 없습니다. ` +
                   '브랜치 이름이 `epic/*`, `feat/*`, `fix/*`, `chore/*`, `refactor/*` 중 하나인지 확인해주세요.',
               );
+            }
+
+            // ruleset 설정과 별개로, head 커밋의 체크가 모두 통과했는지 직접 확인
+            const checkRuns = await github.paginate(github.rest.checks.listForRef, {
+              owner,
+              repo,
+              ref: pr.head.sha,
+              per_page: 100,
+            });
+            if (checkRuns.length === 0) return fail('head 커밋에 CI 결과가 없습니다.');
+            const pending = checkRuns.filter((run) => run.status !== 'completed');
+            if (pending.length > 0) {
+              return fail(`아직 끝나지 않은 체크가 있습니다: ${pending.map((run) => run.name).join(', ')}`);
+            }
+            const failed = checkRuns.filter(
+              (run) => !['success', 'skipped', 'neutral'].includes(run.conclusion),
+            );
+            if (failed.length > 0) {
+              return fail(`통과하지 못한 체크가 있습니다: ${failed.map((run) => run.name).join(', ')}`);
+            }
+            const { data: status } = await github.rest.repos.getCombinedStatusForRef({
+              owner,
+              repo,
+              ref: pr.head.sha,
+            });
+            if (status.total_count > 0 && status.state !== 'success') {
+              return fail(`commit status가 \`${status.state}\` 상태입니다.`);
             }
 
             try {
