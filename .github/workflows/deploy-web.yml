@@ -4,15 +4,30 @@ on:
   push:
     branches:
       - main
+      - 'epic/**'
   release:
     types: [published]
 
 jobs:
+  # main은 develop 별칭, epic/<name>은 <name> 별칭(<name>.snuaaa-web.pages.dev)으로 배포
   deploy-preview:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/epic/'))
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
+      - name: Resolve preview alias
+        run: |
+          if [ "$GITHUB_REF_NAME" = "main" ]; then
+            alias=develop
+          else
+            alias=$(echo "${GITHUB_REF_NAME#epic/}" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+/-/g; s/^-+|-+$//g')
+            if [ -z "$alias" ] || [ "$alias" = "develop" ] || [ "$alias" = "main" ]; then
+              echo "Invalid epic branch name for a preview alias: $GITHUB_REF_NAME" >&2
+              exit 1
+            fi
+          fi
+          echo "PREVIEW_ALIAS=$alias" >> "$GITHUB_ENV"
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -29,7 +44,7 @@ jobs:
         run: |
           echo "REACT_APP_SERVER_URL=${{ secrets.SERVER_URL_DEV }}" >> packages/community/.env
           echo "REACT_APP_SENTRY_DSN=${{ secrets.SENTRY_DSN_WEB }}" >> packages/community/.env
-          echo "REACT_APP_SENTRY_ENVIRONMENT=develop" >> packages/community/.env
+          echo "REACT_APP_SENTRY_ENVIRONMENT=${{ env.PREVIEW_ALIAS }}" >> packages/community/.env
 
       - name: Build project
         run: pnpm build
@@ -43,7 +58,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy ./build --project-name=snuaaa-web --branch=develop
+          command: pages deploy ./build --project-name=snuaaa-web --branch=${{ env.PREVIEW_ALIAS }}
           workingDirectory: packages/community
           packageManager: pnpm
 
