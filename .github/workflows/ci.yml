@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - main
+      - 'epic/**'
 
 concurrency:
   group: ci-${{ github.event.pull_request.number }}
