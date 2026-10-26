@@ -13,11 +13,12 @@ const sequelize = (function () {
     },
   );
 
+  // Schema changes go through migrations in `drizzle/` (see docs/db-migration.md),
+  // so never call `seq.sync()` here.
   seq
     .authenticate()
     .then(() => {
       console.log('Connected to PostgreSQL server');
-      seq.sync();
     })
     .catch((e) => {
       console.log('Failed to connect to PostgreSQL server >> ', e);

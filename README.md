@@ -47,7 +47,15 @@ AWS_SECRET_ACCESS_KEY=
 S3_BUCKET_NAME=
 ```
 
-### 3. Run SNUAAA community web
+### 3. Create the database
+
+Start a PostgreSQL server (e.g. `docker run -d -p 5432:5432 -e POSTGRES_USER=snuaaa -e POSTGRES_PASSWORD=snuaaa -e POSTGRES_DB=snuaaa postgres:16`), fill in the `POSTGRESQL_*` variables above, and create the tables with migrations. See [docs/db-migration.md](docs/db-migration.md) for changing the schema.
+
+```bash
+pnpm --filter @snuaaa/api db:migrate
+```
+
+### 4. Run SNUAAA community web
 
 In the project root directory. The dev server runs on http://localhost:3000.
 
@@ -55,7 +63,7 @@ In the project root directory. The dev server runs on http://localhost:3000.
 pnpm dev
 ```
 
-### 4. Run API server
+### 5. Run API server
 
 ```bash
 pnpm --filter @snuaaa/api dev
@@ -70,6 +78,8 @@ pnpm --filter @snuaaa/api dev
 | `pnpm --filter @snuaaa/api build` | Compile the API server (`packages/api/dist`) |
 | `pnpm --filter @snuaaa/api lint` | Lint the API server |
 | `pnpm --filter @snuaaa/api format` | Format the API server with Prettier |
+| `pnpm --filter @snuaaa/api db:generate` | Generate a DB migration from `src/db/schema.ts` |
+| `pnpm --filter @snuaaa/api db:migrate` | Apply pending DB migrations |
 
 ## Deployment
 
