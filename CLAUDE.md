@@ -96,7 +96,7 @@ Each package has its own ESLint flat config (`eslint.config.*`) with Prettier (s
   | `epic/*` ← `<type>/*` | squash |
   | `epic/*` ← `main` (sync) | merge commit |
 
-  Never squash `main` into an epic; that duplicates main's commits and breaks the later epic → `main` merge. `Closes #N` only closes issues when the PR merges into `main`, so list an epic's issues on its epic → `main` PR.
+  To bring `main` into an epic, comment `/sync` on the epic → `main` PR (drafts included). The bot merges `main` into the epic with a merge commit, like the Update branch button, which is blocked for `epic/*`. Never squash `main` into an epic; that duplicates main's commits and breaks the later epic → `main` merge. `Closes #N` only closes issues when the PR merges into `main`, so list an epic's issues on its epic → `main` PR.
 - **Push to `main`:** deploys the web to the Cloudflare Pages preview (`develop` branch) and the API Docker image to the dev Lightsail server.
 - **Push to `epic/<name>`:** deploys the web to the Cloudflare Pages `<name>` alias (`https://<name>.snuaaa-web.pages.dev`), pointed at the dev API. The API is not deployed from epic branches.
 - **Release tagged `WEB-*`:** deploys the web to production Cloudflare Pages.

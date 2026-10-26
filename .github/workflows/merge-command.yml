@@ -7,8 +7,11 @@ name: Merge Command
 #   epic/* <- feat|fix|chore|refactor/*    : squash
 #   epic/* <- main                         : merge commit (epic 동기화)
 #
-# 머지는 머지 봇 GitHub App 토큰으로 한다. 기본 GITHUB_TOKEN으로 머지하면
-# main push가 배포 워크플로를 트리거하지 않기 때문이다.
+# epic -> main PR에 `/sync` 코멘트를 달면 main을 epic에 merge commit으로 반영한다.
+# (PR 화면의 Update branch와 같은 동작. 사람은 epic 브랜치를 직접 갱신할 수 없다)
+#
+# 머지와 동기화는 머지 봇 GitHub App 토큰으로 한다. 기본 GITHUB_TOKEN으로 push하면
+# main·epic push가 배포 워크플로를 트리거하지 않기 때문이다.
 # 필요한 secrets: MERGE_BOT_APP_ID, MERGE_BOT_PRIVATE_KEY
 # App 권한: Contents, Pull requests, Issues (Read & write), Checks, Commit statuses (Read)
 #
@@ -28,7 +31,9 @@ concurrency:
 
 jobs:
   merge:
-    if: github.event.issue.pull_request && startsWith(github.event.comment.body, '/merge')
+    if: >-
+      github.event.issue.pull_request &&
+      (startsWith(github.event.comment.body, '/merge') || startsWith(github.event.comment.body, '/sync'))
     runs-on: ubuntu-latest
     steps:
       - name: Create merge bot token
@@ -38,7 +43,7 @@ jobs:
           app-id: ${{ secrets.MERGE_BOT_APP_ID }}
           private-key: ${{ secrets.MERGE_BOT_PRIVATE_KEY }}
 
-      - name: Merge pull request
+      - name: Run command
         uses: actions/github-script@v7
         with:
           github-token: ${{ steps.app-token.outputs.token }}
@@ -48,7 +53,9 @@ jobs:
             const comment_id = context.payload.comment.id;
             const commenter = context.payload.comment.user.login;
 
-            if (context.payload.comment.body.trim() !== '/merge') return;
+            const command = context.payload.comment.body.trim();
+            if (command !== '/merge' && command !== '/sync') return;
+            const action = command === '/sync' ? '동기화' : '머지';
 
             const react = (content) =>
               github.rest.reactions.createForIssueComment({ owner, repo, comment_id, content });
@@ -56,7 +63,7 @@ jobs:
               github.rest.issues.createComment({ owner, repo, issue_number, body });
             const fail = async (message) => {
               await react('confused');
-              await reply(`❌ 머지하지 않았습니다: ${message}`);
+              await reply(`❌ ${action}하지 않았습니다: ${message}`);
               core.setFailed(message);
             };
 
@@ -73,13 +80,40 @@ jobs:
 
             const { data: pr } = await github.rest.pulls.get({ owner, repo, pull_number: issue_number });
             if (pr.state !== 'open') return fail('열려 있는 PR이 아닙니다.');
-            if (pr.draft) return fail('draft PR은 머지할 수 없습니다.');
 
             const base = pr.base.ref;
             const head = pr.head.ref;
             const sameRepo = pr.head.repo?.full_name === pr.base.repo.full_name;
             const isEpic = (ref) => /^epic\/.+/.test(ref);
             const isWork = (ref) => /^(feat|fix|chore|refactor)\/.+/.test(ref);
+
+            if (command === '/sync') {
+              // epic 진행 상황을 추적하는 draft PR에서도 쓸 수 있도록 draft 여부는 보지 않음
+              if (base !== 'main' || !sameRepo || !isEpic(head)) {
+                return fail('`/sync`는 `epic/*` → `main` PR에서만 쓸 수 있습니다.');
+              }
+              try {
+                await github.rest.pulls.updateBranch({
+                  owner,
+                  repo,
+                  pull_number: issue_number,
+                  // 코멘트 이후 epic에 새 커밋이 들어왔으면 동기화하지 않음
+                  expected_head_sha: pr.head.sha,
+                });
+              } catch (err) {
+                if (/no new commits/i.test(err.message)) {
+                  await react('+1');
+                  await reply(`ℹ️ \`${head}\`에 이미 \`main\`의 변경이 모두 반영되어 있습니다.`);
+                  return;
+                }
+                return fail(err.message);
+              }
+              await react('rocket');
+              await reply(`✅ \`main\`을 \`${head}\`에 merge commit으로 반영하도록 요청했습니다.`);
+              return;
+            }
+
+            if (pr.draft) return fail('draft PR은 머지할 수 없습니다.');
 
             let method;
             if (base === 'main' && sameRepo && isEpic(head)) method = 'merge';
