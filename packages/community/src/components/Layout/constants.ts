@@ -23,7 +23,6 @@ export const ABOUT_AAA_LINKS: MenuLink[] = [
   },
   {
     name: '김태영 기념 관측소 소개',
-    shortName: '김태영 관측소',
     url: '/about/observation',
   },
   {
@@ -32,7 +31,6 @@ export const ABOUT_AAA_LINKS: MenuLink[] = [
   },
   {
     name: '역대 회장단/임원진',
-    shortName: '회장단/임원진',
     url: '/about/officers',
   },
   {
@@ -44,21 +42,6 @@ export const ABOUT_AAA_LINKS: MenuLink[] = [
     url: 'https://archive.snuaaa.net',
     isExternal: true,
   },
-];
-
-export const TOOLS_LINKS: MenuLink[] = [
-  {
-    name: '장비 대여',
-    url: '/equipment',
-    accessGrade: EQUIPMENT_GRADE,
-  },
-];
-
-/** Sites members check before observing. Opened in a new tab. */
-export const EXTERNAL_LINKS: MenuLink[] = [
-  { name: '기상청 날씨', url: 'https://www.weather.go.kr', isExternal: true },
-  { name: 'Stellarium', url: 'https://stellarium-web.org/', isExternal: true },
-  { name: 'NASA APOD', url: 'https://apod.nasa.gov/apod/', isExternal: true },
 ];
 
 /** 회원 관리 is for grade 6 and above, except 전회장 (4). */

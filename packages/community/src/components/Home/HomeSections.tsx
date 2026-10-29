@@ -1,14 +1,9 @@
 import type { ReactNode } from 'react';
 import { Link } from '@tanstack/react-router';
-import { ExternalLink, Megaphone, Telescope } from 'lucide-react';
+import { Megaphone, Telescope } from 'lucide-react';
 import ContentTypeEnum from '~/common/ContentTypeEnum';
 import { Button, Tag } from '~/components/ui';
-import {
-  ABOUT_AAA_LINKS,
-  ASTRO_PHOTO_BOARD,
-  EXTERNAL_LINKS,
-  MEMORY_BOARD,
-} from '~/components/Layout/constants';
+import { ASTRO_PHOTO_BOARD, MEMORY_BOARD } from '~/components/Layout/constants';
 import { useBoards } from '~/hooks/queries/useBoardQueries';
 import { resolveImageUrl } from '~/lib/utils';
 import { SoundBoxResponse } from '~/services/HomeService';
@@ -225,52 +220,6 @@ export function EquipmentCard() {
       <Button asChild>
         <Link to="/equipment">예약</Link>
       </Button>
-    </div>
-  );
-}
-
-const chipClassName =
-  'flex h-9 items-center gap-1 rounded-full border border-gray-300 bg-surface px-3.5 text-label font-normal text-gray-700 hover:border-gray-400 hover:text-fg [&_svg]:size-3.5 [&_svg]:text-gray-400';
-
-/** About pages and the sites members check before observing. */
-export function QuickLinks() {
-  return (
-    <div className="flex flex-col gap-3">
-      <h2 className="px-0.5 text-heading">바로가기</h2>
-      <ul className="flex flex-wrap gap-2">
-        {ABOUT_AAA_LINKS.map((link) => (
-          <li key={link.name}>
-            {link.isExternal ? (
-              <a
-                href={link.url}
-                target="_blank"
-                rel="noreferrer"
-                className={chipClassName}
-              >
-                {link.shortName ?? link.name}
-                <ExternalLink aria-label="새 탭에서 열림" />
-              </a>
-            ) : (
-              <Link to={link.url} className={chipClassName}>
-                {link.shortName ?? link.name}
-              </Link>
-            )}
-          </li>
-        ))}
-        {EXTERNAL_LINKS.map((link) => (
-          <li key={link.name}>
-            <a
-              href={link.url}
-              target="_blank"
-              rel="noreferrer"
-              className={chipClassName}
-            >
-              {link.name}
-              <ExternalLink aria-label="새 탭에서 열림" />
-            </a>
-          </li>
-        ))}
-      </ul>
     </div>
   );
 }
