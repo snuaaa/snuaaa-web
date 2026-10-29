@@ -62,7 +62,8 @@ export function useNavSection() {
   if (pathname === '/') {
     section = 'home';
   } else if (boardId) {
-    section = board?.menu === PHOTO_MENU ? 'photo' : 'board';
+    // Until the board list loads, the board's section is unknown.
+    if (board) section = board.menu === PHOTO_MENU ? 'photo' : 'board';
   } else {
     section =
       SECTION_PREFIXES.find(
