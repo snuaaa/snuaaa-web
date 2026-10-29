@@ -28,8 +28,7 @@ import {
   Textarea,
 } from '~/components/ui';
 
-// Component gallery for checking the redesign building blocks on the preview.
-// Not linked from the site; remove or hide it when the redesign ships (#173).
+// TEMPORARY component gallery for the redesign. See routes/dev/ui.tsx.
 
 // A div, not <section>: legacy _section.scss styles every section.
 function Section({ title, children }: { title: string; children: ReactNode }) {
@@ -66,6 +65,9 @@ export default function UiGallery() {
         <header className="flex flex-col gap-1">
           <p className="text-label text-navy-700">SNUAAA COMPONENTS</p>
           <h1 className="text-display">컴포넌트 시트</h1>
+          <p className="text-caption text-fg-muted">
+            리디자인 기간에만 쓰는 임시 페이지예요. 리디자인이 끝나면 지워요.
+          </p>
         </header>
 
         <Section title="Button">
