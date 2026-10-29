@@ -39,6 +39,7 @@ function MobileSheet({
             'fixed inset-x-0 bottom-0 z-50 flex max-h-[90dvh] flex-col rounded-t-xl bg-surface shadow-lg outline-none',
             className,
           )}
+          {...(!description && { 'aria-describedby': undefined })}
         >
           <div
             className="mx-auto mt-2 mb-3 h-1 w-10 shrink-0 rounded-full bg-gray-300"

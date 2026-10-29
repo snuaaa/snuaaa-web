@@ -108,7 +108,11 @@ export function ConfirmDialog({
   loading = false,
 }: ConfirmDialogProps) {
   return (
-    <AlertDialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
+    <AlertDialogPrimitive.Root
+      open={open}
+      // Esc and 취소 can't close it while the action is still running.
+      onOpenChange={(next) => !loading && onOpenChange(next)}
+    >
       <AlertDialogPrimitive.Portal>
         <AlertDialogPrimitive.Overlay className={overlayClassName} />
         <AlertDialogPrimitive.Content
@@ -127,7 +131,7 @@ export function ConfirmDialog({
           </div>
           <div className="flex gap-2">
             <AlertDialogPrimitive.Cancel asChild>
-              <Button variant="secondary" className="flex-1">
+              <Button variant="secondary" className="flex-1" disabled={loading}>
                 {cancelLabel}
               </Button>
             </AlertDialogPrimitive.Cancel>
