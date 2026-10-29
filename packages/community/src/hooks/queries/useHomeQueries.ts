@@ -16,13 +16,15 @@ export const homeDataQueryOptions = () =>
   queryOptions({
     queryKey: homeKeys.data(),
     queryFn: async () => {
-      const [soundBoxData, recentPosts, recentAstroPhoto] = await Promise.all([
-        HomeService.retrieveSoundBox(),
-        HomeService.retrieveRecentPosts(),
-        HomeService.retrieveRecentAstroPhoto(),
-      ]);
+      const [soundBoxData, recentPosts, recentMemory, recentAstroPhoto] =
+        await Promise.all([
+          HomeService.retrieveSoundBox(),
+          HomeService.retrieveRecentPosts(),
+          HomeService.retrieveRecentMemory(),
+          HomeService.retrieveRecentAstroPhoto(),
+        ]);
 
-      return { soundBoxData, recentPosts, recentAstroPhoto };
+      return { soundBoxData, recentPosts, recentMemory, recentAstroPhoto };
     },
   });
 

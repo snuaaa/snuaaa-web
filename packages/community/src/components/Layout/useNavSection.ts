@@ -2,14 +2,13 @@ import { useEffect, useMemo } from 'react';
 import { useLocation } from '@tanstack/react-router';
 import { useBoards } from '~/hooks/queries/useBoardQueries';
 import { useAuth } from '~/contexts/auth';
+import { ASTRO_PHOTO_BOARD } from './constants';
 
 export type NavSection =
   'home' | 'about' | 'board' | 'photo' | 'equipment' | 'my';
 
 const LAST_BOARD_KEY = 'aaa:lastBoard';
 const LAST_PHOTO_BOARD_KEY = 'aaa:lastPhotoBoard';
-/** 별사진, the photo tab's landing board until another is visited. */
-const DEFAULT_PHOTO_BOARD = 'brd32';
 const PHOTO_MENU = 4;
 
 const readStorage = (key: string) => {
@@ -97,7 +96,7 @@ export function useNavSection() {
       photo:
         current(true) ??
         readable(readStorage(LAST_PHOTO_BOARD_KEY)) ??
-        DEFAULT_PHOTO_BOARD,
+        ASTRO_PHOTO_BOARD,
     };
   }, [boardsInfo, noticeBoards, grade, board]);
 

@@ -1,18 +1,22 @@
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Link } from '@tanstack/react-router';
 import { ExternalLink, Megaphone, Telescope } from 'lucide-react';
 import ContentTypeEnum from '~/common/ContentTypeEnum';
-import { Button, Tag } from '~/components/ui';
-import { ABOUT_AAA_LINKS, EXTERNAL_LINKS } from '~/components/Layout/constants';
+import { Button, Tabs, TabsList, TabsTrigger, Tag } from '~/components/ui';
+import {
+  ABOUT_AAA_LINKS,
+  ASTRO_PHOTO_BOARD,
+  EXTERNAL_LINKS,
+  MEMORY_BOARD,
+} from '~/components/Layout/constants';
 import { useBoards } from '~/hooks/queries/useBoardQueries';
-import { resolveImageUrl } from '~/lib/utils';
+import { cn, resolveImageUrl } from '~/lib/utils';
 import { SoundBoxResponse } from '~/services/HomeService';
-import { Content, Photo } from '~/services/types';
+import { Album, Content, Photo } from '~/services/types';
 import { convertDynamicTime } from '~/utils/convertDate';
+import { getThumbnailPath } from '~/utils/getThumbnailPath';
 
 const NOTICE_MENU = 1;
-/** 별사진 */
-const ASTRO_PHOTO_BOARD = 'brd32';
 
 function Card({
   title,
@@ -126,40 +130,90 @@ export function RecentPostsCard({ posts }: { posts: Content[] }) {
   );
 }
 
-export function RecentPhotosSection({ photos }: { photos: Photo[] }) {
+type PhotoTab = 'albums' | 'photos';
+
+const PHOTO_TABS: Record<PhotoTab, { label: string; boardId: string }> = {
+  albums: { label: '새 앨범', boardId: MEMORY_BOARD },
+  photos: { label: '새 사진', boardId: ASTRO_PHOTO_BOARD },
+};
+
+/** 추억 만들기 albums and 별사진 photos, one at a time. */
+export function RecentPhotosSection({
+  albums,
+  photos,
+}: {
+  albums: Album[];
+  photos: Photo[];
+}) {
+  const [tab, setTab] = useState<PhotoTab>('albums');
+
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex items-center justify-between px-0.5">
-        <h2 className="text-heading">새 사진</h2>
+      <div className="flex items-end justify-between px-0.5">
+        <Tabs value={tab} onValueChange={(value) => setTab(value as PhotoTab)}>
+          <TabsList className="border-b-0">
+            {Object.entries(PHOTO_TABS).map(([value, { label }]) => (
+              <TabsTrigger key={value} value={value} className="text-heading">
+                {label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
         <Link
           to="/board/$board_id"
-          params={{ board_id: ASTRO_PHOTO_BOARD }}
-          className={moreLinkClassName}
+          params={{ board_id: PHOTO_TABS[tab].boardId }}
+          className={cn(moreLinkClassName, 'pb-3')}
         >
-          별사진 전체보기
+          전체보기
         </Link>
       </div>
-      <ul className="grid grid-cols-3 gap-1.5">
-        {photos.slice(0, 6).map((photo) => (
-          <li key={photo.content_id}>
-            <Link
-              to="."
-              search={(prev) => ({ ...prev, photo: photo.content_id })}
-              className="block aspect-square overflow-hidden rounded-md bg-navy-800"
-              aria-label={photo.title || '사진 보기'}
-            >
-              <img
-                src={resolveImageUrl(
-                  photo.photo?.thumbnail_url ?? photo.photo?.thumbnail_path,
+      {tab === 'albums' ? (
+        <ul className="grid grid-cols-2 gap-1.5">
+          {albums.slice(0, 4).map((album) => (
+            <li key={album.content_id}>
+              <Link
+                to="/album/$album_id"
+                params={{ album_id: String(album.content_id) }}
+                className="group relative block aspect-[4/3] overflow-hidden rounded-md bg-navy-800"
+              >
+                {getThumbnailPath(album) && (
+                  <img
+                    src={resolveImageUrl(getThumbnailPath(album))}
+                    alt=""
+                    loading="lazy"
+                    className="size-full object-cover transition-transform group-hover:scale-105"
+                  />
                 )}
-                alt=""
-                loading="lazy"
-                className="size-full object-cover transition-transform hover:scale-105"
-              />
-            </Link>
-          </li>
-        ))}
-      </ul>
+                <span className="absolute inset-x-0 bottom-0 truncate bg-linear-to-t from-navy-950/80 to-transparent px-3 pt-6 pb-2 text-label text-fg-on-brand">
+                  {album.title}
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <ul className="grid grid-cols-3 gap-1.5">
+          {photos.slice(0, 6).map((photo) => (
+            <li key={photo.content_id}>
+              <Link
+                to="."
+                search={(prev) => ({ ...prev, photo: photo.content_id })}
+                className="block aspect-square overflow-hidden rounded-md bg-navy-800"
+                aria-label={photo.title || '사진 보기'}
+              >
+                <img
+                  src={resolveImageUrl(
+                    photo.photo?.thumbnail_url ?? photo.photo?.thumbnail_path,
+                  )}
+                  alt=""
+                  loading="lazy"
+                  className="size-full object-cover transition-transform hover:scale-105"
+                />
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

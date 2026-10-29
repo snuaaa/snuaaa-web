@@ -37,7 +37,10 @@ function Home() {
           <div className="flex flex-col gap-5">
             <SoundBoxCard soundBox={homeData.soundBoxData} />
             <RecentPostsCard posts={homeData.recentPosts} />
-            <RecentPhotosSection photos={homeData.recentAstroPhoto} />
+            <RecentPhotosSection
+              albums={homeData.recentMemory}
+              photos={homeData.recentAstroPhoto}
+            />
           </div>
           <div className="flex flex-col gap-5">
             <div className="hidden md:block">

@@ -3,6 +3,11 @@ import { MenuLink } from './types';
 /** Grade that may rent equipment (lower is more privileged). */
 export const EQUIPMENT_GRADE = 7;
 
+/** 추억 만들기, the album board shown on the home page. */
+export const MEMORY_BOARD = 'brd31';
+/** 별사진 */
+export const ASTRO_PHOTO_BOARD = 'brd32';
+
 export const ABOUT_AAA_LINKS: MenuLink[] = [
   {
     name: 'AAA는?',
