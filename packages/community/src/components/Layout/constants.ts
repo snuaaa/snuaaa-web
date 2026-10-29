@@ -1,4 +1,7 @@
-import { MenuLink } from './Navigation/types';
+import { MenuLink } from './types';
+
+/** Grade that may rent equipment (lower is more privileged). */
+export const EQUIPMENT_GRADE = 7;
 
 export const ABOUT_AAA_LINKS: MenuLink[] = [
   {
@@ -42,6 +45,16 @@ export const TOOLS_LINKS: MenuLink[] = [
   {
     name: '장비 대여',
     url: '/equipment',
-    accessGrade: 7,
+    accessGrade: EQUIPMENT_GRADE,
   },
 ];
+
+/** Sites members check before observing. Opened in a new tab. */
+export const EXTERNAL_LINKS: MenuLink[] = [
+  { name: '기상청 날씨', url: 'https://www.weather.go.kr', isExternal: true },
+  { name: 'Stellarium', url: 'https://stellarium-web.org/', isExternal: true },
+  { name: 'NASA APOD', url: 'https://apod.nasa.gov/apod/', isExternal: true },
+];
+
+/** 회원 관리 is for grade 6 and above, except 전회장 (4). */
+export const canManageUsers = (grade: number) => grade <= 6 && grade !== 4;

@@ -14,10 +14,7 @@ import '../index.css';
 import { AuthProvider } from '../contexts/auth';
 
 import { ViewportSizeProvider } from '../contexts/viewportSize';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import RiseSet from '~/components/Home/RiseSet';
-import SideBar from '~/components/Home/SideBar';
+import AppShell from '~/components/Layout/AppShell';
 import FullScreenPortal from '~/components/Common/FullScreenPortal';
 import PhotoDetailModal from '~/components/Photo/DetailModal';
 import { queryClient } from '~/lib/queryClient';
@@ -119,19 +116,9 @@ function RootComponent() {
             {isBarePage ? (
               <Outlet />
             ) : (
-              <>
-                <Header />
-                <div className="section-wrapper">
-                  <section>
-                    <div className="side-left">
-                      <RiseSet />
-                    </div>
-                    <SideBar />
-                    <Outlet />
-                  </section>
-                </div>
-                <Footer />
-              </>
+              <AppShell>
+                <Outlet />
+              </AppShell>
             )}
             {photo && (
               <PhotoModal photoId={photo} navigation={photoNavigation} />

@@ -1,50 +1,53 @@
-import SoundBox from '~/components/Home/SoundBox';
 import Loading from '~/components/Common/Loading';
-import NewPosts from '~/components/Home/NewPosts';
-import NewComments from '~/components/Home/NewComments';
-import NewPhotos from '~/components/Home/NewPhotos';
-import NewExhibitions from '~/components/Home/NewExhibitions';
-import RiseSetMobile from '~/components/Home/RiseSetMobile';
-import ExtLinkMobile from '~/components/Home/ExtLinkMobile';
-import NewAlbums from '~/components/Home/NewAlbums';
+import {
+  EquipmentCard,
+  QuickLinks,
+  RecentPhotosSection,
+  RecentPostsCard,
+  SoundBoxCard,
+} from '~/components/Home/HomeSections';
+import { TonightCard, TonightStrip } from '~/components/Home/Tonight';
+import BrandMark from '~/components/Layout/BrandMark';
+import { EQUIPMENT_GRADE } from '~/components/Layout/constants';
+import { useAuth } from '~/contexts/auth';
 import { useHomeData } from '~/hooks/queries/useHomeQueries';
 
 function Home() {
   const { data: homeData } = useHomeData();
-
-  if (!homeData) {
-    return <Loading />;
-  }
+  const {
+    authInfo: {
+      user: { grade },
+    },
+  } = useAuth();
+  const canRent = grade <= EQUIPMENT_GRADE;
 
   return (
-    <div className="home-wrapper">
-      <SoundBox soundBoxInfo={homeData.soundBoxData} />
-      <div className="home-row-mobile">
-        <RiseSetMobile />
-        <ExtLinkMobile />
-      </div>
-      <div className="home-row">
-        <NewPosts posts={homeData.recentPosts} />
-        <NewComments comments={homeData.recentComments} />
-      </div>
-      <div className="home-row">
-        <NewPhotos
-          title="New 별사진"
-          board_id="brd32"
-          photos={homeData.recentAstroPhoto}
-        />
-        <NewAlbums
-          title="New 추억만들기"
-          board_id="brd31"
-          albums={homeData.recentMemory}
-        />
-      </div>
-      <div className="home-row">
-        <NewExhibitions
-          board_id="brd41"
-          exhibitions={homeData.recentExhibitions}
-        />
-      </div>
+    <div className="flex flex-col text-fg">
+      <header className="flex flex-col gap-3 bg-surface-brand px-4 pt-[max(0.75rem,env(safe-area-inset-top))] pb-4 md:hidden">
+        <div className="flex min-h-11 items-center">
+          <BrandMark />
+        </div>
+        <TonightStrip />
+      </header>
+
+      {!homeData ? (
+        <Loading />
+      ) : (
+        <div className="mx-auto grid w-full max-w-[1080px] gap-5 px-4 py-5 md:grid-cols-[minmax(0,1fr)_340px] md:gap-8 md:px-6 md:py-9">
+          <div className="flex flex-col gap-5">
+            <SoundBoxCard soundBox={homeData.soundBoxData} />
+            <RecentPostsCard posts={homeData.recentPosts} />
+            <RecentPhotosSection photos={homeData.recentAstroPhoto} />
+          </div>
+          <div className="flex flex-col gap-5">
+            <div className="hidden md:block">
+              <TonightCard />
+            </div>
+            {canRent && <EquipmentCard />}
+            <QuickLinks />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
