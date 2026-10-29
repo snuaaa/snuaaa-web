@@ -106,15 +106,17 @@ function RootComponent() {
   const location = useLocation();
   const { photo, photoNavigation, exhibitPhoto } = Route.useSearch();
 
-  // Check if the current path is an auth path (login or signup)
-  const isAuthPage = location.pathname.startsWith('/auth');
+  // Auth pages and the /dev component gallery render without the site chrome
+  const isBarePage =
+    location.pathname.startsWith('/auth') ||
+    location.pathname.startsWith('/dev/');
 
   return (
     <QueryClientProvider client={queryClient}>
       <div className="min-h-full flex flex-col">
         <ViewportSizeProvider>
           <AuthProvider>
-            {isAuthPage ? (
+            {isBarePage ? (
               <Outlet />
             ) : (
               <>

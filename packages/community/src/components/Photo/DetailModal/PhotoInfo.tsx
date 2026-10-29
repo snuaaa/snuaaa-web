@@ -4,7 +4,7 @@ import { convertDate, convertFullDate } from '~/utils/convertDate';
 import ActionDrawer from '~/components/Common/ActionDrawer';
 
 import { ExhibitPhoto, Photo } from '~/services/types';
-import { Divider } from '~/ui';
+import { Divider } from '~/components/ui';
 
 type PhotoInfoProps = {
   photoInfo: Photo | ExhibitPhoto;

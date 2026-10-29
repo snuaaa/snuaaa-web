@@ -77,7 +77,11 @@ Tailwind v4 `@theme`으로 정의합니다(`src/index.css`). 기존 `sass/common
 
 ## 3. 기본 컴포넌트
 
-shadcn/ui 방식을 씁니다. Radix 또는 Base UI 같은 headless 라이브러리 위에 `cva`와 `tailwind-merge`를 얹고, 코드를 저장소 안에 복사해 둡니다. 위치는 `src/components/ui/`를 제안합니다.
+shadcn/ui 방식을 씁니다. headless 라이브러리 위에 `cva`와 `tailwind-merge`를 얹고, 코드를 저장소 안에 둡니다. 위치는 `src/components/ui/`이고 `~/components/ui`에서 가져옵니다.
+
+- **라이브러리:** Radix(Dialog, Tabs, ToggleGroup, Avatar, Slot), 하단 시트는 vaul, 아이콘은 lucide-react를 씁니다. remixicon은 화면 PR마다 lucide로 바꿔 나갑니다.
+- **클래스 합치기:** `~/lib/utils`의 `cn()`을 씁니다. 타이포 토큰(`text-label` 등)을 글자 크기로 인식하도록 설정해 두었습니다.
+- **확인용 페이지:** `/dev/ui`에서 모든 기본 컴포넌트를 볼 수 있습니다. 사이트 헤더 없이 렌더링하며, epic이 나가기 전에 숨기거나 지웁니다.
 
 | 컴포넌트 | 변형 / 비고 | 대체할 기존 코드 |
 | --- | --- | --- |

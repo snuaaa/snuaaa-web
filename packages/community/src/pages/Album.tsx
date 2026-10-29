@@ -13,7 +13,7 @@ import {
   albumKeys,
 } from '~/hooks/queries/useAlbumQueries';
 import { useAuth } from '~/contexts/auth';
-import { Divider } from '~/ui';
+import { Divider } from '~/components/ui';
 import { useQueryClient } from '@tanstack/react-query';
 
 const AlbumPage: FC = () => {

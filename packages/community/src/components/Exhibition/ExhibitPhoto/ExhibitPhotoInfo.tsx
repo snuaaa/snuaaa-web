@@ -6,7 +6,7 @@ import Image from '~/components/Common/AaaImage';
 import 'react-datepicker/dist/react-datepicker.css';
 import { ExhibitPhoto } from '~/services/types';
 import { useAuth } from '~/contexts/auth';
-import { Divider } from '~/ui';
+import { Divider } from '~/components/ui';
 
 type ExhibitPhotoInfoProps = {
   photoInfo: ExhibitPhoto;
