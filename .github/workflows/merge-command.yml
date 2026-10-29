@@ -5,10 +5,12 @@ name: Merge Command
 #   main   <- epic/*                       : merge commit
 #   main   <- feat|fix|chore|refactor/*    : squash
 #   epic/* <- feat|fix|chore|refactor/*    : squash
-#   epic/* <- main                         : merge commit (epic 동기화)
+#   epic/* <- sync/*                       : merge commit (epic 수동 동기화)
 #
 # epic -> main PR에 `/sync` 코멘트를 달면 main을 epic에 merge commit으로 반영한다.
 # (PR 화면의 Update branch와 같은 동작. 사람은 epic 브랜치를 직접 갱신할 수 없다)
+# 충돌 등으로 `/sync`를 쓸 수 없으면 epic에서 `sync/*` 브랜치를 따서 main을 머지하고
+# epic으로 PR을 올린다. squash하면 main 커밋이 중복되므로 merge commit으로 머지한다.
 #
 # 머지와 동기화는 머지 봇 GitHub App 토큰으로 한다. 기본 GITHUB_TOKEN으로 push하면
 # main·epic push가 배포 워크플로를 트리거하지 않기 때문이다.
@@ -86,6 +88,7 @@ jobs:
             const sameRepo = pr.head.repo?.full_name === pr.base.repo.full_name;
             const isEpic = (ref) => /^epic\/.+/.test(ref);
             const isWork = (ref) => /^(feat|fix|chore|refactor)\/.+/.test(ref);
+            const isSync = (ref) => /^sync\/.+/.test(ref);
 
             if (command === '/sync') {
               // epic 진행 상황을 추적하는 draft PR에서도 쓸 수 있도록 draft 여부는 보지 않음
@@ -119,12 +122,12 @@ jobs:
             if (base === 'main' && sameRepo && isEpic(head)) method = 'merge';
             else if (base === 'main' && isWork(head)) method = 'squash';
             else if (isEpic(base) && isWork(head)) method = 'squash';
-            else if (isEpic(base) && sameRepo && head === 'main') method = 'merge';
+            else if (isEpic(base) && sameRepo && isSync(head)) method = 'merge';
 
             if (!method) {
               return fail(
                 `\`${base} ← ${head}\` 조합에 대한 머지 규칙이 없습니다. ` +
-                  '브랜치 이름이 `epic/*`, `feat/*`, `fix/*`, `chore/*`, `refactor/*` 중 하나인지 확인해주세요.',
+                  '브랜치 이름이 `epic/*`, `sync/*`, `feat/*`, `fix/*`, `chore/*`, `refactor/*` 중 하나인지 확인해주세요.',
               );
             }
 
