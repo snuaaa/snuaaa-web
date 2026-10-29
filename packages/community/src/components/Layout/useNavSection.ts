@@ -4,8 +4,7 @@ import { useBoards } from '~/hooks/queries/useBoardQueries';
 import { useAuth } from '~/contexts/auth';
 import { ASTRO_PHOTO_BOARD } from './constants';
 
-export type NavSection =
-  'home' | 'about' | 'board' | 'photo' | 'equipment' | 'my';
+export type NavSection = 'home' | 'board' | 'photo' | 'equipment' | 'my';
 
 const LAST_BOARD_KEY = 'aaa:lastBoard';
 const LAST_PHOTO_BOARD_KEY = 'aaa:lastPhotoBoard';
@@ -28,7 +27,6 @@ const writeStorage = (key: string, value: string) => {
 };
 
 const SECTION_PREFIXES: [string, NavSection][] = [
-  ['/about', 'about'],
   ['/post', 'board'],
   ['/posts', 'board'],
   ['/comments', 'board'],

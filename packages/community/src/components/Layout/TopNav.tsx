@@ -9,8 +9,7 @@ import { useMyUserInfo } from '~/hooks/queries/useUserQueries';
 import { cn } from '~/lib/utils';
 import { Board } from '~/services/types';
 import BrandMark from './BrandMark';
-import { ABOUT_AAA_LINKS, EQUIPMENT_GRADE, canManageUsers } from './constants';
-import { MenuLink } from './types';
+import { CLUB_INTRO_URL, EQUIPMENT_GRADE, canManageUsers } from './constants';
 import { NavSection, useNavSection } from './useNavSection';
 
 const triggerClassName =
@@ -21,21 +20,6 @@ const menuClassName =
 
 const itemClassName =
   'flex h-9 cursor-pointer items-center justify-between gap-3 rounded-md px-3 text-sm text-gray-700 outline-none data-[highlighted]:bg-primary-soft data-[highlighted]:text-fg [&_svg]:size-4 [&_svg]:text-gray-400';
-
-function MenuLinkItem({ link }: { link: MenuLink }) {
-  return (
-    <DropdownMenu.Item asChild className={itemClassName}>
-      {link.isExternal ? (
-        <a href={link.url} target="_blank" rel="noreferrer">
-          {link.name}
-          <ExternalLink aria-label="새 탭에서 열림" />
-        </a>
-      ) : (
-        <Link to={link.url}>{link.name}</Link>
-      )}
-    </DropdownMenu.Item>
-  );
-}
 
 function BoardItems({ label, boards }: { label?: string; boards: Board[] }) {
   if (boards.length === 0) return null;
@@ -158,11 +142,6 @@ export default function TopNav() {
       <div className="mx-auto flex h-16 max-w-[1080px] items-center gap-8 px-6">
         <BrandMark />
         <nav aria-label="주 메뉴" className="flex flex-1 items-center gap-1">
-          <NavMenu label="소개" active={isActive('about')}>
-            {ABOUT_AAA_LINKS.map((link) => (
-              <MenuLinkItem key={link.name} link={link} />
-            ))}
-          </NavMenu>
           <NavMenu label="게시판" active={isActive('board')}>
             <BoardItems label="공지" boards={readable(noticeBoards)} />
             <BoardItems label="일상" boards={readable(communityBoards)} />
@@ -180,6 +159,18 @@ export default function TopNav() {
               장비 대여
             </Link>
           )}
+          <a
+            href={CLUB_INTRO_URL}
+            target="_blank"
+            rel="noreferrer"
+            className={triggerClassName}
+          >
+            동아리 소개
+            <ExternalLink
+              className="size-3.5 opacity-70"
+              aria-label="새 탭에서 열림"
+            />
+          </a>
         </nav>
         <ProfileMenu />
       </div>
