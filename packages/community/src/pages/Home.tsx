@@ -2,6 +2,7 @@ import Loading from '~/components/Common/Loading';
 import {
   EquipmentCard,
   QuickLinks,
+  RecentAlbumsSection,
   RecentPhotosSection,
   RecentPostsCard,
   SoundBoxCard,
@@ -37,10 +38,8 @@ function Home() {
           <div className="flex flex-col gap-5">
             <SoundBoxCard soundBox={homeData.soundBoxData} />
             <RecentPostsCard posts={homeData.recentPosts} />
-            <RecentPhotosSection
-              albums={homeData.recentMemory}
-              photos={homeData.recentAstroPhoto}
-            />
+            <RecentAlbumsSection albums={homeData.recentMemory} />
+            <RecentPhotosSection photos={homeData.recentAstroPhoto} />
           </div>
           <div className="flex flex-col gap-5">
             <div className="hidden md:block">
