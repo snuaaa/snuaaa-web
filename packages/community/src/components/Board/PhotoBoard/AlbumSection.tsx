@@ -5,7 +5,7 @@ import { FC, useState } from 'react';
 import { useSearch } from '@tanstack/react-router';
 import { Board } from '~/services/types';
 import { useAuth } from '~/contexts/auth';
-import { Divider } from '~/ui';
+import { Divider } from '~/components/ui';
 import Pagination from '~/components/Common/Pagination';
 import { useAlbumsInPhotoBoard } from '~/hooks/queries/useAlbumQueries';
 

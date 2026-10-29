@@ -77,7 +77,11 @@ Tailwind v4 `@theme`으로 정의합니다(`src/index.css`). 기존 `sass/common
 
 ## 3. 기본 컴포넌트
 
-shadcn/ui 방식을 씁니다. Radix 또는 Base UI 같은 headless 라이브러리 위에 `cva`와 `tailwind-merge`를 얹고, 코드를 저장소 안에 복사해 둡니다. 위치는 `src/components/ui/`를 제안합니다.
+shadcn/ui 방식을 씁니다. headless 라이브러리 위에 `cva`와 `tailwind-merge`를 얹고, 코드를 저장소 안에 둡니다. 위치는 `src/components/ui/`이고 `~/components/ui`에서 가져옵니다.
+
+- **라이브러리:** Radix(Dialog, Tabs, ToggleGroup, Avatar, Slot), 하단 시트는 vaul, 아이콘은 lucide-react를 씁니다. remixicon은 화면 PR마다 lucide로 바꿔 나갑니다.
+- **클래스 합치기:** `~/lib/utils`의 `cn()`을 씁니다. 타이포 토큰(`text-label` 등)을 글자 크기로 인식하도록 설정해 두었습니다.
+- **확인용 페이지 (임시):** `/dev/ui`에서 모든 기본 컴포넌트를 볼 수 있습니다. 프리뷰에서 확인하려고 일부러 프로덕션 빌드에 포함하고, 로그인 없이 열리며, 사이트 헤더 없이 렌더링합니다. epic을 `main`에 머지하기 전에 라우트(`routes/dev/ui.tsx`), `pages/UiGallery.tsx`, auth의 `PUBLIC_PAGES` 항목을 지웁니다.
 
 | 컴포넌트 | 변형 / 비고 | 대체할 기존 코드 |
 | --- | --- | --- |
@@ -85,7 +89,8 @@ shadcn/ui 방식을 씁니다. Radix 또는 Base UI 같은 headless 라이브러
 | Input, Textarea | 라벨은 입력칸 위에 고정 / 오류 메시지는 아래 / 16px | `InputField`, `InputText`, `Form/Input` (floating 라벨 폐지) |
 | Tag, Badge | 게시판 분류, 해시태그, 상태 칩, 숫자 배지 | `Tag` |
 | Avatar | 56 / 40 / 28 / 20, 등급 테두리 옵션 / `profile_url` → `profile_path` → 이니셜 순으로 표시 | `ProfileMini`, 각 화면의 프로필 이미지 처리 |
-| BottomSheet, Dialog | 모바일은 시트, 데스크톱은 Dialog | `PopUp`, `Drawer`, `ActionDrawer`, `UserActionDrawer`, `window.confirm` |
+| Sheet | 액션 메뉴와 짧은 폼. 모바일·태블릿은 하단 시트, 데스크톱은 가운데 Dialog | `Drawer`, `ActionDrawer`, `UserActionDrawer` |
+| Dialog, ConfirmDialog | 모든 화면 크기에서 가운데 모달. 삭제할까요? 같은 확인 질문은 ConfirmDialog(바깥 클릭으로 닫히지 않음) | `PopUp`, `window.confirm` |
 | Tabs, SegmentedControl | 밑줄 탭, 알약 모양 전환 버튼 | `Tab`, 사진/앨범 전환 버튼 |
 | Pagination / 더 보기 | 모바일은 무한 스크롤 또는 "더 보기", 데스크톱은 번호 | `Pagination`, `Paginator` |
 | FAB | 글쓰기, 사진 올리기, 문서 등록 등 | 각 게시판의 작성 버튼 |
@@ -134,7 +139,7 @@ shadcn/ui 방식을 씁니다. Radix 또는 Base UI 같은 headless 라이브러
   - #162는 임시 수정입니다. A 방식으로 옮길 때 서버 계산 로직(`navigation=user`)을 포함해 자유롭게 바꿔도 됩니다. search param 이름은 기존 `photoNavigation`을 넓혀 쓰는 것(`album` / `board` / `user`)을 기본으로 합니다.
 - **게시판 목록 무한 스크롤 (모바일):** `usePostList`를 `useInfiniteQuery`로 바꿉니다. API는 이미 offset과 limit을 받습니다.
 - **앨범 생성 후 흐름:** 모달을 닫는 대신 새로 만든 앨범의 상세(사진 목록) 화면으로 이동합니다.
-- **장비 대여:** 한 개씩 빌리기와 일괄 대여를 합쳐, 담아서 한 번에 빌리는 흐름 하나로 만듭니다. 확인은 `window.confirm` 대신 확인 시트로 하고, 반납 기한을 크게 보여줍니다.
+- **장비 대여:** 한 개씩 빌리기와 일괄 대여를 합쳐, 담아서 한 번에 빌리는 흐름 하나로 만듭니다. 확인은 `window.confirm` 대신 ConfirmDialog로 하고, 반납 기한을 크게 보여줍니다.
 - **alert, confirm을 인라인 처리로 바꾸기:** 필수 항목이 비면 제출 버튼을 막고 문구로 알려줍니다. 적용 대상은 문서 등록, 반납 사진, 사진 업로드 대기, 회원가입 검증 등입니다.
 - **임시저장 안내:** 글쓰기에서 저장된 글을 말없이 불러오는 대신 "이어서 쓰기 / 새로 쓰기" 배너를 보여줍니다.
 - **촬영 정보 일괄 적용:** 사진 올리기에서 촬영 정보를 선택한 사진 모두에 한 번에 적용합니다.
@@ -168,7 +173,7 @@ shadcn/ui 방식을 씁니다. Radix 또는 Base UI 같은 headless 라이브러
 각 PR에서 옮긴 화면의 SCSS를 함께 지웁니다. 진행 상황은 남은 SCSS 줄 수로 확인합니다.
 
 1. **토큰:** `@theme`에 원시·의미 토큰과 등급 그라데이션을 정의하고, 코드 곳곳의 hex 값과 Tailwind 기본 팔레트를 토큰으로 바꿉니다. 이 PR에서는 UI가 거의 바뀌지 않아야 합니다.
-2. **기본 컴포넌트:** Button, Input, Tag, Avatar, BottomSheet / Dialog, Tabs를 만듭니다.
+2. **기본 컴포넌트:** Button, Input, Tag, Avatar, Sheet / Dialog / ConfirmDialog, Tabs를 만듭니다.
 3. **레이아웃:** 모바일 하단 탭바와 데스크톱 상단 네비게이션을 만듭니다(`routes/__root.tsx`).
 4. **게시판:** 목록(N, D), 게시판 전환, 검색, 글 상세와 댓글을 옮깁니다.
 5. **사진:** 사진 탭(A, M, E), 필터, 사진 상세, 앨범 상세를 옮깁니다.

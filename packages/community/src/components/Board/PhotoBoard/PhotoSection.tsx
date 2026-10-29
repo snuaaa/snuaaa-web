@@ -8,7 +8,7 @@ import { useAuth } from '~/contexts/auth';
 import { usePhotoList } from '~/hooks/queries/usePhotoQueries';
 import { ChangeEvent, FC, useCallback, useMemo, useState } from 'react';
 import { Board } from '~/services/types';
-import { Divider } from '~/ui';
+import { Divider } from '~/components/ui';
 
 const PHOTO_ROW_NUM = 12;
 

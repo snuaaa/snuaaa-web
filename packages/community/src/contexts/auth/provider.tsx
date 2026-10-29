@@ -21,7 +21,8 @@ const initialAuth: AuthType = {
   },
 };
 
-const PUBLIC_PAGES = ['/auth/login', '/auth/signup'];
+// '/dev/ui' is the temporary redesign component gallery (routes/dev/ui.tsx).
+const PUBLIC_PAGES = ['/auth/login', '/auth/signup', '/dev/ui'];
 
 const Provider = ({ children }: PropsWithChildren) => {
   const [authInfo, setAuthInfo] = useState<AuthType>(initialAuth);
@@ -98,10 +99,7 @@ const Provider = ({ children }: PropsWithChildren) => {
     return <Loading />;
   }
 
-  if (
-    !authInfo.isLoggedIn &&
-    !['/auth/login', '/auth/signup'].includes(location.pathname)
-  ) {
+  if (!authInfo.isLoggedIn && !PUBLIC_PAGES.includes(location.pathname)) {
     return <Navigate to="/auth/login" />;
   }
 

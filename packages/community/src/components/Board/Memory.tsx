@@ -12,7 +12,7 @@ import { useNavigate, useSearch } from '@tanstack/react-router';
 import { Board } from '~/services/types';
 import { useAlbumsInPhotoBoard } from '~/hooks/queries/useAlbumQueries';
 import { useAuth } from '~/contexts/auth';
-import { Divider } from '~/ui';
+import { Divider } from '~/components/ui';
 import Pagination from '../Common/Pagination';
 
 type MemoryProps = {
