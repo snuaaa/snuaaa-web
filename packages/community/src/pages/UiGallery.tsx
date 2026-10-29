@@ -12,7 +12,9 @@ import {
   Avatar,
   Badge,
   Button,
+  ConfirmDialog,
   CountBadge,
+  Dialog,
   Fab,
   Field,
   Input,
@@ -54,6 +56,8 @@ const sampleUsers = [
 export default function UiGallery() {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [view, setView] = useState<'photo' | 'album'>('photo');
   const [page, setPage] = useState(3);
   const [loading, setLoading] = useState(false);
@@ -190,16 +194,20 @@ export default function UiGallery() {
           <Pagination page={page} totalPages={23} onPageChange={setPage} />
         </Section>
 
-        <Section title="Sheet">
+        <Section title="Sheet · Dialog">
           <p className="text-caption text-fg-muted">
-            모바일·태블릿은 하단 시트, 데스크톱은 가운데 Dialog로 열려요.
+            Sheet는 모바일·태블릿에서 하단 시트, 데스크톱에서 가운데 Dialog로
+            열려요. 확인 질문은 화면 크기와 상관없이 ConfirmDialog를 써요.
           </p>
           <Row>
             <Button variant="secondary" onClick={() => setSheetOpen(true)}>
-              게시글 메뉴
+              게시글 메뉴 (Sheet)
+            </Button>
+            <Button variant="secondary" onClick={() => setDialogOpen(true)}>
+              Dialog
             </Button>
             <Button variant="secondary" onClick={() => setConfirmOpen(true)}>
-              삭제 확인
+              삭제 확인 (ConfirmDialog)
             </Button>
           </Row>
         </Section>
@@ -239,29 +247,42 @@ export default function UiGallery() {
         </SheetAction>
       </Sheet>
 
-      <Sheet
+      <Dialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        title="이메일 변경"
+        description="새 이메일로 확인 메일을 보내요."
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => setDialogOpen(false)}>
+              취소
+            </Button>
+            <Button onClick={() => setDialogOpen(false)}>보내기</Button>
+          </>
+        }
+      >
+        <div className="px-2">
+          <Field label="새 이메일">
+            <Input type="email" placeholder="aaa@snu.ac.kr" />
+          </Field>
+        </div>
+      </Dialog>
+
+      <ConfirmDialog
         open={confirmOpen}
         onOpenChange={setConfirmOpen}
         title="게시글을 삭제할까요?"
         description="삭제한 글은 되돌릴 수 없어요."
-        footer={
-          <div className="flex w-full gap-2 md:w-auto">
-            <Button
-              variant="secondary"
-              className="flex-1 md:flex-none"
-              onClick={() => setConfirmOpen(false)}
-            >
-              취소
-            </Button>
-            <Button
-              variant="danger"
-              className="flex-1 md:flex-none"
-              onClick={() => setConfirmOpen(false)}
-            >
-              삭제
-            </Button>
-          </div>
-        }
+        confirmLabel="삭제"
+        tone="danger"
+        loading={deleting}
+        onConfirm={() => {
+          setDeleting(true);
+          setTimeout(() => {
+            setDeleting(false);
+            setConfirmOpen(false);
+          }, 1000);
+        }}
       />
     </div>
   );

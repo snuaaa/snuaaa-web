@@ -1,5 +1,6 @@
 export { Avatar } from './Avatar';
 export { Button, type ButtonProps } from './Button';
+export { ConfirmDialog, Dialog } from './Dialog';
 export { Divider } from './Divider';
 export { Fab } from './Fab';
 export { Field, Input, Textarea } from './Field';
