@@ -24,11 +24,11 @@ const Drawer = ({
         className={`fixed inset-0 h-full w-full z-30 ${isOpen ? 'visible' : 'invisible'} transition-all duration-300 ease-out`}
       >
         <div
-          className={`bg-slate-800 absolute inset-0 ${isOpen ? 'opacity-50' : 'opacity-0'} transition-all duration-300 ease-out`}
+          className={`bg-navy-900 absolute inset-0 ${isOpen ? 'opacity-50' : 'opacity-0'} transition-all duration-300 ease-out`}
           onClick={onClose}
         ></div>
         <div
-          className={`absolute top-0 left-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'} h-full bg-slate-700 transition-all duration-300 ease-out z-10 overflow-auto`}
+          className={`absolute top-0 left-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'} h-full bg-navy-800 transition-all duration-300 ease-out z-10 overflow-auto`}
         >
           {children}
         </div>

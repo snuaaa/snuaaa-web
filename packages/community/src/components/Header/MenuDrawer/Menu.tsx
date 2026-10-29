@@ -56,7 +56,7 @@ function Menu({ menuName, menuItems, icon }: Props) {
   };
 
   return (
-    <li className={'bg-slate-700'}>
+    <li className={'bg-navy-800'}>
       <input
         type="checkbox"
         id={menuName}
@@ -66,7 +66,7 @@ function Menu({ menuName, menuItems, icon }: Props) {
       />
       <label
         htmlFor={menuName}
-        className={`cursor-pointer font-extrabold flex items-center pl-4 pr-12 py-3 gap-2 hover:bg-slate-800`}
+        className={`cursor-pointer font-extrabold flex items-center pl-4 pr-12 py-3 gap-2 hover:bg-navy-900`}
       >
         {icon}
         {menuName}

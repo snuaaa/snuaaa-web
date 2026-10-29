@@ -59,7 +59,7 @@ const LogInComponent: React.FC<Props> = ({
             />
           </div>
           <button
-            className="w-32 mb-4 tracking-wider text-white bg-[#57adb6] border-none rounded-md text-lg transition duration-1000"
+            className="w-32 mb-4 tracking-wider text-white bg-navy-500 border-none rounded-md text-lg transition duration-1000"
             onClick={userLogIn}
           >
             로그인

@@ -33,7 +33,7 @@ const InputField = ({
 }: InputFieldProps) => {
   const fieldClass = `mx-auto mt-4 w-[400px] bg-white rounded-[20px] p-2 text-sm 
   ${valid !== undefined ? 'border-2 border-solid' : ''}
-  ${valid === true ? 'border-blue-500' : valid === false ? 'border-red-500' : ''}`;
+  ${valid === true ? 'border-navy-700' : valid === false ? 'border-danger' : ''}`;
 
   return (
     <div className={fieldClass}>
@@ -65,7 +65,7 @@ const InputField = ({
         required={required}
       />
       {valid === false && (
-        <p className="text-right text-xs text-red-500">{invalidMessage}</p>
+        <p className="text-right text-xs text-danger">{invalidMessage}</p>
       )}
     </div>
   );

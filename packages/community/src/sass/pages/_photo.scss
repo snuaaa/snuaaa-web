@@ -317,7 +317,7 @@
             h4 {
                 // margin-left: 0.5rem;
                 width: 50%;
-                font-family: 'S-CoreDream-5Medium';
+                font-family: inherit;
                 font-size: 23px;
                 
             }
@@ -523,7 +523,7 @@
         color: #F1F1F1;
         background-color: color2.$color-blue3;
         &:hover {
-            background-color: color.adjust($color: color2.$color-blue3, $lightness: -10%);                            
+            background-color: var(--color-navy-700);                            
         }
         &:disabled {
             background-color: #646464;

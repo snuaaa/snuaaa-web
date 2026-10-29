@@ -12,7 +12,7 @@ function NewAlbums({ title, board_id, albums }: NewAlbumsProps) {
   return (
     <div className="w-full md:w-1/2 p-2 md:p-[5px]">
       <Link to="/board/$board_id" params={{ board_id }}>
-        <h4 className="text-xl font-bold text-[#7193C4] py-2 px-1">{title}</h4>
+        <h4 className="text-xl font-bold text-navy-500 py-2 px-1">{title}</h4>
       </Link>
       <div className="grid grid-cols-2 grid-rows-2 gap-px aspect-[1/1]">
         {albums.map((album) => (

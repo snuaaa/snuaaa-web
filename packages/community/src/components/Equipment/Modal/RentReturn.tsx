@@ -59,7 +59,7 @@ const RentReturn: FC<Props> = ({ rent }) => {
               />
             </div>
             <button
-              className="absolute top-0 right-0 w-6 h-6 flex justify-center items-center text-white bg-[#EF645D]"
+              className="absolute top-0 right-0 w-6 h-6 flex justify-center items-center text-white bg-danger"
               onClick={handleRemoveFile}
             >
               <i className="ri-close-line text-2xl"></i>
@@ -85,7 +85,7 @@ const RentReturn: FC<Props> = ({ rent }) => {
       </div>
       <div className="flex w-full mx-auto items-center justify-center">
         <button
-          className="text-base border border-gray-400 text-white text-center font-bold py-2 mx-2 mt-4 mb-2 bg-red-400 px-8"
+          className="text-base border border-gray-400 text-white text-center font-bold py-2 mx-2 mt-4 mb-2 bg-danger px-8"
           onClick={handleClickSubmit}
         >
           반납 완료

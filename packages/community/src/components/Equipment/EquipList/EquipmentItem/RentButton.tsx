@@ -53,8 +53,8 @@ const RentButton: FC<Props> = ({ equipment }) => {
           className={
             'text-center font-bold py-2 grow ' +
             (equipment.rent_status === EquipmentRentStatus.RENTABLE
-              ? 'text-cyan-600 border border-cyan-600'
-              : 'text-black bg-gray-200')
+              ? 'text-primary border border-primary'
+              : 'text-fg bg-gray-200')
           }
         >
           {mapEquipmentRentButtonText(equipment)}
@@ -66,9 +66,9 @@ const RentButton: FC<Props> = ({ equipment }) => {
             'text-center font-bold p-2 ' +
             (equipment.rent_status === EquipmentRentStatus.RENTABLE
               ? cart?.find((eq: Equipment) => eq.id === equipment.id)
-                ? 'text-white bg-cyan-600 border border-cyan-600'
-                : 'text-cyan-600 border border-cyan-600'
-              : 'text-black bg-gray-200')
+                ? 'text-white bg-primary border border-primary'
+                : 'text-primary border border-primary'
+              : 'text-fg bg-gray-200')
           }
         >
           {equipment.rent_status === EquipmentRentStatus.RENTABLE

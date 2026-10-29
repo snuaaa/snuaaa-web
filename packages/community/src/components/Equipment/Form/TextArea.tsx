@@ -20,10 +20,10 @@ const InputField = ({
       <div className="w-1/4">
         <label
           htmlFor={name}
-          className="block font-bold text-gray-950 text-left pr-1"
+          className="block font-bold text-fg text-left pr-1"
         >
           {name}
-          <div className="text-red-600 inline">{required && '*'}</div>
+          <div className="text-danger inline">{required && '*'}</div>
         </label>
       </div>
       <div className="w-3/4">

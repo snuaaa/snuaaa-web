@@ -132,7 +132,7 @@ const EquipSearchBar: FC<Props> = ({ search, onSearchChange }) => {
         />
 
         <button
-          className="border border-gray-300 bg-white p-2 text-gray-950"
+          className="border border-gray-300 bg-white p-2 text-fg"
           onClick={handleSearch}
         >
           <i className="ri-search-line"></i>

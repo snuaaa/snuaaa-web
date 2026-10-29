@@ -89,7 +89,7 @@ const EquipmentForm: React.FC<Props> = ({
               />
             </div>
             <button
-              className="absolute top-0 right-0 w-6 h-6 flex justify-center items-center text-white bg-[#EF645D]"
+              className="absolute top-0 right-0 w-6 h-6 flex justify-center items-center text-white bg-danger"
               onClick={handleRemoveFile}
             >
               <i className="ri-close-line text-2xl"></i>
@@ -173,7 +173,7 @@ const EquipmentForm: React.FC<Props> = ({
         {onDelete && (
           <div className="flex w-full mx-auto items-center justify-center">
             <button
-              className="text-base border border-red-500 text-red-500 text-center font-bold py-2 mx-2 mb-4 mt-2 px-8"
+              className="text-base border border-danger text-danger text-center font-bold py-2 mx-2 mb-4 mt-2 px-8"
               onClick={onDelete}
             >
               장비 삭제

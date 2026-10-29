@@ -13,7 +13,7 @@ function MenuItem(props: Props) {
   const deviceType = useDeviceType();
 
   return (
-    <li className="text-left relative md:font-bold md:[text-shadow:_0_0_3px_#E6AD0F] transition-all duration-300 hover:bg-[#FCE8A7] hover:text-[#646464] md:hover:[text-shadow:none]">
+    <li className="text-left relative md:font-bold md:[text-shadow:_0_0_3px_var(--color-star-600)] transition-all duration-300 hover:bg-star-200 hover:text-gray-600 md:hover:[text-shadow:none]">
       {'board_id' in item ? (
         <Link
           to="/board/$board_id"

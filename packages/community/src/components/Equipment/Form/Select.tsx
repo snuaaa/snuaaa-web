@@ -18,16 +18,16 @@ const Select = <T extends number | string>({
       <div className="w-1/4">
         <label
           htmlFor={name}
-          className="block font-bold text-gray-950 text-left pr-1"
+          className="block font-bold text-fg text-left pr-1"
         >
           {name}
-          <div className="text-red-600 inline">{required && '*'}</div>
+          <div className="text-danger inline">{required && '*'}</div>
         </label>
       </div>
       <div className="w-3/4">
         <select
           name={name}
-          className="border border-gray-300 rounded-xs m-2 p-1 w-full bg-white text-gray-950"
+          className="border border-gray-300 rounded-xs m-2 p-1 w-full bg-white text-fg"
           value={value}
           onChange={(e) => onChange(e.target.value as T)}
         >

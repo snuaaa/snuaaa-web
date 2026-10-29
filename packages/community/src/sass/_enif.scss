@@ -1,4 +1,3 @@
-@use "sass:color";
 @use "common/color" as color2;
 
 /**********  ENIF  **********/
@@ -163,7 +162,7 @@
     transition: all 0.3s;
     cursor: pointer;
     &:hover {
-        background-color: color.adjust(color2.$color_aqua, $lightness: -10%);
+        background-color: var(--color-primary-hover);
     }
 }
 

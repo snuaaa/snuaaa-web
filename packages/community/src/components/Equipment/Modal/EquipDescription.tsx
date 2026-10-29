@@ -28,20 +28,20 @@ const EquipDescription: React.FC<Props> = ({ equipment }) => {
         />
       </div>
       <div className="relative overflow-x-auto mt-4">
-        <table className="w-full text-sm text-left border text-gray-700 dark:text-gray-400">
-          <tr className="border-b border-gray-200 dark:border-gray-700">
+        <table className="w-full text-sm text-left border text-gray-700">
+          <tr className="border-b border-gray-200">
             <th
               scope="row"
-              className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap bg-gray-50 dark:text-white dark:bg-gray-800"
+              className="px-6 py-2 font-medium text-fg whitespace-nowrap bg-gray-50"
             >
               장비명
             </th>
             <td className="px-6 py-2">{equipment.name}</td>
           </tr>
-          <tr className="border-b border-gray-200 dark:border-gray-700">
+          <tr className="border-b border-gray-200">
             <th
               scope="row"
-              className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap bg-gray-50 dark:text-white dark:bg-gray-800"
+              className="px-6 py-2 font-medium text-fg whitespace-nowrap bg-gray-50"
             >
               분류
             </th>
@@ -53,10 +53,10 @@ const EquipDescription: React.FC<Props> = ({ equipment }) => {
               }
             </td>
           </tr>
-          <tr className="border-b border-gray-200 dark:border-gray-700">
+          <tr className="border-b border-gray-200">
             <th
               scope="row"
-              className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap bg-gray-50 dark:text-white dark:bg-gray-800"
+              className="px-6 py-2 font-medium text-fg whitespace-nowrap bg-gray-50"
             >
               상태
             </th>
@@ -64,28 +64,28 @@ const EquipDescription: React.FC<Props> = ({ equipment }) => {
               {equipmentStatusTextMap[equipment.status]}
             </td>
           </tr>
-          <tr className="border-b border-gray-200 dark:border-gray-700">
+          <tr className="border-b border-gray-200">
             <th
               scope="row"
-              className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap bg-gray-50 dark:text-white dark:bg-gray-800"
+              className="px-6 py-2 font-medium text-fg whitespace-nowrap bg-gray-50"
             >
               위치
             </th>
             <td className="px-6 py-2">{equipment.location}</td>
           </tr>
-          <tr className="border-b border-gray-200 dark:border-gray-700">
+          <tr className="border-b border-gray-200">
             <th
               scope="row"
-              className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap bg-gray-50 dark:text-white dark:bg-gray-800"
+              className="px-6 py-2 font-medium text-fg whitespace-nowrap bg-gray-50"
             >
               제조사
             </th>
             <td className="px-6 py-2">{equipment.maker}</td>
           </tr>
-          <tr className="border-b border-gray-200 dark:border-gray-700">
+          <tr className="border-b border-gray-200">
             <th
               scope="row"
-              className="px-6 py-2 font-medium text-gray-900 whitespace-nowrap bg-gray-50 dark:text-white dark:bg-gray-800"
+              className="px-6 py-2 font-medium text-fg whitespace-nowrap bg-gray-50"
             >
               별명
             </th>

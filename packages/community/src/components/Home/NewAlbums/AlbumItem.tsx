@@ -23,7 +23,7 @@ const AlbumItem: FC<Props> = ({ album }) => {
           imgSrc={thumbnailPath}
           defaultImgSrc={defaultAlbumCover}
         />
-        <div className="absolute top-0 left-0 flex justify-center items-center w-full h-full z-10 bg-[#333333]/[0.1] hover:bg-[#686868]/[0.5] transition-all">
+        <div className="absolute top-0 left-0 flex justify-center items-center w-full h-full z-10 bg-black/10 hover:bg-gray-500/50 transition-all">
           <h5 className="text-center text-lg font-bold text-white">
             {album.title}
           </h5>

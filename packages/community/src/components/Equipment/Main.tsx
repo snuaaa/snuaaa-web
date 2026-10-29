@@ -53,12 +53,12 @@ const Main: FC = () => {
                 />
               </div>
               <div className="flex flex-col-reverse ml-1">
-                <div className="font-bold text-red-400 text-xs py-1">
+                <div className="font-bold text-danger text-xs py-1">
                   {getTimeLeft(rent.end_date)}
                 </div>
                 <div className="font-bold py-1">{rent.equipment.name}</div>
               </div>
-              <div className="z-1 absolute top-0 right-0 bg-red-400 text-white text-xs font-bold px-1">
+              <div className="z-1 absolute top-0 right-0 bg-danger text-white text-xs font-bold px-1">
                 <button onClick={() => openModal(<RentReturn rent={rent} />)}>
                   <i className="ri-arrow-go-back-line text-base"></i>
                 </button>
@@ -70,14 +70,14 @@ const Main: FC = () => {
       <div className="flex justify-center">
         <Link to="/equipment/rent">
           <button
-            className="mt-4 px-10 py-3 bg-[#49A1AF] text-white text-base"
+            className="mt-4 px-10 py-3 bg-primary text-white text-base"
             type="button"
           >
             장비 대여하기
           </button>
         </Link>
       </div>
-      <ul className="text-[#A3A3A3] text-sm list-disc mt-4 pl-4">
+      <ul className="text-gray-400 text-sm list-disc mt-4 pl-4">
         <li>장비 대여는 사용 당일 신청을 원칙으로 합니다.</li>
         <li>
           대여가 승인된 시각을 기준으로 최대 48시간 이내에 반납해야 합니다.

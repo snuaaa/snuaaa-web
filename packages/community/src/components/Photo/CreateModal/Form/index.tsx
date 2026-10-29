@@ -25,7 +25,7 @@ const PhotoInfoForm = withForm({
           name={`list[${editingIdx}].text`}
           children={(field) => (
             <textarea
-              className="w-full h-24 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full h-24 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-navy-300"
               placeholder="설명"
               name="text"
               onChange={(e) => field.handleChange(e.target.value)}

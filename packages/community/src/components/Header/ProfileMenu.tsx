@@ -29,7 +29,7 @@ function ProfileMenu({ profileImgUrl, togglePopup, logout }: Props) {
 
   return (
     <div
-      className="fixed md:absolute left-0 md:left-auto top-0 md:top-[70px] z-[99] md:z-[11] w-full md:w-[150px] h-full md:h-[200px] bg-[#06234eee] md:bg-[#6181b0] md:rounded-[10px]
+      className="fixed md:absolute left-0 md:left-auto top-0 md:top-[70px] z-[99] md:z-[11] w-full md:w-[150px] h-full md:h-[200px] bg-navy-800/95 md:bg-navy-500 md:rounded-[10px]
         flex flex-col items-center pt-20 md:pt-8 text-white gap-8 md:gap-5"
       onClick={(e) => e.stopPropagation()}
     >
