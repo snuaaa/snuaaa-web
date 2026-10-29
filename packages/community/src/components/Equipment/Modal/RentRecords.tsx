@@ -19,8 +19,8 @@ const PenaltyStatusTextMap: Record<PenaltyStatus, string> = {
 
 const PenaltyStatusColorMap: Record<PenaltyStatus, string> = {
   [PenaltyStatus.RECEIVED_PAYMENT]: 'text-gray-600',
-  [PenaltyStatus.NEED_PAYMENT]: 'text-red-600',
-  [PenaltyStatus.NO_PENALTY]: 'text-green-600',
+  [PenaltyStatus.NEED_PAYMENT]: 'text-danger',
+  [PenaltyStatus.NO_PENALTY]: 'text-success',
 };
 
 const RentRecords: FC<Props> = ({ id }) => {
@@ -51,7 +51,7 @@ const RentRecords: FC<Props> = ({ id }) => {
       </div>
       <h3 className="text-xl font-bold mt-4 mb-2">대여 기록</h3>
       <div className="mt-8">
-        <div className="flex items-center text-gray-950 border first:rounded-t-lg last:rounded-b-lg border-gray-300 w-full py-2">
+        <div className="flex items-center text-fg border first:rounded-t-lg last:rounded-b-lg border-gray-300 w-full py-2">
           <div className="w-1/5">대여자</div>
           <div className="w-1/5">대여 시각</div>
           <div className="w-1/5">반납 기한</div>
@@ -65,7 +65,7 @@ const RentRecords: FC<Props> = ({ id }) => {
           <>
             <button
               onClick={() => clickRecord(rentRecord.id)}
-              className="flex items-center text-gray-950 border first:rounded-t-lg last:rounded-b-lg border-gray-300 w-full py-2"
+              className="flex items-center text-fg border first:rounded-t-lg last:rounded-b-lg border-gray-300 w-full py-2"
               key={rentRecord.id}
             >
               <div className="w-1/5">{rentRecord.user.nickname}</div>
@@ -93,7 +93,7 @@ const RentRecords: FC<Props> = ({ id }) => {
               </div>
             </button>
             {rentRecord.rentReturn && photoRentId === rentRecord.id && (
-              <div className="flex items-center text-gray-950 border first:rounded-t-lg last:rounded-b-lg border-gray-300 w-full py-2">
+              <div className="flex items-center text-fg border first:rounded-t-lg last:rounded-b-lg border-gray-300 w-full py-2">
                 <button
                   onClick={() => clickRecord(rentRecord.id)}
                   className="mx-auto"

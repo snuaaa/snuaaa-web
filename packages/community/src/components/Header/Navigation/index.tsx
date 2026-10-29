@@ -10,7 +10,7 @@ function Navigation() {
   return (
     <nav
       className={
-        'sticky top-0 h-8 md:h-[42px] bg-[#7092C4] md:bg-[#000E2C] w-full z-10 text-[0.8rem] md:text-base shadow-[0_1px_1px_0_rgba(105,105,105,0.61)] md:shadow-[0_2px_2px_0_rgba(50,45,119,0.61)]'
+        'sticky top-0 h-8 md:h-[42px] bg-navy-500 md:bg-navy-900 w-full z-10 text-[0.8rem] md:text-base shadow-[0_1px_1px_0_rgba(105,105,105,0.61)] md:shadow-[0_2px_2px_0_rgba(50,45,119,0.61)]'
       }
     >
       <ul className="h-full w-full flex justify-around md:justify-center items-center">

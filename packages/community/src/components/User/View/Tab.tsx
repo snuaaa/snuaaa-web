@@ -10,7 +10,7 @@ type ButtonProps = {
 
 const LinkButton = ({ to, isSelected, text }: ButtonProps) => (
   <Link
-    className={`mx-[15px] font-bold text-lg ${isSelected ? 'text-[#7193C4]' : 'text-[#CDD9EA]'}`}
+    className={`mx-[15px] font-bold text-lg ${isSelected ? 'text-navy-500' : 'text-navy-200'}`}
     to={to}
   >
     <span className="enif-hide-mobile">등록한 </span>

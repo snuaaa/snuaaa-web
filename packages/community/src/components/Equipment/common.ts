@@ -60,9 +60,9 @@ export const equipmentRentStatusOptions = [
 ];
 
 export const equipmentStatusColorMap: Record<EquipmentStatus, string> = {
-  [EquipmentStatus.OK]: 'text-green-600',
-  [EquipmentStatus.BROKEN]: 'text-red-600',
-  [EquipmentStatus.REPAIRING]: 'text-yellow-600',
+  [EquipmentStatus.OK]: 'text-success',
+  [EquipmentStatus.BROKEN]: 'text-danger',
+  [EquipmentStatus.REPAIRING]: 'text-star-600',
   [EquipmentStatus.LOST]: 'text-gray-500',
   [EquipmentStatus.ETC]: 'text-gray-500',
 };
@@ -76,7 +76,7 @@ export const equipmentStatusTextMap: Record<EquipmentStatus, string> = {
 };
 
 export const equipmentRentColorMap: Record<EquipmentRentStatus, string> = {
-  [EquipmentRentStatus.RENTABLE]: 'text-cyan-500',
-  [EquipmentRentStatus.UNRENTABLE]: 'text-yellow-400',
-  [EquipmentRentStatus.RENTED]: 'text-red-400',
+  [EquipmentRentStatus.RENTABLE]: 'text-primary',
+  [EquipmentRentStatus.UNRENTABLE]: 'text-star-400',
+  [EquipmentRentStatus.RENTED]: 'text-danger',
 };

@@ -19,7 +19,7 @@ const SearchString = ({
     <input
       name={name}
       type="text"
-      className="border border-gray-300 text-gray-950 w-1/3 p-2"
+      className="border border-gray-300 text-fg w-1/3 p-2"
       placeholder={placeholder}
       value={value}
       onChange={onChange}

@@ -8,7 +8,7 @@ type Props = {
 };
 
 const baseItemStyle =
-  'block w-full pl-4 py-2 pr-4 whitespace-nowrap border-l border-slate-500 hover:bg-slate-500 transition-colors duration-200';
+  'block w-full pl-4 py-2 pr-4 whitespace-nowrap border-l border-navy-500 hover:bg-navy-500 transition-colors duration-200';
 
 function MenuItem(props: Props) {
   const { item } = props;
@@ -16,7 +16,7 @@ function MenuItem(props: Props) {
   const { onClose } = useDrawer();
 
   return (
-    <li className="pl-6 bg-slate-700">
+    <li className="pl-6 bg-navy-800">
       {'board_id' in item ? (
         <Link
           to="/board/$board_id"

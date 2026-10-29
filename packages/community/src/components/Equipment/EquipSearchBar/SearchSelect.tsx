@@ -21,7 +21,7 @@ const SearchSelect = <T extends number | string>({
       name={name}
       className={
         'border border-gray-300 bg-white p-2 ' +
-        (value === defaultVal ? 'text-gray-500' : 'text-gray-950')
+        (value === defaultVal ? 'text-gray-500' : 'text-fg')
       }
       value={value}
       onChange={onChange}

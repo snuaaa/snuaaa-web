@@ -54,20 +54,20 @@ const Admin = () => {
           //TODO: display modal
           <>
             <button
-              className="bg-[#A3A3A3] text-white ml-auto flex justify-center items-center text-base px-2 py-1 font-bold"
+              className="bg-gray-400 text-white ml-auto flex justify-center items-center text-base px-2 py-1 font-bold"
               onClick={handleClickEditCategory}
             >
               <i className="ri-edit-box-line mr-1"></i> 장비 분류 수정
             </button>
             <button
-              className="bg-[#A3A3A3] text-white ml-2 flex justify-center items-center text-base px-2 py-1 font-bold"
+              className="bg-gray-400 text-white ml-2 flex justify-center items-center text-base px-2 py-1 font-bold"
               onClick={handleClickCreate}
             >
               <i className="ri-menu-add-line mr-1"></i> 장비 추가
             </button>
             <Link
               to="/equipment/admin/fees"
-              className="bg-[#A3A3A3] text-white ml-2 flex justify-center items-center text-base px-2 py-1 font-bold"
+              className="bg-gray-400 text-white ml-2 flex justify-center items-center text-base px-2 py-1 font-bold"
             >
               <i className="ri-money-dollar-circle-line mr-1"></i> 연체료 관리
             </Link>

@@ -43,7 +43,7 @@ function Header() {
 
   return (
     <>
-      <div id="aaa-top" className="w-full bg-[#040c22]">
+      <div id="aaa-top" className="w-full bg-navy-950">
         <div className="w-full flex md:max-w-[1920px] relative m-auto">
           <img
             src={backgroundImg}

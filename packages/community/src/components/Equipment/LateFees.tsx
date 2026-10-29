@@ -26,8 +26,8 @@ const PenaltyStatusTextMap: Record<PenaltyStatus, string> = {
 
 const PenaltyStatusColorMap: Record<PenaltyStatus, string> = {
   [PenaltyStatus.RECEIVED_PAYMENT]: 'text-gray-600',
-  [PenaltyStatus.NEED_PAYMENT]: 'text-red-600',
-  [PenaltyStatus.NO_PENALTY]: 'text-green-600',
+  [PenaltyStatus.NEED_PAYMENT]: 'text-danger',
+  [PenaltyStatus.NO_PENALTY]: 'text-success',
 };
 
 const PenaltyStatusFilterOptions: {
@@ -207,7 +207,7 @@ const LateFees: FC = () => {
       ) : (
         <div className="overflow-x-auto">
           <div className="min-w-[700px]">
-            <div className="flex items-center text-gray-950 font-bold border border-gray-300 rounded-t-lg w-full py-2 text-sm">
+            <div className="flex items-center text-fg font-bold border border-gray-300 rounded-t-lg w-full py-2 text-sm">
               <div className="w-[14%] text-center">장비명</div>
               <div className="w-[12%] text-center">대여자</div>
               <div className="w-[16%] text-center">대여 시각</div>
@@ -231,7 +231,7 @@ const LateFees: FC = () => {
                     (e.key === 'Enter' || e.key === ' ') &&
                     handleClickRecord(record.id)
                   }
-                  className="flex items-center text-gray-950 border border-t-0 border-gray-300 w-full py-2 text-sm hover:bg-gray-50 cursor-pointer"
+                  className="flex items-center text-fg border border-t-0 border-gray-300 w-full py-2 text-sm hover:bg-gray-50 cursor-pointer"
                 >
                   <div className="w-[14%] text-center truncate px-1">
                     {record.equipment.name}
@@ -271,7 +271,7 @@ const LateFees: FC = () => {
                     {record.rentReturn?.penalty_status ===
                       PenaltyStatus.NEED_PAYMENT && (
                       <button
-                        className="bg-[#49A1AF] text-white text-xs px-2 py-1 rounded hover:bg-[#3d8a96]"
+                        className="bg-primary text-white text-xs px-2 py-1 rounded hover:bg-primary-hover"
                         onClick={() =>
                           handleTogglePenalty(
                             record.id,

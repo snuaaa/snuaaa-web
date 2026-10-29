@@ -20,11 +20,11 @@ const EquipCart: FC<Props> = ({ columns }) => {
 
   return (
     <div className="text-center px-2">
-      <h3 className="font-bold text-base text-center text-cyan-600 pt-6 pb-2">
+      <h3 className="font-bold text-base text-center text-primary pt-6 pb-2">
         여러 장비 대여하기
       </h3>
       {cart.length === 0 && (
-        <div className="text-xs text-center text-gray-800 pt-2 pb-6">
+        <div className="text-xs text-center text-fg pt-2 pb-6">
           여러 장비들을 한 번에
           <br /> 대여하려면 + 를 클릭하세요.
         </div>
@@ -42,7 +42,7 @@ const EquipCart: FC<Props> = ({ columns }) => {
       <button
         className={
           'w-full text-base text-center text-white font-bold py-2 my-2 ' +
-          (cart.length === 0 ? 'bg-gray-200' : 'bg-cyan-600')
+          (cart.length === 0 ? 'bg-gray-200' : 'bg-primary')
         }
         onClick={handleClickRentAll}
         disabled={cart.length === 0}

@@ -213,7 +213,7 @@ const PhotoDetailModal = ({
                   onClickNext={() => moveToPhoto('next')}
                   imgUrl={photoInfo.img_url ?? photoInfo.file_path}
                 />
-                <div className="grow flex flex-col basis-[400px] bg-[#FFFFFF] overflow-auto">
+                <div className="grow flex flex-col basis-[400px] bg-white overflow-auto">
                   {isEditing ? (
                     <EditPhotoInfo
                       photoInfo={contentInfo}

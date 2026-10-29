@@ -117,7 +117,7 @@ const EditPhotoInfo = ({
               name="text"
               children={(field) => (
                 <textarea
-                  className="w-full min-h-24 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  className="w-full min-h-24 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-navy-300"
                   placeholder="설명"
                   name="text"
                   onChange={(e) => field.handleChange(e.target.value)}
@@ -218,13 +218,13 @@ const EditPhotoInfo = ({
           </div>
           <div className="mt-auto flex">
             <button
-              className="h-12 text-base font-bold grow text-[#1d1d1d] bg-[#F1F1F1] hover:bg-[#E0E0E0] "
+              className="h-12 text-base font-bold grow text-fg bg-gray-100 hover:bg-gray-200 "
               onClick={onCancel}
             >
               취소
             </button>
             <button
-              className="h-12 text-base font-bold grow text-white bg-[#7193C4] hover:bg-[#7193C4]"
+              className="h-12 text-base font-bold grow text-white bg-navy-500 hover:bg-navy-500"
               disabled={form.state.isSubmitting}
               type="submit"
             >

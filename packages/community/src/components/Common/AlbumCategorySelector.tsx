@@ -14,11 +14,11 @@ function AlbumCategorySelector({
   onClickCategory,
 }: CategoryProps) {
   const style = {
-    border: '1px solid #aaaaaa',
+    border: '1px solid var(--color-gray-400)',
   };
   const style_selected = {
-    backgroundColor: '#aaaaaa',
-    color: '#eeeeee',
+    backgroundColor: 'var(--color-gray-400)',
+    color: 'var(--color-gray-100)',
   };
 
   // TODO: radio input으로 refactoring 하기
@@ -38,7 +38,7 @@ function AlbumCategorySelector({
         const style_selected = {
           border: `1px solid ${category.category_color}`,
           backgroundColor: category.category_color,
-          color: '#eeeeee',
+          color: 'var(--color-gray-100)',
         };
         return (
           <div

@@ -76,46 +76,10 @@
     height: 100%;
     width: 100%;
     border-radius: 50%;
-    /* Sun */
-    &.grade1 {
-      background: linear-gradient(
-        125deg,
-        #e86200 0%,
-        #ffb000 20%,
-        #ffec9f 30%,
-        #ffa100 50%,
-        #ffec9f 70%,
-        #ffb000 80%,
-        #e86200 100%
-      );
-    }
-    /* Earth */
-    &.grade3 {
-      background: linear-gradient(125deg, #fff900 0%, #fff900 10%, #29d5d6 40%, #2fa9ea 70%, #84ff00 100%);
-    }
-    /* Mars */
-    &.grade4 {
-      background: linear-gradient(180deg, #f3f1e6 0%, #de7702 25%);
-    }
-    /* Jupiter */
-    &.grade5 {
-      background: linear-gradient(180deg, #ecddb3 10%, #efbf71 25%, #ecddb3 50%, #efbf71 75%, #ecddb3 90%);
-    }
-    /* Saturn */
-    &.grade6 {
-      background: linear-gradient(180deg, #ecddb3 25%, #4a4a4a 50%, #ecddb3 75%);
-    }
-    /* Uranus */
-    &.grade7 {
-      background: #ade8e1;
-    }
-    /* Neptune */
-    &.grade8 {
-      background: #74a9ff;
-    }
-    /* Pluto */
-    &.grade9 {
-      background: #999;
+    @each $grade in 1, 3, 4, 5, 6, 7, 8, 9 {
+      &.grade#{$grade} {
+        background: var(--grade-#{$grade});
+      }
     }
   }
   .profile-img {

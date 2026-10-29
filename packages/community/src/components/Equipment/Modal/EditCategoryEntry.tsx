@@ -27,10 +27,10 @@ const EditCategoryEntry: FC<Props> = ({ defaultValue, onFinish, onCancel }) => {
       />
       <div className="w-1/4 pr-1">
         <button onClick={() => onFinish(name)}>
-          <i className="ri-check-line text-lg text-green-500"></i>
+          <i className="ri-check-line text-lg text-success"></i>
         </button>
         <button onClick={onCancel}>
-          <i className="ri-close-line text-lg text-red-500"></i>
+          <i className="ri-close-line text-lg text-danger"></i>
         </button>
       </div>
     </>

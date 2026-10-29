@@ -14,10 +14,10 @@ type ViewMode = 'photo' | 'album';
 const baseViewModeClassName =
   'w-1/2 text-center py-[10px] transition-all duration-500';
 
-const selectedViewModeClassName = 'bg-[#49A0AE] text-white';
+const selectedViewModeClassName = 'bg-primary text-white';
 
 const unselectedViewModeClassName =
-  'bg-[#F1F1F1] text-[#A3A3A3] hover:text-[#646464]';
+  'bg-gray-100 text-gray-400 hover:text-gray-600';
 
 function AstroPhoto({ boardInfo }: AstroPhotoProps) {
   const navigate = useNavigate({ from: '/board/$board_id' });

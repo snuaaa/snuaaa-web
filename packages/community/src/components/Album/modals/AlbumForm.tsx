@@ -48,7 +48,7 @@ const AlbumForm: FC<Props> = (props) => {
         const style_selected = {
           border: `1px solid ${category.category_color}`,
           backgroundColor: category.category_color,
-          color: '#eeeeee',
+          color: 'var(--color-gray-100)',
         };
         return (
           <>

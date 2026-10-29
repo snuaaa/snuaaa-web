@@ -19,7 +19,7 @@ const NewPosts = ({ posts }: { posts: Content[] }) => {
             className="px-3 py-[12.5px] flex max-w-full border-t border-solid border-gray-200 last:border-b gap-1"
             key={content_id}
           >
-            <div className="shrink-0 w-1/5 grow-0 text-[#A3A3A3] truncate">
+            <div className="shrink-0 w-1/5 grow-0 text-gray-400 truncate">
               <Link to="/board/$board_id" params={{ board_id }}>
                 {board_name}
               </Link>
@@ -45,7 +45,7 @@ const NewPosts = ({ posts }: { posts: Content[] }) => {
               </Link>
             </div>
             <p>{`[${comment_num}]`}</p>
-            <div className="ml-auto text-[#A3A3A3]">
+            <div className="ml-auto text-gray-400">
               {convertDate(createdAt)}
             </div>
           </div>
@@ -57,9 +57,7 @@ const NewPosts = ({ posts }: { posts: Content[] }) => {
   return (
     <div className="w-full md:w-1/2 p-2 md:p-[5px]">
       <Link to={'/posts/all'}>
-        <h4 className="text-xl font-bold text-[#7193C4] py-2 px-1">
-          New Posts
-        </h4>
+        <h4 className="text-xl font-bold text-navy-500 py-2 px-1">New Posts</h4>
       </Link>
       {makePostList()}
     </div>
