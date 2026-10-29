@@ -1,12 +1,19 @@
 import { useState, type ReactNode } from 'react';
 import {
+  Bell,
+  FileText,
   Heart,
+  Image,
   Link2,
+  Menu,
+  MessageSquare,
   MoreHorizontal,
   Pencil,
   Plus,
   Search,
+  Sparkles,
   Trash2,
+  Wrench,
 } from 'lucide-react';
 import {
   Avatar,
@@ -19,6 +26,9 @@ import {
   Field,
   Input,
   LoadMore,
+  NavDrawer,
+  NavGroup,
+  NavItem,
   Pagination,
   SegmentedControl,
   Sheet,
@@ -60,6 +70,8 @@ export default function UiGallery() {
   const [deleting, setDeleting] = useState(false);
   const [view, setView] = useState<'photo' | 'album'>('photo');
   const [page, setPage] = useState(3);
+  const [longPage, setLongPage] = useState(50);
+  const [navOpen, setNavOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [password, setPassword] = useState('abcd');
 
@@ -192,6 +204,24 @@ export default function UiGallery() {
         <Section title="더 보기 · Pagination">
           <LoadMore hasMore onClick={() => undefined} />
           <Pagination page={page} totalPages={23} onPageChange={setPage} />
+          <Pagination
+            page={longPage}
+            totalPages={100}
+            onPageChange={setLongPage}
+          />
+        </Section>
+
+        <Section title="NavDrawer">
+          <p className="text-caption text-fg-muted">
+            모바일 전체 메뉴예요. 왼쪽에서 열리고, 그룹은 각각 접고 펼 수
+            있어요. 지금 보는 페이지는 노란 선으로 표시돼요.
+          </p>
+          <Row>
+            <Button variant="secondary" onClick={() => setNavOpen(true)}>
+              <Menu />
+              메뉴 열기
+            </Button>
+          </Row>
         </Section>
 
         <Section title="Sheet · Dialog">
@@ -216,6 +246,41 @@ export default function UiGallery() {
       <Fab icon={<Pencil />} onClick={() => setSheetOpen(true)}>
         글쓰기
       </Fab>
+
+      <NavDrawer
+        open={navOpen}
+        onOpenChange={setNavOpen}
+        defaultOpenGroups={['notice']}
+      >
+        <NavGroup value="aaa" label="A.A.A." icon={<Sparkles />}>
+          <NavItem href="#">AAA는?</NavItem>
+          <NavItem href="#">찾아오는길&연락처</NavItem>
+          <NavItem href="#">장비소개</NavItem>
+          <NavItem href="https://archive.snuaaa.net" external>
+            AAArchive
+          </NavItem>
+        </NavGroup>
+        <NavGroup value="notice" label="Notice" icon={<Bell />}>
+          <NavItem href="#" aria-current="page">
+            공지게시판
+          </NavItem>
+          <NavItem href="#">관측일정</NavItem>
+        </NavGroup>
+        <NavGroup value="daily" label="Daily" icon={<MessageSquare />}>
+          <NavItem href="#">자유게시판</NavItem>
+          <NavItem href="#">관측후기</NavItem>
+        </NavGroup>
+        <NavGroup value="docu" label="Docu" icon={<FileText />}>
+          <NavItem href="#">회의록</NavItem>
+        </NavGroup>
+        <NavGroup value="photo" label="Photo" icon={<Image />}>
+          <NavItem href="#">별사진</NavItem>
+          <NavItem href="#">추억사진</NavItem>
+        </NavGroup>
+        <NavGroup value="tools" label="Tools" icon={<Wrench />}>
+          <NavItem href="#">장비 대여</NavItem>
+        </NavGroup>
+      </NavDrawer>
 
       <Sheet
         open={sheetOpen}

@@ -9,7 +9,7 @@
 
 - **리브랜딩 방향:** "A · Midnight Navy". 기존 navy와 노랑 정체성을 계승하면서 정돈합니다. B(Observatory), C(Deep Field) 안은 참고용으로 캔버스에 남아 있습니다.
 - **모바일 우선:** 모바일 비중이 크므로 모바일 레이아웃을 먼저 만들고 데스크톱으로 넓힙니다.
-- **내비게이션:** 모바일은 하단 탭바(홈 / 게시판 / 사진 / 장비 / 마이)를 쓰고, 데스크톱은 상단 네비게이션을 씁니다. 헤더 프로필 메뉴에 있던 로그아웃은 프로필 수정 화면으로 옮깁니다.
+- **내비게이션:** 모바일은 하단 탭바(홈 / 게시판 / 사진 / 장비 / 마이)를 쓰고, 데스크톱은 상단 네비게이션을 씁니다. 모바일 헤더의 메뉴 버튼은 전체 메뉴(NavDrawer)를 열어, 탭바에 없는 소개·도구·모든 게시판으로 가는 길을 남깁니다. 헤더 프로필 메뉴에 있던 로그아웃은 프로필 수정 화면으로 옮깁니다.
 - **다크 모드:** 지금 하지는 않지만, 나중에 추가할 수 있도록 컴포넌트는 의미 토큰만 참조합니다.
 - **서체:** Pretendard를 씁니다. 시안에는 IBM Plex Sans KR로 대신 그렸습니다.
 
@@ -92,9 +92,10 @@ shadcn/ui 방식을 씁니다. headless 라이브러리 위에 `cva`와 `tailwin
 | Sheet | 액션 메뉴와 짧은 폼. 모바일·태블릿은 하단 시트, 데스크톱은 가운데 Dialog | `Drawer`, `ActionDrawer`, `UserActionDrawer` |
 | Dialog, ConfirmDialog | 모든 화면 크기에서 가운데 모달. 삭제할까요? 같은 확인 질문은 ConfirmDialog(바깥 클릭으로 닫히지 않음) | `PopUp`, `window.confirm` |
 | Tabs, SegmentedControl | 밑줄 탭, 알약 모양 전환 버튼 | `Tab`, 사진/앨범 전환 버튼 |
-| Pagination / 더 보기 | 모바일은 무한 스크롤 또는 "더 보기", 데스크톱은 번호 | `Pagination`, `Paginator` |
+| Pagination / 더 보기 | 번호 페이지는 기존 방식을 이어 처음·끝 페이지를 항상 보이고 사이를 …로 접음(데스크톱 9칸, 모바일 7칸), 현재 페이지는 원형. 모바일 피드형 목록은 "더 보기"도 씀 | `Pagination`, `Paginator` |
 | FAB | 글쓰기, 사진 올리기, 문서 등록 등 | 각 게시판의 작성 버튼 |
 | BottomTabBar | 모바일 전용 | `MenuDrawer` 역할의 일부 |
+| NavDrawer | 모바일 전체 메뉴. 기존 `MenuDrawer`를 이어 왼쪽에서 열리고 그룹(A.A.A., Notice, Daily …)을 각각 접고 폄. 지금 페이지는 노란 선으로 표시 | `MenuDrawer`, `Common/Drawer` |
 
 ## 4. 화면 목록 (캔버스)
 
