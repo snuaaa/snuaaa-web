@@ -1,6 +1,6 @@
 import { ChangeEvent, useState, useEffect } from 'react';
 
-import { useNavigate, useSearch, Navigate } from '@tanstack/react-router';
+import { useNavigate, useSearch } from '@tanstack/react-router';
 import LogInComponent from '~/components/Login/LogInComponent';
 import Loading from '~/components/Common/Loading';
 import PopUp from '~/components/Common/PopUp';
@@ -27,6 +27,15 @@ function LogIn() {
   const navigate = useNavigate();
   const search = useSearch({ from: '/auth/login' });
   const authContext = useAuth();
+  const { isLoggedIn } = authContext.authInfo;
+
+  // 로그인 상태가 반영된 뒤 한 번만 이동한다.
+  // <Navigate>는 리렌더마다 props가 새로 만들어져 navigate를 다시 호출하므로,
+  // 메인 페이지 loader가 끝나기 전까지 리다이렉트가 무한 반복되어 화면이 멈춘다.
+  useEffect(() => {
+    if (!isLoggedIn) return;
+    navigate({ to: search.redirect || '/', replace: true });
+  }, [isLoggedIn, navigate, search.redirect]);
 
   useEffect(() => {
     if (!errPopUp) return;
@@ -72,12 +81,9 @@ function LogIn() {
       const res = await AuthService.logIn(loginInfo);
       const { token, userInfo, autoLogin } = res.data;
       setIsLoading(false);
+      // 이동은 위 useEffect가 처리한다. 여기서 바로 navigate하면 AuthProvider가
+      // 아직 로그아웃 상태로 보고 다시 로그인 페이지로 보낸다.
       authContext.authLogin(token, autoLogin, userInfo);
-      if (search.redirect) {
-        navigate({ to: search.redirect });
-      } else {
-        navigate({ to: '/' });
-      }
     } catch (err) {
       console.error(err);
       setIsLoading(false);
@@ -102,8 +108,8 @@ function LogIn() {
     }
   };
 
-  if (authContext.authInfo.isLoggedIn) {
-    return <Navigate to="/" />;
+  if (isLoggedIn) {
+    return <Loading />;
   }
 
   return (
