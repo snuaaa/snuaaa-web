@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Link } from '@tanstack/react-router';
-import { Megaphone } from 'lucide-react';
+import { ChevronRight, Megaphone } from 'lucide-react';
 import ContentTypeEnum from '~/common/ContentTypeEnum';
 import { Tag } from '~/components/ui';
 import { ASTRO_PHOTO_BOARD, MEMORY_BOARD } from '~/components/Layout/constants';
@@ -66,47 +66,61 @@ export function SoundBoxCard({
       to="/post/$post_id"
       params={{ post_id: String(soundBox.content_id) }}
       className={cn(
-        'flex items-start gap-3.5 rounded-lg p-[18px] transition-colors',
+        'group relative isolate flex flex-col gap-2.5 overflow-hidden rounded-lg p-5 transition-colors',
         brand
-          ? 'bg-surface-brand-raised px-[22px] py-5 text-fg-on-brand hover:bg-navy-700'
+          ? 'bg-surface-brand-raised px-6 py-[22px] text-fg-on-brand hover:bg-navy-700'
           : 'bg-surface shadow-sm hover:bg-gray-50',
       )}
     >
+      {/* A large tilted megaphone fills the card's empty corner. */}
+      <Megaphone
+        className={cn(
+          'absolute -z-10 -rotate-12',
+          brand
+            ? '-right-6 -bottom-10 size-40 text-navy-700 transition-colors group-hover:text-navy-500'
+            : '-right-2 -bottom-6 size-28 text-navy-50',
+        )}
+        strokeWidth={1.5}
+        aria-hidden
+      />
       <span
         className={cn(
-          'flex size-10 shrink-0 items-center justify-center rounded-md text-navy-900',
+          'inline-flex items-center gap-1 self-start rounded-full px-2.5 py-1 text-micro font-semibold text-navy-900',
           brand ? 'bg-accent' : 'bg-accent-soft',
         )}
       >
-        <Megaphone className="size-5" aria-hidden />
+        <Megaphone className="size-3.5" aria-hidden />
+        소리통
       </span>
-      <span className="flex min-w-0 flex-col gap-1">
-        <span
-          className={cn('text-micro', brand ? 'text-accent' : 'text-fg-muted')}
-        >
-          소리통
-        </span>
+      <span
+        className={cn(
+          'line-clamp-2 break-keep',
+          brand ? 'text-title' : 'text-heading',
+        )}
+      >
+        {soundBox.title}
+      </span>
+      {soundBox.text && (
         <span
           className={cn(
-            'truncate font-semibold',
-            brand ? 'text-heading' : 'text-body',
+            'break-keep leading-relaxed',
+            brand
+              ? 'line-clamp-3 text-body text-navy-200'
+              : 'line-clamp-2 text-label font-normal text-fg-muted',
           )}
         >
-          {soundBox.title}
+          {plainText(soundBox.text)}
         </span>
-        {soundBox.text && (
-          <span
-            className={cn(
-              'line-clamp-2',
-              brand
-                ? 'text-label font-normal text-navy-200'
-                : 'text-caption text-fg-muted',
-            )}
-          >
-            {plainText(soundBox.text)}
-          </span>
-        )}
-      </span>
+      )}
+      {brand && (
+        <span className="mt-auto flex items-center gap-0.5 pt-1 text-label text-accent">
+          읽어보기
+          <ChevronRight
+            className="size-4 transition-transform group-hover:translate-x-0.5"
+            aria-hidden
+          />
+        </span>
+      )}
     </Link>
   );
 }
