@@ -1,7 +1,10 @@
 import type { CSSProperties, ReactNode } from 'react';
 import { useLocation } from '@tanstack/react-router';
+import { ExternalLink } from 'lucide-react';
+import { cn } from '~/lib/utils';
 import BottomTabBar from './BottomTabBar';
 import BrandMark from './BrandMark';
+import { CLUB_INTRO_URL, OLD_SITE_URL } from './constants';
 import TopNav from './TopNav';
 
 /**
@@ -23,14 +26,46 @@ function MobileHeader() {
   );
 }
 
-function SiteFooter() {
+const footerLinks = [
+  { name: '동아리 소개', url: CLUB_INTRO_URL },
+  { name: '옛 홈페이지', url: OLD_SITE_URL },
+];
+
+/** Shown on every desktop page, and only at the bottom of home on mobile. */
+function SiteFooter({ showOnMobile }: { showOnMobile: boolean }) {
   return (
     <div
       role="contentinfo"
-      className="hidden border-t border-border bg-surface md:block"
+      className={cn(
+        'border-t border-border bg-surface',
+        showOnMobile
+          ? 'pb-[calc(var(--tab-bar-height)+env(safe-area-inset-bottom))] md:pb-0'
+          : 'hidden md:block',
+      )}
     >
-      <div className="mx-auto max-w-[1080px] px-6 py-8 text-caption text-fg-muted">
-        ⓒ 서울대학교 아마추어 천문회 · Amateur Astronomy Association, Since 1980
+      <div className="mx-auto flex max-w-[1080px] flex-col gap-3 px-4 py-6 text-caption text-fg-muted md:flex-row md:items-center md:justify-between md:px-6 md:py-8">
+        <ul className="flex gap-4">
+          {footerLinks.map((link) => (
+            <li key={link.name}>
+              <a
+                href={link.url}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1 text-label font-normal text-gray-700 hover:text-fg"
+              >
+                {link.name}
+                <ExternalLink
+                  className="size-3.5"
+                  aria-label="새 탭에서 열림"
+                />
+              </a>
+            </li>
+          ))}
+        </ul>
+        <p>
+          ⓒ 서울대학교 아마추어 천문회 · Amateur Astronomy Association, Since
+          1980
+        </p>
       </div>
     </div>
   );
@@ -40,6 +75,8 @@ function SiteFooter() {
 export default function AppShell({ children }: { children: ReactNode }) {
   const { pathname } = useLocation();
   const isRedesigned = REDESIGNED_PATHS.includes(pathname);
+  // On mobile the footer only shows on home, and then it clears the tab bar.
+  const isHome = pathname === '/';
 
   return (
     <div
@@ -48,7 +85,13 @@ export default function AppShell({ children }: { children: ReactNode }) {
     >
       <TopNav />
       {!isRedesigned && <MobileHeader />}
-      <main className="flex flex-1 flex-col pb-[calc(var(--tab-bar-height)+env(safe-area-inset-bottom))] md:pb-0">
+      <main
+        className={cn(
+          'flex flex-1 flex-col',
+          !isHome &&
+            'pb-[calc(var(--tab-bar-height)+env(safe-area-inset-bottom))] md:pb-0',
+        )}
+      >
         {isRedesigned ? (
           children
         ) : (
@@ -57,7 +100,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
           </div>
         )}
       </main>
-      <SiteFooter />
+      <SiteFooter showOnMobile={isHome} />
       <BottomTabBar />
     </div>
   );
