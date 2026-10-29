@@ -1,6 +1,5 @@
 import { queryOptions, useQuery } from '@tanstack/react-query';
 import HomeService from '~/services/HomeService';
-import ExhibitionService from '~/services/ExhibitionService';
 
 // Query keys
 export const homeKeys = {
@@ -17,23 +16,15 @@ export const homeDataQueryOptions = () =>
   queryOptions({
     queryKey: homeKeys.data(),
     queryFn: async () => {
-      const res = await Promise.all([
-        HomeService.retrieveSoundBox(),
-        HomeService.retrieveRecentPosts(),
-        HomeService.retrieveRecentComments(),
-        HomeService.retrieveRecentMemory(),
-        HomeService.retrieveRecentAstroPhoto(),
-        ExhibitionService.retrieveExhibitionsInBoard('brd'),
-      ]);
+      const [soundBoxData, recentPosts, recentMemory, recentAstroPhoto] =
+        await Promise.all([
+          HomeService.retrieveSoundBox(),
+          HomeService.retrieveRecentPosts(),
+          HomeService.retrieveRecentMemory(),
+          HomeService.retrieveRecentAstroPhoto(),
+        ]);
 
-      return {
-        soundBoxData: res[0],
-        recentPosts: res[1],
-        recentComments: res[2],
-        recentMemory: res[3],
-        recentAstroPhoto: res[4],
-        recentExhibitions: res[5],
-      };
+      return { soundBoxData, recentPosts, recentMemory, recentAstroPhoto };
     },
   });
 

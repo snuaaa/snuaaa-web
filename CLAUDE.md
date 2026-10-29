@@ -50,7 +50,7 @@ Each package has its own ESLint flat config (`eslint.config.*`) with Prettier (s
 ### Web (`packages/community/src`)
 
 - **Routing:** TanStack Router with file-based routes in `src/routes/`. The Vite plugin generates `src/routeTree.gen.ts`, so never edit that file by hand. Route files are thin: most render a component from `src/pages/`, which composes feature components from `src/components/<Feature>/`.
-- **Root layout:** `routes/__root.tsx` wires `QueryClientProvider`, `AuthProvider`, `ViewportSizeProvider`, the header, sidebar and footer. It also renders the photo and exhibit-photo detail modals, which are driven by the global `?photo=<id>` / `?exhibitPhoto=<id>` search params. To open a photo from anywhere, set that search param instead of navigating to a route.
+- **Root layout:** `routes/__root.tsx` wires `QueryClientProvider`, `AuthProvider`, `ViewportSizeProvider` and `components/Layout/AppShell` (desktop top nav, mobile bottom tab bar). Pages not yet redesigned render inside the legacy white column; `AppShell`'s `REDESIGNED_PATHS` lists the ones that draw their own layout. It also renders the photo and exhibit-photo detail modals, which are driven by the global `?photo=<id>` / `?exhibitPhoto=<id>` search params. To open a photo from anywhere, set that search param instead of navigating to a route.
 - **Data layer, in three steps:**
   1. `src/services/index.ts` defines the shared axios instance and `API` wrapper. An interceptor attaches `Bearer <token>` from the cookie (`utils/token`).
   2. `src/services/*Service.ts` holds the endpoint functions, and `services/types.ts` holds the response types.
