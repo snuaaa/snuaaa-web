@@ -84,17 +84,22 @@ export function useNavSection() {
       boardsInfo.some((b) => b.board_id === id && grade <= b.lv_read)
         ? id
         : null;
+    // The board on screen wins: storage is written only after this render.
+    const current = (photo: boolean) =>
+      board && (board.menu === PHOTO_MENU) === photo ? board.board_id : null;
 
     return {
       board:
+        current(false) ??
         readable(readStorage(LAST_BOARD_KEY)) ??
         noticeBoards.find((b) => grade <= b.lv_read)?.board_id ??
         'brd01',
-      photo: readable(readStorage(LAST_PHOTO_BOARD_KEY)) ?? DEFAULT_PHOTO_BOARD,
+      photo:
+        current(true) ??
+        readable(readStorage(LAST_PHOTO_BOARD_KEY)) ??
+        DEFAULT_PHOTO_BOARD,
     };
-    // Re-read storage when the page changes, after the effect above wrote it.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [boardsInfo, noticeBoards, grade, pathname]);
+  }, [boardsInfo, noticeBoards, grade, board]);
 
   return { section, destinations };
 }
