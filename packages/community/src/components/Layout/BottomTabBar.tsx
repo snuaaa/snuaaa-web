@@ -1,7 +1,9 @@
 import type { ReactNode } from 'react';
 import { Link, type LinkProps } from '@tanstack/react-router';
 import { House, Image, List, Telescope, User } from 'lucide-react';
+import { useAuth } from '~/contexts/auth';
 import { cn } from '~/lib/utils';
+import { EQUIPMENT_GRADE } from './constants';
 import { NavSection, useNavSection } from './useNavSection';
 
 function Tab({
@@ -28,12 +30,17 @@ function Tab({
 /** Mobile and tablet navigation, fixed to the bottom of the screen. */
 export default function BottomTabBar() {
   const { section, destinations } = useNavSection();
+  const {
+    authInfo: {
+      user: { grade },
+    },
+  } = useAuth();
   const isActive = (target: NavSection) => section === target;
 
   return (
     <nav
       aria-label="주 메뉴"
-      className="fixed inset-x-0 bottom-0 z-30 grid h-[calc(var(--tab-bar-height)+env(safe-area-inset-bottom))] grid-cols-5 border-t border-border bg-surface px-1 pb-[env(safe-area-inset-bottom)] md:hidden"
+      className="fixed inset-x-0 bottom-0 z-30 grid h-[calc(var(--tab-bar-height)+env(safe-area-inset-bottom))] auto-cols-fr grid-flow-col border-t border-border bg-surface px-1 pb-[env(safe-area-inset-bottom)] md:hidden"
     >
       <Tab to="/" label="홈" icon={<House />} active={isActive('home')} />
       <Tab
@@ -50,12 +57,14 @@ export default function BottomTabBar() {
         icon={<Image />}
         active={isActive('photo')}
       />
-      <Tab
-        to="/equipment"
-        label="장비"
-        icon={<Telescope />}
-        active={isActive('equipment')}
-      />
+      {grade <= EQUIPMENT_GRADE && (
+        <Tab
+          to="/equipment"
+          label="장비"
+          icon={<Telescope />}
+          active={isActive('equipment')}
+        />
+      )}
       <Tab
         to="/mypage/$view"
         params={{ view: 'info' }}
