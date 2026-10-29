@@ -1,11 +1,11 @@
 import type { ReactNode } from 'react';
 import { Link } from '@tanstack/react-router';
-import { Megaphone, Telescope } from 'lucide-react';
+import { Megaphone } from 'lucide-react';
 import ContentTypeEnum from '~/common/ContentTypeEnum';
-import { Button, Tag } from '~/components/ui';
+import { Tag } from '~/components/ui';
 import { ASTRO_PHOTO_BOARD, MEMORY_BOARD } from '~/components/Layout/constants';
 import { useBoards } from '~/hooks/queries/useBoardQueries';
-import { resolveImageUrl } from '~/lib/utils';
+import { cn, resolveImageUrl } from '~/lib/utils';
 import { SoundBoxResponse } from '~/services/HomeService';
 import { Album, Content, Photo } from '~/services/types';
 import { convertDynamicTime } from '~/utils/convertDate';
@@ -16,14 +16,21 @@ const NOTICE_MENU = 1;
 function Card({
   title,
   action,
+  className,
   children,
 }: {
   title: ReactNode;
   action?: ReactNode;
+  className?: string;
   children: ReactNode;
 }) {
   return (
-    <div className="flex flex-col rounded-lg bg-surface p-[18px] shadow-sm">
+    <div
+      className={cn(
+        'flex flex-col rounded-lg bg-surface p-[18px] shadow-sm',
+        className,
+      )}
+    >
       <div className="flex items-center justify-between pb-2">
         <h2 className="text-heading">{title}</h2>
         {action}
@@ -42,25 +49,60 @@ const plainText = (html: string) =>
     .replace(/\s+/g, ' ')
     .trim();
 
-/** The latest 소리통 post, pinned above everything else. */
-export function SoundBoxCard({ soundBox }: { soundBox?: SoundBoxResponse }) {
+/**
+ * The latest 소리통 post, pinned above everything else. `brand` is the
+ * desktop variant that sits on the navy band.
+ */
+export function SoundBoxCard({
+  soundBox,
+  brand = false,
+}: {
+  soundBox?: SoundBoxResponse;
+  brand?: boolean;
+}) {
   if (!soundBox?.content_id) return null;
   return (
     <Link
       to="/post/$post_id"
       params={{ post_id: String(soundBox.content_id) }}
-      className="flex items-start gap-3.5 rounded-lg bg-surface p-[18px] shadow-sm transition-colors hover:bg-gray-50"
+      className={cn(
+        'flex items-start gap-3.5 rounded-lg p-[18px] transition-colors',
+        brand
+          ? 'bg-surface-brand-raised px-[22px] py-5 text-fg-on-brand hover:bg-navy-700'
+          : 'bg-surface shadow-sm hover:bg-gray-50',
+      )}
     >
-      <span className="flex size-10 shrink-0 items-center justify-center rounded-md bg-accent-soft text-navy-900">
+      <span
+        className={cn(
+          'flex size-10 shrink-0 items-center justify-center rounded-md text-navy-900',
+          brand ? 'bg-accent' : 'bg-accent-soft',
+        )}
+      >
         <Megaphone className="size-5" aria-hidden />
       </span>
       <span className="flex min-w-0 flex-col gap-1">
-        <span className="text-micro text-fg-muted">소리통</span>
-        <span className="truncate text-body font-semibold">
+        <span
+          className={cn('text-micro', brand ? 'text-accent' : 'text-fg-muted')}
+        >
+          소리통
+        </span>
+        <span
+          className={cn(
+            'truncate font-semibold',
+            brand ? 'text-heading' : 'text-body',
+          )}
+        >
           {soundBox.title}
         </span>
         {soundBox.text && (
-          <span className="line-clamp-2 text-caption text-fg-muted">
+          <span
+            className={cn(
+              'line-clamp-2',
+              brand
+                ? 'text-label font-normal text-navy-200'
+                : 'text-caption text-fg-muted',
+            )}
+          >
             {plainText(soundBox.text)}
           </span>
         )}
@@ -98,7 +140,7 @@ export function RecentPostsCard({ posts }: { posts: Content[] }) {
                       to: '/post/$post_id',
                       params: { post_id: String(post.content_id) },
                     })}
-                className="flex flex-col gap-1 py-2.5 hover:text-navy-700"
+                className="flex flex-col gap-1 py-2.5 hover:text-navy-700 md:h-12 md:flex-row md:items-center md:justify-between md:gap-3 md:py-0"
               >
                 <span className="flex min-w-0 items-center gap-1.5">
                   <Tag
@@ -112,7 +154,7 @@ export function RecentPostsCard({ posts }: { posts: Content[] }) {
                     {post.title}
                   </span>
                 </span>
-                <span className="text-caption text-fg-muted">
+                <span className="shrink-0 text-caption text-fg-muted">
                   {convertDynamicTime(post.updatedAt ?? post.createdAt)}
                   {post.comment_num > 0 && ` · 댓글 ${post.comment_num}`}
                 </span>
@@ -145,7 +187,7 @@ export function RecentAlbumsSection({ albums }: { albums: Album[] }) {
   return (
     <div className="flex flex-col gap-3">
       <SectionHeader title="새 앨범" boardId={MEMORY_BOARD} />
-      <ul className="grid grid-cols-2 gap-1.5">
+      <ul className="grid grid-cols-2 gap-1.5 md:grid-cols-4 md:gap-4">
         {albums.slice(0, 4).map((album) => {
           const thumbnail = getThumbnailPath(album);
           return (
@@ -175,18 +217,23 @@ export function RecentAlbumsSection({ albums }: { albums: Album[] }) {
   );
 }
 
-/** The latest 별사진 photos, opened in the photo modal. */
+/**
+ * The latest 별사진 photos, opened in the photo modal. On desktop it is a card
+ * beside 새 글, and the photos stretch to that card's height.
+ */
 export function RecentPhotosSection({ photos }: { photos: Photo[] }) {
   return (
-    <div className="flex flex-col gap-3">
-      <SectionHeader title="새 사진" boardId={ASTRO_PHOTO_BOARD} />
-      <ul className="grid grid-cols-3 gap-1.5">
+    <div className="flex flex-col gap-3 md:gap-0 md:rounded-lg md:bg-surface md:p-[18px] md:shadow-sm">
+      <div className="md:pb-2">
+        <SectionHeader title="새 사진" boardId={ASTRO_PHOTO_BOARD} />
+      </div>
+      <ul className="grid grid-cols-3 gap-1.5 md:min-h-72 md:flex-1 md:auto-rows-fr">
         {photos.slice(0, 6).map((photo) => (
-          <li key={photo.content_id}>
+          <li key={photo.content_id} className="min-h-0">
             <Link
               to="."
               search={(prev) => ({ ...prev, photo: photo.content_id })}
-              className="block aspect-square overflow-hidden rounded-md bg-navy-800"
+              className="block aspect-square overflow-hidden rounded-md bg-navy-800 md:aspect-auto md:size-full"
               aria-label={photo.title || '사진 보기'}
             >
               <img
@@ -201,25 +248,6 @@ export function RecentPhotosSection({ photos }: { photos: Photo[] }) {
           </li>
         ))}
       </ul>
-    </div>
-  );
-}
-
-export function EquipmentCard() {
-  return (
-    <div className="flex items-center gap-3.5 rounded-lg bg-surface p-[18px] shadow-sm">
-      <span className="flex size-12 shrink-0 items-center justify-center rounded-md bg-accent-soft text-navy-900">
-        <Telescope className="size-6" aria-hidden />
-      </span>
-      <span className="flex flex-1 flex-col gap-1">
-        <span className="text-body font-semibold">장비 대여</span>
-        <span className="text-caption text-fg-muted">
-          망원경 · 가대 · 카메라 예약
-        </span>
-      </span>
-      <Button asChild>
-        <Link to="/equipment">예약</Link>
-      </Button>
     </div>
   );
 }

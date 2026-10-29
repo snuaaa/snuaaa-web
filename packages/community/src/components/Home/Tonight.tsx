@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { ChevronRight, Moon } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { Sheet } from '~/components/ui';
 import { useRiseSet } from '~/hooks/queries/useHomeQueries';
+import { cn } from '~/lib/utils';
 import { convertDateWithDay, convertTime } from '~/utils/convertDate';
+import MoonPhase from './MoonPhase';
 
 function useTonightRows() {
   const { data: riseSet } = useRiseSet();
@@ -30,30 +32,68 @@ function useTonightRows() {
 function TonightDetails() {
   const { lunAge, rows } = useTonightRows();
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex items-baseline justify-between text-caption text-fg-muted">
-        <span>{convertDateWithDay(new Date())} · 서울 기준</span>
-        <span>월령 {lunAge ?? '-'}</span>
+    <div className="flex flex-col gap-4">
+      <div className="flex items-center gap-4">
+        <MoonPhase lunAge={lunAge} size={64} shadeClassName="fill-navy-100" />
+        <div className="flex flex-col gap-0.5">
+          <span className="text-body font-semibold">월령 {lunAge ?? '-'}</span>
+          <span className="text-caption text-fg-muted">
+            {convertDateWithDay(new Date())} · 서울 기준
+          </span>
+        </div>
       </div>
-      <dl className="grid grid-cols-2 gap-2">
-        {rows.map(({ label, time }) => (
-          <div
-            key={label}
-            className="flex items-center justify-between rounded-md bg-surface-sunken px-3 py-2.5"
-          >
-            <dt className="text-caption text-fg-muted">{label}</dt>
-            <dd className="text-sm font-semibold tabular-nums">{time}</dd>
-          </div>
-        ))}
-      </dl>
+      <RiseSetGrid rows={rows} className="grid-cols-2" />
     </div>
+  );
+}
+
+function RiseSetGrid({
+  rows,
+  brand = false,
+  className,
+}: {
+  rows: { label: string; time: string }[];
+  brand?: boolean;
+  className?: string;
+}) {
+  return (
+    <dl className={cn('grid gap-2', className)}>
+      {rows.map(({ label, time }) => (
+        <div
+          key={label}
+          className={cn(
+            'flex rounded-md px-3',
+            brand
+              ? 'flex-col gap-0.5 bg-surface-brand py-2'
+              : 'items-center justify-between bg-surface-sunken py-2.5',
+          )}
+        >
+          <dt
+            className={cn(
+              'text-caption',
+              brand ? 'text-fg-on-brand-muted' : 'text-fg-muted',
+            )}
+          >
+            {label}
+          </dt>
+          <dd
+            className={cn(
+              'font-semibold tabular-nums',
+              brand ? 'text-body' : 'text-sm',
+            )}
+          >
+            {time}
+          </dd>
+        </div>
+      ))}
+    </dl>
   );
 }
 
 /** Mobile home header row; opens the full rise/set table in a sheet. */
 export function TonightStrip() {
   const [open, setOpen] = useState(false);
-  const { summary } = useTonightRows();
+  const { lunAge, summary } = useTonightRows();
 
   return (
     <>
@@ -62,7 +102,12 @@ export function TonightStrip() {
         onClick={() => setOpen(true)}
         className="flex min-h-11 w-full items-center gap-2.5 rounded-md bg-surface-brand-raised px-3 text-left text-fg-on-brand"
       >
-        <Moon className="size-[18px] shrink-0 text-accent" aria-hidden />
+        <MoonPhase
+          lunAge={lunAge}
+          size={20}
+          shadeClassName="fill-navy-700"
+          className="pointer-events-none"
+        />
         <span className="text-label">오늘 밤</span>
         <span className="flex flex-1 flex-wrap gap-x-2.5 text-label font-normal text-navy-200 tabular-nums">
           {summary.map((item) => (
@@ -80,15 +125,26 @@ export function TonightStrip() {
   );
 }
 
-/** Desktop home side card with the same table, always open. */
+/** Desktop home band card: the moon beside the rise/set table. */
 export function TonightCard() {
+  const { lunAge, rows } = useTonightRows();
   return (
-    <div className="flex flex-col gap-4 rounded-lg bg-surface p-5 shadow-sm">
-      <h2 className="flex items-center gap-2 text-heading">
-        <Moon className="size-5 text-star-600" aria-hidden />
-        오늘 밤
-      </h2>
-      <TonightDetails />
+    <div className="flex items-center gap-5 rounded-lg bg-surface-brand-raised px-5 py-[18px] text-fg-on-brand">
+      <div className="flex w-24 shrink-0 flex-col items-center gap-2">
+        <MoonPhase lunAge={lunAge} size={80} />
+        <span className="text-caption text-navy-200 tabular-nums">
+          월령 {lunAge ?? '-'}
+        </span>
+      </div>
+      <div className="flex min-w-0 flex-1 flex-col gap-3">
+        <div className="flex items-baseline gap-2">
+          <h2 className="text-body font-bold">오늘 밤</h2>
+          <span className="text-caption text-fg-on-brand-muted">
+            {convertDateWithDay(new Date())} · 서울 기준
+          </span>
+        </div>
+        <RiseSetGrid rows={rows} brand className="grid-cols-3" />
+      </div>
     </div>
   );
 }
