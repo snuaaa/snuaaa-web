@@ -6,14 +6,12 @@ function UserPage() {
   const { tab, page } = useSearch({ from: '/userpage/$uuid' });
 
   return (
-    <div className="my-page-wrapper">
-      <UserView
-        userUuid={params.uuid}
-        isMyInfo={false}
-        tab={tab ?? 'posts'}
-        page={page ?? 1}
-      />
-    </div>
+    <UserView
+      userUuid={params.uuid}
+      isMyInfo={false}
+      tab={tab ?? 'posts'}
+      page={page ?? 1}
+    />
   );
 }
 

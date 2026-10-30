@@ -2,6 +2,8 @@ import * as AvatarPrimitive from '@radix-ui/react-avatar';
 import { cn, resolveImageUrl } from '~/lib/utils';
 
 const SIZES = {
+  104: 'size-26 text-[36px]',
+  80: 'size-20 text-[28px]',
   56: 'size-14 text-[20px]',
   40: 'size-10 text-[15px]',
   28: 'size-7 text-[12px]',
