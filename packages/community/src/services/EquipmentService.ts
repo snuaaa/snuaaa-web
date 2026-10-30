@@ -19,6 +19,12 @@ export type RentEquipmentRequest = {
   equipmentIds: number[];
 };
 
+/** Items someone else took first, or that went unrentable, fail alone. */
+export type RentEquipmentResponse = {
+  successEquipmentIds: number[];
+  failedEquipmentIds: number[];
+};
+
 export type EquipmentSearchInfo = {
   category_id: number;
   status: string;
@@ -93,7 +99,7 @@ const EquipmentService = {
   },
 
   rentEquipments: function (data: RentEquipmentRequest) {
-    return API.post<Equipment>(`equipment/rent/`, data);
+    return API.post<RentEquipmentResponse>(`equipment/rent/`, data);
   },
 
   returnEquipment: function (rentId: number, photo_path: string) {
