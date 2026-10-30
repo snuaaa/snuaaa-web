@@ -1,4 +1,4 @@
-import { useState, FC } from 'react';
+import { useEffect, useState, FC } from 'react';
 import {
   Link,
   useCanGoBack,
@@ -20,13 +20,26 @@ const Post: FC = () => {
   // Tied to the post, so moving to another post (e.g. back) leaves edit mode.
   const [editingPostId, setEditingPostId] = useState<string | null>(null);
   const isEditing = editingPostId === postId;
-  // Set by the write screen when some attachments didn't upload.
-  const failedAttachments = useLocation({
-    select: (location) =>
-      (location.state as { failedAttachments?: number }).failedAttachments ?? 0,
-  });
-  const [failedNoticeOpen, setFailedNoticeOpen] = useState(true);
   const router = useRouter();
+  // Set by the write screen when some attachments didn't upload. Kept here
+  // and cleared from history, so a reload or back/forward doesn't repeat it.
+  const location = useLocation();
+  const [failedNotice, setFailedNotice] = useState(() => ({
+    postId,
+    count:
+      (location.state as { failedAttachments?: number }).failedAttachments ?? 0,
+  }));
+  const failedAttachments =
+    failedNotice.postId === postId ? failedNotice.count : 0;
+  useEffect(() => {
+    const state = location.state as { failedAttachments?: number };
+    if (state.failedAttachments) {
+      router.history.replace(location.href, {
+        ...location.state,
+        failedAttachments: undefined,
+      } as typeof location.state);
+    }
+  }, [location, router]);
   const navigate = useNavigate();
   const canGoBack = useCanGoBack();
 
@@ -68,9 +81,9 @@ const Post: FC = () => {
       key={postInfo.content_id}
       post={postInfo}
       isLiked={likeInfo ?? false}
-      failedAttachments={failedNoticeOpen ? failedAttachments : 0}
+      failedAttachments={failedAttachments}
       onEdit={() => {
-        setFailedNoticeOpen(false);
+        setFailedNotice({ postId, count: 0 });
         setEditingPostId(postId);
       }}
       onBack={() => {
