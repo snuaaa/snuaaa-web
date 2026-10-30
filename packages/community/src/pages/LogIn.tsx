@@ -1,147 +1,191 @@
-import { ChangeEvent, useState, useEffect } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
+import { Link, useNavigate, useSearch } from '@tanstack/react-router';
 
-import { useNavigate, useSearch } from '@tanstack/react-router';
-import LogInComponent from '~/components/Login/LogInComponent';
-import Loading from '~/components/Common/Loading';
-import PopUp from '~/components/Common/PopUp';
-import FullScreenPortal from '~/components/Common/FullScreenPortal';
-import FindIdPw from '~/components/Login/FindIdPw';
-import AuthService from '~/services/AuthService';
+import AuthLayout, { ClubLogo } from '~/components/Auth/AuthLayout';
+import FindAccountSheet from '~/components/Auth/FindAccountSheet';
+import { Button } from '~/components/ui';
 import { useAuth } from '~/contexts/auth';
+import { cn } from '~/lib/utils';
+import AuthService from '~/services/AuthService';
 
-const popUpTitle = '자동 로그인 기능을 사용하시겠습니까?';
-const popUpText = `자동 로그인 사용시 다음 접속부터는 로그인을 하실 필요가 없습니다.\n
-          단, 게임방, 학교 등 공공장소에서 이용 시 개인정보가 유출될 수 있으니 주의해주세요.`;
-const errText = '로그인에 실패하였습니다.\n아이디나 비밀번호를 확인해주세요.';
+// Dark fields on the mobile sky, regular fields in the desktop card.
+const inputClassName =
+  'h-[52px] w-full rounded-lg border border-navy-700 bg-navy-900 px-4 text-base text-white outline-none placeholder:text-navy-300 focus:border-navy-300 md:h-12 md:rounded-md md:border-gray-300 md:bg-surface md:text-fg md:placeholder:text-gray-400 md:focus:border-navy-700 md:focus:shadow-[0_0_0_3px_var(--color-navy-200)]';
+const labelClassName = 'sr-only md:not-sr-only md:text-label md:text-fg';
 
 function LogIn() {
-  const [loginInfo, setLoginInfo] = useState({
-    id: '',
-    password: '',
-    autoLogin: false,
-  });
-  const [isLoading, setIsLoading] = useState(false);
-  const [popUp, setPopUp] = useState(false);
-  const [errPopUp, setErrPopUp] = useState(false);
-  const [findPopUp, setFindPopUp] = useState(false);
   const navigate = useNavigate();
   const search = useSearch({ from: '/auth/login' });
-  const authContext = useAuth();
-  const { isLoggedIn } = authContext.authInfo;
+  const { authInfo, authLogin } = useAuth();
+  const [id, setId] = useState('');
+  const [password, setPassword] = useState('');
+  const [autoLogin, setAutoLogin] = useState(true);
+  const [pending, setPending] = useState<'user' | 'guest' | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [finding, setFinding] = useState(false);
 
-  // 로그인 상태가 반영된 뒤 한 번만 이동한다.
-  // <Navigate>는 리렌더마다 props가 새로 만들어져 navigate를 다시 호출하므로,
-  // 메인 페이지 loader가 끝나기 전까지 리다이렉트가 무한 반복되어 화면이 멈춘다.
+  // Move on once the login has landed in the auth context. Navigating
+  // right after authLogin would see the logged-out state and bounce back.
   useEffect(() => {
-    if (!isLoggedIn) return;
+    if (!authInfo.isLoggedIn) return;
     navigate({ to: search.redirect || '/', replace: true });
-  }, [isLoggedIn, navigate, search.redirect]);
+  }, [authInfo.isLoggedIn, navigate, search.redirect]);
 
-  useEffect(() => {
-    if (!errPopUp) return;
-    const timer = setTimeout(() => {
-      setErrPopUp(false);
-    }, 1500);
-    return () => clearTimeout(timer);
-  }, [errPopUp]);
-
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setLoginInfo({
-      ...loginInfo,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const checkAuto = (e: ChangeEvent<HTMLInputElement>) => {
-    setPopUp(e.target.checked);
-    setLoginInfo({
-      ...loginInfo,
-      autoLogin: e.target.checked,
-    });
-  };
-
-  // const makeErrPopUp = () => {
-  //     setErrPopUp(true);
-  //     setTimeout(() => {
-  //         setErrPopUp(false)
-  //     }, 1500)
-  // }
-
-  const setAutoLogin = (isAuto: boolean) => {
-    setLoginInfo({
-      ...loginInfo,
-      autoLogin: isAuto,
-    });
-  };
-
-  const userLogIn = async () => {
-    setIsLoading(true);
-
+  const logIn = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!id || !password) {
+      setError('아이디와 비밀번호를 입력해 주세요');
+      return;
+    }
+    setPending('user');
+    setError(null);
     try {
-      const res = await AuthService.logIn(loginInfo);
-      const { token, userInfo, autoLogin } = res.data;
-      setIsLoading(false);
-      // 이동은 위 useEffect가 처리한다. 여기서 바로 navigate하면 AuthProvider가
-      // 아직 로그아웃 상태로 보고 다시 로그인 페이지로 보낸다.
-      authContext.authLogin(token, autoLogin, userInfo);
+      const { data } = await AuthService.logIn({ id, password, autoLogin });
+      authLogin(data.token, data.autoLogin, data.userInfo);
     } catch (err) {
       console.error(err);
-      setIsLoading(false);
-      setErrPopUp(true);
-      // makeErrPopUp()
+      setError('아이디 또는 비밀번호가 맞지 않아요');
+      setPending(null);
     }
   };
 
   const guestLogIn = async () => {
-    setIsLoading(true);
-
+    setPending('guest');
+    setError(null);
     try {
-      const res = await AuthService.guestLogIn();
-      setIsLoading(false);
-      const { token, userInfo, autoLogin } = res;
-      authContext.authLogin(token, autoLogin, userInfo);
+      const { token, autoLogin, userInfo } = await AuthService.guestLogIn();
+      authLogin(token, autoLogin, userInfo);
     } catch (err) {
       console.error(err);
-      setIsLoading(false);
-      setErrPopUp(true);
-      // makeErrPopUp()
+      setError('게스트로 들어가지 못했어요. 잠시 후 다시 시도해 주세요.');
+      setPending(null);
     }
   };
 
-  if (isLoggedIn) {
-    return <Loading />;
-  }
-
   return (
-    <>
-      {isLoading && <Loading />}
-      {findPopUp && <FindIdPw cancel={() => setFindPopUp(false)} />}
-      {errPopUp && <PopUp title={''} contents={errText} isAction={false} />}
-      {popUp && (
-        <PopUp
-          title={popUpTitle}
-          contents={popUpText}
-          isAction={true}
-          cancel={() => {
-            setPopUp(false);
-            setAutoLogin(false);
-          }}
-          confirm={() => {
-            setPopUp(false);
-          }}
-        />
-      )}
-      <FullScreenPortal>
-        <LogInComponent
-          autoLogin={loginInfo.autoLogin}
-          handleChange={handleChange}
-          userLogIn={userLogIn}
-          guestLogIn={guestLogIn}
-          openFindPopUp={() => setFindPopUp(true)}
-          checkAuto={checkAuto}
-        />
-      </FullScreenPortal>
-    </>
+    <AuthLayout mobile="night">
+      <div className="flex flex-1 flex-col px-6 pb-8 md:p-0">
+        <div className="flex flex-col items-center gap-3.5 pt-[min(120px,14dvh)] text-center text-fg-on-brand md:hidden">
+          <ClubLogo className="size-16 rounded-[18px]" />
+          <div className="flex flex-col gap-1.5">
+            <h1 className="text-[22px] font-bold tracking-[-0.4px]">
+              서울대학교 아마추어 천문회
+            </h1>
+            <p className="text-sm text-fg-on-brand-muted">
+              오늘 밤도 맑은 하늘을
+            </p>
+          </div>
+        </div>
+        <h1 className="mb-5 hidden text-title md:block">로그인</h1>
+
+        <form
+          onSubmit={logIn}
+          noValidate
+          className="mt-11 flex flex-col gap-3 md:mt-0 md:gap-3.5"
+        >
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="login-id" className={labelClassName}>
+              아이디
+            </label>
+            <input
+              id="login-id"
+              autoComplete="username"
+              autoCapitalize="none"
+              placeholder="아이디"
+              value={id}
+              onChange={(e) => setId(e.target.value)}
+              aria-invalid={Boolean(error) || undefined}
+              className={cn(inputClassName, 'md:placeholder:text-transparent')}
+            />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <label htmlFor="login-password" className={labelClassName}>
+              비밀번호
+            </label>
+            <input
+              id="login-password"
+              type="password"
+              autoComplete="current-password"
+              placeholder="비밀번호"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              aria-invalid={Boolean(error) || undefined}
+              aria-describedby={error ? 'login-error' : undefined}
+              className={cn(inputClassName, 'md:placeholder:text-transparent')}
+            />
+          </div>
+          {error && (
+            <p
+              id="login-error"
+              role="alert"
+              className="px-1 text-label font-normal text-danger-soft md:text-danger"
+            >
+              {error}
+            </p>
+          )}
+          <div className="flex min-h-9 items-center justify-between">
+            <label className="flex items-center gap-2 text-sm text-navy-200 md:text-fg">
+              <input
+                type="checkbox"
+                checked={autoLogin}
+                onChange={(e) => setAutoLogin(e.target.checked)}
+                className="size-[18px] accent-accent md:size-4 md:accent-primary"
+              />
+              로그인 상태 유지
+            </label>
+            <button
+              type="button"
+              onClick={() => setFinding(true)}
+              className="hidden text-label font-normal text-gray-700 hover:text-fg md:block"
+            >
+              아이디 · 비밀번호 찾기
+            </button>
+          </div>
+          <Button
+            type="submit"
+            variant="accent"
+            loading={pending === 'user'}
+            disabled={pending !== null}
+            className="h-[52px] rounded-lg text-base md:bg-primary md:text-white md:hover:bg-primary-hover"
+          >
+            로그인
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={guestLogIn}
+            loading={pending === 'guest'}
+            disabled={pending !== null}
+            className="h-12 rounded-lg border-info bg-transparent text-[15px] text-white hover:bg-navy-900 md:border-gray-300 md:bg-surface md:text-fg md:hover:bg-gray-50"
+          >
+            게스트로 둘러보기
+          </Button>
+        </form>
+
+        <div className="mt-5 flex items-center justify-center gap-3.5 text-sm md:hidden">
+          <Link
+            to="/auth/signup"
+            className="flex min-h-11 items-center font-semibold text-white"
+          >
+            회원가입
+          </Link>
+          <span className="h-3 w-px bg-info" aria-hidden />
+          <button
+            type="button"
+            onClick={() => setFinding(true)}
+            className="flex min-h-11 items-center text-fg-on-brand-muted"
+          >
+            아이디 · 비밀번호 찾기
+          </button>
+        </div>
+        <p className="mt-5 hidden justify-center gap-1.5 text-sm text-gray-700 md:flex">
+          아직 회원이 아니신가요?
+          <Link to="/auth/signup" className="font-bold text-navy-700">
+            회원가입
+          </Link>
+        </p>
+      </div>
+      <FindAccountSheet open={finding} onClose={() => setFinding(false)} />
+    </AuthLayout>
   );
 }
 
