@@ -78,7 +78,6 @@ const Admin = () => {
       <EquipList
         data={data}
         columns={viewportSize === ViewportSize.Mobile ? 1 : 3}
-        type="admin"
         search={search}
       />
     </div>
