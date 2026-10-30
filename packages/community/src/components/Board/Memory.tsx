@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import { FolderPlus } from 'lucide-react';
 
-import CreateAlbum from '~/components/Album/modals/CreateAlbum';
+import AlbumFormSheet from '~/components/Album/AlbumFormSheet';
 import { Button, Fab, Pagination } from '~/components/ui';
 import { useAuth } from '~/contexts/auth';
 import { useAlbumsInPhotoBoard } from '~/hooks/queries/useAlbumQueries';
@@ -154,14 +154,13 @@ function Memory({ boardInfo }: MemoryProps) {
           </Fab>
         </>
       )}
-      {isCreating && (
-        <CreateAlbum
-          board_id={boardInfo.board_id}
-          categories={boardInfo.categories}
-          onCreate={() => setIsCreating(false)}
-          onCancel={() => setIsCreating(false)}
-        />
-      )}
+      <AlbumFormSheet
+        open={isCreating}
+        onOpenChange={setIsCreating}
+        categories={boardInfo.categories}
+        boardId={boardInfo.board_id}
+        onSaved={() => setIsCreating(false)}
+      />
     </PhotoTabLayout>
   );
 }

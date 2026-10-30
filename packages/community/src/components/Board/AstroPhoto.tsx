@@ -2,8 +2,8 @@ import { useMemo, useState } from 'react';
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import { FolderPlus, Upload } from 'lucide-react';
 
-import CreateAlbum from '~/components/Album/modals/CreateAlbum';
-import CreatePhotoModal from '~/components/Photo/CreateModal';
+import AlbumFormSheet from '~/components/Album/AlbumFormSheet';
+import PhotoUploader from '~/components/Photo/PhotoUploader';
 import { Button, Fab, Pagination } from '~/components/ui';
 import { useAuth } from '~/contexts/auth';
 import { useAlbumsInPhotoBoard } from '~/hooks/queries/useAlbumQueries';
@@ -234,20 +234,20 @@ function AstroPhoto({ boardInfo }: AstroPhotoProps) {
         </>
       )}
       {isCreating && view === 'photo' && (
-        <CreatePhotoModal
+        <PhotoUploader
           boardId={boardInfo.board_id}
+          targetName={boardInfo.board_name}
           tags={boardInfo.tags}
           onCreatePhoto={() => setIsCreating(false)}
           onCancel={() => setIsCreating(false)}
         />
       )}
-      {isCreating && view === 'album' && (
-        <CreateAlbum
-          board_id={boardInfo.board_id}
-          onCreate={() => setIsCreating(false)}
-          onCancel={() => setIsCreating(false)}
-        />
-      )}
+      <AlbumFormSheet
+        open={isCreating && view === 'album'}
+        onOpenChange={setIsCreating}
+        boardId={boardInfo.board_id}
+        onSaved={() => setIsCreating(false)}
+      />
     </PhotoTabLayout>
   );
 }
