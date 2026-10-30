@@ -150,7 +150,10 @@ export default function CreateDocu({
               ))}
             </select>
           </label>
-          <div className="my-1 hidden h-6 w-px shrink-0 bg-border md:block" aria-hidden />
+          <div
+            className="my-1 hidden h-6 w-px shrink-0 bg-border md:block"
+            aria-hidden
+          />
           <div
             role="radiogroup"
             aria-label="분류"
