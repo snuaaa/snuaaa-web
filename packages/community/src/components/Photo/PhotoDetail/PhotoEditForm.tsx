@@ -5,7 +5,7 @@ import { useUpdatePhoto } from '~/hooks/queries/usePhotoQueries';
 import { UpdatePhotoRequest } from '~/services/PhotoService';
 import { Photo, Tag } from '~/services/types';
 import PhotoTagPicker from '../PhotoTagPicker';
-import { SHOT_FIELDS } from '../shotFields';
+import ShotInfoFields from '../ShotInfoFields';
 
 type PhotoEditFormProps = {
   photo: Photo;
@@ -115,34 +115,12 @@ export default function PhotoEditForm({
 
         <PhotoTagPicker tags={boardTags} selected={tags} onChange={setTags} />
 
-        <div
-          role="group"
-          aria-label="촬영 정보"
-          className="flex flex-col gap-2.5 rounded-lg bg-gray-50 p-3.5"
-        >
-          <div className="text-label font-bold">촬영 정보</div>
-          <div className="grid grid-cols-2 gap-x-2.5 gap-y-2">
-            {SHOT_FIELDS.map((field) => (
-              <label key={field.key} className="flex min-w-0 flex-col gap-1">
-                <span className="text-caption text-gray-700">
-                  {field.label}
-                </span>
-                <Input
-                  type={field.key === 'date' ? 'date' : 'text'}
-                  placeholder={field.placeholder}
-                  value={shot[field.key] ?? ''}
-                  onChange={(e) =>
-                    setShot((prev) => ({
-                      ...prev,
-                      [field.key]: e.target.value,
-                    }))
-                  }
-                  className="h-10 min-w-0 px-2.5"
-                />
-              </label>
-            ))}
-          </div>
-        </div>
+        <ShotInfoFields
+          values={shot}
+          onChange={(key, value) =>
+            setShot((prev) => ({ ...prev, [key]: value }))
+          }
+        />
 
         {error && (
           <p role="alert" className="text-label font-normal text-danger">

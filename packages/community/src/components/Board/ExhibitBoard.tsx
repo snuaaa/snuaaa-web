@@ -3,7 +3,7 @@ import { Link } from '@tanstack/react-router';
 import { ImagePlus } from 'lucide-react';
 
 import Skeleton from '~/components/Common/Skeleton';
-import CreateExhibition from '~/components/Exhibition/CreateExhibition';
+import ExhibitionFormSheet from '~/components/Exhibition/ExhibitionFormSheet';
 import { Button, Fab } from '~/components/ui';
 import { useAuth } from '~/contexts/auth';
 import { useExhibitionsInBoard } from '~/hooks/queries/useExhibitionQueries';
@@ -195,13 +195,15 @@ const ExhibitBoard: FC<ExhibitBoardProps> = ({ boardInfo }) => {
           </Fab>
         </>
       )}
-      {isCreating && (
-        <CreateExhibition
-          boardId={boardInfo.board_id}
-          onClose={() => setIsCreating(false)}
-          onCreate={() => setIsCreating(false)}
-        />
-      )}
+      <ExhibitionFormSheet
+        open={isCreating}
+        onOpenChange={setIsCreating}
+        boardId={boardInfo.board_id}
+        defaultNo={
+          latest?.exhibition ? latest.exhibition.exhibition_no + 1 : undefined
+        }
+        onCreated={() => setIsCreating(false)}
+      />
     </PhotoTabLayout>
   );
 };
