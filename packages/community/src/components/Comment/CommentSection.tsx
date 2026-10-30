@@ -31,6 +31,8 @@ type ComposerProps = {
   onCancelReply?: () => void;
   /** `bar`: the mobile bar stuck to the bottom. `box`: desktop text box. */
   variant: 'bar' | 'box';
+  /** The bar sits on the screen's bottom edge instead of above the tab bar. */
+  overTabBar?: boolean;
   autoFocus?: boolean;
 };
 
@@ -44,6 +46,7 @@ const Composer = forwardRef<HTMLTextAreaElement, ComposerProps>(
       replyTo,
       onCancelReply,
       variant,
+      overTabBar,
       autoFocus,
     },
     ref,
@@ -60,7 +63,12 @@ const Composer = forwardRef<HTMLTextAreaElement, ComposerProps>(
       return (
         <form
           onSubmit={handleSubmit}
-          className="sticky bottom-[calc(var(--tab-bar-height)+env(safe-area-inset-bottom))] z-20 flex flex-col gap-1.5 border-t border-border bg-surface px-3 pt-2 pb-3"
+          className={cn(
+            'sticky z-20 flex flex-col gap-1.5 border-t border-border bg-surface px-3 pt-2',
+            overTabBar
+              ? 'bottom-0 pb-[max(0.75rem,env(safe-area-inset-bottom))]'
+              : 'bottom-[calc(var(--tab-bar-height)+env(safe-area-inset-bottom))] pb-3',
+          )}
         >
           {replyTo && (
             <div className="flex h-7 items-center justify-between px-1 text-caption text-navy-700">
@@ -328,6 +336,11 @@ type CommentSectionProps = {
   contentAuthorId?: number;
   /** Comment count from the post, shown until the list loads. */
   initialCount?: number;
+  /**
+   * `page`: under a post. `panel`: inside the photo modal, with less side
+   * padding and the mobile bar on the screen's bottom edge.
+   */
+  variant?: 'page' | 'panel';
   className?: string;
 };
 
@@ -339,8 +352,10 @@ export default function CommentSection({
   contentId,
   contentAuthorId,
   initialCount = 0,
+  variant = 'page',
   className,
 }: CommentSectionProps) {
+  const isPanel = variant === 'panel';
   const isDesktop = useViewportSize() === ViewportSize.Desktop;
   const {
     authInfo: {
@@ -461,8 +476,19 @@ export default function CommentSection({
       aria-labelledby="comments-title"
       className={cn('flex flex-col', className)}
     >
-      <div className="flex flex-col gap-1 px-4 pt-[18px] md:gap-2 md:px-11 md:pt-7">
-        <h2 id="comments-title" className="pb-2 text-base font-bold md:text-lg">
+      <div
+        className={cn(
+          'flex flex-col gap-1 px-4 pt-[18px] md:gap-2',
+          isPanel ? 'md:px-5 md:pt-4' : 'md:px-11 md:pt-7',
+        )}
+      >
+        <h2
+          id="comments-title"
+          className={cn(
+            'pb-2 text-base font-bold',
+            isPanel ? 'md:text-sm' : 'md:text-lg',
+          )}
+        >
           댓글 <span className="text-navy-700">{count}</span>
         </h2>
         {isDesktop && !replyTo && <Composer {...composerProps} variant="box" />}
@@ -518,6 +544,7 @@ export default function CommentSection({
           ref={composerRef}
           {...composerProps}
           variant="bar"
+          overTabBar={isPanel}
           replyTo={replyTo}
           onCancelReply={cancelReply}
         />

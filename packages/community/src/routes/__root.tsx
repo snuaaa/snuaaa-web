@@ -16,7 +16,7 @@ import { AuthProvider } from '../contexts/auth';
 import { ViewportSizeProvider } from '../contexts/viewportSize';
 import AppShell from '~/components/Layout/AppShell';
 import FullScreenPortal from '~/components/Common/FullScreenPortal';
-import PhotoDetailModal from '~/components/Photo/DetailModal';
+import PhotoDetailModal from '~/components/Photo/PhotoDetail';
 import { queryClient } from '~/lib/queryClient';
 import { PhotoNavigationScope } from '~/services/PhotoService';
 
