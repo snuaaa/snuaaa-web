@@ -1,4 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react';
+import { isAxiosError } from 'axios';
 import { Camera } from 'lucide-react';
 
 import { Button, Field, Input, Textarea } from '~/components/ui';
@@ -154,7 +155,7 @@ export function GuideStep({ onNext }: { onNext: () => void }) {
   );
 }
 
-type IdCheck = 'idle' | 'checking' | 'ok' | 'taken';
+type IdCheck = 'idle' | 'checking' | 'ok' | 'taken' | 'failed';
 
 /** 2 / 3: 아이디 and 비밀번호. */
 export function AccountStep({
@@ -186,8 +187,10 @@ export function AccountStep({
       await AuthService.duplicateCheck({ check_id: values.id });
       setIdCheck('ok');
       return true;
-    } catch {
-      setIdCheck('taken');
+    } catch (err) {
+      // 409 means taken; anything else (network, 500) is worth a retry.
+      const taken = isAxiosError(err) && err.response?.status === 409;
+      setIdCheck(taken ? 'taken' : 'failed');
       return false;
     }
   };
@@ -207,7 +210,9 @@ export function AccountStep({
         ? '영문, 숫자 4~12자로 입력해 주세요'
         : idCheck === 'taken'
           ? '이미 쓰고 있는 아이디예요'
-          : undefined;
+          : idCheck === 'failed'
+            ? '아이디를 확인하지 못했어요. 다시 시도해 주세요'
+            : undefined;
 
   return (
     <StepBody
