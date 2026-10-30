@@ -1,10 +1,13 @@
 import type { CSSProperties, ReactNode } from 'react';
 import { useLocation } from '@tanstack/react-router';
 import { ExternalLink } from 'lucide-react';
+import { useBoards } from '~/hooks/queries/useBoardQueries';
 import { cn } from '~/lib/utils';
+import { Board } from '~/services/types';
 import BottomTabBar from './BottomTabBar';
 import BrandMark from './BrandMark';
 import { CLUB_INTRO_URL, OLD_SITE_URL } from './constants';
+import LegacySection from './LegacySection';
 import TopNav from './TopNav';
 
 /**
@@ -13,6 +16,23 @@ import TopNav from './TopNav';
  * (`sass/_section.scss`) until its screen PR moves it.
  */
 const REDESIGNED_PATHS = ['/'];
+/** Board types whose list screen has moved to the redesign. */
+const REDESIGNED_BOARD_TYPES: Board['board_type'][] = ['N', 'D'];
+
+function useIsRedesigned() {
+  const { pathname, search } = useLocation();
+  const { boardsInfo } = useBoards();
+  if (REDESIGNED_PATHS.includes(pathname)) return true;
+  // The write screen (?status=create) moves in its own PR.
+  if ((search as { status?: string }).status === 'create') return false;
+  const boardId = pathname.match(/^\/board\/([^/]+)\/?$/)?.[1];
+  if (!boardId) return false;
+  const board = boardsInfo.find((b) => b.board_id === boardId);
+  // Until the board list loads the page only shows a spinner, so skip the
+  // legacy column rather than flash it before a redesigned board.
+  if (!board) return true;
+  return REDESIGNED_BOARD_TYPES.includes(board.board_type);
+}
 
 const shellStyle = {
   '--tab-bar-height': '3.5rem',
@@ -74,13 +94,13 @@ function SiteFooter({ showOnMobile }: { showOnMobile: boolean }) {
 /** Site chrome: top navigation on desktop, bottom tab bar below it. */
 export default function AppShell({ children }: { children: ReactNode }) {
   const { pathname } = useLocation();
-  const isRedesigned = REDESIGNED_PATHS.includes(pathname);
+  const isRedesigned = useIsRedesigned();
   // On mobile the footer only shows on home, and then it clears the tab bar.
   const isHome = pathname === '/';
 
   return (
     <div
-      className="flex min-h-full flex-col bg-bg [--fab-bottom:calc(var(--tab-bar-height)+env(safe-area-inset-bottom)+1rem)] md:[--fab-bottom:1.5rem]"
+      className="flex min-h-dvh flex-col bg-bg [--fab-bottom:calc(var(--tab-bar-height)+env(safe-area-inset-bottom)+1rem)] md:[--fab-bottom:1.5rem]"
       style={shellStyle}
     >
       <TopNav />
@@ -92,13 +112,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
             'pb-[calc(var(--tab-bar-height)+env(safe-area-inset-bottom))] md:pb-0',
         )}
       >
-        {isRedesigned ? (
-          children
-        ) : (
-          <div className="section-wrapper">
-            <section>{children}</section>
-          </div>
-        )}
+        {isRedesigned ? children : <LegacySection>{children}</LegacySection>}
       </main>
       <SiteFooter showOnMobile={isHome} />
       <BottomTabBar />

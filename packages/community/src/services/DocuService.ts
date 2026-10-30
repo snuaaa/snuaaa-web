@@ -1,4 +1,4 @@
-import { Content } from './types';
+import { Content, File } from './types';
 import { API } from './index';
 
 export interface CreateDocuRequest {
@@ -12,6 +12,16 @@ type UpdateDocuRequest = {
   title: string;
   text: string;
   category_id?: string;
+};
+
+/** A row of the document list: the Document row with its Content. */
+export type DocumentListItem = {
+  content_id: number;
+  generation: number;
+  content: Pick<Content, 'content_id' | 'title' | 'text' | 'user'> & {
+    category?: { category_name: string };
+    attachedFiles?: File[];
+  };
 };
 
 export type RetrieveDocumentParams = {
@@ -30,7 +40,7 @@ const DocuService = {
 
   retrieveDocuments: function (params: RetrieveDocumentParams) {
     return API.get<{
-      docInfo: Content[];
+      docInfo: DocumentListItem[];
       docCount: number;
     }>('document', {
       params,
