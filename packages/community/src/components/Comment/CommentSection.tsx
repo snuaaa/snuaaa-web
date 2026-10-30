@@ -1,4 +1,4 @@
-import { FormEvent, forwardRef, useEffect, useRef, useState } from 'react';
+import { FormEvent, forwardRef, useRef, useState } from 'react';
 import { ArrowUp, Ellipsis, Heart, Pencil, Trash2, X } from 'lucide-react';
 import {
   Avatar,
@@ -181,9 +181,13 @@ function CommentItem({
   const [draft, setDraft] = useState(comment.text);
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => {
+  // Reset the draft only when editing starts, so a refetch while editing
+  // doesn't overwrite what is being typed.
+  const [wasEditing, setWasEditing] = useState(editing);
+  if (editing !== wasEditing) {
+    setWasEditing(editing);
     if (editing) setDraft(comment.text);
-  }, [editing, comment.text]);
+  }
 
   const save = async () => {
     setSaving(true);
