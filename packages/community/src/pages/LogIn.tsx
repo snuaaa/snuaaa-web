@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { Link, useNavigate, useSearch } from '@tanstack/react-router';
+import { isAxiosError } from 'axios';
 
 import AuthLayout, { ClubLogo } from '~/components/Auth/AuthLayout';
 import FindAccountSheet from '~/components/Auth/FindAccountSheet';
@@ -44,7 +45,12 @@ function LogIn() {
       authLogin(data.token, data.autoLogin, data.userInfo);
     } catch (err) {
       console.error(err);
-      setError('아이디 또는 비밀번호가 맞지 않아요');
+      // 401 is a wrong id or password; anything else is worth a retry.
+      setError(
+        isAxiosError(err) && err.response?.status === 401
+          ? '아이디 또는 비밀번호가 맞지 않아요'
+          : '로그인하지 못했어요. 잠시 후 다시 시도해 주세요.',
+      );
       setPending(null);
     }
   };

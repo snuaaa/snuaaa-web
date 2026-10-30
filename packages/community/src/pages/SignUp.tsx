@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
+import { isAxiosError } from 'axios';
 
 import AuthLayout, { StepHeader } from '~/components/Auth/AuthLayout';
 import {
@@ -27,6 +28,25 @@ const emptyInfo: InfoValues = {
   aaaNum: '',
   introduction: '',
 };
+
+/**
+ * Why the signup failed. The API answers a taken id with a 500 (the unique
+ * constraint), so ask the duplicate check again to tell that case apart:
+ * someone may have taken the id since step 2.
+ */
+async function signUpError(err: unknown, id: string) {
+  if (isAxiosError(err) && !err.response) {
+    return '가입하지 못했어요. 인터넷 연결을 확인하고 다시 시도해 주세요.';
+  }
+  try {
+    await AuthService.duplicateCheck({ check_id: id });
+  } catch (dupErr) {
+    if (isAxiosError(dupErr) && dupErr.response?.status === 409) {
+      return '그새 다른 사람이 이 아이디로 가입했어요. 이전 단계에서 아이디를 바꿔 주세요.';
+    }
+  }
+  return '가입하지 못했어요. 입력한 내용을 확인하고 다시 시도해 주세요.';
+}
 
 /** 가입 안내 → 계정 → 회원 정보 → 가입 완료. */
 function SignUp() {
@@ -59,7 +79,7 @@ function SignUp() {
       });
     } catch (err) {
       console.error(err);
-      setError('가입하지 못했어요. 입력한 내용을 확인하고 다시 시도해 주세요.');
+      setError(await signUpError(err, account.id));
       setSubmitting(false);
       return;
     }
