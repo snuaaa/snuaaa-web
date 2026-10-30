@@ -167,7 +167,13 @@ export function AccountStep({
   onChange: (values: AccountValues) => void;
   onNext: () => void;
 }) {
-  const [idCheck, setIdCheck] = useState<IdCheck>('idle');
+  // Each result belongs to the id it checked, so a late answer for an
+  // earlier id never counts for the one typed now.
+  const [check, setCheck] = useState<{ id: string; status: IdCheck }>({
+    id: '',
+    status: 'idle',
+  });
+  const idCheck = check.id === values.id ? check.status : 'idle';
   const [touched, setTouched] = useState<
     Partial<Record<keyof AccountValues, boolean>>
   >({});
@@ -177,20 +183,18 @@ export function AccountStep({
   const passwordValid = PASSWORD_PATTERN.test(values.password);
   const confirmValid = values.passwordCf === values.password && passwordValid;
 
-  // A new id needs a new duplicate check.
-  useEffect(() => setIdCheck('idle'), [values.id]);
-
   const checkId = async () => {
-    if (!idValid) return idCheck === 'ok';
-    setIdCheck('checking');
+    if (!idValid) return false;
+    const { id } = values;
+    setCheck({ id, status: 'checking' });
     try {
-      await AuthService.duplicateCheck({ check_id: values.id });
-      setIdCheck('ok');
+      await AuthService.duplicateCheck({ check_id: id });
+      setCheck({ id, status: 'ok' });
       return true;
     } catch (err) {
       // 409 means taken; anything else (network, 500) is worth a retry.
       const taken = isAxiosError(err) && err.response?.status === 409;
-      setIdCheck(taken ? 'taken' : 'failed');
+      setCheck({ id, status: taken ? 'taken' : 'failed' });
       return false;
     }
   };
