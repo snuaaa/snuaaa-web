@@ -1,7 +1,8 @@
-import { useState, FC } from 'react';
+import { useEffect, useState, FC } from 'react';
 import {
   Link,
   useCanGoBack,
+  useLocation,
   useNavigate,
   useParams,
   useRouter,
@@ -10,8 +11,6 @@ import {
 import Loading from '~/components/Common/Loading';
 import EditPost from '~/components/Post/EditPost';
 import PostDetail from '~/components/Post/PostDetail';
-import BoardName from '~/components/Board/BoardName';
-import LegacySection from '~/components/Layout/LegacySection';
 import { Button } from '~/components/ui';
 
 import { usePost } from '~/hooks/queries/usePostQueries';
@@ -22,6 +21,25 @@ const Post: FC = () => {
   const [editingPostId, setEditingPostId] = useState<string | null>(null);
   const isEditing = editingPostId === postId;
   const router = useRouter();
+  // Set by the write screen when some attachments didn't upload. Kept here
+  // and cleared from history, so a reload or back/forward doesn't repeat it.
+  const location = useLocation();
+  const [failedNotice, setFailedNotice] = useState(() => ({
+    postId,
+    count:
+      (location.state as { failedAttachments?: number }).failedAttachments ?? 0,
+  }));
+  const failedAttachments =
+    failedNotice.postId === postId ? failedNotice.count : 0;
+  useEffect(() => {
+    const state = location.state as { failedAttachments?: number };
+    if (state.failedAttachments) {
+      router.history.replace(location.href, {
+        ...location.state,
+        failedAttachments: undefined,
+      } as typeof location.state);
+    }
+  }, [location, router]);
   const navigate = useNavigate();
   const canGoBack = useCanGoBack();
 
@@ -47,20 +65,13 @@ const Post: FC = () => {
     return <Loading />;
   }
 
-  // The edit screen moves to the redesign with the write screen.
   if (isEditing) {
     return (
-      <LegacySection>
-        <BoardName
-          board_id={postInfo.board.board_id}
-          board_name={postInfo.board.board_name}
-        />
-        <EditPost
-          postInfo={postInfo}
-          onCancel={() => setEditingPostId(null)}
-          onUpdate={() => setEditingPostId(null)}
-        />
-      </LegacySection>
+      <EditPost
+        postInfo={postInfo}
+        onCancel={() => setEditingPostId(null)}
+        onUpdate={() => setEditingPostId(null)}
+      />
     );
   }
 
@@ -70,7 +81,11 @@ const Post: FC = () => {
       key={postInfo.content_id}
       post={postInfo}
       isLiked={likeInfo ?? false}
-      onEdit={() => setEditingPostId(postId)}
+      failedAttachments={failedAttachments}
+      onEdit={() => {
+        setFailedNotice({ postId, count: 0 });
+        setEditingPostId(postId);
+      }}
       onBack={() => {
         if (canGoBack) {
           router.history.back();
