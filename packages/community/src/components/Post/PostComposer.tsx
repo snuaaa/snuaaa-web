@@ -12,6 +12,11 @@ const MAX_FILES = 5;
 const MAX_TOTAL_SIZE = 20 * 1024 * 1024;
 const ACCEPT =
   '.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf,.hwp,.zip,.txt';
+const ACCEPTED_EXTENSIONS = ACCEPT.split(',');
+
+// `accept` only filters the file picker, so dropped files are checked here.
+const isAccepted = (file: File) =>
+  ACCEPTED_EXTENSIONS.some((ext) => file.name.toLowerCase().endsWith(ext));
 
 function formatSize(bytes: number) {
   if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))}KB`;
@@ -94,6 +99,11 @@ export default function PostComposer({
   const addFiles = (picked: File[]) => {
     if (picked.length === 0) return;
     setAttachError(null);
+    const rejected = picked.find((file) => !isAccepted(file));
+    if (rejected) {
+      setAttachError(`${rejected.name}은 첨부할 수 없는 형식이에요.`);
+      return;
+    }
     if (fileCount + picked.length > MAX_FILES) {
       setAttachError(`파일은 최대 ${MAX_FILES}개까지 첨부할 수 있어요.`);
       return;
@@ -123,6 +133,7 @@ export default function PostComposer({
   const handleDrop = (e: DragEvent) => {
     e.preventDefault();
     setDragging(false);
+    if (submitting) return;
     addFiles(Array.from(e.dataTransfer.files));
   };
 
