@@ -1,10 +1,5 @@
 import { type ReactNode } from 'react';
-import {
-  Link,
-  useNavigate,
-  useRouter,
-  useSearch,
-} from '@tanstack/react-router';
+import { Link, useNavigate, useSearch } from '@tanstack/react-router';
 import { ChevronDown, Download, FilePlus } from 'lucide-react';
 
 import Skeleton from '~/components/Common/Skeleton';
@@ -12,6 +7,7 @@ import DownloadFile from '~/components/Post/DownloadFile';
 import FileTypeBadge from '~/components/Post/FileTypeBadge';
 import { Button, Fab, Pagination, Tag, Toast, useToast } from '~/components/ui';
 import CreateDocu from './CreateDocu';
+import useLeaveWriteScreen from './useLeaveWriteScreen';
 import BoardLayout from './BoardLayout';
 import { canWrite, currentGeneration } from './boardUtils';
 
@@ -106,11 +102,12 @@ function DocuBoard({ boardInfo }: DocuBoardProps) {
   } = useAuth();
   const writable = canWrite(boardInfo, grade);
 
-  const router = useRouter();
+  const leaveCreate = useLeaveWriteScreen();
   const toast = useToast();
 
   const { category, generation, status } = searchParams;
-  const isCreating = status === 'create';
+  // The URL can be opened without write access; the list shows instead.
+  const isCreating = writable && status === 'create';
   const openCreate = () =>
     navigate({ search: (prev) => ({ ...prev, status: 'create' }) });
   const page = Number(searchParams.page ?? 1);
@@ -146,9 +143,9 @@ function DocuBoard({ boardInfo }: DocuBoardProps) {
     return (
       <CreateDocu
         board={boardInfo}
-        onClose={() => router.history.back()}
+        onClose={leaveCreate}
         onCreate={(failedFiles) => {
-          router.history.back();
+          leaveCreate();
           toast.show(
             failedFiles > 0
               ? `문서를 등록했지만 파일 ${failedFiles}개를 올리지 못했어요. 문서 수정에서 다시 첨부해 주세요.`

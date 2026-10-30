@@ -1,7 +1,10 @@
 import { Board } from '~/services/types';
 import CreatePost from './Create';
 import ListPost from './List';
-import { useRouter, useSearch, useNavigate } from '@tanstack/react-router';
+import { useSearch, useNavigate } from '@tanstack/react-router';
+import { useAuth } from '~/contexts/auth';
+import { canWrite } from '../boardUtils';
+import useLeaveWriteScreen from '../useLeaveWriteScreen';
 
 type PostBoardProps = {
   boardInfo: Board;
@@ -10,10 +13,16 @@ type PostBoardProps = {
 function PostBoard({ boardInfo }: PostBoardProps) {
   const search = useSearch({ from: '/board/$board_id' });
   const status = search.status;
-  const router = useRouter();
   const navigate = useNavigate({ from: '/board/$board_id' });
+  const leaveCreate = useLeaveWriteScreen();
+  const {
+    authInfo: {
+      user: { grade },
+    },
+  } = useAuth();
 
-  if (status !== 'create') {
+  // The URL can be opened without write access; the list shows instead.
+  if (status !== 'create' || !canWrite(boardInfo, grade)) {
     return (
       <ListPost
         boardInfo={boardInfo}
@@ -29,7 +38,7 @@ function PostBoard({ boardInfo }: PostBoardProps) {
   return (
     <CreatePost
       board={boardInfo}
-      onClose={() => router.history.back()}
+      onClose={leaveCreate}
       onCreate={(contentId, failedFiles) => {
         // Replace the write screen, so back from the new post is the list.
         navigate({
