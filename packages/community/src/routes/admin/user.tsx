@@ -1,19 +1,15 @@
 import { createFileRoute } from '@tanstack/react-router';
-import UserManagement from '../../pages/UserManagement';
-
-type UserManagementSearch = {
-  page?: number;
-  sort?: string;
-  order?: string;
-};
+import UserManagement, {
+  SortOrder,
+  UserManagementSearch,
+  UserSort,
+} from '../../pages/UserManagement';
 
 export const Route = createFileRoute('/admin/user')({
-  validateSearch: (search: Record<string, unknown>): UserManagementSearch => {
-    return {
-      page: Number(search.page) || 1,
-      sort: (search.sort as string) || undefined,
-      order: (search.order as string) || undefined,
-    };
-  },
+  validateSearch: (search: Record<string, unknown>): UserManagementSearch => ({
+    page: Number(search.page) > 1 ? Number(search.page) : undefined,
+    sort: (search.sort as UserSort) || undefined,
+    order: (search.order as SortOrder) || undefined,
+  }),
   component: UserManagement,
 });

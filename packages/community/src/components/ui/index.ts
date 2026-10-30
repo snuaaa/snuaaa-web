@@ -3,7 +3,7 @@ export { Button, type ButtonProps } from './Button';
 export { ConfirmDialog, Dialog } from './Dialog';
 export { Divider } from './Divider';
 export { Fab } from './Fab';
-export { Field, Input, Textarea } from './Field';
+export { Field, Input, Select, Textarea } from './Field';
 export { NavDrawer, NavGroup, NavItem } from './NavDrawer';
 export { LoadMore, Pagination } from './Pagination';
 export { Sheet, SheetAction } from './Sheet';
