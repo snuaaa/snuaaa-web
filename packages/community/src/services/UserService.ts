@@ -13,6 +13,8 @@ export type UpdateUserInfoRequest = {
   major: string;
   col_no: string;
   profile_url?: string;
+  /** @deprecated sent back unchanged so the update doesn't clear it */
+  profile_path?: string;
   introduction?: string;
 };
 export interface UpdatePasswordRequest {

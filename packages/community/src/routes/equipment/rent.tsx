@@ -10,7 +10,11 @@ import { EquipmentStatus } from '~/services/types';
 export const Route = createFileRoute('/equipment/rent')({
   component: EquipmentRent,
   validateSearch: (search: Record<string, unknown>): RentFilter => ({
-    keyword: (search.keyword as string) || undefined,
+    // The router parses `?keyword=123` as a number.
+    keyword:
+      typeof search.keyword === 'string' || typeof search.keyword === 'number'
+        ? String(search.keyword) || undefined
+        : undefined,
     category_id: Number(search.category_id) || undefined,
     status: Object.values(EquipmentStatus).includes(
       search.status as EquipmentStatus,
