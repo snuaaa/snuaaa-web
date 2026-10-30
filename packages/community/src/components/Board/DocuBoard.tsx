@@ -1,11 +1,16 @@
-import { useState, type ReactNode } from 'react';
-import { Link, useNavigate, useSearch } from '@tanstack/react-router';
+import { type ReactNode } from 'react';
+import {
+  Link,
+  useNavigate,
+  useRouter,
+  useSearch,
+} from '@tanstack/react-router';
 import { ChevronDown, Download, FilePlus } from 'lucide-react';
 
 import Skeleton from '~/components/Common/Skeleton';
 import DownloadFile from '~/components/Post/DownloadFile';
 import FileTypeBadge from '~/components/Post/FileTypeBadge';
-import { Button, Fab, Pagination, Tag } from '~/components/ui';
+import { Button, Fab, Pagination, Tag, Toast, useToast } from '~/components/ui';
 import CreateDocu from './CreateDocu';
 import BoardLayout from './BoardLayout';
 import { canWrite, currentGeneration } from './boardUtils';
@@ -101,9 +106,13 @@ function DocuBoard({ boardInfo }: DocuBoardProps) {
   } = useAuth();
   const writable = canWrite(boardInfo, grade);
 
-  const [isCreating, setIsCreating] = useState(false);
+  const router = useRouter();
+  const toast = useToast();
 
-  const { category, generation } = searchParams;
+  const { category, generation, status } = searchParams;
+  const isCreating = status === 'create';
+  const openCreate = () =>
+    navigate({ search: (prev) => ({ ...prev, status: 'create' }) });
   const page = Number(searchParams.page ?? 1);
 
   const { data, isLoading, isError, refetch } = useDocuments({
@@ -133,8 +142,25 @@ function DocuBoard({ boardInfo }: DocuBoardProps) {
     (_, i) => currentGeneration() - i,
   );
 
+  if (isCreating) {
+    return (
+      <CreateDocu
+        board={boardInfo}
+        onClose={() => router.history.back()}
+        onCreate={(failedFiles) => {
+          router.history.back();
+          toast.show(
+            failedFiles > 0
+              ? `문서를 등록했지만 파일 ${failedFiles}개를 올리지 못했어요. 문서 수정에서 다시 첨부해 주세요.`
+              : '문서를 등록했어요',
+          );
+        }}
+      />
+    );
+  }
+
   const createAction = writable ? (
-    <Button onClick={() => setIsCreating(true)} className="[&_svg]:text-accent">
+    <Button onClick={openCreate} className="[&_svg]:text-accent">
       <FilePlus className="size-[18px]!" />
       문서 등록
     </Button>
@@ -257,20 +283,11 @@ function DocuBoard({ boardInfo }: DocuBoardProps) {
 
       {writable && <div className="h-18 md:hidden" aria-hidden />}
       {writable && (
-        <Fab
-          icon={<FilePlus />}
-          onClick={() => setIsCreating(true)}
-          className="md:hidden"
-        >
+        <Fab icon={<FilePlus />} onClick={openCreate} className="md:hidden">
           문서 등록
         </Fab>
       )}
-      {isCreating && (
-        <CreateDocu
-          boardInfo={boardInfo}
-          onClose={() => setIsCreating(false)}
-        />
-      )}
+      <Toast message={toast.message} />
     </BoardLayout>
   );
 }
