@@ -110,6 +110,9 @@ export default function CreatePost({ board, onCreate, onClose }: Props) {
     saveDraft(storageKey, null);
     // The post exists now, so a failed attachment doesn't stop us: the
     // post tells the author, who can add it again by editing.
+    // TODO(planned API change): upload files first and send only their file
+    // ids with the post request. That needs the API to keep uploads as
+    // temporary until the post is saved, then mark them as attached.
     let failedFiles = 0;
     for (let i = 0; i < files.length; i++) {
       setProgress({ current: i + 1, total: files.length, percent: 0 });

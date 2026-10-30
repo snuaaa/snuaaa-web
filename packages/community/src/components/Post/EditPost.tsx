@@ -50,6 +50,8 @@ export default function EditPost({ postInfo, onCancel, onUpdate }: Props) {
       });
       // Drop each upload from the form once it succeeds, so a retry after
       // a failure doesn't attach it twice.
+      // TODO(planned API change): send pre-uploaded file ids with the post
+      // request instead (see PostBoard/Create.tsx).
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         setProgress({ current: i + 1, total: files.length, percent: 0 });
