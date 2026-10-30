@@ -1,69 +1,6 @@
 @use "../common/color";
 
 /****** ALBUM *******/
-.album-info {
-    
-    .alb-header-wrapper {
-        margin-top: 20px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        .alb-btn-back {
-            button {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                height: 2rem;
-                width: 2rem;
-                border: none;
-                border-radius: 50%;
-                background-color: color.$color_aqua;
-                cursor: pointer;
-                color: color.$color_white;
-                font-size: 1rem;
-            }
-        }
-        .alb-title {
-            // display: inline-block;
-            // margin-left: 20px;
-            max-width: 500px;
-            font-size: 20px;
-            font-weight: bold;
-            padding: 10px 10px;
-            float: left;
-        }
-        .actions-drawer {
-            position: relative;
-            margin-left: auto;
-            // right: 0;
-        }
-        // .actions-wrapper {
-        //     padding: 5px 0px;
-        //     width: 60px;
-        //     flex-shrink: 0;
-        // }
-        .alb-author {
-            // text-align: right;
-            // flex-grow: 1;
-            flex-shrink: 0;
-            text-align: right;
-            padding: 10px 5px;
-            margin-right: 0px;
-            font-size: 20px;
-            font-weight: bold;
-            // float: right;
-            color: #49A0AE;
-        }
-    
-    }
-    .contents {
-        font-size: 15px;
-        margin: 30px 10px 10px 10px;
-
-    }
-}
-
-
 .crt-alb-wrapper {
     .categories-wrapper {
         height: 30px;
@@ -111,29 +48,6 @@
             }
         }
     }
-}
-
-@media screen and (max-width: 800px) {
-    .album-info {
-        .alb-header-wrapper {
-            .alb-btn-back {
-                margin-left: 0.5rem;
-            }
-            .alb-title {
-                font-size: 1.1rem;
-                padding: 10px 5px;
-            }
-            // .actions-wrapper {
-            //     padding: 1px 1px;
-            // }
-            .alb-author {
-                font-size: 1.1rem;
-                float: right;
-                color: #49A0AE;
-            }
-        }
-    }
-    
 }
 
 /****** ALBUM *******/

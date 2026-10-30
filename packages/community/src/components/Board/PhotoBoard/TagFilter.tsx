@@ -9,20 +9,9 @@ import {
 import { Button, Sheet } from '~/components/ui';
 import { cn } from '~/lib/utils';
 import { Tag } from '~/services/types';
+import { groupTags } from './tagGroups';
 
 export type PhotoView = 'photo' | 'album';
-
-/** 별사진 tags come in two groups, by `tag_type`. */
-const TAG_GROUPS = [
-  { type: 'M', name: '대상' },
-  { type: 'T', name: '촬영 방식' },
-] as const;
-
-const groupTags = (tags: Tag[]) =>
-  TAG_GROUPS.map((group) => ({
-    ...group,
-    tags: tags.filter((tag) => tag.tag_type === group.type),
-  })).filter((group) => group.tags.length > 0);
 
 const toggle = (list: string[], id: string) =>
   list.includes(id) ? list.filter((t) => t !== id) : [...list, id];
