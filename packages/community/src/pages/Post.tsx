@@ -1,66 +1,85 @@
-import { useState, FC, useEffect } from 'react';
-import { useParams, useRouter } from '@tanstack/react-router';
+import { useState, FC } from 'react';
+import {
+  Link,
+  useCanGoBack,
+  useNavigate,
+  useParams,
+  useRouter,
+} from '@tanstack/react-router';
 
-import Comment from '~/components/Comment';
 import Loading from '~/components/Common/Loading';
-import PostView from '~/components/Post/PostView';
 import EditPost from '~/components/Post/EditPost';
-// import history from '~/common/history'; // removed
+import PostDetail from '~/components/Post/PostDetail';
 import BoardName from '~/components/Board/BoardName';
+import LegacySection from '~/components/Layout/LegacySection';
+import { Button } from '~/components/ui';
 
-import { useAuth } from '~/contexts/auth';
 import { usePost } from '~/hooks/queries/usePostQueries';
 
 const Post: FC = () => {
   const [isEditing, setIsEditing] = useState(false);
-  const authContext = useAuth();
   const { post_id: postId } = useParams({ from: '/post/$post_id' });
   const router = useRouter();
+  const navigate = useNavigate();
+  const canGoBack = useCanGoBack();
 
   const { data, isError } = usePost(Number(postId));
-
   const { postInfo, likeInfo } = data ?? {};
 
-  useEffect(() => {
-    if (isError) {
-      router.history.back();
-    }
-  }, [isError, router]);
+  // A post that is deleted or on a board this member can't read.
+  if (isError || (data && !postInfo)) {
+    return (
+      <div className="flex flex-1 flex-col items-center justify-center gap-1.5 px-4 py-24 text-center">
+        <p className="text-heading">글을 찾을 수 없어요</p>
+        <p className="text-label font-normal text-fg-muted">
+          삭제되었거나 볼 수 없는 글이에요.
+        </p>
+        <Button asChild variant="secondary" size="sm" className="mt-4">
+          <Link to="/">홈으로</Link>
+        </Button>
+      </div>
+    );
+  }
 
   if (!postInfo) {
     return <Loading />;
   }
 
-  return (
-    <>
-      {postInfo && (
+  // The edit screen moves to the redesign with the write screen.
+  if (isEditing) {
+    return (
+      <LegacySection>
         <BoardName
           board_id={postInfo.board.board_id}
           board_name={postInfo.board.board_name}
         />
-      )}
-      {isEditing ? (
         <EditPost
           postInfo={postInfo}
           onCancel={() => setIsEditing(false)}
-          onUpdate={() => {
-            setIsEditing(false);
-          }}
+          onUpdate={() => setIsEditing(false)}
         />
-      ) : (
-        <>
-          <PostView
-            postInfo={postInfo}
-            my_id={authContext.authInfo.user.user_id}
-            isLiked={likeInfo ?? false}
-            onClickEdit={() => setIsEditing(true)}
-          />
-          {authContext.authInfo.user.grade < 10 && (
-            <Comment parent_id={postInfo.content_id} />
-          )}
-        </>
-      )}
-    </>
+      </LegacySection>
+    );
+  }
+
+  return (
+    <PostDetail
+      // Remount when moving between posts so like state starts fresh.
+      key={postInfo.content_id}
+      post={postInfo}
+      isLiked={likeInfo ?? false}
+      onEdit={() => setIsEditing(true)}
+      onBack={() => {
+        if (canGoBack) {
+          router.history.back();
+        } else {
+          navigate({
+            to: '/board/$board_id',
+            params: { board_id: postInfo.board.board_id },
+          });
+        }
+      }}
+    />
   );
 };
 

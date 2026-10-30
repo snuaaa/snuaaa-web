@@ -15,3 +15,5 @@ export {
   TabsTrigger,
 } from './Tabs';
 export { Badge, CountBadge, Tag } from './Tag';
+export { Toast } from './Toast';
+export { useToast } from './useToast';
