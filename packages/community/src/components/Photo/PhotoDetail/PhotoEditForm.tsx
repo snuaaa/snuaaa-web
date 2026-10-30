@@ -1,27 +1,11 @@
 import { FormEvent, useState } from 'react';
 import { format } from 'date-fns';
-import { groupTags } from '~/components/Board/PhotoBoard/tagGroups';
 import { Button, Field, Input, Textarea } from '~/components/ui';
 import { useUpdatePhoto } from '~/hooks/queries/usePhotoQueries';
-import { cn } from '~/lib/utils';
 import { UpdatePhotoRequest } from '~/services/PhotoService';
 import { Photo, Tag } from '~/services/types';
-
-type ShotField = keyof UpdatePhotoRequest['photo'];
-
-const SHOT_FIELDS: { key: ShotField; label: string; placeholder?: string }[] = [
-  { key: 'date', label: '촬영일' },
-  { key: 'location', label: '장소' },
-  { key: 'camera', label: '카메라' },
-  { key: 'lens', label: '렌즈' },
-  { key: 'focal_length', label: '초점거리', placeholder: 'mm' },
-  { key: 'f_stop', label: '조리개', placeholder: 'f/' },
-  { key: 'exposure_time', label: '노출', placeholder: '초' },
-  { key: 'iso', label: 'ISO' },
-];
-
-const toggle = (list: string[], id: string) =>
-  list.includes(id) ? list.filter((t) => t !== id) : [...list, id];
+import PhotoTagPicker from '../PhotoTagPicker';
+import { SHOT_FIELDS } from '../shotFields';
 
 type PhotoEditFormProps = {
   photo: Photo;
@@ -83,8 +67,6 @@ export default function PhotoEditForm({
     }
   };
 
-  const tagGroups = groupTags(boardTags);
-
   return (
     <form
       aria-label="사진 정보 수정"
@@ -131,36 +113,7 @@ export default function PhotoEditForm({
           />
         </Field>
 
-        {tagGroups.map((group) => (
-          <div key={group.type} className="flex flex-col gap-2">
-            <div className="text-label">{group.name}</div>
-            <div
-              role="group"
-              aria-label={`${group.name} 태그`}
-              className="flex flex-wrap gap-1.5"
-            >
-              {group.tags.map((tag) => {
-                const on = tags.includes(tag.tag_id);
-                return (
-                  <button
-                    key={tag.tag_id}
-                    type="button"
-                    aria-pressed={on}
-                    onClick={() => setTags(toggle(tags, tag.tag_id))}
-                    className={cn(
-                      'h-9 rounded-full border px-3 text-label transition-colors md:h-8 md:text-caption',
-                      on
-                        ? 'border-primary bg-primary text-white'
-                        : 'border-border bg-surface font-normal text-gray-700 hover:border-gray-300',
-                    )}
-                  >
-                    {tag.tag_name}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        ))}
+        <PhotoTagPicker tags={boardTags} selected={tags} onChange={setTags} />
 
         <div
           role="group"

@@ -12,8 +12,8 @@ import {
 } from 'lucide-react';
 
 import { formatListDate } from '~/components/Board/boardUtils';
-import { EditAlbum } from '~/components/Album/modals/EditAlbum';
-import CreatePhotoModal from '~/components/Photo/CreateModal';
+import AlbumFormSheet from '~/components/Album/AlbumFormSheet';
+import PhotoUploader from '~/components/Photo/PhotoUploader';
 import {
   Button,
   ConfirmDialog,
@@ -387,11 +387,11 @@ const AlbumPage: FC = () => {
       />
       <Toast message={toast.message} />
 
-      {/* The write screens move in their own PR; these are still legacy. */}
       {isUploading && (
-        <CreatePhotoModal
+        <PhotoUploader
           albumId={album.content_id}
           boardId={album.board_id}
+          targetName={album.title}
           tags={tagInfo}
           onCreatePhoto={() => {
             invalidateAlbum();
@@ -400,17 +400,16 @@ const AlbumPage: FC = () => {
           onCancel={() => setIsUploading(false)}
         />
       )}
-      {isEditing && (
-        <EditAlbum
-          albumInfo={album}
-          categoryInfo={categoryInfo}
-          onUpdateAlbum={() => {
-            setIsEditing(false);
-            invalidateAlbum();
-          }}
-          onCancel={() => setIsEditing(false)}
-        />
-      )}
+      <AlbumFormSheet
+        open={isEditing}
+        onOpenChange={setIsEditing}
+        categories={categoryInfo}
+        album={album}
+        onSaved={() => {
+          setIsEditing(false);
+          invalidateAlbum();
+        }}
+      />
     </div>
   );
 };
