@@ -13,6 +13,7 @@ import {
 } from '../controllers/exhibitPhoto.controller';
 import { checkLike } from '../controllers/contentLike.controller';
 import {
+  assertCanEditContent,
   increaseViewNum,
   updateContent,
   deleteContent,
@@ -51,8 +52,9 @@ router.get(
 router.patch(
   '/:exhibitPhoto_id',
   verifyTokenMiddleware,
-  async (req, res, next) => {
+  async (req: AuthenticatedRequest, res, next) => {
     try {
+      await assertCanEditContent(req.params.exhibitPhoto_id, req.decodedToken);
       let photographer = null;
       if (req.body.photographer) {
         photographer = await retrieveUserByUserUuid(
@@ -91,8 +93,9 @@ router.patch(
 router.delete(
   '/:exhibitPhoto_id',
   verifyTokenMiddleware,
-  async (req, res, next) => {
+  async (req: AuthenticatedRequest, res, next) => {
     try {
+      await assertCanEditContent(req.params.exhibitPhoto_id, req.decodedToken);
       await deleteExhibitPhoto(req.params.exhibitPhoto_id);
       await deleteContent(req.params.exhibitPhoto_id);
       res.json({ success: true });
