@@ -42,6 +42,8 @@ function formatPostDate(value: string) {
 type PostDetailProps = {
   post: Content;
   isLiked: boolean;
+  /** Attachments that didn't upload when the post was just written. */
+  failedAttachments?: number;
   onEdit: () => void;
   onBack: () => void;
 };
@@ -53,6 +55,7 @@ type PostDetailProps = {
 export default function PostDetail({
   post,
   isLiked: initialLiked,
+  failedAttachments = 0,
   onEdit,
   onBack,
 }: PostDetailProps) {
@@ -151,6 +154,16 @@ export default function PostDetail({
           <ChevronLeft className="size-4" />
           {post.board.board_name}
         </Link>
+
+        {failedAttachments > 0 && (
+          <p
+            role="alert"
+            className="mx-4 mt-3 rounded-lg bg-danger-soft px-3.5 py-3 text-label font-normal text-danger md:mx-0 md:mt-0"
+          >
+            글은 올렸지만 첨부파일 {failedAttachments}개를 올리지 못했어요.
+            수정에서 다시 첨부해 주세요.
+          </p>
+        )}
 
         <article className="flex flex-col gap-4 px-4 pt-5 md:gap-5 md:rounded-lg md:bg-surface md:px-11 md:py-9 md:shadow-sm">
           <div className="flex flex-col gap-4 border-b border-gray-100 pb-4 md:pb-5">

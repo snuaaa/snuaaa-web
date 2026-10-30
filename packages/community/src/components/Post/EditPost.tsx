@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { postKeys, useUpdatePost } from '~/hooks/queries/usePostQueries';
@@ -27,6 +27,9 @@ export default function EditPost({ postInfo, onCancel, onUpdate }: Props) {
   const [progress, setProgress] = useState<UploadProgress | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // Deletions already done, so a retry after a failure skips them.
+  const deletedIds = useRef(new Set<number>());
+
   const { mutateAsync: updatePost } = useUpdatePost();
   const { mutateAsync: createFile } = useCreateFile();
   const { mutateAsync: deleteFile } = useDeleteFile();
@@ -45,10 +48,13 @@ export default function EditPost({ postInfo, onCancel, onUpdate }: Props) {
         post_id: postId,
         data: { title: title.trim(), text },
       });
+      // Drop each upload from the form once it succeeds, so a retry after
+      // a failure doesn't attach it twice.
       for (let i = 0; i < files.length; i++) {
+        const file = files[i];
         setProgress({ current: i + 1, total: files.length, percent: 0 });
         const formData = new FormData();
-        formData.append('attachedFile', files[i]);
+        formData.append('attachedFile', file);
         await createFile({
           content_id: postId,
           formData,
@@ -59,9 +65,12 @@ export default function EditPost({ postInfo, onCancel, onUpdate }: Props) {
             }
           },
         });
+        setFiles((prev) => prev.filter((f) => f !== file));
       }
       for (const fileId of removedIds) {
+        if (deletedIds.current.has(fileId)) continue;
         await deleteFile(fileId);
+        deletedIds.current.add(fileId);
       }
       onUpdate();
     } catch (err) {

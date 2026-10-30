@@ -2,6 +2,7 @@ import { useState, FC } from 'react';
 import {
   Link,
   useCanGoBack,
+  useLocation,
   useNavigate,
   useParams,
   useRouter,
@@ -19,6 +20,12 @@ const Post: FC = () => {
   // Tied to the post, so moving to another post (e.g. back) leaves edit mode.
   const [editingPostId, setEditingPostId] = useState<string | null>(null);
   const isEditing = editingPostId === postId;
+  // Set by the write screen when some attachments didn't upload.
+  const failedAttachments = useLocation({
+    select: (location) =>
+      (location.state as { failedAttachments?: number }).failedAttachments ?? 0,
+  });
+  const [failedNoticeOpen, setFailedNoticeOpen] = useState(true);
   const router = useRouter();
   const navigate = useNavigate();
   const canGoBack = useCanGoBack();
@@ -61,7 +68,11 @@ const Post: FC = () => {
       key={postInfo.content_id}
       post={postInfo}
       isLiked={likeInfo ?? false}
-      onEdit={() => setEditingPostId(postId)}
+      failedAttachments={failedNoticeOpen ? failedAttachments : 0}
+      onEdit={() => {
+        setFailedNoticeOpen(false);
+        setEditingPostId(postId);
+      }}
       onBack={() => {
         if (canGoBack) {
           router.history.back();

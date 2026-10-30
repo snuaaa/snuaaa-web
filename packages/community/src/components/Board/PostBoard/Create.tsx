@@ -39,7 +39,8 @@ function saveDraft(key: string, draft: Draft | null) {
 
 type Props = {
   board: Board;
-  onCreate: (contentId: number) => void;
+  /** `failedFiles`: attachments that didn't upload, to tell the author. */
+  onCreate: (contentId: number, failedFiles: number) => void;
   onClose: () => void;
 };
 
@@ -108,7 +109,8 @@ export default function CreatePost({ board, onCreate, onClose }: Props) {
     }
     saveDraft(storageKey, null);
     // The post exists now, so a failed attachment doesn't stop us: the
-    // author sees what is missing on the post and can add it by editing.
+    // post tells the author, who can add it again by editing.
+    let failedFiles = 0;
     for (let i = 0; i < files.length; i++) {
       setProgress({ current: i + 1, total: files.length, percent: 0 });
       const formData = new FormData();
@@ -126,9 +128,10 @@ export default function CreatePost({ board, onCreate, onClose }: Props) {
         });
       } catch (err) {
         console.error(err);
+        failedFiles += 1;
       }
     }
-    onCreate(contentId);
+    onCreate(contentId, failedFiles);
   };
 
   const savedDate = initialDraft?.savedAt

@@ -30,12 +30,13 @@ function PostBoard({ boardInfo }: PostBoardProps) {
     <CreatePost
       board={boardInfo}
       onClose={() => router.history.back()}
-      onCreate={(contentId) => {
+      onCreate={(contentId, failedFiles) => {
         // Replace the write screen, so back from the new post is the list.
         navigate({
           to: '/post/$post_id',
           params: { post_id: String(contentId) },
           replace: true,
+          state: (prev) => ({ ...prev, failedAttachments: failedFiles }),
         });
       }}
     />
