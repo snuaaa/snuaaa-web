@@ -4,6 +4,7 @@ import { ChevronDown, Download, FilePlus } from 'lucide-react';
 
 import Skeleton from '~/components/Common/Skeleton';
 import DownloadFile from '~/components/Post/DownloadFile';
+import FileTypeBadge from '~/components/Post/FileTypeBadge';
 import { Button, Fab, Pagination, Tag } from '~/components/ui';
 import CreateDocu from './CreateDocu';
 import BoardLayout from './BoardLayout';
@@ -17,14 +18,6 @@ import { cn } from '~/lib/utils';
 
 const DOCROWNUM = 10;
 
-const FILE_TYPE_STYLES: Record<string, string> = {
-  PDF: 'bg-danger-soft text-danger',
-  HWP: 'bg-info-soft text-navy-700',
-  DOC: 'bg-info-soft text-navy-700',
-  XLS: 'bg-success-soft text-success',
-  ZIP: 'bg-accent-soft text-star-800',
-};
-
 const chipClassName =
   'flex h-[34px] shrink-0 items-center rounded-full border px-3.5 text-label transition-colors';
 const chipStateClassName = (selected: boolean) =>
@@ -36,14 +29,7 @@ function FileChip({ file }: { file: File }) {
   return (
     <DownloadFile content_id={file.parent_id} file_id={file.file_id}>
       <span className="flex h-9 max-w-full items-center gap-2 rounded-md border border-border bg-surface px-2.5 text-caption hover:bg-gray-50">
-        <span
-          className={cn(
-            'rounded-[4px] px-[5px] py-0.5 text-[10px] font-bold',
-            FILE_TYPE_STYLES[file.file_type] ?? 'bg-gray-100 text-gray-700',
-          )}
-        >
-          {file.file_type || 'FILE'}
-        </span>
+        <FileTypeBadge type={file.file_type} />
         <span className="max-w-[170px] truncate">{file.original_name}</span>
         <Download className="size-3.5 shrink-0 text-fg-muted" aria-hidden />
       </span>

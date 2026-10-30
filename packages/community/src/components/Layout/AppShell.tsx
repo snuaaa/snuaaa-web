@@ -16,6 +16,8 @@ import TopNav from './TopNav';
  * (`sass/_section.scss`) until its screen PR moves it.
  */
 const REDESIGNED_PATHS = ['/'];
+/** Detail pages that draw their own layout (the edit form wraps itself). */
+const REDESIGNED_PREFIXES = ['/post/'];
 /** Board types whose list screen has moved to the redesign. */
 const REDESIGNED_BOARD_TYPES: Board['board_type'][] = ['N', 'D'];
 
@@ -23,6 +25,9 @@ function useIsRedesigned() {
   const { pathname, search } = useLocation();
   const { boardsInfo } = useBoards();
   if (REDESIGNED_PATHS.includes(pathname)) return true;
+  if (REDESIGNED_PREFIXES.some((prefix) => pathname.startsWith(prefix))) {
+    return true;
+  }
   // The write screen (?status=create) moves in its own PR.
   if ((search as { status?: string }).status === 'create') return false;
   const boardId = pathname.match(/^\/board\/([^/]+)\/?$/)?.[1];
