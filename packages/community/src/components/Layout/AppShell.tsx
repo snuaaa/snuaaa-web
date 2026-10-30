@@ -26,8 +26,12 @@ function useIsRedesigned() {
   // The write screen (?status=create) moves in its own PR.
   if ((search as { status?: string }).status === 'create') return false;
   const boardId = pathname.match(/^\/board\/([^/]+)\/?$/)?.[1];
+  if (!boardId) return false;
   const board = boardsInfo.find((b) => b.board_id === boardId);
-  return !!board && REDESIGNED_BOARD_TYPES.includes(board.board_type);
+  // Until the board list loads the page only shows a spinner, so skip the
+  // legacy column rather than flash it before a redesigned board.
+  if (!board) return true;
+  return REDESIGNED_BOARD_TYPES.includes(board.board_type);
 }
 
 const shellStyle = {
