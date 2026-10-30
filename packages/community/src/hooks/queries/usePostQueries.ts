@@ -1,4 +1,9 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  keepPreviousData,
+  useQuery,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
 import PostService, { CreatePostRequest } from '~/services/PostService';
 
 // Query keys
@@ -28,6 +33,8 @@ export function usePostList(params: {
   return useQuery({
     queryKey: postKeys.list(params),
     queryFn: () => PostService.retrievePostList(params),
+    // Keep the current page on screen while the next one loads.
+    placeholderData: keepPreviousData,
   });
 }
 

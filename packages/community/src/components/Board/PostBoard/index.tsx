@@ -14,6 +14,19 @@ function PostBoard({ boardInfo }: PostBoardProps) {
   const router = useRouter();
   const navigate = useNavigate({ from: '/board/$board_id' });
 
+  if (status !== 'create') {
+    return (
+      <ListPost
+        boardInfo={boardInfo}
+        onClickCreate={() => {
+          navigate({
+            search: (prev) => ({ ...prev, status: 'create' }),
+          });
+        }}
+      />
+    );
+  }
+
   return (
     <div className="board-wrapper postboard-wrapper">
       <BoardName
@@ -21,27 +34,16 @@ function PostBoard({ boardInfo }: PostBoardProps) {
         board_name={boardInfo.board_name}
       />
       <div className="board-desc">{boardInfo.board_desc}</div>
-      {status !== 'create' ? (
-        <ListPost
-          boardInfo={boardInfo}
-          onClickCreate={() => {
-            navigate({
-              search: (prev) => ({ ...prev, status: 'create' }),
-            });
-          }}
-        />
-      ) : (
-        <CreatePost
-          board_id={boardInfo.board_id}
-          onClose={() => router.history.back()}
-          onCreate={() => {
-            navigate({
-              search: (prev) => ({ ...prev, status: undefined }),
-              replace: true,
-            });
-          }}
-        />
-      )}
+      <CreatePost
+        board_id={boardInfo.board_id}
+        onClose={() => router.history.back()}
+        onCreate={() => {
+          navigate({
+            search: (prev) => ({ ...prev, status: undefined }),
+            replace: true,
+          });
+        }}
+      />
     </div>
   );
 }
