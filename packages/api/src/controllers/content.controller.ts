@@ -23,14 +23,20 @@ export async function createContent(user_id, board_id, data, type) {
 
 /**
  * Throws unless the user wrote the content or their grade is within the
- * board's edit level (a lower grade means more privilege).
+ * board's edit level (a lower grade means more privilege). With `type`, a
+ * content of another type counts as not found, so one route can't delete
+ * another type's row.
  */
-export async function assertCanEditContent(content_id, user: JWTPayload) {
+export async function assertCanEditContent(
+  content_id,
+  user: JWTPayload,
+  type?: string,
+) {
   const content = await ContentModel.findByPk(content_id, {
-    attributes: ['content_id', 'author_id'],
+    attributes: ['content_id', 'author_id', 'type'],
     include: [{ model: BoardModel, attributes: ['lv_edit'] }],
   });
-  if (!content) {
+  if (!content || (type && content.getDataValue('type') !== type)) {
     throw new NotFoundError('Content not found');
   }
   const board = content.get('board') as BoardModel | undefined;

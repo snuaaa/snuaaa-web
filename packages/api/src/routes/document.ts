@@ -1,3 +1,4 @@
+import ContentTypeEnum from '../enums/contentTypeEnum';
 import express from 'express';
 
 import {
@@ -91,7 +92,11 @@ router.patch(
   verifyTokenMiddleware,
   async (req: AuthenticatedRequest, res, next) => {
     try {
-      await assertCanEditContent(req.params.doc_id, req.decodedToken);
+      await assertCanEditContent(
+        req.params.doc_id,
+        req.decodedToken,
+        ContentTypeEnum.DOCUMENT,
+      );
       await updateContent(req.params.doc_id, req.body);
       res.json({ success: true });
     } catch (err) {
@@ -105,7 +110,11 @@ router.delete(
   verifyTokenMiddleware,
   async (req: AuthenticatedRequest, res, next) => {
     try {
-      await assertCanEditContent(req.params.doc_id, req.decodedToken);
+      await assertCanEditContent(
+        req.params.doc_id,
+        req.decodedToken,
+        ContentTypeEnum.DOCUMENT,
+      );
       await deleteDocument(req.params.doc_id);
       await deleteContent(req.params.doc_id);
       res.json({ success: true });

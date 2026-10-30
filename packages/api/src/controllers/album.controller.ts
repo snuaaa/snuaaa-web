@@ -11,6 +11,7 @@ import { BASE_USER_FIELDS } from '../models/User';
 import { AuthorizationError, BadRequestError, NotFoundError } from '../errors';
 import { JWTPayload } from '../utils/token';
 import { assertCanEditContent } from './content.controller';
+import ContentTypeEnum from '../enums/contentTypeEnum';
 
 export type AlbumResponse = ContentModel & {
   album: AlbumModel;
@@ -220,7 +221,7 @@ export async function assertCanSetAlbumThumbnail(
   user: JWTPayload,
 ) {
   try {
-    await assertCanEditContent(album_id, user);
+    await assertCanEditContent(album_id, user, ContentTypeEnum.ALBUM);
     return;
   } catch (err) {
     if (!(err instanceof AuthorizationError)) throw err;
