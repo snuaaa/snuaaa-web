@@ -1,38 +1,10 @@
 import { Link } from '@tanstack/react-router';
 import { convertDate } from '~/utils/convertDate';
-import ContentTypeEnum from '~/common/ContentTypeEnum';
-import { Comment, Content } from '~/services/types';
+import { Comment } from '~/services/types';
+import { commentLink } from './commentLink';
 
 type Props = {
   comments: Comment[];
-};
-
-const getLinkProps = (
-  content: Content,
-): {
-  to: string;
-  params?: Record<string, string>;
-  search?: (prev: Record<string, unknown>) => Record<string, unknown>;
-} => {
-  switch (content.type) {
-    case ContentTypeEnum.POST:
-      return {
-        to: '/post/$post_id',
-        params: { post_id: String(content.content_id) },
-      };
-    case ContentTypeEnum.PHOTO:
-      return {
-        to: '.',
-        search: (prev) => ({ ...prev, photo: content.content_id }),
-      };
-    case ContentTypeEnum.DOCUMENT:
-      return {
-        to: '/document/$doc_id',
-        params: { doc_id: String(content.content_id) },
-      };
-    default:
-      return { to: '/' };
-  }
 };
 
 function CommentList({ comments }: Props) {
@@ -41,7 +13,7 @@ function CommentList({ comments }: Props) {
       {comments.map((comment) => {
         const contentInfo = comment.content;
         const boardInfo = comment.content.board;
-        const linkProps = getLinkProps(contentInfo);
+        const linkProps = commentLink(contentInfo);
 
         return (
           <div className="my-cmt-wrapper" key={comment.comment_id}>
