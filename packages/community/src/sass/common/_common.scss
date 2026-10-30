@@ -208,10 +208,6 @@
   }
 }
 
-.tag-wrapper {
-  margin-top: 20px;
-  margin-bottom: 10px;
-}
 .tag-list-wrapper {
   display: flex;
   flex-wrap: wrap;
@@ -242,15 +238,6 @@
     input:checked + .tag-label-2 {
       color: #eeeeee;
       background-color: #3a68a0;
-    }
-  }
-  .tag-all {
-    label {
-      border: 1px solid #686868;
-    }
-    input:checked + label {
-      color: #eeeeee;
-      background-color: #686868;
     }
   }
 }
