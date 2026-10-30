@@ -138,6 +138,8 @@ export default function PostComposer({
   };
 
   const requestLeave = () => {
+    // Saving finishes by navigating, so leaving now would be undone.
+    if (submitting) return;
     if (leaveConfirm) setLeaveOpen(true);
     else onLeave();
   };
@@ -175,8 +177,9 @@ export default function PostComposer({
         <button
           type="button"
           aria-label="닫기"
+          disabled={submitting}
           onClick={requestLeave}
-          className="flex size-11 shrink-0 items-center justify-center"
+          className="flex size-11 shrink-0 items-center justify-center disabled:opacity-40"
         >
           <X className="size-[22px]" />
         </button>
@@ -340,7 +343,11 @@ export default function PostComposer({
         </div>
 
         <div className="hidden justify-end gap-2 md:flex">
-          <Button variant="secondary" onClick={requestLeave}>
+          <Button
+            variant="secondary"
+            disabled={submitting}
+            onClick={requestLeave}
+          >
             취소
           </Button>
           <Button
