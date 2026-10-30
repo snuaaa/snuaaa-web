@@ -17,7 +17,13 @@ import TopNav from './TopNav';
  */
 const REDESIGNED_PATHS = ['/', '/equipment', '/equipment/rent'];
 /** Detail pages, edit forms included, that draw their own layout. */
-const REDESIGNED_PREFIXES = ['/post/', '/album/', '/exhibition/'];
+const REDESIGNED_PREFIXES = [
+  '/post/',
+  '/album/',
+  '/exhibition/',
+  '/mypage/',
+  '/userpage/',
+];
 /** Board types whose list screen has moved to the redesign. */
 const REDESIGNED_BOARD_TYPES: Board['board_type'][] = ['N', 'D', 'A', 'M', 'E'];
 
