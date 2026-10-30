@@ -7,12 +7,12 @@ export interface SingUpRequest {
   passwordCf: string;
   aaaNum: string;
   username: string;
-  col_no: string;
+  schoolNum: string;
   major: string;
   email: string;
   mobile: string;
   introduction: string;
-  profile: File;
+  profile?: File;
 }
 
 export interface DuplicateCheckRequest {
@@ -22,6 +22,8 @@ export interface DuplicateCheckRequest {
 export interface LogInRequest {
   id: string;
   password: string;
+  /** Keeps the token cookie after the browser closes. */
+  autoLogin?: boolean;
 }
 
 export interface Auth {
@@ -53,7 +55,7 @@ const AuthService = {
   signUp: function (data: SingUpRequest) {
     const formData = new FormData();
     for (const [key, value] of Object.entries(data)) {
-      formData.append(key, value);
+      if (value !== undefined) formData.append(key, value);
     }
 
     return API.post('auth/signup/', formData);
