@@ -352,7 +352,9 @@ export default function CommentSection({
     useDeleteComment();
   const { mutate: likeComment } = useLikeComment();
 
+  // Separate drafts, so starting a reply keeps the comment in progress.
   const [text, setText] = useState('');
+  const [replyText, setReplyText] = useState('');
   const [replyTo, setReplyTo] = useState<ReplyTarget | null>(null);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [menuFor, setMenuFor] = useState<Comment | null>(null);
@@ -369,27 +371,29 @@ export default function CommentSection({
       commentId: comment.comment_id,
       nickname: comment.user.nickname,
     });
-    setText('');
+    setReplyText('');
     setError(null);
     if (!isDesktop) composerRef.current?.focus();
   };
 
   const cancelReply = () => {
     setReplyTo(null);
-    setText('');
+    setReplyText('');
   };
 
   const submit = async () => {
     setError(null);
+    const draft = replyTo ? replyText : text;
     try {
       await createComment({
         parentId: contentId,
         data: {
           parent_comment_id: replyTo?.commentId ?? 0,
-          text: text.trim(),
+          text: draft.trim(),
         },
       });
-      setText('');
+      if (replyTo) setReplyText('');
+      else setText('');
       setReplyTo(null);
     } catch (err) {
       console.error(err);
@@ -439,8 +443,9 @@ export default function CommentSection({
   });
 
   const composerProps = {
-    value: text,
-    onChange: setText,
+    // While replying, the only composer shown is the reply one.
+    value: replyTo ? replyText : text,
+    onChange: replyTo ? setReplyText : setText,
     onSubmit: submit,
     submitting: creating,
   };
