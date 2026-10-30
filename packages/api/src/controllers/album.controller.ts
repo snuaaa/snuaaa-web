@@ -8,7 +8,9 @@ import {
 } from '../models';
 import { Op } from 'sequelize';
 import { BASE_USER_FIELDS } from '../models/User';
-import { BadRequestError, NotFoundError } from '../errors';
+import { AuthorizationError, BadRequestError, NotFoundError } from '../errors';
+import { JWTPayload } from '../utils/token';
+import { assertCanEditContent } from './content.controller';
 
 export type AlbumResponse = ContentModel & {
   album: AlbumModel;
@@ -205,6 +207,35 @@ export async function updateAlbum(album_id, data) {
       },
     },
   );
+}
+
+/**
+ * Whoever can edit the album may pick any of its photos as the cover. The
+ * author of a photo in the album may also pick that photo, as the web has
+ * always allowed.
+ */
+export async function assertCanSetAlbumThumbnail(
+  album_id,
+  photo_id,
+  user: JWTPayload,
+) {
+  try {
+    await assertCanEditContent(album_id, user);
+    return;
+  } catch (err) {
+    if (!(err instanceof AuthorizationError)) throw err;
+  }
+  const photo = await ContentModel.findOne({
+    attributes: ['content_id'],
+    where: {
+      content_id: photo_id,
+      parent_id: album_id,
+      author_id: user._id,
+    },
+  });
+  if (!photo) {
+    throw new AuthorizationError('Permission denied', { code: 4001 });
+  }
 }
 
 export async function updateAlbumThumbnail(album_id, photo_id) {

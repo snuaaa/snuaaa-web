@@ -18,7 +18,10 @@ import {
 import { resizeImageBuffer } from '../utils/resize';
 import { uploadImageToS3 } from '../utils/upload';
 import { retrieveUserByUserUuid } from '../controllers/user.controller';
-import { deleteContent } from '../controllers/content.controller';
+import {
+  assertCanEditContent,
+  deleteContent,
+} from '../controllers/content.controller';
 import { BadRequestError } from '../errors';
 
 const router = express.Router();
@@ -42,8 +45,9 @@ router.patch(
 router.delete(
   '/:exhibition_id',
   verifyTokenMiddleware,
-  async (req, res, next) => {
+  async (req: AuthenticatedRequest, res, next) => {
     try {
+      await assertCanEditContent(req.params.exhibition_id, req.decodedToken);
       await deleteContent(req.params.exhibition_id);
       res.json({ success: true });
     } catch (err) {
