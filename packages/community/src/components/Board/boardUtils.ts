@@ -8,7 +8,7 @@ export const BOARD_GROUPS = [
 ] as const;
 
 export const canRead = (board: Board, grade: number) => grade <= board.lv_read;
-export const canWrite = (board: Board, grade: number) =>
+export const canWrite = (board: Pick<Board, 'lv_write'>, grade: number) =>
   grade <= board.lv_write;
 
 const DAY = 24 * 60 * 60 * 1000;

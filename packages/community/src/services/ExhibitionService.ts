@@ -17,7 +17,7 @@ type ExhibitionInfo = Exhibition & {
     User,
     'user_id' | 'nickname' | 'introduction' | 'profile_path' | 'deleted_at'
   >;
-  board: Pick<Board, 'board_id' | 'board_name' | 'lv_read'>;
+  board: Pick<Board, 'board_id' | 'board_name' | 'lv_read' | 'lv_write'>;
 };
 
 type RetrieveExhibitionListResponse = ExhibitionInfo[];
