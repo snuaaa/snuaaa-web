@@ -16,11 +16,10 @@ import { AuthProvider } from '../contexts/auth';
 import { ViewportSizeProvider } from '../contexts/viewportSize';
 import AppShell from '~/components/Layout/AppShell';
 import FullScreenPortal from '~/components/Common/FullScreenPortal';
+import ExhibitPhotoDetailModal from '~/components/Exhibition/ExhibitPhotoDetail';
 import PhotoDetailModal from '~/components/Photo/PhotoDetail';
 import { queryClient } from '~/lib/queryClient';
 import { PhotoNavigationScope } from '~/services/PhotoService';
-
-const ExhibitPhotoPage = React.lazy(() => import('~/pages/ExhibitPhoto'));
 
 const TanStackRouterDevtools =
   process.env.NODE_ENV === 'production'
@@ -92,10 +91,39 @@ function PhotoModal({
 }
 
 function ExhibitPhotoModal({ exhibitPhotoId }: { exhibitPhotoId: number }) {
+  const router = useRouter();
+  const navigate = useNavigate();
+
+  const handleMovePhoto = useCallback(
+    (newPhotoId: number) => {
+      navigate({
+        to: '.',
+        search: (prev: Record<string, unknown>) => ({
+          ...prev,
+          exhibitPhoto: newPhotoId,
+        }),
+        replace: true,
+      });
+    },
+    [navigate],
+  );
+
+  const handleClosePhoto = useCallback(() => {
+    if (window.history.length > 2) {
+      router.history.back();
+    } else {
+      navigate({ to: '/' });
+    }
+  }, [router, navigate]);
+
   return (
-    <Suspense fallback={null}>
-      <ExhibitPhotoPage exhibitPhotoId={exhibitPhotoId} />
-    </Suspense>
+    <FullScreenPortal>
+      <ExhibitPhotoDetailModal
+        exhibitPhotoId={exhibitPhotoId}
+        onClose={handleClosePhoto}
+        onMovePhoto={handleMovePhoto}
+      />
+    </FullScreenPortal>
   );
 }
 

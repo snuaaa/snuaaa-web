@@ -1,7 +1,16 @@
 import { cn } from '~/lib/utils';
-import { Photo } from '~/services/types';
 
-type PhotoFields = Photo['photo'];
+/** The shooting details shared by photos and exhibit photos. */
+export type PhotoMetaFields = {
+  date?: string | Date;
+  location?: string;
+  camera?: string;
+  lens?: string;
+  focal_length?: string;
+  f_stop?: string;
+  exposure_time?: string;
+  iso?: string;
+};
 
 /** 2026.9.25 */
 function formatShotDate(value?: string | Date) {
@@ -22,7 +31,7 @@ const withPrefix = (value: string | undefined, prefix: string) =>
     : value;
 
 /** The shooting details that were filled in, in display order. */
-function photoMetaItems(photo: Pick<PhotoFields, keyof PhotoFields>) {
+function photoMetaItems(photo: PhotoMetaFields) {
   return [
     { label: '촬영일', value: formatShotDate(photo.date) },
     { label: '장소', value: photo.location },
@@ -40,7 +49,7 @@ function photoMetaItems(photo: Pick<PhotoFields, keyof PhotoFields>) {
 }
 
 type PhotoMetaProps = {
-  photo: PhotoFields;
+  photo: PhotoMetaFields;
   /** `panel`: four columns in the desktop side panel. */
   variant?: 'page' | 'panel';
 };
