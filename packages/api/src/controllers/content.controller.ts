@@ -1,6 +1,7 @@
-import { ContentModel } from '../models';
+import { BoardModel, ContentModel } from '../models';
 import uuid4 from 'uuid4';
-import { BadRequestError } from '../errors';
+import { AuthorizationError, BadRequestError, NotFoundError } from '../errors';
+import { JWTPayload } from '../utils/token';
 
 export async function createContent(user_id, board_id, data, type) {
   if (!user_id || !board_id) {
@@ -18,6 +19,26 @@ export async function createContent(user_id, board_id, data, type) {
   });
 
   return content.getDataValue('content_id');
+}
+
+/**
+ * Throws unless the user wrote the content or their grade is within the
+ * board's edit level (a lower grade means more privilege).
+ */
+export async function assertCanEditContent(content_id, user: JWTPayload) {
+  const content = await ContentModel.findByPk(content_id, {
+    attributes: ['content_id', 'author_id'],
+    include: [{ model: BoardModel, attributes: ['lv_edit'] }],
+  });
+  if (!content) {
+    throw new NotFoundError('Content not found');
+  }
+  const board = content.get('board') as BoardModel | undefined;
+  const isAuthor = content.getDataValue('author_id') === user._id;
+  const canEditBoard = !!board && user.grade <= board.getDataValue('lv_edit');
+  if (!isAuthor && !canEditBoard) {
+    throw new AuthorizationError('Permission denied', { code: 4001 });
+  }
 }
 
 export async function updateContent(content_id, data) {
