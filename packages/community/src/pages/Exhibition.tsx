@@ -4,7 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { ChevronLeft, ImagePlus, Images, Link2 } from 'lucide-react';
 
 import { canWrite } from '~/components/Board/boardUtils';
-import CreateExhibitPhoto from '~/components/Exhibition/CreateExhibitPhoto';
+import ExhibitPhotoUploader from '~/components/Exhibition/ExhibitPhotoUploader';
 import { Button, Fab, Toast, useToast } from '~/components/ui';
 import { useAuth } from '~/contexts/auth';
 import {
@@ -198,12 +198,17 @@ const ExhibitionPage: FC = () => {
       )}
       <Toast message={toast.message} />
 
-      {/* The write screens move in their own PR; this is still legacy. */}
       {isCreating && (
-        <CreateExhibitPhoto
-          board_id={content.board_id}
-          exhibition_id={exhibitionId}
-          exhibition_no={exhibition.exhibition_no}
+        <ExhibitPhotoUploader
+          boardId={content.board_id}
+          exhibitionId={exhibitionId}
+          exhibitionNo={exhibition.exhibition_no}
+          nextOrder={
+            works.reduce(
+              (max, work) => Math.max(max, work.exhibitPhoto.order ?? 0),
+              0,
+            ) + 1
+          }
           onCreate={() => {
             queryClient.invalidateQueries({
               queryKey: exhibitionKeys.detail(exhibitionId),
