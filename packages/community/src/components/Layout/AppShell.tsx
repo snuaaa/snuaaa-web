@@ -15,7 +15,7 @@ import TopNav from './TopNav';
  * content width. Every other page keeps the legacy white column
  * (`sass/_section.scss`) until its screen PR moves it.
  */
-const REDESIGNED_PATHS = ['/'];
+const REDESIGNED_PATHS = ['/', '/equipment', '/equipment/rent'];
 /** Detail pages, edit forms included, that draw their own layout. */
 const REDESIGNED_PREFIXES = [
   '/post/',

@@ -3,12 +3,10 @@ import { Equipment } from '~/services/types';
 import Image from '~/components/Common/AaaImage';
 import { ViewportSize, useViewportSize } from '~/contexts/viewportSize';
 import ManagementButton from './ManagementButton';
-import RentButton from './RentButton';
 import BasicInfo from './BasicInfo';
 
 type Props = {
   equip: Equipment;
-  type: 'rent' | 'admin';
 };
 
 const Title = ({ children }: PropsWithChildren) => {
@@ -17,7 +15,7 @@ const Title = ({ children }: PropsWithChildren) => {
   );
 };
 
-const EquipmentItem: FC<Props> = ({ equip, type }) => {
+const EquipmentItem: FC<Props> = ({ equip }) => {
   const viewportSize = useViewportSize();
 
   const isMobile = viewportSize === ViewportSize.Mobile;
@@ -31,11 +29,7 @@ const EquipmentItem: FC<Props> = ({ equip, type }) => {
       <div className="w-3/5 md:w-full">
         {isMobile && <Title>{equip.name}</Title>}
         <BasicInfo equipment={equip} />
-        {type === 'admin' ? (
-          <ManagementButton equipment={equip} />
-        ) : (
-          <RentButton equipment={equip} />
-        )}
+        <ManagementButton equipment={equip} />
       </div>
     </div>
   );

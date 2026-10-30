@@ -16,7 +16,6 @@ import { Equipment } from '~/services/types';
 import EquipmentItem from './EquipmentItem';
 
 type Props = {
-  type: 'rent' | 'admin';
   data: RetrieveEquipmentListResponse;
   columns: 1 | 2 | 3;
   search: EquipSearchLocationState;
@@ -32,7 +31,7 @@ const fakeFetch = (delay = 500) => new Promise((res) => setTimeout(res, delay));
 
 const LIMIT_UNIT = 12;
 
-const EquipList: React.FC<Props> = ({ data, columns, type, search }) => {
+const EquipList: React.FC<Props> = ({ data, columns, search }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   // ...
@@ -151,11 +150,7 @@ const EquipList: React.FC<Props> = ({ data, columns, type, search }) => {
     <>
       <div className={`grid ${gridColumnsStyles[columns]} gap-4 px-2`}>
         {filteredEquipments.map((equip) => (
-          <EquipmentItem
-            equip={equip}
-            key={equip.id}
-            type={type}
-          ></EquipmentItem>
+          <EquipmentItem equip={equip} key={equip.id} />
         ))}
       </div>
       <div className="w-full flex justify-center" ref={loaderRef}>
