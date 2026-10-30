@@ -398,6 +398,7 @@ export default function CommentSection({
   };
 
   const saveEdit = async (comment: Comment, nextText: string) => {
+    setError(null);
     try {
       await updateComment({
         commentId: comment.comment_id,
@@ -412,6 +413,7 @@ export default function CommentSection({
 
   const confirmDelete = async () => {
     if (!deleteTarget) return;
+    setError(null);
     try {
       await deleteComment(deleteTarget.comment_id);
     } catch (err) {
