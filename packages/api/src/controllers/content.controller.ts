@@ -22,16 +22,16 @@ export async function createContent(user_id, board_id, data, type) {
 }
 
 /**
- * Throws unless the user wrote the content or their grade is within the
- * board's edit level (a lower grade means more privilege). With `type`, a
- * content of another type counts as not found, so one route can't delete
- * another type's row.
+ * Whether the user wrote the content or their grade is within the board's
+ * edit level (a lower grade means more privilege). With `type`, a content of
+ * another type counts as not found, so one route can't delete another type's
+ * row. Throws NotFoundError when the content doesn't exist.
  */
-export async function assertCanEditContent(
+export async function canEditContent(
   content_id,
   user: JWTPayload,
   type?: string,
-) {
+): Promise<boolean> {
   const content = await ContentModel.findByPk(content_id, {
     attributes: ['content_id', 'author_id', 'type'],
     include: [{ model: BoardModel, attributes: ['lv_edit'] }],
@@ -42,7 +42,16 @@ export async function assertCanEditContent(
   const board = content.get('board') as BoardModel | undefined;
   const isAuthor = content.getDataValue('author_id') === user._id;
   const canEditBoard = !!board && user.grade <= board.getDataValue('lv_edit');
-  if (!isAuthor && !canEditBoard) {
+  return isAuthor || canEditBoard;
+}
+
+/** Throws unless `canEditContent` allows the user. */
+export async function assertCanEditContent(
+  content_id,
+  user: JWTPayload,
+  type?: string,
+) {
+  if (!(await canEditContent(content_id, user, type))) {
     throw new AuthorizationError('Permission denied', { code: 4001 });
   }
 }

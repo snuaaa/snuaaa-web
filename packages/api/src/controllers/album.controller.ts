@@ -10,7 +10,7 @@ import { Op } from 'sequelize';
 import { BASE_USER_FIELDS } from '../models/User';
 import { AuthorizationError, BadRequestError, NotFoundError } from '../errors';
 import { JWTPayload } from '../utils/token';
-import { assertCanEditContent } from './content.controller';
+import { canEditContent } from './content.controller';
 import ContentTypeEnum from '../enums/contentTypeEnum';
 
 export type AlbumResponse = ContentModel & {
@@ -211,30 +211,31 @@ export async function updateAlbum(album_id, data) {
 }
 
 /**
- * Whoever can edit the album may pick any of its photos as the cover. The
- * author of a photo in the album may also pick that photo, as the web has
- * always allowed.
+ * The photo must be in the album, or it's not found. Whoever can edit the
+ * album may pick any of its photos as the cover. The author of a photo in the
+ * album may also pick that photo, as the web has always allowed.
  */
 export async function assertCanSetAlbumThumbnail(
   album_id,
   photo_id,
   user: JWTPayload,
 ) {
-  try {
-    await assertCanEditContent(album_id, user, ContentTypeEnum.ALBUM);
-    return;
-  } catch (err) {
-    if (!(err instanceof AuthorizationError)) throw err;
+  if (!photo_id) {
+    throw new BadRequestError('tn_photo_id can not be null');
   }
   const photo = await ContentModel.findOne({
-    attributes: ['content_id'],
+    attributes: ['content_id', 'author_id'],
     where: {
       content_id: photo_id,
       parent_id: album_id,
-      author_id: user._id,
+      type: ContentTypeEnum.PHOTO,
     },
   });
   if (!photo) {
+    throw new NotFoundError('Photo not found in album');
+  }
+  if (photo.getDataValue('author_id') === user._id) return;
+  if (!(await canEditContent(album_id, user, ContentTypeEnum.ALBUM))) {
     throw new AuthorizationError('Permission denied', { code: 4001 });
   }
 }
