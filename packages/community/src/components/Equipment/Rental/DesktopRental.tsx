@@ -56,7 +56,7 @@ export default function DesktopRental({
         open={confirming}
         items={cart.cart}
         onClose={() => setConfirming(false)}
-        onRented={() => cart.clear()}
+        onRented={cart.remove}
         onDone={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
       />
     </div>

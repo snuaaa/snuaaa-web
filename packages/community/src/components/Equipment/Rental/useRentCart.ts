@@ -25,7 +25,9 @@ export default function useRentCart() {
     has,
     toggle,
     remaining,
-    clear: () => setCart([]),
+    /** Drop the items that were rented; failed ones stay to retry. */
+    remove: (ids: number[]) =>
+      setCart((prev) => prev.filter((item) => !ids.includes(item.id))),
   };
 }
 

@@ -54,7 +54,7 @@ export default function EquipmentRent() {
         open={confirming}
         items={cart.cart}
         onClose={() => setConfirming(false)}
-        onRented={() => cart.clear()}
+        onRented={cart.remove}
         onDone={() => navigate({ to: '/equipment' })}
       />
     </div>
