@@ -15,6 +15,7 @@ import {
   useAllRentRecords,
   useUpdatePenaltyStatus,
 } from '~/hooks/queries/useEquipmentQueries';
+import { useAuth } from '~/contexts/auth';
 import { cn } from '~/lib/utils';
 import { PenaltyStatus, RentWithEquipment } from '~/services/types';
 import {
@@ -24,6 +25,7 @@ import {
   PenaltyFilter,
   rentChip,
 } from './adminUtils';
+import { EQUIP_ADMIN_GRADE } from '../Rental/rentUtils';
 import EquipmentAdminPage from './EquipmentAdminPage';
 import ReturnPhotoButton from './ReturnPhotoButton';
 
@@ -51,6 +53,7 @@ export default function LateFeesAdmin() {
   const search = useSearch({ from: '/equipment/admin/fees' });
   const navigate = useNavigate({ from: '/equipment/admin/fees' });
   const page = search.page ?? 1;
+  const { authInfo } = useAuth();
   const { data, isLoading, isError } = useAllRentRecords(
     {
       penaltyStatus: search.penalty_status,
@@ -58,6 +61,7 @@ export default function LateFeesAdmin() {
       dateToStart: search.date_to_start,
     },
     page,
+    authInfo.user.grade <= EQUIP_ADMIN_GRADE,
   );
   const { mutateAsync: updatePenalty, isPending: updating } =
     useUpdatePenaltyStatus();

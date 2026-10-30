@@ -1,12 +1,11 @@
 import type { ReactNode } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
 
 import AdminPage, { AdminTab, AdminTabs } from '~/components/Admin/AdminPage';
 import { CountBadge } from '~/components/ui';
 import { useAuth } from '~/contexts/auth';
 import {
-  allRentRecordsQueryOptions,
+  useAllRentRecords,
   useEquipmentList,
 } from '~/hooks/queries/useEquipmentQueries';
 import { PenaltyStatus } from '~/services/types';
@@ -27,13 +26,11 @@ export default function EquipmentAdminPage({
   const { authInfo } = useAuth();
   const allowed = authInfo.user.grade <= EQUIP_ADMIN_GRADE;
   const { data: equipments } = useEquipmentList();
-  const { data: unpaid } = useQuery({
-    ...allRentRecordsQueryOptions(
-      { penaltyStatus: PenaltyStatus.NEED_PAYMENT },
-      1,
-    ),
-    enabled: allowed,
-  });
+  const { data: unpaid } = useAllRentRecords(
+    { penaltyStatus: PenaltyStatus.NEED_PAYMENT },
+    1,
+    allowed,
+  );
   const unpaidCount = unpaid?.count ?? 0;
 
   return (
