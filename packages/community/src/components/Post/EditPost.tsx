@@ -1,17 +1,13 @@
-import { ChangeEvent, FC, useRef, useState } from 'react';
-import { AxiosProgressEvent } from 'axios';
-import Editor from '../Common/Editor';
+import { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 
-import AttachFile from './AttachFile';
-
-import FileIcon from '../Common/FileIcon';
-import { Content, File as FileType } from '~/services/types';
-import ProgressBar from '~/components/Common/ProgressBar';
-import { useUpdatePost } from '~/hooks/queries/usePostQueries';
+import { postKeys, useUpdatePost } from '~/hooks/queries/usePostQueries';
 import {
   useCreateFile,
   useDeleteFile,
 } from '~/hooks/queries/useContentQueries';
+import { Content } from '~/services/types';
+import PostComposer, { type UploadProgress } from './PostComposer';
 
 type Props = {
   postInfo: Content;
@@ -19,221 +15,99 @@ type Props = {
   onUpdate: () => void;
 };
 
-const MAX_SIZE = 20 * 1024 * 1024;
+/** 글 수정: the 글쓰기 form filled with the post, without a draft. */
+export default function EditPost({ postInfo, onCancel, onUpdate }: Props) {
+  const queryClient = useQueryClient();
+  const [title, setTitle] = useState(postInfo.title);
+  const [text, setText] = useState(postInfo.text);
+  const [removedIds, setRemovedIds] = useState<number[]>([]);
+  const [files, setFiles] = useState<File[]>([]);
+  const [touched, setTouched] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [progress, setProgress] = useState<UploadProgress | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-const EditPost: FC<Props> = ({ postInfo, onCancel, onUpdate }) => {
-  const [removedFiles, setRemovedFiles] = useState<number[]>([]);
-  const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
-  const [progress, setProgress] = useState<number>(0);
+  const { mutateAsync: updatePost } = useUpdatePost();
+  const { mutateAsync: createFile } = useCreateFile();
+  const { mutateAsync: deleteFile } = useDeleteFile();
 
-  const [editingPostData, setEditingPostData] = useState<Content>(postInfo);
+  const existingFiles = (postInfo.attachedFiles ?? []).filter(
+    (file) => !removedIds.includes(file.file_id),
+  );
+  const dirty = touched || removedIds.length > 0 || files.length > 0;
 
-  const currentSize = useRef(0);
-
-  const { mutateAsync: mutateUpdatePost, isPending: isPendingUpdate } =
-    useUpdatePost();
-  const { mutateAsync: mutateCreateFile } = useCreateFile();
-  const { mutateAsync: mutateDeleteFile } = useDeleteFile();
-
-  const handleEditing = (e: ChangeEvent<HTMLInputElement>) => {
-    if (editingPostData) {
-      setEditingPostData({
-        ...editingPostData,
-        [e.target.name]: e.target.value,
-      });
-    }
-  };
-
-  const handleEditingText = (value: string) => {
-    if (editingPostData) {
-      setEditingPostData({
-        ...editingPostData,
-        text: value,
-      });
-    }
-  };
-
-  const removeFile = (file_id: number) => {
-    setRemovedFiles(removedFiles.concat(file_id));
-  };
-
-  const uploadProgress = (e: AxiosProgressEvent) => {
-    if (e.total) {
-      setProgress(Math.round((e.loaded / e.total) * 100));
-    }
-  };
-
-  const updatePost = async () => {
-    if (!editingPostData) return;
-    const post_id = Number(postInfo.content_id);
+  const submit = async () => {
+    const postId = postInfo.content_id;
+    setError(null);
+    setSubmitting(true);
     try {
-      await mutateUpdatePost({ post_id, data: editingPostData });
-      if (attachedFiles.length > 0) {
-        for (let i = 0; i < attachedFiles.length; i++) {
-          const formData = new FormData();
-          formData.append('attachedFile', attachedFiles[i]);
-          await mutateCreateFile({
-            content_id: post_id,
-            formData,
-            onUploadProgress: uploadProgress,
-          });
-        }
+      await updatePost({
+        post_id: postId,
+        data: { title: title.trim(), text },
+      });
+      for (let i = 0; i < files.length; i++) {
+        setProgress({ current: i + 1, total: files.length, percent: 0 });
+        const formData = new FormData();
+        formData.append('attachedFile', files[i]);
+        await createFile({
+          content_id: postId,
+          formData,
+          onUploadProgress: (e) => {
+            if (e.total) {
+              const percent = Math.round((e.loaded / e.total) * 100);
+              setProgress({ current: i + 1, total: files.length, percent });
+            }
+          },
+        });
       }
-      if (removedFiles.length > 0) {
-        for (let i = 0; i < removedFiles.length; i++) {
-          await mutateDeleteFile(removedFiles[i]);
-        }
+      for (const fileId of removedIds) {
+        await deleteFile(fileId);
       }
       onUpdate();
     } catch (err) {
       console.error(err);
-      alert('업데이트 오류');
-    }
-  };
-
-  const attachFile = (e: ChangeEvent<HTMLInputElement>) => {
-    // const { attachedFiles } = this.state;
-    if (e.target.files && postInfo) {
-      if (
-        e.target.files.length +
-          attachFile.length +
-          (postInfo.attachedFiles ? postInfo.attachedFiles.length : 0) >
-        5
-      ) {
-        alert('파일은 최대 5개까지만 첨부해주세요.');
-        e.target.value = '';
-      } else if (e.target.files) {
-        let tmpSize = currentSize.current;
-        for (let i = 0; i < e.target.files.length; i++) {
-          tmpSize += e.target.files[i].size;
-        }
-        if (tmpSize > MAX_SIZE) {
-          alert('한 번에 20MB 이상의 파일은 업로드 할 수 없습니다.');
-        } else {
-          currentSize.current += tmpSize;
-          const newFiles: File[] = [];
-          for (let i = 0; i < e.target.files.length; i++) {
-            const tmpFile = e.target.files.item(i);
-            if (tmpFile) {
-              newFiles.push(tmpFile);
-            }
-          }
-          if (newFiles && newFiles.length > 0) {
-            setAttachedFiles(attachedFiles.concat(...newFiles));
-          }
-        }
-      }
-    }
-  };
-
-  const removeAttachedFile = (index: number) => {
-    setAttachedFiles(
-      attachedFiles.filter((file, i) => {
-        return index !== i;
-      }),
-    );
-  };
-
-  const cancelRemoveFile = (file_id: number) => {
-    setRemovedFiles(removedFiles.filter((file) => file !== file_id));
-  };
-
-  const makeFileList = () => {
-    if (
-      editingPostData.attachedFiles &&
-      editingPostData.attachedFiles.length > 0
-    ) {
-      return (
-        <div className="file-download-wrapper">
-          {editingPostData.attachedFiles.map((file: FileType) => {
-            const isDeleted = removedFiles.includes(file.file_id);
-
-            return (
-              <div key={file.file_id}>
-                <div
-                  className={`file-attached-list ${isDeleted ? 'deleted' : ''}`}
-                >
-                  <FileIcon fileInfo={file} isFull={true} isDownload={false} />
-                </div>
-                {removedFiles.includes(file.file_id) ? (
-                  <i
-                    className="ri-delete-bin-2-line"
-                    onClick={() => cancelRemoveFile(file.file_id)}
-                  >
-                    취소
-                  </i>
-                ) : (
-                  <i
-                    className="ri-delete-bin-line"
-                    onClick={() => removeFile(file.file_id)}
-                  ></i>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      );
+      setError('저장하지 못했어요. 잠시 후 다시 시도해 주세요.');
+    } finally {
+      // Files change after the post itself, so refetch once they are done.
+      queryClient.invalidateQueries({ queryKey: postKeys.all });
+      setProgress(null);
+      setSubmitting(false);
     }
   };
 
   return (
-    <>
-      <div className="writepost-wrapper">
-        <div className="writepost-header">
-          <i
-            className="ri-arrow-left-line cursor-pointer"
-            onClick={onCancel}
-          ></i>
-          <h5>글수정</h5>
-        </div>
-        <div className="writepost-title">
-          <input
-            name="title"
-            value={editingPostData.title}
-            onChange={handleEditing}
-            placeholder="제목"
-          />
-        </div>
-        <div className="writepost-content">
-          <Editor
-            text={editingPostData.text}
-            setText={handleEditingText}
-            readOnly={false}
-          />
-        </div>
-        {editingPostData.attachedFiles && makeFileList()}
-        <div className="writepost-file">
-          <AttachFile
-            files={attachedFiles}
-            attachFile={attachFile}
-            removeFile={removeAttachedFile}
-          />
-        </div>
-        <div className="btn-wrapper">
-          <button
-            className="enif-btn-common enif-btn-cancel"
-            onClick={onCancel}
-          >
-            취소
-          </button>
-          <button
-            className="enif-btn-common enif-btn-ok"
-            disabled={isPendingUpdate}
-            onClick={updatePost}
-          >
-            확인
-          </button>
-        </div>
-      </div>
-      {isPendingUpdate && (
-        <ProgressBar
-          loadedPercentage={progress}
-          currentIdx={0}
-          totalIdx={attachedFiles.length}
-        />
-      )}
-    </>
+    <PostComposer
+      heading="글 수정"
+      boardName={postInfo.board.board_name}
+      title={title}
+      onTitleChange={(value) => {
+        setTitle(value);
+        setTouched(true);
+      }}
+      text={text}
+      onTextChange={(value) => {
+        setText(value);
+        setTouched(true);
+      }}
+      existingFiles={existingFiles}
+      onRemoveExisting={(fileId) => setRemovedIds((ids) => [...ids, fileId])}
+      newFiles={files}
+      onNewFilesChange={setFiles}
+      submitLabel="저장"
+      submitting={submitting}
+      progress={progress}
+      error={error}
+      onSubmit={submit}
+      leaveConfirm={
+        dirty
+          ? {
+              title: '수정을 그만둘까요?',
+              description: '고친 내용은 저장되지 않아요.',
+              cancelLabel: '계속 고치기',
+            }
+          : null
+      }
+      onLeave={onCancel}
+    />
   );
-};
-
-export default EditPost;
+}

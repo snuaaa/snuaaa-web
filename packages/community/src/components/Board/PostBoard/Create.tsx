@@ -1,226 +1,197 @@
-import { useState, ChangeEvent, useEffect } from 'react';
-import { AxiosProgressEvent } from 'axios';
-import { CreatePostRequest } from '~/services/PostService';
-import Editor from '~/components/Common/Editor';
-import AttachFile from '~/components/Post/AttachFile';
-import ProgressBar from '~/components/Common/ProgressBar';
+import { useState } from 'react';
+
+import PostComposer, {
+  type UploadProgress,
+} from '~/components/Post/PostComposer';
+import { Button } from '~/components/ui';
 import { useCreatePost } from '~/hooks/queries/usePostQueries';
 import { useCreateFile } from '~/hooks/queries/useContentQueries';
+import { Board } from '~/services/types';
 
-const MAX_SIZE = 20 * 1024 * 1024;
 const BASE_STORAGE_KEY = 'CREATE_POST_DRAFT';
 
+type Draft = { title: string; text: string; savedAt?: number };
+
+const pad = (n: number) => String(n).padStart(2, '0');
+const formatTime = (date: Date) =>
+  `${pad(date.getHours())}:${pad(date.getMinutes())}`;
+
+// Storage can be missing or full (private mode); the draft is a convenience.
+function loadDraft(key: string): Draft | null {
+  try {
+    const saved = localStorage.getItem(key);
+    if (!saved) return null;
+    const draft = JSON.parse(saved) as Draft;
+    return draft.title || draft.text ? draft : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveDraft(key: string, draft: Draft | null) {
+  try {
+    if (draft) localStorage.setItem(key, JSON.stringify(draft));
+    else localStorage.removeItem(key);
+  } catch {
+    // Ignore: writing still works, only the draft is lost.
+  }
+}
+
 type Props = {
-  board_id: string;
-  onCreate: () => void;
+  board: Board;
+  onCreate: (contentId: number) => void;
   onClose: () => void;
 };
 
-const CreatePost = ({ board_id, onCreate, onClose }: Props) => {
-  let currentSize = 0;
-  const STORAGE_KEY = `${BASE_STORAGE_KEY}_${board_id}`;
+/** 글쓰기, with a draft that is saved as you type. */
+export default function CreatePost({ board, onCreate, onClose }: Props) {
+  const storageKey = `${BASE_STORAGE_KEY}_${board.board_id}`;
 
-  const [postInfo, setPostInfo] = useState<CreatePostRequest>(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        return parsed;
-      } catch (e) {
-        console.error('Failed to load draft', e);
-      }
-    }
-    return {
-      title: '',
-      text: '',
-    };
-  });
-  const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
-  const [progress, setProgress] = useState<number>(0);
-  const [isUploading, setIsUploading] = useState<boolean>(false);
-  const [uploadIdx, setUploadIdx] = useState<number>(0);
+  const [initialDraft] = useState(() => loadDraft(storageKey));
+  const [title, setTitle] = useState(initialDraft?.title ?? '');
+  const [text, setText] = useState(initialDraft?.text ?? '');
+  const [savedAt, setSavedAt] = useState(initialDraft?.savedAt ?? null);
+  const [showBanner, setShowBanner] = useState(initialDraft !== null);
+  const [editorKey, setEditorKey] = useState(0);
+  const [files, setFiles] = useState<File[]>([]);
+  const [submitting, setSubmitting] = useState(false);
+  const [progress, setProgress] = useState<UploadProgress | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const { mutate: mutateCreatePost } = useCreatePost();
-  const { mutateAsync: mutateCreateFile } = useCreateFile();
+  const { mutateAsync: createPost } = useCreatePost();
+  const { mutateAsync: createFile } = useCreateFile();
 
-  useEffect(() => {
-    if (postInfo.title || postInfo.text) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(postInfo));
+  const persist = (next: { title: string; text: string }) => {
+    if (next.title || next.text) {
+      const now = Date.now();
+      saveDraft(storageKey, { ...next, savedAt: now });
+      setSavedAt(now);
     } else {
-      localStorage.removeItem(STORAGE_KEY);
-    }
-  }, [STORAGE_KEY, postInfo]);
-
-  const handleChangeTitle = (e: ChangeEvent<HTMLInputElement>) => {
-    setPostInfo((prevPostInfo) => {
-      return {
-        ...prevPostInfo,
-        [e.target.name]: e.target.value,
-      };
-    });
-  };
-
-  const handleEditor = (value: string) => {
-    setPostInfo((prevPostInfo) => {
-      return {
-        ...prevPostInfo,
-        text: value,
-      };
-    });
-  };
-
-  const attachFile = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      if (e.target.files.length + attachedFiles.length > 5) {
-        alert('파일은 최대 5개까지만 첨부해주세요.');
-        e.target.value = '';
-      } else if (e.target.files) {
-        let tmpSize = currentSize;
-        for (let i = 0; i < e.target.files.length; i++) {
-          tmpSize += e.target.files[i].size;
-        }
-        if (tmpSize > MAX_SIZE) {
-          alert('한 번에 20MB 이상의 파일은 업로드 할 수 없습니다.');
-        } else {
-          currentSize = tmpSize;
-          const newFiles: File[] = [];
-          for (let i = 0; i < e.target.files.length; i++) {
-            const tmpFile = e.target.files.item(i);
-            if (tmpFile) {
-              newFiles.push(tmpFile);
-            }
-          }
-          if (newFiles && newFiles.length > 0) {
-            setAttachedFiles(attachedFiles.concat(...newFiles));
-          }
-        }
-      }
+      saveDraft(storageKey, null);
+      setSavedAt(null);
     }
   };
 
-  const removeAttachedFile = (index: number) => {
-    setAttachedFiles(
-      attachedFiles.filter((file, i) => {
-        return index !== i;
-      }),
-    );
+  const changeTitle = (value: string) => {
+    setTitle(value);
+    persist({ title: value, text });
   };
 
-  const uploadProgress = (e: AxiosProgressEvent) => {
-    if (e.total) {
-      setProgress(Math.round((e.loaded / e.total) * 100));
+  const changeText = (value: string) => {
+    setText(value);
+    persist({ title, text: value });
+  };
+
+  const startOver = () => {
+    setTitle('');
+    setText('');
+    persist({ title: '', text: '' });
+    setEditorKey((k) => k + 1);
+    setShowBanner(false);
+  };
+
+  const submit = async () => {
+    setError(null);
+    setSubmitting(true);
+    let contentId: number;
+    try {
+      const res = await createPost({
+        board_id: board.board_id,
+        data: { title: title.trim(), text },
+      });
+      contentId = res.data.content_id;
+    } catch (err) {
+      console.error(err);
+      setError('글을 올리지 못했어요. 잠시 후 다시 시도해 주세요.');
+      setSubmitting(false);
+      return;
     }
-  };
-
-  const createPost = async () => {
-    if (!postInfo.title) {
-      alert('제목을 입력해 주세요.');
-    } else {
+    saveDraft(storageKey, null);
+    // The post exists now, so a failed attachment doesn't stop us: the
+    // author sees what is missing on the post and can add it by editing.
+    for (let i = 0; i < files.length; i++) {
+      setProgress({ current: i + 1, total: files.length, percent: 0 });
       const formData = new FormData();
-      formData.append('title', postInfo.title);
-      formData.append('text', postInfo.text);
-      setIsUploading(true);
+      formData.append('attachedFile', files[i]);
       try {
-        mutateCreatePost(
-          { board_id, data: postInfo },
-          {
-            onSuccess: async (res) => {
-              // TODO: 파일먼저 업로드하게 변경
-              if (attachedFiles.length > 0) {
-                for (let i = 0, max = attachedFiles.length; i < max; i++) {
-                  const fileFormData = new FormData();
-                  fileFormData.append('attachedFile', attachedFiles[i]);
-                  await mutateCreateFile({
-                    content_id: res.data.content_id,
-                    formData: fileFormData,
-                    onUploadProgress: uploadProgress,
-                  });
-                  setUploadIdx((uploadIdx) => uploadIdx + 1);
-                }
-              }
-              localStorage.removeItem(STORAGE_KEY);
-              setIsUploading(false);
-              onCreate();
-            },
+        await createFile({
+          content_id: contentId,
+          formData,
+          onUploadProgress: (e) => {
+            if (e.total) {
+              const percent = Math.round((e.loaded / e.total) * 100);
+              setProgress({ current: i + 1, total: files.length, percent });
+            }
           },
-        );
+        });
       } catch (err) {
         console.error(err);
-        setIsUploading(false);
-        alert('게시글 저장에 실패했습니다.');
       }
     }
+    onCreate(contentId);
   };
 
-  const handleClose = () => {
-    if (
-      window.confirm(
-        '작성 중인 내용과 저장된 임시 내용이 모두 삭제됩니다. 계속하시겠습니까?',
-      )
-    ) {
-      localStorage.removeItem(STORAGE_KEY);
-      onClose();
-    }
-  };
+  const savedDate = initialDraft?.savedAt
+    ? new Date(initialDraft.savedAt)
+    : null;
 
   return (
-    <>
-      <div className="writepost-wrapper">
-        <div className="writepost-header">
-          <i
-            className="ri-arrow-left-line cursor-pointer"
-            onClick={handleClose}
-          ></i>
-          <h5>글쓰기</h5>
-        </div>
-        <div className="writepost-title">
-          <input
-            name="title"
-            value={postInfo.title}
-            maxLength={50}
-            onChange={handleChangeTitle}
-            placeholder="제목을 입력하세요."
-          />
-        </div>
-        <div className="writepost-content">
-          <Editor
-            text={postInfo.text}
-            setText={handleEditor}
-            readOnly={false}
-          />
-        </div>
-        <div className="writepost-file">
-          <AttachFile
-            files={attachedFiles}
-            attachFile={attachFile}
-            removeFile={removeAttachedFile}
-          />
-        </div>
-        <div className="btn-wrapper">
-          <button
-            className="enif-btn-common enif-btn-cancel"
-            onClick={handleClose}
-          >
-            취소
-          </button>
-          <button
-            className="enif-btn-common enif-btn-ok"
-            disabled={isUploading}
-            onClick={createPost}
-          >
-            확인
-          </button>
-        </div>
-      </div>
-      {isUploading && attachedFiles.length > 0 && (
-        <ProgressBar
-          currentIdx={uploadIdx}
-          loadedPercentage={progress}
-          totalIdx={attachedFiles.length}
-        />
-      )}
-    </>
+    <PostComposer
+      heading="글쓰기"
+      boardName={board.board_name}
+      status={
+        savedAt ? `임시저장됨 ${formatTime(new Date(savedAt))}` : undefined
+      }
+      banner={
+        showBanner && (
+          <div className="mx-4 mt-3 flex flex-col gap-2.5 rounded-lg bg-accent-soft px-3.5 py-3 md:mx-0 md:mt-0 md:flex-row md:items-center md:gap-3 md:px-4">
+            <p className="flex-1 text-sm leading-normal">
+              <b>작성 중이던 글이 있어요.</b>{' '}
+              <span className="block text-label font-normal text-gray-700 md:inline">
+                {savedDate
+                  ? `${savedDate.getMonth() + 1}.${savedDate.getDate()} ${formatTime(savedDate)}에 임시저장된 글을 불러왔어요.`
+                  : '임시저장된 글을 불러왔어요.'}
+              </span>
+            </p>
+            <div className="flex gap-2">
+              <Button size="sm" onClick={() => setShowBanner(false)}>
+                이어서 쓰기
+              </Button>
+              <Button
+                size="sm"
+                variant="secondary"
+                className="border-star-600 bg-transparent"
+                onClick={startOver}
+              >
+                새로 쓰기
+              </Button>
+            </div>
+          </div>
+        )
+      }
+      title={title}
+      onTitleChange={changeTitle}
+      text={text}
+      onTextChange={changeText}
+      editorKey={editorKey}
+      newFiles={files}
+      onNewFilesChange={setFiles}
+      submitLabel="등록"
+      submitting={submitting}
+      progress={progress}
+      error={error}
+      onSubmit={submit}
+      leaveConfirm={
+        title || text
+          ? {
+              title: '작성을 그만둘까요?',
+              description:
+                '쓰던 내용은 임시저장돼 있어서 다음에 글쓰기를 열면 이어서 쓸 수 있어요.',
+              cancelLabel: '계속 쓰기',
+            }
+          : null
+      }
+      onLeave={onClose}
+    />
   );
-};
-
-export default CreatePost;
+}

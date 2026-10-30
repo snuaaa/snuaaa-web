@@ -1,4 +1,3 @@
-import BoardName from '~/components/Board/BoardName';
 import { Board } from '~/services/types';
 import CreatePost from './Create';
 import ListPost from './List';
@@ -28,23 +27,18 @@ function PostBoard({ boardInfo }: PostBoardProps) {
   }
 
   return (
-    <div className="board-wrapper postboard-wrapper">
-      <BoardName
-        board_id={boardInfo.board_id}
-        board_name={boardInfo.board_name}
-      />
-      <div className="board-desc">{boardInfo.board_desc}</div>
-      <CreatePost
-        board_id={boardInfo.board_id}
-        onClose={() => router.history.back()}
-        onCreate={() => {
-          navigate({
-            search: (prev) => ({ ...prev, status: undefined }),
-            replace: true,
-          });
-        }}
-      />
-    </div>
+    <CreatePost
+      board={boardInfo}
+      onClose={() => router.history.back()}
+      onCreate={(contentId) => {
+        // Replace the write screen, so back from the new post is the list.
+        navigate({
+          to: '/post/$post_id',
+          params: { post_id: String(contentId) },
+          replace: true,
+        });
+      }}
+    />
   );
 }
 

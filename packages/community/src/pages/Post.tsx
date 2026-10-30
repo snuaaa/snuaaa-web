@@ -10,8 +10,6 @@ import {
 import Loading from '~/components/Common/Loading';
 import EditPost from '~/components/Post/EditPost';
 import PostDetail from '~/components/Post/PostDetail';
-import BoardName from '~/components/Board/BoardName';
-import LegacySection from '~/components/Layout/LegacySection';
 import { Button } from '~/components/ui';
 
 import { usePost } from '~/hooks/queries/usePostQueries';
@@ -47,20 +45,13 @@ const Post: FC = () => {
     return <Loading />;
   }
 
-  // The edit screen moves to the redesign with the write screen.
   if (isEditing) {
     return (
-      <LegacySection>
-        <BoardName
-          board_id={postInfo.board.board_id}
-          board_name={postInfo.board.board_name}
-        />
-        <EditPost
-          postInfo={postInfo}
-          onCancel={() => setEditingPostId(null)}
-          onUpdate={() => setEditingPostId(null)}
-        />
-      </LegacySection>
+      <EditPost
+        postInfo={postInfo}
+        onCancel={() => setEditingPostId(null)}
+        onUpdate={() => setEditingPostId(null)}
+      />
     );
   }
 

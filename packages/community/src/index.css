@@ -224,3 +224,60 @@ button {
 }
 
 input, select, textarea { outline: none; }
+
+/*
+ * CKEditor in the write screen (components/Post/PostComposer.tsx). Kept
+ * here, unlayered, because CKEditor's and the legacy .sa-editor rules are
+ * unlayered too. The editor is to be replaced, so only light overrides.
+ */
+.post-composer-editor {
+  .sa-editor {
+    border: 0;
+  }
+  /* CSS sticky under the header instead of CKEditor's own, which tracks
+     the window and doesn't know about the headers. */
+  .ck.ck-editor__top {
+    position: sticky;
+    top: calc(3.75rem + env(safe-area-inset-top));
+    z-index: 10;
+  }
+  .ck-sticky-panel__content_sticky {
+    position: static !important;
+  }
+  .ck-sticky-panel__placeholder {
+    display: none !important;
+  }
+  .ck.ck-editor__top .ck-sticky-panel .ck-sticky-panel__content,
+  .ck.ck-toolbar {
+    border: 0;
+    border-bottom: 1px solid var(--color-border);
+    border-radius: 0;
+    background: var(--color-gray-50);
+  }
+  .ck.ck-editor__main > .ck-editor__editable,
+  .ck.ck-editor__main > .ck-editor__editable.ck-focused {
+    min-height: 300px;
+    border: 0;
+    box-shadow: none;
+    padding: 0.5rem 1rem;
+    font-size: var(--text-base);
+    line-height: 1.75;
+  }
+  .ck-content > * + * {
+    margin-top: 0.875rem;
+  }
+
+  @media (width >= 48rem) {
+    .ck.ck-editor__top {
+      top: 4rem;
+    }
+    .ck.ck-toolbar {
+      padding: 0 0.5rem;
+    }
+    .ck.ck-editor__main > .ck-editor__editable,
+    .ck.ck-editor__main > .ck-editor__editable.ck-focused {
+      min-height: 420px;
+      padding: 1rem 1.75rem;
+    }
+  }
+}
