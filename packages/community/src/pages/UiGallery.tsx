@@ -31,6 +31,7 @@ import {
   NavItem,
   Pagination,
   SegmentedControl,
+  Select,
   Sheet,
   SheetAction,
   Tabs,
@@ -144,6 +145,15 @@ export default function UiGallery() {
               <Input disabled defaultValue="수정할 수 없음" />
             </Field>
           </div>
+          <Field label="분류">
+            <Select defaultValue="">
+              <option value="" disabled>
+                분류 선택
+              </option>
+              <option>망원경</option>
+              <option>가대</option>
+            </Select>
+          </Field>
           <Field label="소개">
             <Textarea placeholder="자기소개를 입력하세요" />
           </Field>

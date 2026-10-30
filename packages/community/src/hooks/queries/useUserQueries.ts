@@ -41,10 +41,11 @@ export function useMyUserInfo() {
   });
 }
 
-export function useUserList(params: UsersSearchType) {
+export function useUserList(params: UsersSearchType, enabled = true) {
   return useQuery({
     queryKey: userKeys.list(params),
     queryFn: () => UserService.retrieveUsers(params),
+    enabled,
   });
 }
 

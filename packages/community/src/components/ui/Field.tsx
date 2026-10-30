@@ -6,8 +6,10 @@ import {
   type AriaAttributes,
   type InputHTMLAttributes,
   type ReactNode,
+  type SelectHTMLAttributes,
   type TextareaHTMLAttributes,
 } from 'react';
+import { ChevronDown } from 'lucide-react';
 import { cn } from '~/lib/utils';
 
 type FieldContextValue = {
@@ -127,3 +129,25 @@ export const Textarea = forwardRef<
   />
 ));
 Textarea.displayName = 'Textarea';
+
+/** A native select styled like `Input`, for short fixed lists (분류, 상태). */
+export const Select = forwardRef<
+  HTMLSelectElement,
+  SelectHTMLAttributes<HTMLSelectElement>
+>(({ className, children, ...props }, ref) => (
+  <div className={cn('relative', className)}>
+    <select
+      ref={ref}
+      className={cn(controlClassName, 'h-11 appearance-none pr-9')}
+      {...props}
+      {...useFieldProps(props)}
+    >
+      {children}
+    </select>
+    <ChevronDown
+      className="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-fg-muted"
+      aria-hidden
+    />
+  </div>
+));
+Select.displayName = 'Select';

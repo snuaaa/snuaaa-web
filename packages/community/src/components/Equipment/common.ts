@@ -1,25 +1,4 @@
-import { EquipmentRentStatus, EquipmentStatus } from '~/services/types';
-
-export type EquipSearchLocationState = {
-  category_id?: number;
-  keyword?: string;
-  maker?: string;
-  status?: EquipmentStatus | '';
-  rent_status?: EquipmentRentStatus | '';
-  sort_by?: SortBy;
-  sort_order?: SortOrder;
-};
-
-export enum SortOrder {
-  ASC = 'ASC',
-  DESC = 'DESC',
-}
-
-export enum SortBy {
-  NAME = 'name',
-  CREATED_AT = 'createdAt',
-  CATEGORY = 'category_id',
-}
+import { EquipmentStatus } from '~/services/types';
 
 export const equipmentStatusOptions = [
   {
@@ -44,39 +23,10 @@ export const equipmentStatusOptions = [
   },
 ];
 
-export const equipmentRentStatusOptions = [
-  {
-    value: EquipmentRentStatus.RENTABLE,
-    name: '대여 가능',
-  },
-  {
-    value: EquipmentRentStatus.UNRENTABLE,
-    name: '대여 불가',
-  },
-  {
-    value: EquipmentRentStatus.RENTED,
-    name: '대여 중',
-  },
-];
-
-export const equipmentStatusColorMap: Record<EquipmentStatus, string> = {
-  [EquipmentStatus.OK]: 'text-success',
-  [EquipmentStatus.BROKEN]: 'text-danger',
-  [EquipmentStatus.REPAIRING]: 'text-star-600',
-  [EquipmentStatus.LOST]: 'text-gray-500',
-  [EquipmentStatus.ETC]: 'text-gray-500',
-};
-
 export const equipmentStatusTextMap: Record<EquipmentStatus, string> = {
   [EquipmentStatus.OK]: '양호',
   [EquipmentStatus.BROKEN]: '수리 필요',
   [EquipmentStatus.REPAIRING]: '수리 중',
   [EquipmentStatus.LOST]: '분실',
   [EquipmentStatus.ETC]: '기타',
-};
-
-export const equipmentRentColorMap: Record<EquipmentRentStatus, string> = {
-  [EquipmentRentStatus.RENTABLE]: 'text-primary',
-  [EquipmentRentStatus.UNRENTABLE]: 'text-star-400',
-  [EquipmentRentStatus.RENTED]: 'text-danger',
 };
