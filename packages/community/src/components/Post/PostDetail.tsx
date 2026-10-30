@@ -238,14 +238,14 @@ export default function PostDetail({
               className={cn(
                 'flex h-12 items-center gap-2 rounded-full border px-[22px] text-[15px] font-semibold transition-colors',
                 liked
-                  ? 'border-accent bg-accent-soft'
+                  ? 'border-danger bg-danger-soft'
                   : 'border-gray-300 bg-surface hover:bg-gray-50',
               )}
             >
               <Heart
                 className={cn(
                   'size-5',
-                  liked ? 'fill-accent text-star-700' : 'text-gray-700',
+                  liked ? 'fill-danger text-danger' : 'text-gray-700',
                 )}
                 strokeWidth={1.8}
                 aria-hidden

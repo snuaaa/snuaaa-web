@@ -266,10 +266,10 @@ function CommentItem({
               onClick={onLike}
               aria-pressed={liked}
               aria-label={`추천 ${comment.likeUsers.length}`}
-              className={cn(actionClassName, liked && 'text-star-700')}
+              className={cn(actionClassName, liked && 'text-danger')}
             >
               <Heart
-                className={cn('size-3.5', liked && 'fill-accent')}
+                className={cn('size-3.5', liked && 'fill-danger')}
                 aria-hidden
               />
               {comment.likeUsers.length}
