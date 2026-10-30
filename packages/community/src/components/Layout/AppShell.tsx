@@ -19,7 +19,7 @@ const REDESIGNED_PATHS = ['/'];
 /** Detail pages, edit forms included, that draw their own layout. */
 const REDESIGNED_PREFIXES = ['/post/'];
 /** Board types whose list screen has moved to the redesign. */
-const REDESIGNED_BOARD_TYPES: Board['board_type'][] = ['N', 'D'];
+const REDESIGNED_BOARD_TYPES: Board['board_type'][] = ['N', 'D', 'A', 'M', 'E'];
 
 function useIsRedesigned() {
   const { pathname } = useLocation();
