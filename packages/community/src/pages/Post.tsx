@@ -17,8 +17,10 @@ import { Button } from '~/components/ui';
 import { usePost } from '~/hooks/queries/usePostQueries';
 
 const Post: FC = () => {
-  const [isEditing, setIsEditing] = useState(false);
   const { post_id: postId } = useParams({ from: '/post/$post_id' });
+  // Tied to the post, so moving to another post (e.g. back) leaves edit mode.
+  const [editingPostId, setEditingPostId] = useState<string | null>(null);
+  const isEditing = editingPostId === postId;
   const router = useRouter();
   const navigate = useNavigate();
   const canGoBack = useCanGoBack();
@@ -55,8 +57,8 @@ const Post: FC = () => {
         />
         <EditPost
           postInfo={postInfo}
-          onCancel={() => setIsEditing(false)}
-          onUpdate={() => setIsEditing(false)}
+          onCancel={() => setEditingPostId(null)}
+          onUpdate={() => setEditingPostId(null)}
         />
       </LegacySection>
     );
@@ -68,7 +70,7 @@ const Post: FC = () => {
       key={postInfo.content_id}
       post={postInfo}
       isLiked={likeInfo ?? false}
-      onEdit={() => setIsEditing(true)}
+      onEdit={() => setEditingPostId(postId)}
       onBack={() => {
         if (canGoBack) {
           router.history.back();
