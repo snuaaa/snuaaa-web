@@ -33,6 +33,18 @@ const emptyForm: CreateEquipmentRequest = {
   img_path: '',
 };
 
+/** Only the editable fields, so the PATCH doesn't carry rent_status etc. */
+const toForm = (equipment: Equipment): CreateEquipmentRequest => ({
+  name: equipment.name,
+  nickname: equipment.nickname ?? '',
+  category_id: equipment.category_id,
+  status: equipment.status,
+  location: equipment.location ?? '',
+  maker: equipment.maker ?? '',
+  description: equipment.description ?? '',
+  img_path: equipment.img_path ?? '',
+});
+
 /** 새 장비 등록 and 장비 정보 수정 share this form. */
 export default function EquipmentFormSheet({
   target,
@@ -50,9 +62,7 @@ export default function EquipmentFormSheet({
 
   useEffect(() => {
     if (!target) return;
-    setForm(
-      target.equipment ? { ...emptyForm, ...target.equipment } : emptyForm,
-    );
+    setForm(target.equipment ? toForm(target.equipment) : emptyForm);
     setError(null);
     setSubmitted(false);
   }, [target]);
