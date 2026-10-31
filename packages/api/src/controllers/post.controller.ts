@@ -346,7 +346,7 @@ export async function retrieveAllPosts(grade, rowNum, offset) {
       {
         model: UserModel,
         required: true,
-        attributes: ['nickname'],
+        attributes: ['nickname', 'profile_path', 'profile_url'],
         paranoid: false,
       },
     ],
