@@ -18,7 +18,6 @@ import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as AuthSignupRouteImport } from './routes/auth/signup'
 import { Route as BoardBoard_idRouteImport } from './routes/board/$board_id'
 import { Route as CommentsAllRouteImport } from './routes/comments/all'
-import { Route as DevUiRouteImport } from './routes/dev/ui'
 import { Route as DocumentDoc_idRouteImport } from './routes/document/$doc_id'
 import { Route as EquipmentIndexRouteImport } from './routes/equipment/index'
 import { Route as EquipmentAdminRouteRouteImport } from './routes/equipment/admin/route'
@@ -76,11 +75,6 @@ const BoardBoard_idRoute = BoardBoard_idRouteImport.update({
 const CommentsAllRoute = CommentsAllRouteImport.update({
   id: '/comments/all',
   path: '/comments/all',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DevUiRoute = DevUiRouteImport.update({
-  id: '/dev/ui',
-  path: '/dev/ui',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DocumentDoc_idRoute = DocumentDoc_idRouteImport.update({
@@ -161,7 +155,6 @@ export interface FileRoutesByFullPath {
   '/auth/signup': typeof AuthSignupRoute
   '/board/$board_id': typeof BoardBoard_idRoute
   '/comments/all': typeof CommentsAllRoute
-  '/dev/ui': typeof DevUiRoute
   '/document/$doc_id': typeof DocumentDoc_idRoute
   '/equipment/rent': typeof EquipmentRentRoute
   '/exhibitPhoto/$exhibitPhoto_id': typeof ExhibitPhotoExhibitPhoto_idRoute
@@ -184,7 +177,6 @@ export interface FileRoutesByTo {
   '/auth/signup': typeof AuthSignupRoute
   '/board/$board_id': typeof BoardBoard_idRoute
   '/comments/all': typeof CommentsAllRoute
-  '/dev/ui': typeof DevUiRoute
   '/document/$doc_id': typeof DocumentDoc_idRoute
   '/equipment/rent': typeof EquipmentRentRoute
   '/exhibitPhoto/$exhibitPhoto_id': typeof ExhibitPhotoExhibitPhoto_idRoute
@@ -210,7 +202,6 @@ export interface FileRoutesById {
   '/auth/signup': typeof AuthSignupRoute
   '/board/$board_id': typeof BoardBoard_idRoute
   '/comments/all': typeof CommentsAllRoute
-  '/dev/ui': typeof DevUiRoute
   '/document/$doc_id': typeof DocumentDoc_idRoute
   '/equipment/rent': typeof EquipmentRentRoute
   '/exhibitPhoto/$exhibitPhoto_id': typeof ExhibitPhotoExhibitPhoto_idRoute
@@ -237,7 +228,6 @@ export interface FileRouteTypes {
     | '/auth/signup'
     | '/board/$board_id'
     | '/comments/all'
-    | '/dev/ui'
     | '/document/$doc_id'
     | '/equipment/rent'
     | '/exhibitPhoto/$exhibitPhoto_id'
@@ -260,7 +250,6 @@ export interface FileRouteTypes {
     | '/auth/signup'
     | '/board/$board_id'
     | '/comments/all'
-    | '/dev/ui'
     | '/document/$doc_id'
     | '/equipment/rent'
     | '/exhibitPhoto/$exhibitPhoto_id'
@@ -285,7 +274,6 @@ export interface FileRouteTypes {
     | '/auth/signup'
     | '/board/$board_id'
     | '/comments/all'
-    | '/dev/ui'
     | '/document/$doc_id'
     | '/equipment/rent'
     | '/exhibitPhoto/$exhibitPhoto_id'
@@ -310,7 +298,6 @@ export interface RootRouteChildren {
   AuthSignupRoute: typeof AuthSignupRoute
   BoardBoard_idRoute: typeof BoardBoard_idRoute
   CommentsAllRoute: typeof CommentsAllRoute
-  DevUiRoute: typeof DevUiRoute
   DocumentDoc_idRoute: typeof DocumentDoc_idRoute
   ExhibitPhotoExhibitPhoto_idRoute: typeof ExhibitPhotoExhibitPhoto_idRoute
   ExhibitionExhibition_idRoute: typeof ExhibitionExhibition_idRoute
@@ -384,13 +371,6 @@ declare module '@tanstack/react-router' {
       path: '/comments/all'
       fullPath: '/comments/all'
       preLoaderRoute: typeof CommentsAllRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dev/ui': {
-      id: '/dev/ui'
-      path: '/dev/ui'
-      fullPath: '/dev/ui'
-      preLoaderRoute: typeof DevUiRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/document/$doc_id': {
@@ -526,7 +506,6 @@ const rootRouteChildren: RootRouteChildren = {
   AuthSignupRoute: AuthSignupRoute,
   BoardBoard_idRoute: BoardBoard_idRoute,
   CommentsAllRoute: CommentsAllRoute,
-  DevUiRoute: DevUiRoute,
   DocumentDoc_idRoute: DocumentDoc_idRoute,
   ExhibitPhotoExhibitPhoto_idRoute: ExhibitPhotoExhibitPhoto_idRoute,
   ExhibitionExhibition_idRoute: ExhibitionExhibition_idRoute,
