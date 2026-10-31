@@ -78,44 +78,42 @@ export default function GradeSheet({
         </div>
       }
     >
-      <ul role="radiogroup" aria-label="등급" className="flex flex-col">
+      <div role="group" aria-label="등급" className="flex flex-col">
         {options.map(({ grade, name, role }) => {
           const checked = selected === grade;
           const current = user?.grade === grade;
           return (
-            <li key={grade}>
-              <button
-                type="button"
-                role="radio"
-                aria-checked={checked}
-                onClick={() => setSelected(grade)}
-                className={cn(
-                  'flex h-14 w-full items-center gap-3 rounded-md px-2 text-left hover:bg-gray-50',
-                  checked && 'bg-info-soft hover:bg-info-soft',
-                )}
-              >
-                <GradeDot grade={grade} />
-                <span className="flex min-w-0 flex-1 flex-col">
-                  <span className="flex items-center gap-1.5 text-[15px] font-semibold">
-                    {grade} {name}
-                    {current && (
-                      <span className="rounded-full bg-gray-100 px-1.5 py-px text-micro font-medium text-fg-muted">
-                        현재
-                      </span>
-                    )}
-                  </span>
-                  <span className="truncate text-caption text-fg-muted">
-                    {role}
-                  </span>
+            <button
+              key={grade}
+              type="button"
+              aria-pressed={checked}
+              onClick={() => setSelected(grade)}
+              className={cn(
+                'flex h-14 w-full items-center gap-3 rounded-md px-2 text-left hover:bg-gray-50',
+                checked && 'bg-info-soft hover:bg-info-soft',
+              )}
+            >
+              <GradeDot grade={grade} />
+              <span className="flex min-w-0 flex-1 flex-col">
+                <span className="flex items-center gap-1.5 text-[15px] font-semibold">
+                  {grade} {name}
+                  {current && (
+                    <span className="rounded-full bg-gray-100 px-1.5 py-px text-micro font-medium text-fg-muted">
+                      현재
+                    </span>
+                  )}
                 </span>
-                {checked && (
-                  <Check className="size-5 shrink-0 text-primary" aria-hidden />
-                )}
-              </button>
-            </li>
+                <span className="truncate text-caption text-fg-muted">
+                  {role}
+                </span>
+              </span>
+              {checked && (
+                <Check className="size-5 shrink-0 text-primary" aria-hidden />
+              )}
+            </button>
           );
         })}
-      </ul>
+      </div>
     </Sheet>
   );
 }
