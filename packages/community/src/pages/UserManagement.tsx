@@ -1,10 +1,16 @@
+import { useState } from 'react';
 import { Link, useNavigate, useSearch } from '@tanstack/react-router';
-import { ArrowDown, ArrowUp } from 'lucide-react';
+import { ArrowDown, ArrowUp, ChevronDown } from 'lucide-react';
 
 import AdminPage from '~/components/Admin/AdminPage';
-import { canManageUsers } from '~/components/Layout/constants';
+import GradeSheet from '~/components/Admin/GradeSheet';
+import {
+  canChangeGrade,
+  canManageUsers,
+  GRADE_MANAGER_GRADE,
+} from '~/components/Layout/constants';
 import Skeleton from '~/components/Common/Skeleton';
-import { Avatar, Pagination } from '~/components/ui';
+import { Avatar, Pagination, Toast, useToast } from '~/components/ui';
 import { useAuth } from '~/contexts/auth';
 import { useUserList } from '~/hooks/queries/useUserQueries';
 import { cn } from '~/lib/utils';
@@ -67,22 +73,70 @@ function formatLogin(value?: string) {
     : `${date.getFullYear()}.${pad(date.getMonth() + 1)}.${pad(date.getDate())}`;
 }
 
-function GradeChip({ grade }: { grade: number }) {
+/**
+ * The grade as a chip. With `onChange` it is a button that opens 등급 조정;
+ * it sits above the row's stretched link, so it takes its own clicks.
+ */
+function GradeChip({
+  grade,
+  nickname,
+  onChange,
+}: {
+  grade: number;
+  nickname?: string;
+  onChange?: () => void;
+}) {
+  const label = [gradeAssigner(grade), grade].filter(Boolean).join(' ');
+  const dot = (
+    <span
+      className={cn('size-2 rounded-full bg-gray-400', GRADE_DOTS[grade])}
+      aria-hidden
+    />
+  );
+  if (!onChange) {
+    return (
+      <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-gray-100 py-0.5 pr-2 pl-1.5 text-micro text-gray-700">
+        {dot}
+        {label}
+      </span>
+    );
+  }
   return (
-    <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-gray-100 py-0.5 pr-2 pl-1.5 text-micro text-gray-700">
-      <span
-        className={cn('size-2 rounded-full bg-gray-400', GRADE_DOTS[grade])}
-        aria-hidden
-      />
-      {[gradeAssigner(grade), grade].filter(Boolean).join(' ')}
-    </span>
+    <button
+      type="button"
+      onClick={onChange}
+      aria-label={`${nickname} 등급 조정, 현재 ${label}`}
+      className="relative z-10 inline-flex shrink-0 items-center gap-1.5 rounded-full border border-gray-200 bg-surface py-0.5 pr-1.5 pl-1.5 text-micro text-gray-700 hover:border-gray-300 hover:bg-gray-50"
+    >
+      {dot}
+      {label}
+      <ChevronDown className="size-3 text-fg-muted" aria-hidden />
+    </button>
   );
 }
+
+// Makes the row's link cover the whole row, so a button can sit on top.
+const stretchedLink = 'after:absolute after:inset-0 after:content-[""]';
 
 /** 회원 관리: every member, sortable, 20 a page. */
 function UserManagement() {
   const { authInfo } = useAuth();
-  const allowed = canManageUsers(authInfo.user.grade);
+  const myGrade = authInfo.user.grade;
+  const allowed = canManageUsers(myGrade);
+  const canAdjust = myGrade <= GRADE_MANAGER_GRADE;
+  const [adjusting, setAdjusting] = useState<User | null>(null);
+  const toast = useToast();
+  const gradeChip = (user: User) => (
+    <GradeChip
+      grade={user.grade}
+      nickname={user.nickname}
+      onChange={
+        canChangeGrade(myGrade, user.grade)
+          ? () => setAdjusting(user)
+          : undefined
+      }
+    />
+  );
   const search = useSearch({ from: '/admin/user' });
   const navigate = useNavigate({ from: '/admin/user' });
   const page = search.page ?? 1;
@@ -132,7 +186,9 @@ function UserManagement() {
     <AdminPage
       title="회원 관리"
       allowed={allowed}
-      subtitle={`전체 ${count}명 · 제목을 누르면 정렬돼요`}
+      subtitle={`전체 ${count}명 · 제목을 누르면 정렬돼요${
+        canAdjust ? ' · 등급을 누르면 바꿀 수 있어요' : ''
+      }`}
     >
       {/* Mobile */}
       <div className="flex flex-col gap-2 px-4 pt-3 md:hidden">
@@ -178,28 +234,32 @@ function UserManagement() {
         ) : (
           <ul className="overflow-hidden rounded-xl bg-surface shadow-sm">
             {users.map((user) => (
-              <li key={user.user_uuid}>
-                <Link
-                  {...userLink(user)}
-                  className="flex items-center gap-3 border-b border-gray-100 px-3.5 py-3 hover:bg-gray-50"
-                >
-                  <Avatar user={user} />
-                  <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                    <span className="flex items-center gap-1.5">
-                      <span className="truncate text-[15px] font-semibold">
-                        {user.nickname}
-                      </span>
-                      <GradeChip grade={user.grade} />
-                    </span>
-                    <span className="truncate text-caption text-fg-muted">
-                      {user.id} · {user.aaa_no || '가입번호 없음'}
-                    </span>
+              <li
+                key={user.user_uuid}
+                className="relative flex items-center gap-3 border-b border-gray-100 px-3.5 py-3 has-[a:hover]:bg-gray-50"
+              >
+                <Avatar user={user} />
+                <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                  <span className="flex items-center gap-1.5">
+                    <Link
+                      {...userLink(user)}
+                      className={cn(
+                        'truncate text-[15px] font-semibold',
+                        stretchedLink,
+                      )}
+                    >
+                      {user.nickname}
+                    </Link>
+                    {gradeChip(user)}
                   </span>
-                  <span className="flex shrink-0 flex-col items-end gap-0.5 text-micro font-normal text-fg-muted tabular-nums">
-                    <span>가입 {formatJoined(user.created_at)}</span>
-                    <span>접속 {formatLogin(user.login_at)}</span>
+                  <span className="truncate text-caption text-fg-muted">
+                    {user.id} · {user.aaa_no || '가입번호 없음'}
                   </span>
-                </Link>
+                </span>
+                <span className="flex shrink-0 flex-col items-end gap-0.5 text-micro font-normal text-fg-muted tabular-nums">
+                  <span>가입 {formatJoined(user.created_at)}</span>
+                  <span>접속 {formatLogin(user.login_at)}</span>
+                </span>
               </li>
             ))}
           </ul>
@@ -266,12 +326,11 @@ function UserManagement() {
             </p>
           ) : (
             users.map((user) => (
-              <Link
+              <div
                 key={user.user_uuid}
                 role="row"
-                {...userLink(user)}
                 className={cn(
-                  'grid h-[52px] items-center gap-3 border-t border-gray-100 px-5 text-sm hover:bg-gray-50',
+                  'relative grid h-[52px] items-center gap-3 border-t border-gray-100 px-5 text-sm has-[a:hover]:bg-gray-50',
                   tableColumns,
                 )}
               >
@@ -283,9 +342,12 @@ function UserManagement() {
                 </span>
                 <span role="cell" className="flex min-w-0 items-center gap-2">
                   <Avatar user={user} size={28} />
-                  <span className="truncate font-semibold">
+                  <Link
+                    {...userLink(user)}
+                    className={cn('truncate font-semibold', stretchedLink)}
+                  >
                     {user.nickname}
-                  </span>
+                  </Link>
                 </span>
                 <span
                   role="cell"
@@ -296,9 +358,7 @@ function UserManagement() {
                 >
                   {user.aaa_no || '—'}
                 </span>
-                <span role="cell">
-                  <GradeChip grade={user.grade} />
-                </span>
+                <span role="cell">{gradeChip(user)}</span>
                 <span
                   role="cell"
                   className="text-caption text-gray-700 tabular-nums"
@@ -311,12 +371,19 @@ function UserManagement() {
                 >
                   {formatLogin(user.login_at)}
                 </span>
-              </Link>
+              </div>
             ))
           )}
         </div>
         {pagination}
       </div>
+      <GradeSheet
+        user={adjusting}
+        actorGrade={myGrade}
+        onClose={() => setAdjusting(null)}
+        onChanged={toast.show}
+      />
+      <Toast message={toast.message} />
     </AdminPage>
   );
 }

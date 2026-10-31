@@ -58,6 +58,11 @@ const UserService = {
     });
   },
 
+  /** Grade 1–3 only; see `canChangeGrade`. */
+  updateUserGrade: function (user_uuid: string, grade: number) {
+    return API.patch(`user/${user_uuid}/grade`, { grade });
+  },
+
   updatePassword: function (data: UpdatePasswordRequest) {
     return API.patch('userinfo/password', data);
   },
