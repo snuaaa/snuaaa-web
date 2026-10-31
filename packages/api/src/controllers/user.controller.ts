@@ -5,7 +5,12 @@ import fs from 'fs';
 import path from 'path';
 import { resizeImageBuffer } from '../utils/resize';
 import { uploadImageToS3 } from '../utils/upload';
-import { BadRequestError, ConflictError, NotFoundError } from '../errors';
+import {
+  AuthorizationError,
+  BadRequestError,
+  ConflictError,
+  NotFoundError,
+} from '../errors';
 
 export async function createUser(userData) {
   await UserModel.create({
@@ -318,5 +323,60 @@ export async function migrateUserProfilePhotos() {
       //   console.error(`Failed to delete local profile file: ${filePath}`, err);
       // });
     }),
+  );
+}
+
+/** Grades a member can hold. There is no grade 2; 1 is the most privileged. */
+export const USER_GRADES = [1, 3, 4, 5, 6, 7, 8, 9] as const;
+
+/** The least privileged grade that may change other members' grades. */
+export const GRADE_MANAGER_GRADE = 3;
+
+/**
+ * Changes another member's grade. The actor must be grade 1–3, the target
+ * must currently have a lower grade (a larger number) than the actor, and the
+ * new grade must also be lower than the actor's. The actor's grade is read
+ * from the database, since the one in the token can be stale.
+ */
+export async function updateUserGrade(
+  actor_id: number,
+  target_uuid: string,
+  grade: number,
+) {
+  if (!Number.isInteger(grade) || !USER_GRADES.includes(grade as never)) {
+    throw new BadRequestError('grade is not valid');
+  }
+
+  const actor = await UserModel.findOne({
+    attributes: ['user_id', 'grade'],
+    where: { user_id: actor_id },
+  });
+  if (!actor) {
+    throw new NotFoundError('user not found');
+  }
+  const actorGrade = actor.get('grade') as number;
+  if (actorGrade > GRADE_MANAGER_GRADE) {
+    throw new AuthorizationError('only grade 1-3 can change grades');
+  }
+
+  const target = await UserModel.findOne({
+    attributes: ['user_id', 'grade'],
+    where: { user_uuid: target_uuid },
+  });
+  if (!target) {
+    throw new NotFoundError('user not found');
+  }
+  if ((target.get('grade') as number) <= actorGrade) {
+    throw new AuthorizationError(
+      "can only change members with a lower grade than one's own",
+    );
+  }
+  if (grade <= actorGrade) {
+    throw new AuthorizationError("can only set a grade lower than one's own");
+  }
+
+  await UserModel.update(
+    { grade },
+    { where: { user_id: target.get('user_id') } },
   );
 }
