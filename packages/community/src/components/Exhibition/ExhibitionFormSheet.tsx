@@ -62,9 +62,16 @@ export default function ExhibitionFormSheet({
   const [touched, setTouched] = useState(false);
   const [error, setError] = useState(false);
 
+  // Read the latest exhibition without resetting the form when a refetch
+  // hands over a new object while the sheet is open.
+  const exhibitionRef = useRef(exhibition);
+  exhibitionRef.current = exhibition;
+  const exhibitionId = exhibition?.content_id;
+
   // Start blank, or from the exhibition being edited, each time it opens.
   useEffect(() => {
     if (!open) return;
+    const exhibition = exhibitionRef.current;
     const info = exhibition?.exhibition;
     setNo(
       info ? String(info.exhibition_no) : defaultNo ? String(defaultNo) : '',
@@ -82,7 +89,7 @@ export default function ExhibitionFormSheet({
     );
     setTouched(false);
     setError(false);
-  }, [open, defaultNo, exhibition]);
+  }, [open, defaultNo, exhibitionId]);
 
   useEffect(() => {
     if (!poster) {
