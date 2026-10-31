@@ -63,6 +63,18 @@ export function useUpdateMyUserInfo() {
   });
 }
 
+export function useUpdateUserGrade() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ userUuid, grade }: { userUuid: string; grade: number }) =>
+      UserService.updateUserGrade(userUuid, grade),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: userKeys.all });
+    },
+  });
+}
+
 export function useDeleteUserInfo() {
   return useMutation({
     mutationFn: () => UserService.deleteUserInfo(),
