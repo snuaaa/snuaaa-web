@@ -202,7 +202,7 @@ const ExhibitBoard: FC<ExhibitBoardProps> = ({ boardInfo }) => {
         defaultNo={
           latest?.exhibition ? latest.exhibition.exhibition_no + 1 : undefined
         }
-        onCreated={() => setIsCreating(false)}
+        onSaved={() => setIsCreating(false)}
       />
     </PhotoTabLayout>
   );

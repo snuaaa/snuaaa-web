@@ -1,9 +1,14 @@
 import { FormEvent, useEffect, useRef, useState } from 'react';
-import { parse } from 'date-fns';
+import { format, parse } from 'date-fns';
 import { ImagePlus, X } from 'lucide-react';
 
 import { Button, Field, Input, Sheet, Textarea } from '~/components/ui';
-import { useCreateExhibition } from '~/hooks/queries/useExhibitionQueries';
+import {
+  useCreateExhibition,
+  useUpdateExhibition,
+} from '~/hooks/queries/useExhibitionQueries';
+import { resolveImageUrl } from '~/lib/utils';
+import { ExhibitionInfo } from '~/services/ExhibitionService';
 
 type ExhibitionFormSheetProps = {
   open: boolean;
@@ -11,25 +16,37 @@ type ExhibitionFormSheetProps = {
   boardId: string;
   /** Filled in as the 회차, usually the latest exhibition's plus one. */
   defaultNo?: number;
-  onCreated: () => void;
+  /** Edits this exhibition instead of making a new one. */
+  exhibition?: ExhibitionInfo;
+  onSaved: () => void;
 };
 
 // Local midnight, as the date picker this replaces sent.
 const toDate = (value: string) => parse(value, 'yyyy-MM-dd', new Date());
+const toInputDate = (value?: Date | string) =>
+  value ? format(new Date(value), 'yyyy-MM-dd') : '';
 
 /**
- * 사진전 만들기: 회차, 슬로건, 기간, 장소, 포스터 and a description, all
- * required. A bottom sheet on mobile, a dialog on desktop.
+ * 사진전 만들기 and 사진전 수정: 회차, 슬로건, 기간, 장소, 포스터 and a
+ * description, all required. Editing starts from the exhibition's values and
+ * keeps its poster unless a new one is picked. A bottom sheet on mobile, a
+ * dialog on desktop.
  */
 export default function ExhibitionFormSheet({
   open,
   onOpenChange,
   boardId,
   defaultNo,
-  onCreated,
+  exhibition,
+  onSaved,
 }: ExhibitionFormSheetProps) {
-  const { mutateAsync: createExhibition, isPending: saving } =
+  const isEdit = !!exhibition;
+  const label = isEdit ? '사진전 수정' : '사진전 만들기';
+  const { mutateAsync: createExhibition, isPending: creating } =
     useCreateExhibition();
+  const { mutateAsync: updateExhibition, isPending: updating } =
+    useUpdateExhibition();
+  const saving = creating || updating;
   const posterInputRef = useRef<HTMLInputElement>(null);
 
   const [no, setNo] = useState('');
@@ -40,22 +57,32 @@ export default function ExhibitionFormSheet({
   const [text, setText] = useState('');
   const [poster, setPoster] = useState<File>();
   const [posterUrl, setPosterUrl] = useState<string>();
+  // The saved poster, shown until it is removed or replaced.
+  const [currentPoster, setCurrentPoster] = useState<string>();
   const [touched, setTouched] = useState(false);
   const [error, setError] = useState(false);
 
-  // Start blank each time the sheet opens.
+  // Start blank, or from the exhibition being edited, each time it opens.
   useEffect(() => {
     if (!open) return;
-    setNo(defaultNo ? String(defaultNo) : '');
-    setSlogan('');
-    setDateStart('');
-    setDateEnd('');
-    setPlace('');
-    setText('');
+    const info = exhibition?.exhibition;
+    setNo(
+      info ? String(info.exhibition_no) : defaultNo ? String(defaultNo) : '',
+    );
+    setSlogan(info?.slogan ?? '');
+    setDateStart(toInputDate(info?.date_start));
+    setDateEnd(toInputDate(info?.date_end));
+    setPlace(info?.place ?? '');
+    setText(exhibition?.text ?? '');
     setPoster(undefined);
+    setCurrentPoster(
+      info
+        ? resolveImageUrl(info.poster_thumbnail_path || info.poster_path)
+        : undefined,
+    );
     setTouched(false);
     setError(false);
-  }, [open, defaultNo]);
+  }, [open, defaultNo, exhibition]);
 
   useEffect(() => {
     if (!poster) {
@@ -80,7 +107,7 @@ export default function ExhibitionFormSheet({
           ? '종료일이 시작일보다 빨라요.'
           : undefined,
     place: place.trim() ? undefined : '장소를 입력해 주세요.',
-    poster: poster ? undefined : '포스터를 올려 주세요.',
+    poster: poster || currentPoster ? undefined : '포스터를 올려 주세요.',
     text: text.trim() ? undefined : '설명을 입력해 주세요.',
   };
   const valid = Object.values(errors).every((message) => !message);
@@ -89,23 +116,31 @@ export default function ExhibitionFormSheet({
   const submit = async (e: FormEvent) => {
     e.preventDefault();
     setTouched(true);
-    if (!valid || !poster || saving) return;
+    if (!valid || saving) return;
     setError(false);
+    const fields = {
+      text,
+      exhibition_no: no,
+      slogan: slogan.trim(),
+      date_start: toDate(dateStart),
+      date_end: toDate(dateEnd),
+      place: place.trim(),
+    };
     try {
-      await createExhibition({
-        board_id: boardId,
-        data: {
-          title: '',
-          text,
-          exhibition_no: no,
-          slogan: slogan.trim(),
-          date_start: toDate(dateStart),
-          date_end: toDate(dateEnd),
-          place: place.trim(),
-          poster,
-        },
-      });
-      onCreated();
+      if (exhibition) {
+        await updateExhibition({
+          exhibition_id: exhibition.content_id,
+          data: { ...fields, poster },
+        });
+      } else if (poster) {
+        await createExhibition({
+          board_id: boardId,
+          data: { ...fields, title: '', poster },
+        });
+      } else {
+        return;
+      }
+      onSaved();
     } catch (err) {
       console.error(err);
       setError(true);
@@ -116,7 +151,7 @@ export default function ExhibitionFormSheet({
     <Sheet
       open={open}
       onOpenChange={(next) => !saving && onOpenChange(next)}
-      title="사진전 만들기"
+      title={label}
       className="md:w-[520px]"
       footer={
         <div className="flex gap-2">
@@ -135,14 +170,14 @@ export default function ExhibitionFormSheet({
             disabled={touched && !valid}
             loading={saving}
           >
-            만들기
+            {isEdit ? '저장' : '만들기'}
           </Button>
         </div>
       }
     >
       <form
         id="exhibition-form"
-        aria-label="사진전 만들기"
+        aria-label={label}
         onSubmit={submit}
         className="flex flex-col gap-4 pb-1"
       >
@@ -208,17 +243,20 @@ export default function ExhibitionFormSheet({
           <span className="text-label">
             포스터 <span className="text-danger">*</span>
           </span>
-          {posterUrl ? (
+          {posterUrl || currentPoster ? (
             <div className="relative w-32 self-start">
               <img
-                src={posterUrl}
+                src={posterUrl || currentPoster}
                 alt="포스터 미리보기"
                 className="aspect-[3/4] w-full rounded-lg bg-gray-100 object-cover"
               />
               <button
                 type="button"
                 aria-label="포스터 빼기"
-                onClick={() => setPoster(undefined)}
+                onClick={() => {
+                  setPoster(undefined);
+                  setCurrentPoster(undefined);
+                }}
                 className="absolute -top-1.5 -right-1.5 flex size-6 items-center justify-center rounded-full bg-navy-900 text-white shadow-sm"
               >
                 <X className="size-3.5" strokeWidth={2.4} />
@@ -261,7 +299,10 @@ export default function ExhibitionFormSheet({
 
         {error && (
           <p role="alert" className="text-label font-normal text-danger">
-            사진전을 만들지 못했어요. 잠시 후 다시 시도해 주세요.
+            {isEdit
+              ? '사진전을 수정하지 못했어요.'
+              : '사진전을 만들지 못했어요.'}{' '}
+            잠시 후 다시 시도해 주세요.
           </p>
         )}
       </form>

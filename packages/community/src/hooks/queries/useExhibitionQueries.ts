@@ -6,6 +6,7 @@ import {
 } from '@tanstack/react-query';
 import ExhibitionService, {
   CreateExhibitionRequest,
+  UpdateExhibitionRequest,
 } from '~/services/ExhibitionService';
 import ExhibitPhotoService, {
   CreateExhibitPhotoRequest,
@@ -60,6 +61,23 @@ export function useCreateExhibition() {
       board_id: string;
       data: CreateExhibitionRequest;
     }) => ExhibitionService.createExhibition(board_id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: exhibitionKeys.all });
+    },
+  });
+}
+
+export function useUpdateExhibition() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      exhibition_id,
+      data,
+    }: {
+      exhibition_id: number;
+      data: UpdateExhibitionRequest;
+    }) => ExhibitionService.updateExhibition(exhibition_id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: exhibitionKeys.all });
     },
