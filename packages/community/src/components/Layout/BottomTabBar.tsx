@@ -40,7 +40,7 @@ export default function BottomTabBar() {
   return (
     <nav
       aria-label="주 메뉴"
-      className="fixed inset-x-0 bottom-0 z-30 grid h-[calc(var(--tab-bar-height)+env(safe-area-inset-bottom))] auto-cols-fr grid-flow-col border-t border-border bg-surface px-1 pb-[env(safe-area-inset-bottom)] md:hidden"
+      className="fixed inset-x-0 bottom-0 z-30 grid h-[calc(var(--tab-bar-height)+env(safe-area-inset-bottom))] auto-cols-fr grid-flow-col border-t border-border bg-surface pr-[max(0.25rem,env(safe-area-inset-right))] pb-[env(safe-area-inset-bottom)] pl-[max(0.25rem,env(safe-area-inset-left))] md:hidden"
     >
       <Tab to="/" label="홈" icon={<House />} active={isActive('home')} />
       <Tab

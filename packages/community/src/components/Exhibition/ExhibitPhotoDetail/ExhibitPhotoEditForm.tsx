@@ -103,7 +103,7 @@ export default function ExhibitPhotoEditForm({
         </Button>
       </div>
 
-      <div className="flex flex-col gap-4 overflow-y-auto px-4 pt-4 pb-8 md:flex-1 md:px-5 md:pt-[18px] md:pb-5">
+      <div className="flex flex-col gap-4 overflow-y-auto px-4 pt-4 pb-[calc(2rem+env(safe-area-inset-bottom))] md:flex-1 md:px-5 md:pt-[18px] md:pb-5">
         <p className="rounded-md bg-gray-50 px-3 py-2.5 text-caption leading-relaxed text-fg-muted">
           사진 파일은 바꿀 수 없어요. 다른 사진으로 바꾸려면 지우고 새로 올려
           주세요.
