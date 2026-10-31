@@ -233,7 +233,8 @@ export function RecentAlbumsSection({ albums }: { albums: Album[] }) {
 
 /**
  * The latest 별사진 photos, opened in the photo modal. On desktop it is a card
- * beside 새 글, and the photos stretch to that card's height.
+ * beside 새 글, and the photos stretch to that card's height. The images are
+ * taken out of flow there, so a tall thumbnail can't size the rows itself.
  */
 export function RecentPhotosSection({ photos }: { photos: Photo[] }) {
   return (
@@ -247,7 +248,7 @@ export function RecentPhotosSection({ photos }: { photos: Photo[] }) {
             <Link
               to="."
               search={(prev) => ({ ...prev, photo: photo.content_id })}
-              className="block aspect-square overflow-hidden rounded-md bg-navy-800 md:aspect-auto md:size-full"
+              className="relative block aspect-square overflow-hidden rounded-md bg-navy-800 md:aspect-auto md:size-full"
               aria-label={photo.title || '사진 보기'}
             >
               <img
@@ -256,7 +257,7 @@ export function RecentPhotosSection({ photos }: { photos: Photo[] }) {
                 )}
                 alt=""
                 loading="lazy"
-                className="size-full object-cover transition-transform hover:scale-105"
+                className="absolute inset-0 size-full object-cover transition-transform hover:scale-105"
               />
             </Link>
           </li>
