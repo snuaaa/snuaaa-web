@@ -92,8 +92,6 @@ export async function retrieveUserByUserUuid(user_uuid: string) {
       'aaa_no',
       'col_no',
       'major',
-      'email',
-      'mobile',
       'introduction',
       'grade',
       'level',
