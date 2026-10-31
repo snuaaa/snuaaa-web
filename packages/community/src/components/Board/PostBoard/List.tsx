@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState, type ReactNode } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { Link, useNavigate, useSearch } from '@tanstack/react-router';
 import {
   ChevronLeft,
@@ -23,6 +23,7 @@ import { cn } from '~/lib/utils';
 import { Board, Content } from '~/services/types';
 import BoardLayout from '../BoardLayout';
 import Highlight from '../Highlight';
+import { ListMessage, NewDot } from '../ListParts';
 import {
   canWrite,
   findSnippet,
@@ -91,36 +92,6 @@ function useRecentSearches() {
       ),
     remove: (keyword: string) => update(recent.filter((k) => k !== keyword)),
   };
-}
-
-function ListMessage({
-  title,
-  description,
-  action,
-}: {
-  title: string;
-  description?: string;
-  action?: ReactNode;
-}) {
-  return (
-    <div className="flex flex-col items-center gap-1.5 px-4 py-16 text-center">
-      <p className="text-heading">{title}</p>
-      {description && (
-        <p className="text-label font-normal text-fg-muted">{description}</p>
-      )}
-      {action && <div className="pt-3">{action}</div>}
-    </div>
-  );
-}
-
-function NewDot() {
-  return (
-    <span
-      className="block size-1.5 shrink-0 rounded-full bg-accent"
-      aria-label="새 글"
-      role="img"
-    />
-  );
 }
 
 function Counts({ post }: { post: Content }) {

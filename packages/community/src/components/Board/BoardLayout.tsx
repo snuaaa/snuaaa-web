@@ -8,8 +8,19 @@ import { Board } from '~/services/types';
 import BoardSwitcher from './BoardSwitcher';
 import { BOARD_GROUPS, canRead } from './boardUtils';
 
-/** Desktop board list on the left of every board page. */
-function BoardSidebar({ currentBoardId }: { currentBoardId: string }) {
+const sidebarLinkClassName = (current: boolean) =>
+  cn(
+    'flex h-[38px] items-center rounded-md px-3 text-sm transition-colors',
+    current
+      ? 'bg-primary-soft font-semibold text-primary'
+      : 'text-gray-700 hover:bg-gray-100 hover:text-fg',
+  );
+
+/**
+ * Desktop board list on the left of every board page. Without a
+ * `currentBoardId`, 전체 게시글 is the current page.
+ */
+function BoardSidebar({ currentBoardId }: { currentBoardId?: string }) {
   const { boardsInfo } = useBoards();
   const {
     authInfo: {
@@ -22,16 +33,20 @@ function BoardSidebar({ currentBoardId }: { currentBoardId: string }) {
       aria-label="게시판"
       className="sticky top-25 hidden flex-col gap-0.5 md:flex"
     >
+      <Link
+        to="/posts/all"
+        aria-current={currentBoardId ? undefined : 'page'}
+        className={sidebarLinkClassName(!currentBoardId)}
+      >
+        전체 게시글
+      </Link>
       {BOARD_GROUPS.map((group) => {
         const boards = boardsInfo.filter(
           (board) => board.menu === group.menu && canRead(board, grade),
         );
         if (boards.length === 0) return null;
         return (
-          <div
-            key={group.menu}
-            className="flex flex-col gap-0.5 pt-4 first:pt-0"
-          >
+          <div key={group.menu} className="flex flex-col gap-0.5 pt-4">
             <div className="px-3 pb-1.5 text-caption font-semibold text-fg-muted">
               {group.name}
             </div>
@@ -43,12 +58,7 @@ function BoardSidebar({ currentBoardId }: { currentBoardId: string }) {
                   to="/board/$board_id"
                   params={{ board_id: board.board_id }}
                   aria-current={current ? 'page' : undefined}
-                  className={cn(
-                    'flex h-[38px] items-center rounded-md px-3 text-sm transition-colors',
-                    current
-                      ? 'bg-primary-soft font-semibold text-primary'
-                      : 'text-gray-700 hover:bg-gray-100 hover:text-fg',
-                  )}
+                  className={sidebarLinkClassName(current)}
                 >
                   {board.board_name}
                 </Link>
@@ -111,6 +121,51 @@ function BoardMobileHeader({ board, onSearch }: BoardMobileHeaderProps) {
   );
 }
 
+type BoardFrameProps = {
+  /** The sidebar highlights this board, or 전체 게시글 when left out. */
+  currentBoardId?: string;
+  title: string;
+  description?: string;
+  /** Desktop action beside the title, e.g. 글쓰기. Mobile uses a FAB. */
+  action?: ReactNode;
+  mobileHeader: ReactNode;
+  children: ReactNode;
+};
+
+/**
+ * Board page frame. Mobile: navy header over the list. Desktop: board
+ * sidebar on the left, title and list on the right.
+ */
+export function BoardFrame({
+  currentBoardId,
+  title,
+  description,
+  action,
+  mobileHeader,
+  children,
+}: BoardFrameProps) {
+  return (
+    <div className="flex flex-1 flex-col text-fg">
+      {mobileHeader}
+      <div className="mx-auto flex w-full max-w-[1080px] flex-1 flex-col md:grid md:grid-cols-[220px_minmax(0,1fr)] md:items-start md:gap-8 md:px-6 md:py-9">
+        <BoardSidebar currentBoardId={currentBoardId} />
+        <div className="flex flex-1 flex-col md:gap-5">
+          <div className="hidden items-end justify-between gap-6 md:flex">
+            <div className="flex flex-col gap-1.5">
+              <h1 className="text-display">{title}</h1>
+              {description && (
+                <p className="text-sm text-fg-muted">{description}</p>
+              )}
+            </div>
+            {action}
+          </div>
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 type BoardLayoutProps = {
   board: Board;
   /** Desktop action beside the title, e.g. 글쓰기. Mobile uses a FAB. */
@@ -122,10 +177,7 @@ type BoardLayoutProps = {
   children: ReactNode;
 };
 
-/**
- * Board page frame. Mobile: navy header over the list. Desktop: board
- * sidebar on the left, title and list on the right.
- */
+/** {@link BoardFrame} for one board, with the board switcher on mobile. */
 export default function BoardLayout({
   board,
   action,
@@ -134,23 +186,16 @@ export default function BoardLayout({
   children,
 }: BoardLayoutProps) {
   return (
-    <div className="flex flex-1 flex-col text-fg">
-      {mobileHeader ?? <BoardMobileHeader board={board} onSearch={onSearch} />}
-      <div className="mx-auto flex w-full max-w-[1080px] flex-1 flex-col md:grid md:grid-cols-[220px_minmax(0,1fr)] md:items-start md:gap-8 md:px-6 md:py-9">
-        <BoardSidebar currentBoardId={board.board_id} />
-        <div className="flex flex-1 flex-col md:gap-5">
-          <div className="hidden items-end justify-between gap-6 md:flex">
-            <div className="flex flex-col gap-1.5">
-              <h1 className="text-display">{board.board_name}</h1>
-              {board.board_desc && (
-                <p className="text-sm text-fg-muted">{board.board_desc}</p>
-              )}
-            </div>
-            {action}
-          </div>
-          {children}
-        </div>
-      </div>
-    </div>
+    <BoardFrame
+      currentBoardId={board.board_id}
+      title={board.board_name}
+      description={board.board_desc}
+      action={action}
+      mobileHeader={
+        mobileHeader ?? <BoardMobileHeader board={board} onSearch={onSearch} />
+      }
+    >
+      {children}
+    </BoardFrame>
   );
 }
