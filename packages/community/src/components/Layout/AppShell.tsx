@@ -28,6 +28,7 @@ const REDESIGNED_PATHS = [
 /** Detail pages, edit forms included, that draw their own layout. */
 const REDESIGNED_PREFIXES = [
   '/post/',
+  '/document/',
   '/album/',
   '/exhibition/',
   '/mypage/',
