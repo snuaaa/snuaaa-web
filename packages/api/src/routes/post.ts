@@ -1,3 +1,4 @@
+import ContentTypeEnum from '../enums/contentTypeEnum';
 import express from 'express';
 
 import {
@@ -6,6 +7,7 @@ import {
 } from '../middlewares/auth';
 
 import {
+  assertCanEditContent,
   updateContent,
   deleteContent,
   increaseViewNum,
@@ -83,22 +85,40 @@ router.get(
   },
 );
 
-router.patch('/:post_id', verifyTokenMiddleware, async (req, res, next) => {
-  try {
-    await updateContent(req.params.post_id, req.body);
-    res.json({ success: true });
-  } catch (err) {
-    next(err);
-  }
-});
+router.patch(
+  '/:post_id',
+  verifyTokenMiddleware,
+  async (req: AuthenticatedRequest, res, next) => {
+    try {
+      await assertCanEditContent(
+        req.params.post_id,
+        req.decodedToken,
+        ContentTypeEnum.POST,
+      );
+      await updateContent(req.params.post_id, req.body);
+      res.json({ success: true });
+    } catch (err) {
+      next(err);
+    }
+  },
+);
 
-router.delete('/:post_id', verifyTokenMiddleware, async (req, res, next) => {
-  try {
-    await deleteContent(req.params.post_id);
-    res.json({ success: true });
-  } catch (err) {
-    next(err);
-  }
-});
+router.delete(
+  '/:post_id',
+  verifyTokenMiddleware,
+  async (req: AuthenticatedRequest, res, next) => {
+    try {
+      await assertCanEditContent(
+        req.params.post_id,
+        req.decodedToken,
+        ContentTypeEnum.POST,
+      );
+      await deleteContent(req.params.post_id);
+      res.json({ success: true });
+    } catch (err) {
+      next(err);
+    }
+  },
+);
 
 export default router;
