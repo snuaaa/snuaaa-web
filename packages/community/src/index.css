@@ -281,3 +281,42 @@ input, select, textarea { outline: none; }
     }
   }
 }
+
+/*
+ * 관측 모드 (red-light night mode), toggled by hooks/useObservationMode.ts.
+ * One filter on the root covers every screen, legacy ones and portals
+ * included: the page turns dark and only red light is left, which keeps the
+ * eyes dark-adapted at the telescope. Media is inverted back first, so a
+ * photo ends up as red brightness rather than a negative.
+ */
+:root[data-observation='on'] {
+  background: #000;
+  filter: url(#observation-filter);
+
+  /* The filter inverts brightness, so the navy chrome is made light here
+     to come out dark, instead of as a bright red bar. */
+  --color-surface-brand: #ffffff;
+  --color-surface-brand-raised: #e3e6ee;
+  --color-fg-on-brand: #141a2a;
+  --color-fg-on-brand-muted: #4a5570;
+  --color-navy-300: #4a5570;
+  --color-navy-800: #e3e6ee;
+
+  /* Raw navy shades drawn on the navy surfaces (소리통, 오늘 밤), flipped
+     only inside them so light pages keep their own. */
+  .bg-surface-brand,
+  .bg-surface-brand-raised {
+    --color-navy-200: #4a5570;
+    --color-navy-500: #9db2d6;
+    --color-navy-700: #cdd9ea;
+    /* the moon's lit side stays the brightest thing on the surface */
+    --color-accent: var(--color-star-800);
+  }
+
+  img,
+  video,
+  canvas,
+  iframe {
+    filter: invert(1);
+  }
+}

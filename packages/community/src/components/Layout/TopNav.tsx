@@ -9,6 +9,7 @@ import { useMyUserInfo } from '~/hooks/queries/useUserQueries';
 import { cn } from '~/lib/utils';
 import { Board } from '~/services/types';
 import BrandMark from './BrandMark';
+import ObservationToggle from './ObservationToggle';
 import { CLUB_INTRO_URL, EQUIPMENT_GRADE, canManageUsers } from './constants';
 import { NavSection, useNavSection } from './useNavSection';
 
@@ -172,7 +173,10 @@ export default function TopNav() {
             />
           </a>
         </nav>
-        <ProfileMenu />
+        <div className="flex items-center gap-2">
+          <ObservationToggle />
+          <ProfileMenu />
+        </div>
       </div>
     </header>
   );
