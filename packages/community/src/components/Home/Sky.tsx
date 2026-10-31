@@ -129,7 +129,7 @@ export function SunArc({ sky }: { sky: Sky }) {
       </svg>
       {t !== undefined && (
         <span
-          className="absolute -mt-1.5 -ml-1.5 size-3 rounded-full bg-[#fff4d1] shadow-[0_0_16px_#fff4d1]"
+          className="absolute -mt-1.5 -ml-1.5 size-3 rounded-full bg-star-100 shadow-[0_0_16px_var(--color-star-100)]"
           style={{ left: `${t * 100}%`, top: `${(y / 40) * 100}%` }}
         />
       )}
