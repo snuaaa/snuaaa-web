@@ -61,9 +61,6 @@ router.patch(
         date_end,
         place,
       } = req.body;
-      if (title !== undefined && !String(title).trim()) {
-        throw new BadRequestError('title can not be empty');
-      }
 
       const exhibitionData: Parameters<typeof updateExhibition>[1] = {
         exhibition_no,
