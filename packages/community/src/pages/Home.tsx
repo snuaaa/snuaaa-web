@@ -1,4 +1,3 @@
-import { ExternalLink } from 'lucide-react';
 import Loading from '~/components/Common/Loading';
 import {
   RecentAlbumsSection,
@@ -8,7 +7,7 @@ import {
 } from '~/components/Home/HomeSections';
 import { TonightCard, TonightStrip } from '~/components/Home/Tonight';
 import BrandMark from '~/components/Layout/BrandMark';
-import { CLUB_INTRO_URL } from '~/components/Layout/constants';
+import ObservationToggle from '~/components/Layout/ObservationToggle';
 import { useHomeData } from '~/hooks/queries/useHomeQueries';
 
 function Home() {
@@ -19,15 +18,8 @@ function Home() {
       <header className="flex flex-col gap-3 bg-surface-brand px-4 pt-[max(0.75rem,env(safe-area-inset-top))] pb-4 md:hidden">
         <div className="flex min-h-11 items-center justify-between gap-3">
           <BrandMark />
-          <a
-            href={CLUB_INTRO_URL}
-            target="_blank"
-            rel="noreferrer"
-            className="flex h-11 shrink-0 items-center gap-1 text-label font-normal text-fg-on-brand-muted hover:text-fg-on-brand"
-          >
-            동아리 소개
-            <ExternalLink className="size-3.5" aria-label="새 탭에서 열림" />
-          </a>
+          {/* 동아리 소개 is in the footer, so this corner holds 관측 모드. */}
+          <ObservationToggle className="-mr-2.5" />
         </div>
         <TonightStrip />
       </header>
