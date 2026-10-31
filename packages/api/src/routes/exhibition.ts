@@ -62,6 +62,19 @@ router.patch(
         place,
       } = req.body;
 
+      // multipart 값은 문자열이라 빈 값이나 잘못된 형식이 DB 오류(500)로 가지 않게 먼저 막아요.
+      if (
+        exhibition_no !== undefined &&
+        !(Number.isInteger(Number(exhibition_no)) && Number(exhibition_no) > 0)
+      ) {
+        throw new BadRequestError('exhibition_no must be a positive integer');
+      }
+      for (const date of [date_start, date_end]) {
+        if (date !== undefined && Number.isNaN(new Date(date).getTime())) {
+          throw new BadRequestError('date_start and date_end must be dates');
+        }
+      }
+
       const exhibitionData: Parameters<typeof updateExhibition>[1] = {
         exhibition_no,
         slogan,
@@ -87,10 +100,8 @@ router.patch(
         exhibitionData.poster_thumbnail_url = posterThumbnailUrl;
       }
 
-      await Promise.all([
-        updateContent(exhibition_id, { title, text }),
-        updateExhibition(exhibition_id, exhibitionData),
-      ]);
+      await updateContent(exhibition_id, { title, text });
+      await updateExhibition(exhibition_id, exhibitionData);
 
       res.json({ success: true });
     } catch (err) {
