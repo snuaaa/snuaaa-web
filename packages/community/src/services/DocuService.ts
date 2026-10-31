@@ -14,6 +14,11 @@ type UpdateDocuRequest = {
   category_id?: string;
 };
 
+/** GET document/:id: the Content with its Document row. */
+export type DocumentDetail = Content & {
+  document: { generation: number };
+};
+
 /** A row of the document list: the Document row with its Content. */
 export type DocumentListItem = {
   content_id: number;
@@ -33,7 +38,7 @@ export type RetrieveDocumentParams = {
 const DocuService = {
   retrieveDocument: function (doc_id: number) {
     return API.get<{
-      docuInfo: Content;
+      docuInfo: DocumentDetail;
       likeInfo: boolean;
     }>(`document/${doc_id}`);
   },
