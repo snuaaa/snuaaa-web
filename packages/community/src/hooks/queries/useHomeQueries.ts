@@ -6,7 +6,7 @@ export const homeKeys = {
   all: ['home'] as const,
   data: () => [...homeKeys.all, 'data'] as const,
   allPosts: (page: number) => [...homeKeys.all, 'allPosts', page] as const,
-  riseSet: () => [...homeKeys.all, 'riseSet'] as const,
+  riseSet: (kstDate: string) => [...homeKeys.all, 'riseSet', kstDate] as const,
 };
 
 // Query options
@@ -32,9 +32,13 @@ export const allPostsQueryOptions = (pageIdx: number) =>
     queryFn: () => HomeService.retrieveAllPosts(pageIdx),
   });
 
+/** Today's date in Seoul (YYYY-MM-DD), so the rise/set times roll over at KST midnight. */
+const kstDate = () =>
+  new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10);
+
 export const riseSetQueryOptions = () =>
   queryOptions({
-    queryKey: homeKeys.riseSet(),
+    queryKey: homeKeys.riseSet(kstDate()),
     queryFn: () => HomeService.retrieveRiseSet(),
     staleTime: 60 * 60 * 1000,
   });
