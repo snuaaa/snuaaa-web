@@ -6,6 +6,7 @@ import {
 } from '../middlewares/auth';
 
 import {
+  assertCanEditComment,
   updateComment,
   deleteComment,
   retrieveCommentsWithFilter,
@@ -52,23 +53,33 @@ router.get(
   },
 );
 
-router.patch('/:comment_id', verifyTokenMiddleware, async (req, res, next) => {
-  try {
-    await updateComment(req.params.comment_id, req.body);
-    res.json({ success: true });
-  } catch (err) {
-    next(err);
-  }
-});
+router.patch(
+  '/:comment_id',
+  verifyTokenMiddleware,
+  async (req: AuthenticatedRequest, res, next) => {
+    try {
+      await assertCanEditComment(req.params.comment_id, req.decodedToken);
+      await updateComment(req.params.comment_id, req.body);
+      res.json({ success: true });
+    } catch (err) {
+      next(err);
+    }
+  },
+);
 
-router.delete('/:comment_id', verifyTokenMiddleware, async (req, res, next) => {
-  try {
-    await deleteComment(req.params.comment_id);
-    res.json({ success: true });
-  } catch (err) {
-    next(err);
-  }
-});
+router.delete(
+  '/:comment_id',
+  verifyTokenMiddleware,
+  async (req: AuthenticatedRequest, res, next) => {
+    try {
+      await assertCanEditComment(req.params.comment_id, req.decodedToken);
+      await deleteComment(req.params.comment_id);
+      res.json({ success: true });
+    } catch (err) {
+      next(err);
+    }
+  },
+);
 
 router.post(
   '/:comment_id/like',
