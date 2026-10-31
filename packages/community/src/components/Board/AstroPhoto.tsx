@@ -1,75 +1,254 @@
-import BoardName from '../../components/Board/BoardName';
-
+import { useMemo, useState } from 'react';
 import { useNavigate, useSearch } from '@tanstack/react-router';
+import { FolderPlus, Upload } from 'lucide-react';
+
+import AlbumFormSheet from '~/components/Album/AlbumFormSheet';
+import PhotoUploader from '~/components/Photo/PhotoUploader';
+import { Button, Fab, Pagination } from '~/components/ui';
+import { useAuth } from '~/contexts/auth';
+import { useAlbumsInPhotoBoard } from '~/hooks/queries/useAlbumQueries';
+import { usePhotoList } from '~/hooks/queries/usePhotoQueries';
 import { Board } from '~/services/types';
-import { PhotoSection } from './PhotoBoard/PhotoSection';
-import { AlbumSection } from './PhotoBoard/AlbumSection';
+import { canWrite } from './boardUtils';
+import { AlbumCardList, AlbumCardListSkeleton } from './PhotoBoard/AlbumCard';
+import PhotoEmpty from './PhotoBoard/PhotoEmpty';
+import { PhotoGrid, PhotoGridSkeleton } from './PhotoBoard/PhotoGrid';
+import PhotoTabLayout from './PhotoBoard/PhotoTabLayout';
+import {
+  DesktopTagFilter,
+  MobileTagFilterBar,
+  PhotoView,
+} from './PhotoBoard/TagFilter';
+
+const PHOTO_PAGE_SIZE = 24;
+/** Fixed by the API (`photoboard/:id/albums`). */
+const ALBUM_PAGE_SIZE = 12;
+
+function PhotoSection({
+  boardInfo,
+  tags,
+  page,
+  onPageChange,
+  onResetTags,
+}: {
+  boardInfo: Board;
+  tags: string[];
+  page: number;
+  onPageChange: (page: number) => void;
+  onResetTags: () => void;
+}) {
+  const { data, isLoading, isError, refetch } = usePhotoList({
+    board_id: boardInfo.board_id,
+    offset: (page - 1) * PHOTO_PAGE_SIZE,
+    limit: PHOTO_PAGE_SIZE,
+    tags,
+  });
+
+  if (isError) {
+    return (
+      <PhotoEmpty
+        title="사진을 불러오지 못했어요"
+        action={
+          <Button variant="secondary" onClick={() => refetch()}>
+            다시 시도
+          </Button>
+        }
+      />
+    );
+  }
+  if (isLoading || !data) return <PhotoGridSkeleton />;
+  if (data.rows.length === 0) {
+    return tags.length > 0 ? (
+      <PhotoEmpty
+        title="고른 태그에 맞는 사진이 없어요"
+        description="태그를 하나씩 빼 보거나 필터를 초기화해 보세요."
+        action={
+          <Button variant="secondary" onClick={onResetTags}>
+            필터 초기화
+          </Button>
+        }
+      />
+    ) : (
+      <PhotoEmpty title="아직 사진이 없어요" />
+    );
+  }
+
+  return (
+    <>
+      <PhotoGrid photos={data.rows} />
+      <Pagination
+        page={page}
+        totalPages={Math.ceil(data.count / PHOTO_PAGE_SIZE)}
+        onPageChange={onPageChange}
+        className="py-4"
+      />
+    </>
+  );
+}
+
+function AlbumSection({
+  boardInfo,
+  page,
+  onPageChange,
+}: {
+  boardInfo: Board;
+  page: number;
+  onPageChange: (page: number) => void;
+}) {
+  const { data, isLoading, isError, refetch } = useAlbumsInPhotoBoard(
+    boardInfo.board_id,
+    page,
+  );
+
+  if (isError) {
+    return (
+      <PhotoEmpty
+        title="앨범을 불러오지 못했어요"
+        action={
+          <Button variant="secondary" onClick={() => refetch()}>
+            다시 시도
+          </Button>
+        }
+      />
+    );
+  }
+  if (isLoading || !data) return <AlbumCardListSkeleton />;
+  if (data.albumInfo.length === 0) {
+    return <PhotoEmpty title="아직 앨범이 없어요" />;
+  }
+
+  return (
+    <>
+      <AlbumCardList albums={data.albumInfo} />
+      <Pagination
+        page={page}
+        totalPages={Math.ceil(data.albumCount / ALBUM_PAGE_SIZE)}
+        onPageChange={onPageChange}
+        className="py-4"
+      />
+    </>
+  );
+}
 
 type AstroPhotoProps = {
   boardInfo: Board;
 };
 
-type ViewMode = 'photo' | 'album';
-
-const baseViewModeClassName =
-  'w-1/2 text-center py-[10px] transition-all duration-500';
-
-const selectedViewModeClassName = 'bg-[#49A0AE] text-white';
-
-const unselectedViewModeClassName =
-  'bg-[#F1F1F1] text-[#A3A3A3] hover:text-[#646464]';
-
+/** 별사진: a masonry wall of photos with tag filters, or its albums. */
 function AstroPhoto({ boardInfo }: AstroPhotoProps) {
   const navigate = useNavigate({ from: '/board/$board_id' });
   const searchParams = useSearch({ from: '/board/$board_id' });
+  const {
+    authInfo: {
+      user: { grade },
+    },
+  } = useAuth();
+  const writable = canWrite(boardInfo, grade);
 
-  const viewMode: ViewMode = searchParams.view === 'album' ? 'album' : 'photo';
+  const [isCreating, setIsCreating] = useState(false);
 
-  const setViewMode = (mode: ViewMode) => {
+  const view: PhotoView = searchParams.view === 'album' ? 'album' : 'photo';
+  const page = Number(searchParams.page ?? 1);
+  const tags = useMemo(() => searchParams.tags ?? [], [searchParams.tags]);
+
+  const setView = (next: PhotoView) => {
+    navigate({
+      search: (prev) => ({ ...prev, view: next, page: 1 }),
+    });
+  };
+
+  const setTags = (next: string[]) => {
     navigate({
       search: (prev) => ({
         ...prev,
-        view: mode,
+        tags: next.length > 0 ? next : undefined,
         page: 1,
       }),
     });
   };
 
+  const goToPage = (idx: number) => {
+    navigate({
+      search: (prev) => ({ ...prev, page: idx }),
+    });
+  };
+
+  const actionLabel = view === 'photo' ? '사진 올리기' : '앨범 만들기';
+  const ActionIcon = view === 'photo' ? Upload : FolderPlus;
+
+  const filterProps = {
+    tags: boardInfo.tags ?? [],
+    selected: tags,
+    onChange: setTags,
+    view,
+    onViewChange: setView,
+  };
+
   return (
-    <div className="board-wrapper photoboard-wrapper">
-      <BoardName
-        board_id={boardInfo.board_id}
-        board_name={boardInfo.board_name}
-      />
-      <div className="board-desc">{boardInfo.board_desc}</div>
-      <div className="w-full flex text-[20px] mb-3">
-        <button
-          className={`${baseViewModeClassName} ${
-            viewMode === 'photo'
-              ? selectedViewModeClassName
-              : unselectedViewModeClassName
-          }`}
-          onClick={() => setViewMode('photo')}
-        >
-          사진
-        </button>
-        <button
-          className={`${baseViewModeClassName} ${
-            viewMode === 'album'
-              ? selectedViewModeClassName
-              : unselectedViewModeClassName
-          }`}
-          onClick={() => setViewMode('album')}
-        >
-          앨범
-        </button>
+    <PhotoTabLayout
+      board={boardInfo}
+      toolbar={<MobileTagFilterBar {...filterProps} />}
+      action={
+        writable && (
+          <Button
+            onClick={() => setIsCreating(true)}
+            className="[&_svg]:text-accent"
+          >
+            <ActionIcon className="size-[18px]!" />
+            {actionLabel}
+          </Button>
+        )
+      }
+    >
+      <div className="flex flex-col p-1 md:grid md:grid-cols-[200px_minmax(0,1fr)] md:items-start md:gap-7 md:p-0">
+        <DesktopTagFilter {...filterProps} />
+        <div className={view === 'album' ? 'px-3 pt-3 md:p-0' : undefined}>
+          {view === 'photo' ? (
+            <PhotoSection
+              boardInfo={boardInfo}
+              tags={tags}
+              page={page}
+              onPageChange={goToPage}
+              onResetTags={() => setTags([])}
+            />
+          ) : (
+            <AlbumSection
+              boardInfo={boardInfo}
+              page={page}
+              onPageChange={goToPage}
+            />
+          )}
+        </div>
       </div>
-      {viewMode === 'photo' ? (
-        <PhotoSection boardInfo={boardInfo} />
-      ) : (
-        <AlbumSection boardInfo={boardInfo} />
+
+      {writable && (
+        <>
+          <div className="h-18 md:hidden" aria-hidden />
+          <Fab
+            icon={<ActionIcon />}
+            onClick={() => setIsCreating(true)}
+            className="md:hidden"
+          >
+            {actionLabel}
+          </Fab>
+        </>
       )}
-    </div>
+      {isCreating && view === 'photo' && (
+        <PhotoUploader
+          boardId={boardInfo.board_id}
+          targetName={boardInfo.board_name}
+          tags={boardInfo.tags}
+          onCreatePhoto={() => setIsCreating(false)}
+          onCancel={() => setIsCreating(false)}
+        />
+      )}
+      <AlbumFormSheet
+        open={isCreating && view === 'album'}
+        onOpenChange={setIsCreating}
+        boardId={boardInfo.board_id}
+        onSaved={() => setIsCreating(false)}
+      />
+    </PhotoTabLayout>
   );
 }
 

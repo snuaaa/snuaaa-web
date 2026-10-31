@@ -1,24 +1,6 @@
-@use "sass:color";
 @use "common/color" as color2;
 
 /**********  ENIF  **********/
-.enif-modal-wrapper {
-    position: fixed;
-    display: flex;
-    z-index: 30;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background-color: rgba(0, 0, 0, 0.6);
-    .enif-btn-common {
-        float: right;
-        bottom: 20px;
-        right: 20px;
-    }
-}
-
 .enif-f-1p2x {
     font-size: 1.2rem;
 }
@@ -163,7 +145,7 @@
     transition: all 0.3s;
     cursor: pointer;
     &:hover {
-        background-color: color.adjust(color2.$color_aqua, $lightness: -10%);
+        background-color: var(--color-primary-hover);
     }
 }
 

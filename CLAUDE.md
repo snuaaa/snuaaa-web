@@ -50,13 +50,17 @@ Each package has its own ESLint flat config (`eslint.config.*`) with Prettier (s
 ### Web (`packages/community/src`)
 
 - **Routing:** TanStack Router with file-based routes in `src/routes/`. The Vite plugin generates `src/routeTree.gen.ts`, so never edit that file by hand. Route files are thin: most render a component from `src/pages/`, which composes feature components from `src/components/<Feature>/`.
-- **Root layout:** `routes/__root.tsx` wires `QueryClientProvider`, `AuthProvider`, `ViewportSizeProvider`, the header, sidebar and footer. It also renders the photo and exhibit-photo detail modals, which are driven by the global `?photo=<id>` / `?exhibitPhoto=<id>` search params. To open a photo from anywhere, set that search param instead of navigating to a route.
+- **Root layout:** `routes/__root.tsx` wires `QueryClientProvider`, `AuthProvider`, `ViewportSizeProvider` and `components/Layout/AppShell` (desktop top nav, mobile bottom tab bar). Pages not yet redesigned render inside the legacy white column; `AppShell`'s `REDESIGNED_PATHS` lists the ones that draw their own layout. It also renders the photo and exhibit-photo detail modals, which are driven by the global `?photo=<id>` / `?exhibitPhoto=<id>` search params. To open a photo from anywhere, set that search param instead of navigating to a route.
 - **Data layer, in three steps:**
   1. `src/services/index.ts` defines the shared axios instance and `API` wrapper. An interceptor attaches `Bearer <token>` from the cookie (`utils/token`).
   2. `src/services/*Service.ts` holds the endpoint functions, and `services/types.ts` holds the response types.
   3. `src/hooks/queries/use*Queries.ts` wraps those functions in TanStack Query hooks, each file with a `xxxKeys` query-key factory. New server calls should follow the same service → query-hook pattern, and mutations should invalidate through the key factories.
 - **Auth:** `contexts/auth` (`useAuth`). On load, the provider validates the cookie token and redirects to `/auth/login?redirect=...` unless the page is public (`/auth/login`, `/auth/signup`).
 - **Styling:** Tailwind v4 via `@tailwindcss/vite`, alongside legacy SCSS in `src/sass/` and `App.scss`.
+  - Design tokens live in the `@theme` block of `src/index.css` (see `docs/redesign.md`). Tailwind's default palette is cleared, so only token colors exist (`bg-primary`, `text-fg-muted`, `border-border`, `bg-navy-500`, ...). Prefer semantic tokens over raw palette steps, and don't add hex values in class names.
+  - Legacy SCSS color variables in `sass/common/_color.scss` point at the same tokens via `var()`, so Sass color functions can't take them.
+  - Shared UI primitives (Button, Field/Input, Tag, Avatar, Sheet, Dialog, NavDrawer, Tabs, Pagination, ...) live in `src/components/ui/` and are imported from `~/components/ui`. Merge classes with `cn()` from `~/lib/utils`, and use lucide-react for new icons.
+- **Redesign:** A UI redesign and design-system migration is in progress. Read `docs/redesign.md` before any UI work; it holds the tokens, component plan, decisions and PR order. It runs as an epic, and `docs/redesign.md` names the branch.
 - **Rich text:** CKEditor 5 v38, bundled via `@ckeditor/vite-plugin-ckeditor5`.
 - **Imports:** the `~/` alias maps to `src/`.
 

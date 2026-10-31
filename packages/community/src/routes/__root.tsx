@@ -14,16 +14,12 @@ import '../index.css';
 import { AuthProvider } from '../contexts/auth';
 
 import { ViewportSizeProvider } from '../contexts/viewportSize';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import RiseSet from '~/components/Home/RiseSet';
-import SideBar from '~/components/Home/SideBar';
+import AppShell from '~/components/Layout/AppShell';
 import FullScreenPortal from '~/components/Common/FullScreenPortal';
-import PhotoDetailModal from '~/components/Photo/DetailModal';
+import ExhibitPhotoDetailModal from '~/components/Exhibition/ExhibitPhotoDetail';
+import PhotoDetailModal from '~/components/Photo/PhotoDetail';
 import { queryClient } from '~/lib/queryClient';
 import { PhotoNavigationScope } from '~/services/PhotoService';
-
-const ExhibitPhotoPage = React.lazy(() => import('~/pages/ExhibitPhoto'));
 
 const TanStackRouterDevtools =
   process.env.NODE_ENV === 'production'
@@ -95,10 +91,39 @@ function PhotoModal({
 }
 
 function ExhibitPhotoModal({ exhibitPhotoId }: { exhibitPhotoId: number }) {
+  const router = useRouter();
+  const navigate = useNavigate();
+
+  const handleMovePhoto = useCallback(
+    (newPhotoId: number) => {
+      navigate({
+        to: '.',
+        search: (prev: Record<string, unknown>) => ({
+          ...prev,
+          exhibitPhoto: newPhotoId,
+        }),
+        replace: true,
+      });
+    },
+    [navigate],
+  );
+
+  const handleClosePhoto = useCallback(() => {
+    if (window.history.length > 2) {
+      router.history.back();
+    } else {
+      navigate({ to: '/' });
+    }
+  }, [router, navigate]);
+
   return (
-    <Suspense fallback={null}>
-      <ExhibitPhotoPage exhibitPhotoId={exhibitPhotoId} />
-    </Suspense>
+    <FullScreenPortal>
+      <ExhibitPhotoDetailModal
+        exhibitPhotoId={exhibitPhotoId}
+        onClose={handleClosePhoto}
+        onMovePhoto={handleMovePhoto}
+      />
+    </FullScreenPortal>
   );
 }
 
@@ -106,30 +131,20 @@ function RootComponent() {
   const location = useLocation();
   const { photo, photoNavigation, exhibitPhoto } = Route.useSearch();
 
-  // Check if the current path is an auth path (login or signup)
-  const isAuthPage = location.pathname.startsWith('/auth');
+  // Auth pages render without the site chrome
+  const isBarePage = location.pathname.startsWith('/auth');
 
   return (
     <QueryClientProvider client={queryClient}>
       <div className="min-h-full flex flex-col">
         <ViewportSizeProvider>
           <AuthProvider>
-            {isAuthPage ? (
+            {isBarePage ? (
               <Outlet />
             ) : (
-              <>
-                <Header />
-                <div className="section-wrapper">
-                  <section>
-                    <div className="side-left">
-                      <RiseSet />
-                    </div>
-                    <SideBar />
-                    <Outlet />
-                  </section>
-                </div>
-                <Footer />
-              </>
+              <AppShell>
+                <Outlet />
+              </AppShell>
             )}
             {photo && (
               <PhotoModal photoId={photo} navigation={photoNavigation} />

@@ -1,17 +1,7 @@
-@use "pages/signup";
-@use "pages/login";
-@use "pages/intro";
 @use "pages/board";
 @use "pages/photoboard";
-@use "pages/album";
-@use "pages/document";
-@use "pages/userinfo";
 @use "pages/photo";
-@use "pages/post";
-@use "pages/home";
-@use "pages/exhibition";
 @use "pages/mighty";
-@use "pages/management";
 @use "common/color";
 
 
@@ -33,7 +23,7 @@ section {
   font-size: 13px;
   // padding: 30px;
   h2 {
-    font-family: "S-CoreDream-5Medium";
+    font-family: inherit;
     font-size: 23px;
     font-weight: bold;
     margin: 0px 0px 0px 0px;

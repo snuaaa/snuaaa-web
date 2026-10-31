@@ -98,10 +98,7 @@ const Provider = ({ children }: PropsWithChildren) => {
     return <Loading />;
   }
 
-  if (
-    !authInfo.isLoggedIn &&
-    !['/auth/login', '/auth/signup'].includes(location.pathname)
-  ) {
+  if (!authInfo.isLoggedIn && !PUBLIC_PAGES.includes(location.pathname)) {
     return <Navigate to="/auth/login" />;
   }
 
