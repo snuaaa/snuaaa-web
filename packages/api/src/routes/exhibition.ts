@@ -10,6 +10,7 @@ import {
 
 import {
   retrieveExhibition,
+  updateExhibition,
   migrateExhibitionPosters,
 } from '../controllers/exhibition.controller';
 import {
@@ -22,6 +23,7 @@ import { retrieveUserByUserUuid } from '../controllers/user.controller';
 import {
   assertCanEditContent,
   deleteContent,
+  updateContent,
 } from '../controllers/content.controller';
 import { BadRequestError } from '../errors';
 
@@ -40,7 +42,72 @@ router.get('/:exhibition_id', verifyTokenMiddleware, async (req, res, next) => {
 router.patch(
   '/:exhibition_id',
   verifyTokenMiddleware,
-  (_req: AuthenticatedRequest, _res) => {},
+  memoryUpload.single('poster'),
+  async (req: AuthenticatedRequestWithFile, res, next) => {
+    try {
+      const { exhibition_id } = req.params;
+      await assertCanEditContent(
+        exhibition_id,
+        req.decodedToken,
+        ContentTypeEnum.EXHIBITION,
+      );
+
+      const {
+        title,
+        text,
+        exhibition_no,
+        slogan,
+        date_start,
+        date_end,
+        place,
+      } = req.body;
+
+      // multipart 값은 문자열이라 빈 값이나 잘못된 형식이 DB 오류(500)로 가지 않게 먼저 막아요.
+      if (
+        exhibition_no !== undefined &&
+        !(Number.isInteger(Number(exhibition_no)) && Number(exhibition_no) > 0)
+      ) {
+        throw new BadRequestError('exhibition_no must be a positive integer');
+      }
+      for (const date of [date_start, date_end]) {
+        if (date !== undefined && Number.isNaN(new Date(date).getTime())) {
+          throw new BadRequestError('date_start and date_end must be dates');
+        }
+      }
+
+      const exhibitionData: Parameters<typeof updateExhibition>[1] = {
+        exhibition_no,
+        slogan,
+        date_start,
+        date_end,
+        place,
+      };
+
+      // 포스터는 새 파일을 보낼 때만 바꿔요.
+      if (req.file) {
+        const resizedOriginalBuffer = await resizeImageBuffer(req.file.buffer);
+        const resizedThumbnailBuffer = await resizeImageBuffer(
+          req.file.buffer,
+          { shortSideSize: 300 },
+        );
+        const [posterUrl, posterThumbnailUrl] = await Promise.all([
+          uploadImageToS3(resizedOriginalBuffer, 'exhibition'),
+          uploadImageToS3(resizedThumbnailBuffer, 'exhibition'),
+        ]);
+        exhibitionData.poster_path = posterUrl;
+        exhibitionData.poster_thumbnail_path = posterThumbnailUrl;
+        exhibitionData.poster_url = posterUrl;
+        exhibitionData.poster_thumbnail_url = posterThumbnailUrl;
+      }
+
+      await updateContent(exhibition_id, { title, text });
+      await updateExhibition(exhibition_id, exhibitionData);
+
+      res.json({ success: true });
+    } catch (err) {
+      next(err);
+    }
+  },
 );
 
 router.delete(
