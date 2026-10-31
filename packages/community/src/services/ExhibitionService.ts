@@ -12,7 +12,12 @@ export interface CreateExhibitionRequest {
   poster: File;
 }
 
-type ExhibitionInfo = Exhibition & {
+export type UpdateExhibitionRequest = Omit<
+  CreateExhibitionRequest,
+  'title' | 'poster'
+> & { poster?: File };
+
+export type ExhibitionInfo = Exhibition & {
   user: Pick<
     User,
     'user_id' | 'nickname' | 'introduction' | 'profile_path' | 'deleted_at'
@@ -59,10 +64,24 @@ const ExhibitionService = {
     );
   },
 
-  // TODO: server 구현
-  // updateExhibition: function (exhibition_id: number, data: any) {
-  //   return API.patch(`exhibition/${exhibition_id}`, data);
-  // },
+  updateExhibition: function (
+    exhibition_id: number,
+    data: UpdateExhibitionRequest,
+  ) {
+    const { text, exhibition_no, slogan, date_start, date_end, place, poster } =
+      data;
+    const formData = new FormData();
+    formData.append('text', text);
+    formData.append('exhibition_no', exhibition_no.toString());
+    formData.append('slogan', slogan);
+    formData.append('date_start', date_start.toString());
+    formData.append('date_end', date_end.toString());
+    formData.append('place', place);
+    // Without a new file the server keeps the current poster.
+    if (poster) formData.append('poster', poster);
+
+    return API.patch(`exhibition/${exhibition_id}`, formData);
+  },
 };
 
 export default ExhibitionService;

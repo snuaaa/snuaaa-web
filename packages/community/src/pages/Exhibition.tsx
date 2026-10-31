@@ -1,11 +1,26 @@
 import { FC, useState } from 'react';
 import { Link, useParams } from '@tanstack/react-router';
 import { useQueryClient } from '@tanstack/react-query';
-import { ChevronLeft, ImagePlus, Images, Link2 } from 'lucide-react';
+import {
+  ChevronLeft,
+  Ellipsis,
+  ImagePlus,
+  Images,
+  Link2,
+  Pencil,
+} from 'lucide-react';
 
 import { canWrite } from '~/components/Board/boardUtils';
 import ExhibitPhotoUploader from '~/components/Exhibition/ExhibitPhotoUploader';
-import { Button, Fab, Toast, useToast } from '~/components/ui';
+import ExhibitionFormSheet from '~/components/Exhibition/ExhibitionFormSheet';
+import {
+  Button,
+  Fab,
+  Sheet,
+  SheetAction,
+  Toast,
+  useToast,
+} from '~/components/ui';
 import { useAuth } from '~/contexts/auth';
 import {
   exhibitionKeys,
@@ -57,12 +72,14 @@ const ExhibitionPage: FC = () => {
   const toast = useToast();
   const {
     authInfo: {
-      user: { grade },
+      user: { grade, user_id: myId },
     },
   } = useAuth();
 
   const { data } = useExhibition(exhibitionId);
   const [isCreating, setIsCreating] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   // The route loader fills the cache before this renders.
   const content = data?.exhibition.exhibitionInfo;
@@ -71,6 +88,7 @@ const ExhibitionPage: FC = () => {
   const { exhibition, board } = content;
   const works = data.exhibitPhotos.exhibitPhotosInfo;
   const writable = canWrite(board, grade);
+  const isOwner = content.user.user_id === myId;
   const posterSrc = resolveImageUrl(
     exhibition.poster_thumbnail_path || exhibition.poster_path,
   );
@@ -102,14 +120,26 @@ const ExhibitionPage: FC = () => {
           >
             <ChevronLeft className="size-[22px]" />
           </Link>
-          <button
-            type="button"
-            aria-label="링크 복사"
-            onClick={copyLink}
-            className="flex size-11 items-center justify-center"
-          >
-            <Link2 className="size-5" />
-          </button>
+          {isOwner ? (
+            <button
+              type="button"
+              aria-label="사진전 메뉴"
+              aria-haspopup="dialog"
+              onClick={() => setMenuOpen(true)}
+              className="flex size-11 items-center justify-center"
+            >
+              <Ellipsis className="size-5" />
+            </button>
+          ) : (
+            <button
+              type="button"
+              aria-label="링크 복사"
+              onClick={copyLink}
+              className="flex size-11 items-center justify-center"
+            >
+              <Link2 className="size-5" />
+            </button>
+          )}
         </div>
         <div className="mx-auto flex w-full max-w-[1080px] flex-col gap-3.5 px-5 pt-1 pb-6 md:px-6 md:pt-5 md:pb-9">
           <Link
@@ -148,15 +178,24 @@ const ExhibitionPage: FC = () => {
                 </p>
               )}
             </div>
-            {writable && (
-              <Button
-                variant="accent"
-                onClick={openUpload}
-                className="hidden shrink-0 md:inline-flex"
-              >
-                <ImagePlus className="size-[18px]!" />
-                작품 올리기
-              </Button>
+            {(isOwner || writable) && (
+              <div className="hidden shrink-0 gap-2 md:flex">
+                {isOwner && (
+                  <Button
+                    variant="ghost"
+                    onClick={() => setIsEditing(true)}
+                    className="border border-navy-700 text-fg-on-brand hover:bg-surface-brand-raised"
+                  >
+                    사진전 수정
+                  </Button>
+                )}
+                {writable && (
+                  <Button variant="accent" onClick={openUpload}>
+                    <ImagePlus className="size-[18px]!" />
+                    작품 올리기
+                  </Button>
+                )}
+              </div>
             )}
           </div>
           {content.text && (
@@ -196,6 +235,52 @@ const ExhibitionPage: FC = () => {
           </Fab>
         </>
       )}
+      <Sheet
+        open={menuOpen}
+        onOpenChange={setMenuOpen}
+        title="사진전 메뉴"
+        hideTitle
+      >
+        <SheetAction
+          icon={<Pencil />}
+          onClick={() => {
+            setMenuOpen(false);
+            setIsEditing(true);
+          }}
+        >
+          사진전 정보 수정
+        </SheetAction>
+        {writable && (
+          <SheetAction
+            icon={<ImagePlus />}
+            onClick={() => {
+              setMenuOpen(false);
+              openUpload();
+            }}
+          >
+            작품 올리기
+          </SheetAction>
+        )}
+        <SheetAction
+          icon={<Link2 />}
+          onClick={() => {
+            setMenuOpen(false);
+            copyLink();
+          }}
+        >
+          링크 복사
+        </SheetAction>
+      </Sheet>
+      <ExhibitionFormSheet
+        open={isEditing}
+        onOpenChange={setIsEditing}
+        boardId={content.board_id}
+        exhibition={content}
+        onSaved={() => {
+          setIsEditing(false);
+          toast.show('사진전 정보를 수정했어요');
+        }}
+      />
       <Toast message={toast.message} />
 
       {isCreating && (
