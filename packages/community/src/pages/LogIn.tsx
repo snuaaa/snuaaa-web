@@ -8,6 +8,8 @@ import FullScreenPortal from '~/components/Common/FullScreenPortal';
 import FindIdPw from '~/components/Login/FindIdPw';
 import AuthService from '~/services/AuthService';
 import { useAuth } from '~/contexts/auth';
+import { getSafeRedirect } from '~/lib/auth';
+import { User } from '~/services/types';
 
 const popUpTitle = '자동 로그인 기능을 사용하시겠습니까?';
 const popUpText = `자동 로그인 사용시 다음 접속부터는 로그인을 하실 필요가 없습니다.\n
@@ -27,15 +29,11 @@ function LogIn() {
   const navigate = useNavigate();
   const search = useSearch({ from: '/auth/login' });
   const authContext = useAuth();
-  const { isLoggedIn } = authContext.authInfo;
 
-  // 로그인 상태가 반영된 뒤 한 번만 이동한다.
-  // <Navigate>는 리렌더마다 props가 새로 만들어져 navigate를 다시 호출하므로,
-  // 메인 페이지 loader가 끝나기 전까지 리다이렉트가 무한 반복되어 화면이 멈춘다.
-  useEffect(() => {
-    if (!isLoggedIn) return;
-    navigate({ to: search.redirect || '/', replace: true });
-  }, [isLoggedIn, navigate, search.redirect]);
+  const completeLogIn = (token: string, autoLogin: boolean, userInfo: User) => {
+    authContext.authLogin(token, autoLogin, userInfo);
+    navigate({ href: getSafeRedirect(search.redirect), replace: true });
+  };
 
   useEffect(() => {
     if (!errPopUp) return;
@@ -81,9 +79,7 @@ function LogIn() {
       const res = await AuthService.logIn(loginInfo);
       const { token, userInfo, autoLogin } = res.data;
       setIsLoading(false);
-      // 이동은 위 useEffect가 처리한다. 여기서 바로 navigate하면 AuthProvider가
-      // 아직 로그아웃 상태로 보고 다시 로그인 페이지로 보낸다.
-      authContext.authLogin(token, autoLogin, userInfo);
+      completeLogIn(token, autoLogin, userInfo);
     } catch (err) {
       console.error(err);
       setIsLoading(false);
@@ -99,7 +95,7 @@ function LogIn() {
       const res = await AuthService.guestLogIn();
       setIsLoading(false);
       const { token, userInfo, autoLogin } = res;
-      authContext.authLogin(token, autoLogin, userInfo);
+      completeLogIn(token, autoLogin, userInfo);
     } catch (err) {
       console.error(err);
       setIsLoading(false);
@@ -107,10 +103,6 @@ function LogIn() {
       // makeErrPopUp()
     }
   };
-
-  if (isLoggedIn) {
-    return <Loading />;
-  }
 
   return (
     <>

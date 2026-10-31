@@ -50,12 +50,12 @@ Each package has its own ESLint flat config (`eslint.config.*`) with Prettier (s
 ### Web (`packages/community/src`)
 
 - **Routing:** TanStack Router with file-based routes in `src/routes/`. The Vite plugin generates `src/routeTree.gen.ts`, so never edit that file by hand. Route files are thin: most render a component from `src/pages/`, which composes feature components from `src/components/<Feature>/`.
-- **Root layout:** `routes/__root.tsx` wires `QueryClientProvider`, `AuthProvider`, `ViewportSizeProvider`, the header, sidebar and footer. It also renders the photo and exhibit-photo detail modals, which are driven by the global `?photo=<id>` / `?exhibitPhoto=<id>` search params. To open a photo from anywhere, set that search param instead of navigating to a route.
+- **Root layout:** `index.jsx` wraps the router in `QueryClientProvider`. `routes/__root.tsx` wires `ViewportSizeProvider`, the header, sidebar and footer. It also renders the photo and exhibit-photo detail modals, which are driven by the global `?photo=<id>` / `?exhibitPhoto=<id>` search params. To open a photo from anywhere, set that search param instead of navigating to a route.
 - **Data layer, in three steps:**
   1. `src/services/index.ts` defines the shared axios instance and `API` wrapper. An interceptor attaches `Bearer <token>` from the cookie (`utils/token`).
   2. `src/services/*Service.ts` holds the endpoint functions, and `services/types.ts` holds the response types.
   3. `src/hooks/queries/use*Queries.ts` wraps those functions in TanStack Query hooks, each file with a `xxxKeys` query-key factory. New server calls should follow the same service → query-hook pattern, and mutations should invalidate through the key factories.
-- **Auth:** `contexts/auth` (`useAuth`). On load, the provider validates the cookie token and redirects to `/auth/login?redirect=...` unless the page is public (`/auth/login`, `/auth/signup`).
+- **Auth:** the session (`/auth/check` result, or `null` when logged out) is a TanStack Query cache entry (`hooks/queries/useAuthQueries.ts`), revalidated at most every 5 minutes. The root route's `beforeLoad` loads it through `loadSession()` (`lib/auth.ts`) and redirects to `/auth/login?redirect=...` unless the page is public (`PUBLIC_PATHS`). It runs before any loader, so guard pages there, not with `<Navigate>` in components. Only a 401 logs the user out. `useAuth()` (`contexts/auth`) exposes `authInfo`, plus `authLogin`/`authLogout`, which update the session cache directly, so navigating right after `authLogin` passes the guard. Pass a `redirect` value through `getSafeRedirect()` before navigating to it.
 - **Styling:** Tailwind v4 via `@tailwindcss/vite`, alongside legacy SCSS in `src/sass/` and `App.scss`.
 - **Rich text:** CKEditor 5 v38, bundled via `@ckeditor/vite-plugin-ckeditor5`.
 - **Imports:** the `~/` alias maps to `src/`.
