@@ -1,5 +1,4 @@
-import { useNavigate, useRouter, useSearch } from '@tanstack/react-router';
-import { ChevronLeft } from 'lucide-react';
+import { useNavigate, useSearch } from '@tanstack/react-router';
 import {
   DesktopAllPostRow,
   DesktopAllPostSkeletonRow,
@@ -7,7 +6,7 @@ import {
   MobileAllPostSkeletonRow,
   desktopAllPostColumns,
 } from '~/components/Board/AllPostList';
-import { BoardFrame } from '~/components/Board/BoardLayout';
+import { AllFeedLayout, AllFeedTabs } from '~/components/Board/AllFeed';
 import { ListMessage } from '~/components/Board/ListParts';
 import { Button, Pagination } from '~/components/ui';
 import { ViewportSize, useViewportSize } from '~/contexts/viewportSize';
@@ -16,35 +15,6 @@ import { cn } from '~/lib/utils';
 
 // The API returns 10 posts a page.
 const PAGE_SIZE = 10;
-
-const TITLE = '전체 게시글';
-const DESCRIPTION = '내가 볼 수 있는 모든 게시판의 새 글을 모아 봐요.';
-
-function MobileHeader() {
-  const router = useRouter();
-  return (
-    <header className="flex flex-col gap-1 bg-surface-brand pt-[max(0.5rem,env(safe-area-inset-top))] pr-4 pb-4 pl-1 text-fg-on-brand md:hidden">
-      <div className="flex items-center gap-1">
-        <button
-          type="button"
-          aria-label="뒤로"
-          onClick={() =>
-            router.history.canGoBack()
-              ? router.history.back()
-              : router.navigate({ to: '/' })
-          }
-          className="flex size-11 shrink-0 items-center justify-center"
-        >
-          <ChevronLeft className="size-[22px]" />
-        </button>
-        <h1 className="text-title">{TITLE}</h1>
-      </div>
-      <p className="pl-4 text-label font-normal leading-normal text-fg-on-brand-muted">
-        {DESCRIPTION}
-      </p>
-    </header>
-  );
-}
 
 function AllPosts() {
   const navigate = useNavigate({ from: '/posts/all' });
@@ -74,12 +44,9 @@ function AllPosts() {
 
   if (isDesktop) {
     return (
-      <BoardFrame
-        title={TITLE}
-        description={DESCRIPTION}
-        mobileHeader={<MobileHeader />}
-      >
+      <AllFeedLayout tab="posts">
         <div className="flex flex-col rounded-lg bg-surface shadow-sm">
+          <AllFeedTabs tab="posts" className="px-5" />
           <div
             className={cn(
               desktopAllPostColumns,
@@ -117,16 +84,12 @@ function AllPosts() {
             className="border-t border-gray-100 p-4"
           />
         </div>
-      </BoardFrame>
+      </AllFeedLayout>
     );
   }
 
   return (
-    <BoardFrame
-      title={TITLE}
-      description={DESCRIPTION}
-      mobileHeader={<MobileHeader />}
-    >
+    <AllFeedLayout tab="posts">
       <div className="flex flex-1 flex-col bg-surface">
         {isError ? (
           errorMessage
@@ -154,7 +117,7 @@ function AllPosts() {
           </>
         )}
       </div>
-    </BoardFrame>
+    </AllFeedLayout>
   );
 }
 

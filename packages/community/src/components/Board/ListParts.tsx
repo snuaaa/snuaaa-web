@@ -21,12 +21,12 @@ export function ListMessage({
   );
 }
 
-/** Yellow dot on posts from the last 24 hours. */
-export function NewDot() {
+/** Yellow dot on posts (or comments) from the last 24 hours. */
+export function NewDot({ label = '새 글' }: { label?: string }) {
   return (
     <span
       className="block size-1.5 shrink-0 rounded-full bg-accent"
-      aria-label="새 글"
+      aria-label={label}
       role="img"
     />
   );

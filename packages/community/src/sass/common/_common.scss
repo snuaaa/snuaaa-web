@@ -174,34 +174,6 @@
   }
 }
 
-.paginator-wrapper {
-  display: flex;
-  margin: auto 10px;
-  padding: 20px 0px;
-  // margin-top: auto;
-  justify-content: center;
-  i {
-    color: color.$color-gray4;
-    &:hover {
-      color: color.$color-gray2;
-    }
-  }
-  ul {
-    display: flex;
-    color: color.$color-gray1;
-  }
-  li {
-    padding: 5px;
-    cursor: pointer;
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-  .current {
-    font-weight: bold;
-  }
-}
-
 .file-icon {
   margin: 3px 3px;
   .file-name {

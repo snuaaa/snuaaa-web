@@ -23,6 +23,7 @@ const REDESIGNED_PATHS = [
   '/equipment/admin/fees',
   '/admin/user',
   '/posts/all',
+  '/comments/all',
 ];
 /** Detail pages, edit forms included, that draw their own layout. */
 const REDESIGNED_PREFIXES = [
