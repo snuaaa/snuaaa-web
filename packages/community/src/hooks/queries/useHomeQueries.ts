@@ -48,6 +48,6 @@ export function useAllPosts(pageIdx: number) {
   return useQuery(allPostsQueryOptions(pageIdx));
 }
 
-export function useRiseSet() {
-  return useQuery(riseSetQueryOptions());
+export function useRiseSet({ enabled = true }: { enabled?: boolean } = {}) {
+  return useQuery({ ...riseSetQueryOptions(), enabled });
 }

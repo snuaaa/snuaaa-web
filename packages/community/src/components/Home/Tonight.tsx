@@ -5,6 +5,8 @@ import { useRiseSet } from '~/hooks/queries/useHomeQueries';
 import { cn } from '~/lib/utils';
 import { convertDateWithDay, convertTime } from '~/utils/convertDate';
 import MoonPhase from './MoonPhase';
+import { SunArc } from './Sky';
+import type { Sky } from './skyColors';
 
 function useTonightRows() {
   const { data: riseSet } = useRiseSet();
@@ -125,8 +127,11 @@ export function TonightStrip() {
   );
 }
 
-/** Desktop home band card: the moon beside the rise/set table. */
-export function TonightCard() {
+/**
+ * Desktop home band card: the moon beside the rise/set table. Under the
+ * 하늘 헤더 it also tells what the sky is doing and where the sun is.
+ */
+export function TonightCard({ sky }: { sky?: Sky }) {
   const { lunAge, rows } = useTonightRows();
   return (
     <div className="flex items-center gap-5 rounded-lg bg-surface-brand-raised px-5 py-[18px] text-fg-on-brand">
@@ -142,7 +147,13 @@ export function TonightCard() {
           <span className="text-caption text-fg-on-brand-muted">
             {convertDateWithDay(new Date())} · 서울 기준
           </span>
+          {sky && (
+            <span className="ml-auto shrink-0 text-caption text-navy-200">
+              {sky.label}
+            </span>
+          )}
         </div>
+        {sky && <SunArc sky={sky} />}
         <RiseSetGrid rows={rows} brand className="grid-cols-3" />
       </div>
     </div>

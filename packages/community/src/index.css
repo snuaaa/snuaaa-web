@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
+@import 'tailwindcss';
+@import 'pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css';
 
 /*
  * Design tokens (docs/redesign.md §2).
@@ -151,6 +151,8 @@
   --animate-slide-out-left: slide-out-left 200ms ease-in;
   --animate-accordion-down: accordion-down 200ms ease-out;
   --animate-accordion-up: accordion-up 200ms ease-in;
+  /* 하늘 헤더 stars; each star sets --star-opacity and its own duration */
+  --animate-twinkle: twinkle 4s ease-in-out infinite;
 
   @keyframes fade-in {
     from {
@@ -170,6 +172,15 @@
   @keyframes slide-out-left {
     to {
       transform: translateX(-100%);
+    }
+  }
+  @keyframes twinkle {
+    0%,
+    100% {
+      opacity: var(--star-opacity);
+    }
+    50% {
+      opacity: calc(var(--star-opacity) * 0.35);
     }
   }
   @keyframes accordion-down {
@@ -223,7 +234,11 @@ button {
   cursor: pointer;
 }
 
-input, select, textarea { outline: none; }
+input,
+select,
+textarea {
+  outline: none;
+}
 
 /*
  * CKEditor in the write screen (components/Post/PostComposer.tsx). Kept

@@ -1,11 +1,13 @@
-import type { ReactNode } from 'react';
-import { Link } from '@tanstack/react-router';
+import { useEffect, useState, type ReactNode } from 'react';
+import { Link, useLocation } from '@tanstack/react-router';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { ChevronDown, ExternalLink } from 'lucide-react';
+import { skyStyle } from '~/components/Home/skyColors';
 import { Avatar } from '~/components/ui';
 import { useAuth } from '~/contexts/auth';
 import { useBoards } from '~/hooks/queries/useBoardQueries';
 import { useMyUserInfo } from '~/hooks/queries/useUserQueries';
+import { useSky } from '~/hooks/useSky';
 import { cn } from '~/lib/utils';
 import { Board } from '~/services/types';
 import BrandMark from './BrandMark';
@@ -123,8 +125,38 @@ function ProfileMenu() {
   );
 }
 
+/** Whether the page has scrolled at all; only listens while `enabled`. */
+function useScrolled(enabled: boolean) {
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    if (!enabled) return;
+    const update = () => setScrolled(window.scrollY > 0);
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+    return () => window.removeEventListener('scroll', update);
+  }, [enabled]);
+  return enabled && scrolled;
+}
+
+/**
+ * On home the header is see-through over the home band, so the 하늘 헤더
+ * runs behind it. Once the page scrolls it fills in with the sky's top color.
+ */
+function useHomeHeaderStyle() {
+  const isHome =
+    useLocation({ select: (location) => location.pathname }) === '/';
+  const sky = useSky({ enabled: isHome });
+  const scrolled = useScrolled(isHome);
+  if (!isHome) return undefined;
+  return {
+    ...skyStyle(sky),
+    background: scrolled ? sky?.top : 'transparent',
+  };
+}
+
 /** Desktop (768px and up) site header. Boards are picked from dropdowns. */
 export default function TopNav() {
+  const headerStyle = useHomeHeaderStyle();
   const { section } = useNavSection();
   const { noticeBoards, communityBoards, officialBoards, photoBoards } =
     useBoards();
@@ -139,7 +171,10 @@ export default function TopNav() {
   const isActive = (target: NavSection) => section === target;
 
   return (
-    <header className="sticky top-0 z-30 hidden bg-surface-brand text-fg-on-brand md:block">
+    <header
+      className="sticky top-0 z-30 hidden bg-surface-brand text-fg-on-brand transition-colors duration-300 motion-reduce:transition-none md:block"
+      style={headerStyle}
+    >
       <div className="mx-auto flex h-16 max-w-[1080px] items-center gap-8 px-6">
         <BrandMark />
         <nav aria-label="주 메뉴" className="flex flex-1 items-center gap-1">

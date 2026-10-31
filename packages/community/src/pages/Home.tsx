@@ -5,17 +5,25 @@ import {
   RecentPostsCard,
   SoundBoxCard,
 } from '~/components/Home/HomeSections';
+import { SkyBackdrop } from '~/components/Home/Sky';
+import { skyStyle } from '~/components/Home/skyColors';
 import { TonightCard, TonightStrip } from '~/components/Home/Tonight';
 import BrandMark from '~/components/Layout/BrandMark';
 import ObservationToggle from '~/components/Layout/ObservationToggle';
 import { useHomeData } from '~/hooks/queries/useHomeQueries';
+import { useSky } from '~/hooks/useSky';
 
 function Home() {
   const { data: homeData } = useHomeData();
+  const sky = useSky();
 
   return (
     <div className="flex flex-col text-fg">
-      <header className="flex flex-col gap-3 bg-surface-brand px-4 pt-[max(0.75rem,env(safe-area-inset-top))] pb-4 md:hidden">
+      <header
+        className="relative isolate flex flex-col gap-3 overflow-hidden bg-surface-brand px-4 pt-[max(0.75rem,env(safe-area-inset-top))] pb-4 md:hidden"
+        style={skyStyle(sky)}
+      >
+        <SkyBackdrop sky={sky} />
         <div className="flex min-h-11 items-center justify-between gap-3">
           <BrandMark />
           {/* 동아리 소개 is in the footer, so this corner holds 관측 모드. */}
@@ -24,11 +32,16 @@ function Home() {
         <TonightStrip />
       </header>
 
-      {/* Desktop band under the top nav: 소리통 beside tonight's sky. */}
-      <div className="hidden border-t border-navy-800 bg-surface-brand md:block">
+      {/* Desktop band: 소리통 beside tonight's sky. It runs up under the top
+          nav, which is see-through over it, so both share one sky. */}
+      <div
+        className="relative isolate hidden overflow-hidden bg-surface-brand md:-mt-16 md:block md:pt-16"
+        style={skyStyle(sky)}
+      >
+        <SkyBackdrop sky={sky} />
         <div className="mx-auto grid max-w-[1080px] grid-cols-2 items-stretch lg:grid-cols-[minmax(0,1fr)_520px] gap-5 px-6 pt-6 pb-7">
           <SoundBoxCard soundBox={homeData?.soundBoxData} brand />
-          <TonightCard />
+          <TonightCard sky={sky} />
         </div>
       </div>
 
