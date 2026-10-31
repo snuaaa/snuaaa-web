@@ -37,12 +37,6 @@ router.get('/:exhibition_id', verifyTokenMiddleware, async (req, res, next) => {
   }
 });
 
-router.patch(
-  '/:exhibition_id',
-  verifyTokenMiddleware,
-  (_req: AuthenticatedRequest, _res) => {},
-);
-
 router.delete(
   '/:exhibition_id',
   verifyTokenMiddleware,
