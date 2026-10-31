@@ -23,11 +23,6 @@ type AllPostsResponse = {
 
 type RecentCommentsResponse = Comment[];
 
-type AllCommentsResponse = {
-  commentInfo: Comment[];
-  commentCount: number;
-};
-
 type RecentMemoryResponse = Album[];
 
 type RecentAstroPhotoResponse = Photo[];
@@ -47,10 +42,6 @@ const HomeService = {
 
   retrieveRecentComments: function () {
     return API.get<RecentCommentsResponse>('home/comments');
-  },
-
-  retrieveAllComments: function (pageIdx: number) {
-    return API.get<AllCommentsResponse>(`home/comments/all?page=${pageIdx}`);
   },
 
   retrieveRecentMemory: function () {

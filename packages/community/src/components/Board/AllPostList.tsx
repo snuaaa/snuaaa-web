@@ -4,18 +4,20 @@ import Skeleton from '~/components/Common/Skeleton';
 import { Avatar, Tag } from '~/components/ui';
 import { useBoards } from '~/hooks/queries/useBoardQueries';
 import { cn } from '~/lib/utils';
-import { Content } from '~/services/types';
+import { Board, Content } from '~/services/types';
 import { NewDot } from './ListParts';
 import { formatListDate, isNewPost } from './boardUtils';
 
 /** Boards in the 공지 group get the navy tag, the rest gray. */
-function BoardTag({ post }: { post: Content }) {
+export function BoardTag({
+  board,
+}: {
+  board: Pick<Board, 'board_id' | 'board_name'>;
+}) {
   const { boardsInfo } = useBoards();
-  const board = boardsInfo.find((b) => b.board_id === post.board.board_id);
+  const menu = boardsInfo.find((b) => b.board_id === board.board_id)?.menu;
   return (
-    <Tag variant={board?.menu === 1 ? 'brand' : 'neutral'}>
-      {post.board.board_name}
-    </Tag>
+    <Tag variant={menu === 1 ? 'brand' : 'neutral'}>{board.board_name}</Tag>
   );
 }
 
@@ -33,7 +35,7 @@ export function MobileAllPostRow({ post }: { post: Content }) {
         className="flex flex-col gap-1.5 py-3.5 active:bg-gray-50"
       >
         <span className="flex items-center gap-1.5">
-          <BoardTag post={post} />
+          <BoardTag board={post.board} />
           {isNewPost(post.createdAt) && <NewDot />}
         </span>
         <span className="line-clamp-2 text-body font-medium leading-[1.45]">
@@ -65,7 +67,7 @@ export function DesktopAllPostRow({ post }: { post: Content }) {
         className={cn(desktopAllPostColumns, 'h-13 text-sm hover:bg-gray-50')}
       >
         <span className="flex min-w-0">
-          <BoardTag post={post} />
+          <BoardTag board={post.board} />
         </span>
         <span className="flex min-w-0 items-center gap-2">
           {isNewPost(post.createdAt) && <NewDot />}

@@ -6,8 +6,6 @@ export const homeKeys = {
   all: ['home'] as const,
   data: () => [...homeKeys.all, 'data'] as const,
   allPosts: (page: number) => [...homeKeys.all, 'allPosts', page] as const,
-  allComments: (page: number) =>
-    [...homeKeys.all, 'allComments', page] as const,
   riseSet: () => [...homeKeys.all, 'riseSet'] as const,
 };
 
@@ -34,12 +32,6 @@ export const allPostsQueryOptions = (pageIdx: number) =>
     queryFn: () => HomeService.retrieveAllPosts(pageIdx),
   });
 
-export const allCommentsQueryOptions = (pageIdx: number) =>
-  queryOptions({
-    queryKey: homeKeys.allComments(pageIdx),
-    queryFn: () => HomeService.retrieveAllComments(pageIdx),
-  });
-
 export const riseSetQueryOptions = () =>
   queryOptions({
     queryKey: homeKeys.riseSet(),
@@ -54,10 +46,6 @@ export function useHomeData() {
 
 export function useAllPosts(pageIdx: number) {
   return useQuery(allPostsQueryOptions(pageIdx));
-}
-
-export function useAllComments(pageIdx: number) {
-  return useQuery(allCommentsQueryOptions(pageIdx));
 }
 
 export function useRiseSet() {
