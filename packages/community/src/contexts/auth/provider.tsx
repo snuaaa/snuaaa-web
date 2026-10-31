@@ -21,8 +21,7 @@ const initialAuth: AuthType = {
   },
 };
 
-// '/dev/ui' is the temporary redesign component gallery (routes/dev/ui.tsx).
-const PUBLIC_PAGES = ['/auth/login', '/auth/signup', '/dev/ui'];
+const PUBLIC_PAGES = ['/auth/login', '/auth/signup'];
 
 const Provider = ({ children }: PropsWithChildren) => {
   const [authInfo, setAuthInfo] = useState<AuthType>(initialAuth);

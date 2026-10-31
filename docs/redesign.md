@@ -81,7 +81,6 @@ shadcn/ui 방식을 씁니다. headless 라이브러리 위에 `cva`와 `tailwin
 
 - **라이브러리:** Radix(Dialog, Tabs, ToggleGroup, Avatar, Slot), 하단 시트는 vaul, 아이콘은 lucide-react를 씁니다. remixicon은 화면 PR마다 lucide로 바꿔 나갑니다.
 - **클래스 합치기:** `~/lib/utils`의 `cn()`을 씁니다. 타이포 토큰(`text-label` 등)을 글자 크기로 인식하도록 설정해 두었습니다.
-- **확인용 페이지 (임시):** `/dev/ui`에서 모든 기본 컴포넌트를 볼 수 있습니다. 프리뷰에서 확인하려고 일부러 프로덕션 빌드에 포함하고, 로그인 없이 열리며, 사이트 헤더 없이 렌더링합니다. epic을 `main`에 머지하기 전에 라우트(`routes/dev/ui.tsx`), `pages/UiGallery.tsx`, auth의 `PUBLIC_PAGES` 항목을 지웁니다.
 
 | 컴포넌트 | 변형 / 비고 | 대체할 기존 코드 |
 | --- | --- | --- |

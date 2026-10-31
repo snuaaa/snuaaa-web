@@ -131,10 +131,8 @@ function RootComponent() {
   const location = useLocation();
   const { photo, photoNavigation, exhibitPhoto } = Route.useSearch();
 
-  // Auth pages and the /dev component gallery render without the site chrome
-  const isBarePage =
-    location.pathname.startsWith('/auth') ||
-    location.pathname.startsWith('/dev/');
+  // Auth pages render without the site chrome
+  const isBarePage = location.pathname.startsWith('/auth');
 
   return (
     <QueryClientProvider client={queryClient}>
