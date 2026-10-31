@@ -3,6 +3,7 @@ import {
   migrateUserProfilePhotos,
   retrieveUser,
   updateUser,
+  updateUserGrade,
 } from '../controllers/user.controller';
 import {
   AuthenticatedRequest,
@@ -65,6 +66,28 @@ router.patch(
       };
 
       await updateUser(user_id, userData);
+      res.json({ success: true });
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
+/**
+ * Changes another member's grade. Body: `{ grade }`. The rules live in
+ * `updateUserGrade`: grade 1–3 only, and both the member's current grade and
+ * the new one must be lower than the actor's.
+ */
+router.patch(
+  '/:user_uuid/grade',
+  verifyTokenMiddleware,
+  async (req: AuthenticatedRequest, res, next) => {
+    try {
+      await updateUserGrade(
+        req.decodedToken._id,
+        req.params.user_uuid,
+        Number(req.body.grade),
+      );
       res.json({ success: true });
     } catch (err) {
       next(err);
