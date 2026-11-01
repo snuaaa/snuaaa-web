@@ -5,7 +5,8 @@
   "private": true,
   "main": "dist/main.js",
   "files": [
-    "dist"
+    "dist",
+    "drizzle"
   ],
   "scripts": {
     "build": "tsc",
@@ -18,7 +19,9 @@
     "format": "prettier --write \"src/**/*.{ts,js,json}\"",
     "format:check": "prettier --check \"src/**/*.{ts,js,json}\"",
     "lint": "eslint \"src/**/*.{ts,js}\"",
-    "lint:fix": "eslint \"src/**/*.{ts,js}\" --fix"
+    "lint:fix": "eslint \"src/**/*.{ts,js}\" --fix",
+    "db:generate": "drizzle-kit generate --custom",
+    "db:migrate": "ts-node src/db/migrate.ts"
   },
   "keywords": [],
   "license": "UNLICENSED",
@@ -37,6 +40,7 @@
     "cors": "^2.8.6",
     "crypto-random-string": "^3.3.1",
     "dotenv": "^17.4.2",
+    "drizzle-orm": "^0.45.3",
     "express": "^4.22.3",
     "helmet": "^8.3.0",
     "jsonwebtoken": "^9.0.3",
@@ -58,6 +62,7 @@
     "@types/express": "^4.17.25",
     "@types/multer": "^2.3.0",
     "@types/node": "^20.19.43",
+    "drizzle-kit": "^0.31.11",
     "eslint": "^9.39.5",
     "globals": "^16.5.0",
     "nodemon": "^3.1.14",
