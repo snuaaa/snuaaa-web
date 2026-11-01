@@ -66,6 +66,11 @@ const Composer = forwardRef<HTMLTextAreaElement, ComposerProps>(
           className={cn(
             'sticky z-20 flex flex-col gap-1.5 border-t border-border bg-surface px-3 pt-2',
             overTabBar ? 'bottom-0 pb-safe-3' : 'bottom-tab-bar pb-3',
+            // iOS keeps the layout viewport full height under the keyboard,
+            // so stick to the keyboard's top edge instead of the screen's
+            // bottom. The tab bar hides meanwhile, and the home indicator
+            // is under the keyboard, so neither needs clearing.
+            'keyboard-open:bottom-(--keyboard-inset) keyboard-open:pb-3',
           )}
         >
           {replyTo && (
@@ -537,7 +542,8 @@ export default function CommentSection({
       </div>
       <div className="h-6 md:h-7" aria-hidden />
 
-      {!isDesktop && (
+      {/* Hidden while editing inline, so the bar can't cover that field. */}
+      {!isDesktop && editingId === null && (
         <Composer
           ref={composerRef}
           {...composerProps}

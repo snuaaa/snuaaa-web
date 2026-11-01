@@ -1,6 +1,9 @@
 @import "tailwindcss";
 @import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
 
+/* While the on-screen keyboard is up (hooks/useVirtualKeyboard). */
+@custom-variant keyboard-open (:root[data-keyboard-open] &);
+
 /*
  * Design tokens (docs/redesign.md §2).
  * Components reference the semantic tokens; the raw palette is only for defining them.

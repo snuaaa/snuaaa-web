@@ -18,6 +18,7 @@ import AppShell from '~/components/Layout/AppShell';
 import FullScreenPortal from '~/components/Common/FullScreenPortal';
 import ExhibitPhotoDetailModal from '~/components/Exhibition/ExhibitPhotoDetail';
 import PhotoDetailModal from '~/components/Photo/PhotoDetail';
+import useVirtualKeyboard from '~/hooks/useVirtualKeyboard';
 import { queryClient } from '~/lib/queryClient';
 import { PhotoNavigationScope } from '~/services/PhotoService';
 
@@ -130,6 +131,7 @@ function ExhibitPhotoModal({ exhibitPhotoId }: { exhibitPhotoId: number }) {
 function RootComponent() {
   const location = useLocation();
   const { photo, photoNavigation, exhibitPhoto } = Route.useSearch();
+  useVirtualKeyboard();
 
   // Auth pages render without the site chrome
   const isBarePage = location.pathname.startsWith('/auth');
