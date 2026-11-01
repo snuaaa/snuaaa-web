@@ -1,5 +1,70 @@
 const tmpHistory = [
   {
+    year: 2026,
+    occasion: [
+      {
+        date: '11월 03일 ~ 11월 06일',
+        desc: '44회 천체 사진전 : 별일 없는 밤은 없으니까',
+      },
+      {
+        date: '09월 19일',
+        desc: 'Home Coming Day',
+      },
+    ],
+  },
+  {
+    year: 2025,
+    occasion: [
+      {
+        date: '11월 03일 ~ 11월 07일',
+        desc: '43회 천체 사진전 : 깊은 밤을 날아서',
+      },
+      {
+        date: '09월 27일',
+        desc: 'Home Coming Day',
+      },
+    ],
+  },
+  {
+    year: 2024,
+    occasion: [
+      {
+        date: '10월 30일 ~ 11월 02일',
+        desc: '42회 천체 사진전 : 별을 노래하는 마음으로',
+      },
+      {
+        date: '09월 28일',
+        desc: 'Home Coming Day',
+      },
+    ],
+  },
+  {
+    year: 2023,
+    occasion: [
+      {
+        date: '10월 31일 ~ 11월 04일',
+        desc: '41회 천체 사진전 : 별 볼일 있는 날',
+      },
+      {
+        date: '09월 23일',
+        desc: 'Home Coming Day',
+      },
+    ],
+  },
+  {
+    year: 2022,
+    occasion: [
+      {
+        date: '11월 01일 ~ 11월 04일',
+        desc: '40회 천체 사진전 : "해" 치웠나?',
+      },
+      {
+        date: '09월 24일',
+        desc: 'Home Coming Day',
+      },
+    ],
+  },
+  {
     year: 2021,
     occasion: [
       {
@@ -22,6 +87,10 @@ const tmpHistory = [
       {
         date: '11월 21일',
         desc: 'Home Coming Day',
+      },
+      {
+        date: '04월 20일 ~ 05월 03일',
+        desc: '온라인 전시 : AAA: The 40th Anniversary',
       },
     ],
   },

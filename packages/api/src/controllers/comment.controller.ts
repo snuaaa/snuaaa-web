@@ -1,7 +1,8 @@
 import { BoardModel, CommentModel, ContentModel, UserModel } from '../models';
 import { Op } from 'sequelize';
 import { BASE_USER_FIELDS } from '../models/User';
-import { BadRequestError } from '../errors';
+import { AuthorizationError, BadRequestError, NotFoundError } from '../errors';
+import { JWTPayload } from '../utils/token';
 
 export type CommentFilter = {
   author_id?: string;
@@ -276,4 +277,31 @@ export async function deleteComment(comment_id) {
       comment_id: comment_id,
     },
   });
+}
+
+/**
+ * Throws unless the user wrote the comment or their grade is within the edit
+ * level of the board the comment's content belongs to.
+ */
+export async function assertCanEditComment(comment_id, user: JWTPayload) {
+  const comment = await CommentModel.findByPk(comment_id, {
+    attributes: ['comment_id', 'author_id'],
+    include: [
+      {
+        model: ContentModel,
+        attributes: ['content_id'],
+        include: [{ model: BoardModel, attributes: ['lv_edit'] }],
+      },
+    ],
+  });
+  if (!comment) {
+    throw new NotFoundError('Comment not found');
+  }
+  const content = comment.get('content') as ContentModel | undefined;
+  const board = content?.get('board') as BoardModel | undefined;
+  const isAuthor = comment.getDataValue('author_id') === user._id;
+  const canEditBoard = !!board && user.grade <= board.getDataValue('lv_edit');
+  if (!isAuthor && !canEditBoard) {
+    throw new AuthorizationError('Permission denied', { code: 4001 });
+  }
 }
