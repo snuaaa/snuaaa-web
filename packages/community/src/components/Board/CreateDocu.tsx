@@ -1,145 +1,149 @@
-import React, { useState, ChangeEvent } from 'react';
-import { AxiosProgressEvent } from 'axios';
-import { CreateDocuRequest } from '../../services/DocuService';
-import CreateDocuComponent from '../../components/Document/CreateDocuComponent';
+import { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 
-import useBlockBackgroundScroll from '../../hooks/useBlockBackgroundScroll';
-import { Board } from '~/services/types';
-import { useCreateDocument } from '~/hooks/queries/useDocuQueries';
+import DocuFields from '~/components/Document/DocuFields';
+import ComposerLayout, {
+  type UploadProgress,
+} from '~/components/Post/ComposerLayout';
 import { useCreateFile } from '~/hooks/queries/useContentQueries';
-
-const MAX_SIZE = 20 * 1024 * 1024;
+import { docuKeys, useCreateDocument } from '~/hooks/queries/useDocuQueries';
+import { Board } from '~/services/types';
+import { currentGeneration } from './boardUtils';
 
 type CreateDocuProps = {
-  boardInfo: Board;
+  board: Board;
+  /** `failedFiles`: attachments that didn't upload, to tell the author. */
+  onCreate: (failedFiles: number) => void;
   onClose: () => void;
 };
 
-function CreateDocu(props: CreateDocuProps) {
-  const today = new Date();
-  let currentGen = 2 * (today.getFullYear() - 1980);
-  if (today.getMonth() > 5) currentGen++;
-  let currentSize = 0;
+/**
+ * 문서 등록: 회기, 분류, 제목, 설명 and at least one file. Uses the same
+ * frame as 글쓰기, with a plain description instead of the editor.
+ */
+export default function CreateDocu({
+  board,
+  onCreate,
+  onClose,
+}: CreateDocuProps) {
+  const queryClient = useQueryClient();
+  const { mutateAsync: createDocument } = useCreateDocument();
+  const { mutateAsync: createFile } = useCreateFile();
 
-  const [docuInfo, setDocuInfo] = useState<CreateDocuRequest>({
-    category_id: '',
-    generation: currentGen,
-    text: '',
-    title: '',
-  });
-  const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
-  const [progress, setProgress] = useState<number>(0);
-  const [isUploading, setIsUploading] = useState<boolean>(false);
-  const [uploadIdx, setUploadIdx] = useState<number>(0);
+  const [generation, setGeneration] = useState(currentGeneration());
+  const [categoryId, setCategoryId] = useState<string>();
+  const [title, setTitle] = useState('');
+  const [text, setText] = useState('');
+  const [files, setFiles] = useState<File[]>([]);
+  const [touched, setTouched] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [progress, setProgress] = useState<UploadProgress | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  useBlockBackgroundScroll();
-
-  const { mutateAsync: mutateCreateDocument } = useCreateDocument();
-  const { mutateAsync: mutateCreateFile } = useCreateFile();
-
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    setDocuInfo({
-      ...docuInfo,
-      [e.target.name]: e.target.value,
-    });
+  const missing = {
+    category: !categoryId,
+    title: !title.trim(),
+    files: files.length === 0,
   };
+  const valid = !missing.category && !missing.title && !missing.files;
 
-  const attachFile = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      if (e.target.files.length + attachedFiles.length > 5) {
-        alert('파일은 최대 5개까지만 첨부해주세요.');
-        e.target.value = '';
-      } else if (e.target.files) {
-        let tmpSize = currentSize;
-        for (let i = 0; i < e.target.files.length; i++) {
-          tmpSize += e.target.files[i].size;
-        }
-        if (tmpSize > MAX_SIZE) {
-          alert('한 번에 20MB 이상의 파일은 업로드 할 수 없습니다.');
-        } else {
-          currentSize = tmpSize;
-          const newFiles: File[] = [];
-          for (let i = 0; i < e.target.files.length; i++) {
-            const tmpFile = e.target.files.item(i);
-            if (tmpFile) {
-              newFiles.push(tmpFile);
-            }
-          }
-          if (newFiles && newFiles.length > 0) {
-            setAttachedFiles(attachedFiles.concat(...newFiles));
-          }
-        }
-      }
+  const submit = async () => {
+    setTouched(true);
+    if (!valid || !categoryId || submitting) return;
+    setError(null);
+    setSubmitting(true);
+    let contentId: number;
+    try {
+      const res = await createDocument({
+        board_id: board.board_id,
+        data: {
+          title: title.trim(),
+          text,
+          generation,
+          category_id: categoryId,
+        },
+      });
+      contentId = res.data.content_id;
+    } catch (err) {
+      console.error(err);
+      setError('문서를 등록하지 못했어요. 잠시 후 다시 시도해 주세요.');
+      setSubmitting(false);
+      return;
     }
-  };
-
-  const removeAttachedFile = (index: number) => {
-    setAttachedFiles(
-      attachedFiles.filter((file, i) => {
-        return index !== i;
-      }),
-    );
-  };
-
-  const uploadProgress = (e: AxiosProgressEvent) => {
-    if (e.total) {
-      setProgress(Math.round((e.loaded / e.total) * 100));
-    }
-  };
-
-  const createDocu = async () => {
-    const { boardInfo } = props;
-
-    if (!docuInfo.title) {
-      alert('제목을 입력해주세요');
-    } else if (!docuInfo.category_id) {
-      alert('카테고리를 선택해주세요');
-    } else if (attachedFiles.length === 0) {
-      alert('파일을 첨부해주세요');
-    } else {
-      setIsUploading(true);
+    // The document exists now, so a failed file doesn't stop us: the
+    // board tells the author, who can attach it again by editing.
+    let failedFiles = 0;
+    for (let i = 0; i < files.length; i++) {
+      setProgress({ current: i + 1, total: files.length, percent: 0 });
+      const formData = new FormData();
+      formData.append('attachedFile', files[i]);
       try {
-        const res = await mutateCreateDocument({
-          board_id: boardInfo.board_id,
-          data: docuInfo,
+        await createFile({
+          content_id: contentId,
+          formData,
+          onUploadProgress: (e) => {
+            if (e.total) {
+              const percent = Math.round((e.loaded / e.total) * 100);
+              setProgress({ current: i + 1, total: files.length, percent });
+            }
+          },
         });
-        if (attachedFiles.length > 0) {
-          for (let i = 0, max = attachedFiles.length; i < max; i++) {
-            const fileFormData = new FormData();
-            fileFormData.append('attachedFile', attachedFiles[i]);
-            await mutateCreateFile({
-              content_id: res.data.content_id,
-              formData: fileFormData,
-              onUploadProgress: uploadProgress,
-            });
-            setUploadIdx(uploadIdx + 1);
-          }
-        }
-        setIsUploading(false);
-        props.onClose();
       } catch (err) {
         console.error(err);
+        failedFiles += 1;
       }
     }
+    // The list was refetched when the document was made, before its files.
+    queryClient.invalidateQueries({ queryKey: docuKeys.list() });
+    onCreate(failedFiles);
   };
 
   return (
-    <CreateDocuComponent
-      docuInfo={docuInfo}
-      boardInfo={props.boardInfo}
-      attachedFiles={attachedFiles}
-      isUploading={isUploading}
+    <ComposerLayout
+      heading="문서 등록"
+      boardName={board.board_name}
       progress={progress}
-      uploadIdx={uploadIdx}
-      handleChange={handleChange}
-      attachFile={attachFile}
-      removeAttachedFile={removeAttachedFile}
-      confirm={createDocu}
-      close={props.onClose}
-    />
+      error={error}
+      submitLabel="등록"
+      canSubmit={!submitting && (!touched || valid)}
+      submitting={submitting}
+      onSubmit={submit}
+      leaveConfirm={
+        title || text || categoryId || files.length > 0
+          ? {
+              title: '등록을 그만둘까요?',
+              description: '적은 내용과 고른 파일이 사라져요.',
+              cancelLabel: '계속 쓰기',
+            }
+          : null
+      }
+      onLeave={onClose}
+    >
+      <DocuFields
+        generation={generation}
+        onGenerationChange={setGeneration}
+        categories={board.categories}
+        categoryId={categoryId}
+        onCategoryChange={setCategoryId}
+        title={title}
+        onTitleChange={setTitle}
+        text={text}
+        onTextChange={setText}
+        newFiles={files}
+        onNewFilesChange={setFiles}
+        disabled={submitting}
+        errors={
+          touched
+            ? {
+                category: missing.category ? '분류를 골라 주세요.' : undefined,
+                title: missing.title ? '제목을 입력해 주세요.' : undefined,
+                files: missing.files
+                  ? '파일을 하나 이상 첨부해 주세요.'
+                  : undefined,
+              }
+            : {}
+        }
+      />
+    </ComposerLayout>
   );
 }
-
-export default CreateDocu;

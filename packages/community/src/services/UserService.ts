@@ -13,6 +13,8 @@ export type UpdateUserInfoRequest = {
   major: string;
   col_no: string;
   profile_url?: string;
+  /** @deprecated sent back unchanged so the update doesn't clear it */
+  profile_path?: string;
   introduction?: string;
 };
 export interface UpdatePasswordRequest {
@@ -54,6 +56,11 @@ const UserService = {
     }>('userinfo/all', {
       params: sortOption,
     });
+  },
+
+  /** Grade 1–3 only; see `canChangeGrade`. */
+  updateUserGrade: function (user_uuid: string, grade: number) {
+    return API.patch(`user/${user_uuid}/grade`, { grade });
   },
 
   updatePassword: function (data: UpdatePasswordRequest) {

@@ -1,8 +1,10 @@
-import BoardName from '~/components/Board/BoardName';
 import { Board } from '~/services/types';
 import CreatePost from './Create';
 import ListPost from './List';
-import { useRouter, useSearch, useNavigate } from '@tanstack/react-router';
+import { useSearch, useNavigate } from '@tanstack/react-router';
+import { useAuth } from '~/contexts/auth';
+import { canWrite } from '../boardUtils';
+import useLeaveWriteScreen from '../useLeaveWriteScreen';
 
 type PostBoardProps = {
   boardInfo: Board;
@@ -11,38 +13,42 @@ type PostBoardProps = {
 function PostBoard({ boardInfo }: PostBoardProps) {
   const search = useSearch({ from: '/board/$board_id' });
   const status = search.status;
-  const router = useRouter();
   const navigate = useNavigate({ from: '/board/$board_id' });
+  const leaveCreate = useLeaveWriteScreen();
+  const {
+    authInfo: {
+      user: { grade },
+    },
+  } = useAuth();
+
+  // The URL can be opened without write access; the list shows instead.
+  if (status !== 'create' || !canWrite(boardInfo, grade)) {
+    return (
+      <ListPost
+        boardInfo={boardInfo}
+        onClickCreate={() => {
+          navigate({
+            search: (prev) => ({ ...prev, status: 'create' }),
+          });
+        }}
+      />
+    );
+  }
 
   return (
-    <div className="board-wrapper postboard-wrapper">
-      <BoardName
-        board_id={boardInfo.board_id}
-        board_name={boardInfo.board_name}
-      />
-      <div className="board-desc">{boardInfo.board_desc}</div>
-      {status !== 'create' ? (
-        <ListPost
-          boardInfo={boardInfo}
-          onClickCreate={() => {
-            navigate({
-              search: (prev) => ({ ...prev, status: 'create' }),
-            });
-          }}
-        />
-      ) : (
-        <CreatePost
-          board_id={boardInfo.board_id}
-          onClose={() => router.history.back()}
-          onCreate={() => {
-            navigate({
-              search: (prev) => ({ ...prev, status: undefined }),
-              replace: true,
-            });
-          }}
-        />
-      )}
-    </div>
+    <CreatePost
+      board={boardInfo}
+      onClose={leaveCreate}
+      onCreate={(contentId, failedFiles) => {
+        // Replace the write screen, so back from the new post is the list.
+        navigate({
+          to: '/post/$post_id',
+          params: { post_id: String(contentId) },
+          replace: true,
+          state: (prev) => ({ ...prev, failedAttachments: failedFiles }),
+        });
+      }}
+    />
   );
 }
 

@@ -1,28 +1,5 @@
 @use "../common/color";
 
-.memory-title {
-    display: inline-block;
-    background-image: url("~/assets/img/board/title_memory.png");
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    width: 270px;
-    height: 60px;
-    padding: 19px 0px 20px 100px;
-    margin: 10px 0px 15px 0px;
-}
-.astrophoto-title {
-    display: inline-block;
-    background-image: url("~/assets/img/board/title_astrophoto_mini.png");
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    width: 250px;
-    height: 60px;
-    padding: 19px 0px 20px 107px;
-    margin: 10px 0px 15px 5px;
-}
-
 .btn-crt-album {
     position: absolute;
     right: -70px;

@@ -41,10 +41,11 @@ export function useMyUserInfo() {
   });
 }
 
-export function useUserList(params: UsersSearchType) {
+export function useUserList(params: UsersSearchType, enabled = true) {
   return useQuery({
     queryKey: userKeys.list(params),
     queryFn: () => UserService.retrieveUsers(params),
+    enabled,
   });
 }
 
@@ -57,6 +58,18 @@ export function useUpdateMyUserInfo() {
       UserService.updateMyUserInfo(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: userKeys.me() });
+      queryClient.invalidateQueries({ queryKey: userKeys.all });
+    },
+  });
+}
+
+export function useUpdateUserGrade() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ userUuid, grade }: { userUuid: string; grade: number }) =>
+      UserService.updateUserGrade(userUuid, grade),
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: userKeys.all });
     },
   });
