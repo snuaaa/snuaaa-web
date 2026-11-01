@@ -10,6 +10,7 @@ import { useAlbumsInPhotoBoard } from '~/hooks/queries/useAlbumQueries';
 import { usePhotoList } from '~/hooks/queries/usePhotoQueries';
 import { Board } from '~/services/types';
 import { canWrite } from './boardUtils';
+import { SearchType, useBoardSearch } from './useBoardSearch';
 import { AlbumCardList, AlbumCardListSkeleton } from './PhotoBoard/AlbumCard';
 import PhotoEmpty from './PhotoBoard/PhotoEmpty';
 import { PhotoGrid, PhotoGridSkeleton } from './PhotoBoard/PhotoGrid';
@@ -24,25 +25,30 @@ const PHOTO_PAGE_SIZE = 24;
 /** Fixed by the API (`photoboard/:id/albums`). */
 const ALBUM_PAGE_SIZE = 12;
 
+type SearchProps = {
+  keyword?: string;
+  searchType: SearchType;
+};
+
+const searchEmpty = (description: string) => (
+  <PhotoEmpty title="검색 결과가 없어요" description={description} />
+);
+
 function PhotoSection({
-  boardInfo,
+  query,
   tags,
+  keyword,
   page,
   onPageChange,
   onResetTags,
 }: {
-  boardInfo: Board;
+  query: ReturnType<typeof usePhotoList>;
   tags: string[];
   page: number;
   onPageChange: (page: number) => void;
   onResetTags: () => void;
-}) {
-  const { data, isLoading, isError, refetch } = usePhotoList({
-    board_id: boardInfo.board_id,
-    offset: (page - 1) * PHOTO_PAGE_SIZE,
-    limit: PHOTO_PAGE_SIZE,
-    tags,
-  });
+} & Pick<SearchProps, 'keyword'>) {
+  const { data, isLoading, isError, refetch } = query;
 
   if (isError) {
     return (
@@ -58,6 +64,13 @@ function PhotoSection({
   }
   if (isLoading || !data) return <PhotoGridSkeleton />;
   if (data.rows.length === 0) {
+    if (keyword) {
+      return searchEmpty(
+        tags.length > 0
+          ? '태그 필터를 빼거나 다른 검색어로 찾아보세요.'
+          : '다른 검색어나 검색 범위로 찾아보세요.',
+      );
+    }
     return tags.length > 0 ? (
       <PhotoEmpty
         title="고른 태그에 맞는 사진이 없어요"
@@ -87,18 +100,17 @@ function PhotoSection({
 }
 
 function AlbumSection({
-  boardInfo,
+  query,
+  keyword,
+  searchType,
   page,
   onPageChange,
 }: {
-  boardInfo: Board;
+  query: ReturnType<typeof useAlbumsInPhotoBoard>;
   page: number;
   onPageChange: (page: number) => void;
-}) {
-  const { data, isLoading, isError, refetch } = useAlbumsInPhotoBoard(
-    boardInfo.board_id,
-    page,
-  );
+} & SearchProps) {
+  const { data, isLoading, isError, refetch } = query;
 
   if (isError) {
     return (
@@ -114,12 +126,20 @@ function AlbumSection({
   }
   if (isLoading || !data) return <AlbumCardListSkeleton />;
   if (data.albumInfo.length === 0) {
-    return <PhotoEmpty title="아직 앨범이 없어요" />;
+    return keyword ? (
+      searchEmpty('다른 검색어나 검색 범위로 찾아보세요.')
+    ) : (
+      <PhotoEmpty title="아직 앨범이 없어요" />
+    );
   }
 
   return (
     <>
-      <AlbumCardList albums={data.albumInfo} />
+      <AlbumCardList
+        albums={data.albumInfo}
+        keyword={keyword}
+        searchType={searchType}
+      />
       <Pagination
         page={page}
         totalPages={Math.ceil(data.albumCount / ALBUM_PAGE_SIZE)}
@@ -134,7 +154,10 @@ type AstroPhotoProps = {
   boardInfo: Board;
 };
 
-/** 별사진: a masonry wall of photos with tag filters, or its albums. */
+/**
+ * 별사진: a masonry wall of photos with tag filters, or its albums. Search
+ * applies to whichever is shown, together with the tag filters.
+ */
 function AstroPhoto({ boardInfo }: AstroPhotoProps) {
   const navigate = useNavigate({ from: '/board/$board_id' });
   const searchParams = useSearch({ from: '/board/$board_id' });
@@ -150,6 +173,33 @@ function AstroPhoto({ boardInfo }: AstroPhotoProps) {
   const view: PhotoView = searchParams.view === 'album' ? 'album' : 'photo';
   const page = Number(searchParams.page ?? 1);
   const tags = useMemo(() => searchParams.tags ?? [], [searchParams.tags]);
+
+  const search = useBoardSearch();
+  const { keyword, searchType } = search;
+  const searchQuery = keyword
+    ? { search_type: searchType, search_keyword: keyword }
+    : undefined;
+
+  // Both lists are read here so the layout can show the result count.
+  const photoQuery = usePhotoList(
+    {
+      board_id: boardInfo.board_id,
+      offset: (page - 1) * PHOTO_PAGE_SIZE,
+      limit: PHOTO_PAGE_SIZE,
+      tags,
+      ...searchQuery,
+    },
+    { enabled: view === 'photo' },
+  );
+  const albumQuery = useAlbumsInPhotoBoard(
+    boardInfo.board_id,
+    page,
+    undefined,
+    searchQuery,
+    { enabled: view === 'album' },
+  );
+  const resultCount =
+    view === 'photo' ? photoQuery.data?.count : albumQuery.data?.albumCount;
 
   const setView = (next: PhotoView) => {
     navigate({
@@ -188,6 +238,8 @@ function AstroPhoto({ boardInfo }: AstroPhotoProps) {
     <PhotoTabLayout
       board={boardInfo}
       toolbar={<MobileTagFilterBar {...filterProps} />}
+      search={search}
+      resultCount={resultCount}
       action={
         writable && (
           <Button
@@ -205,7 +257,8 @@ function AstroPhoto({ boardInfo }: AstroPhotoProps) {
         <div className={view === 'album' ? 'px-3 pt-3 md:p-0' : undefined}>
           {view === 'photo' ? (
             <PhotoSection
-              boardInfo={boardInfo}
+              query={photoQuery}
+              keyword={keyword}
               tags={tags}
               page={page}
               onPageChange={goToPage}
@@ -213,7 +266,9 @@ function AstroPhoto({ boardInfo }: AstroPhotoProps) {
             />
           ) : (
             <AlbumSection
-              boardInfo={boardInfo}
+              query={albumQuery}
+              keyword={keyword}
+              searchType={searchType}
               page={page}
               onPageChange={goToPage}
             />

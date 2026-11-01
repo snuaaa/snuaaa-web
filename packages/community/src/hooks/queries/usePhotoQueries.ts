@@ -12,6 +12,8 @@ type RetrievePhotoListParams = {
   limit?: number;
   user_uuid?: string;
   tags?: Tag['tag_id'][];
+  search_type?: string;
+  search_keyword?: string;
 };
 
 // Query keys
@@ -29,10 +31,14 @@ export const photoKeys = {
 };
 
 // Hook for fetching photo list
-export function usePhotoList(params: RetrievePhotoListParams) {
+export function usePhotoList(
+  params: RetrievePhotoListParams,
+  options?: { enabled?: boolean },
+) {
   return useQuery({
     queryKey: photoKeys.list(params),
     queryFn: () => PhotoService.retrievePhotoList(params),
+    ...options,
   });
 }
 
