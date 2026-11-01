@@ -1,17 +1,15 @@
 import {
   createRootRoute,
   Outlet,
+  redirect,
   useLocation,
   useNavigate,
   useRouter,
 } from '@tanstack/react-router';
-import { QueryClientProvider } from '@tanstack/react-query';
 import React, { Suspense, useCallback } from 'react';
 
 import '../App.scss';
 import '../index.css';
-
-import { AuthProvider } from '../contexts/auth';
 
 import { ViewportSizeProvider } from '../contexts/viewportSize';
 import Header from '../components/Header';
@@ -20,7 +18,8 @@ import RiseSet from '~/components/Home/RiseSet';
 import SideBar from '~/components/Home/SideBar';
 import FullScreenPortal from '~/components/Common/FullScreenPortal';
 import PhotoDetailModal from '~/components/Photo/DetailModal';
-import { queryClient } from '~/lib/queryClient';
+import Loading from '~/components/Common/Loading';
+import { loadSession, PUBLIC_PATHS } from '~/lib/auth';
 import { PhotoNavigationScope } from '~/services/PhotoService';
 
 const ExhibitPhotoPage = React.lazy(() => import('~/pages/ExhibitPhoto'));
@@ -47,6 +46,19 @@ export const Route = createRootRoute({
       search.photoNavigation === 'user' ? search.photoNavigation : undefined,
     exhibitPhoto: search.exhibitPhoto ? Number(search.exhibitPhoto) : undefined,
   }),
+  // 모든 라우트의 loader보다 먼저 실행되므로, 로그인하지 않은 사용자는
+  // 보호된 페이지의 데이터 요청 없이 바로 로그인 페이지로 이동한다.
+  beforeLoad: async ({ location }) => {
+    const session = await loadSession();
+    if (!session && !PUBLIC_PATHS.includes(location.pathname)) {
+      throw redirect({
+        to: '/auth/login',
+        search: { redirect: location.href },
+        replace: true,
+      });
+    }
+  },
+  pendingComponent: Loading,
   component: RootComponent,
 });
 
@@ -110,39 +122,33 @@ function RootComponent() {
   const isAuthPage = location.pathname.startsWith('/auth');
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <>
       <div className="min-h-full flex flex-col">
         <ViewportSizeProvider>
-          <AuthProvider>
-            {isAuthPage ? (
-              <Outlet />
-            ) : (
-              <>
-                <Header />
-                <div className="section-wrapper">
-                  <section>
-                    <div className="side-left">
-                      <RiseSet />
-                    </div>
-                    <SideBar />
-                    <Outlet />
-                  </section>
-                </div>
-                <Footer />
-              </>
-            )}
-            {photo && (
-              <PhotoModal photoId={photo} navigation={photoNavigation} />
-            )}
-            {exhibitPhoto && (
-              <ExhibitPhotoModal exhibitPhotoId={exhibitPhoto} />
-            )}
-          </AuthProvider>
+          {isAuthPage ? (
+            <Outlet />
+          ) : (
+            <>
+              <Header />
+              <div className="section-wrapper">
+                <section>
+                  <div className="side-left">
+                    <RiseSet />
+                  </div>
+                  <SideBar />
+                  <Outlet />
+                </section>
+              </div>
+              <Footer />
+            </>
+          )}
+          {photo && <PhotoModal photoId={photo} navigation={photoNavigation} />}
+          {exhibitPhoto && <ExhibitPhotoModal exhibitPhotoId={exhibitPhoto} />}
         </ViewportSizeProvider>
       </div>
       <Suspense fallback={null}>
         <TanStackRouterDevtools />
       </Suspense>
-    </QueryClientProvider>
+    </>
   );
 }
