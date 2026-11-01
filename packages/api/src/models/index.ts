@@ -176,7 +176,7 @@ TagModel.belongsToMany(ContentModel, {
 UserModel.belongsToMany(CommentModel, {
   through: 'commentLike',
   foreignKey: 'user_id',
-  otherKey: 'user_id',
+  otherKey: 'comment_id',
 });
 
 UserModel.belongsToMany(ContentModel, {
