@@ -10,7 +10,9 @@ import {
   createAlbum,
   retrieveAlbumsInBoard,
   retrieveAlbumCount,
+  AlbumSearch,
 } from '../controllers/album.controller';
+import { SearchType } from '../controllers/post.controller';
 import {
   retrievePhotoCountInBoard,
   retrievePhotosInBoard,
@@ -32,16 +34,23 @@ router.get(
       offset = ROWNUM * (Number(query.page) - 1);
     }
 
+    const search: AlbumSearch = {
+      search_keyword: (query.search_keyword as string) || undefined,
+      search_type: (query.search_type as SearchType) || undefined,
+    };
+
     try {
       const albumCount = await retrieveAlbumCount(
         req.params.board_id,
         req.query.category,
+        search,
       );
       const albumInfo = await retrieveAlbumsInBoard(
         req.params.board_id,
         ROWNUM,
         offset,
         req.query.category,
+        search,
       );
       res.json({ albumCount, albumInfo });
     } catch (err) {

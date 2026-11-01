@@ -12,6 +12,13 @@ import { AuthorizationError, BadRequestError, NotFoundError } from '../errors';
 import { JWTPayload } from '../utils/token';
 import { canEditContent } from './content.controller';
 import ContentTypeEnum from '../enums/contentTypeEnum';
+import { SearchType } from './post.controller';
+import { getSearchCondition } from '../utils/searchCondition';
+
+export type AlbumSearch = {
+  search_type?: SearchType;
+  search_keyword?: string;
+};
 
 export type AlbumResponse = ContentModel & {
   album: AlbumModel;
@@ -97,10 +104,18 @@ export async function retrieveNextAlbum(album_id, board_id) {
   });
 }
 
-export async function retrieveAlbumCount(board_id, category_id) {
+export async function retrieveAlbumCount(
+  board_id,
+  category_id,
+  search: AlbumSearch = {},
+) {
   if (!board_id) {
     throw new BadRequestError('id can not be null');
   }
+  const { content, user } = getSearchCondition(
+    search.search_type,
+    search.search_keyword,
+  );
 
   return ContentModel.count({
     include: [
@@ -109,10 +124,22 @@ export async function retrieveAlbumCount(board_id, category_id) {
         as: 'album',
         required: true,
       },
+      ...(user
+        ? [
+            {
+              model: UserModel,
+              required: true,
+              attributes: [],
+              paranoid: false,
+              where: user,
+            },
+          ]
+        : []),
     ],
     where: {
       ...(board_id && { board_id: board_id }),
       ...(category_id && { category_id: category_id }),
+      ...content,
     },
   });
 }
@@ -122,10 +149,15 @@ export async function retrieveAlbumsInBoard(
   rowNum,
   offset,
   category_id,
+  search: AlbumSearch = {},
 ) {
   if (!board_id) {
     throw new BadRequestError('board_id can not be null');
   }
+  const { content, user } = getSearchCondition(
+    search.search_type,
+    search.search_keyword,
+  );
 
   return ContentModel.findAll({
     include: [
@@ -152,6 +184,7 @@ export async function retrieveAlbumsInBoard(
         required: true,
         attributes: BASE_USER_FIELDS,
         paranoid: false,
+        where: user,
       },
       {
         model: CategoryModel,
@@ -175,6 +208,7 @@ export async function retrieveAlbumsInBoard(
     where: {
       board_id: board_id,
       ...(category_id && { category_id: category_id }),
+      ...content,
     },
     order: [['created_at', 'DESC']],
     limit: rowNum,
