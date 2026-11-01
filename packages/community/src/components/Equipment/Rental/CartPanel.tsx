@@ -14,7 +14,7 @@ type CartPanelProps = {
 export function CartBar({ cart, onRent }: CartPanelProps) {
   const count = cart.cart.length;
   return (
-    <div className="fixed inset-x-0 bottom-[calc(var(--tab-bar-height)+env(safe-area-inset-bottom))] z-30 flex flex-col gap-2.5 border-t border-border bg-surface px-4 pt-3 pb-3 shadow-[0_-8px_28px_rgba(11,26,58,0.10)]">
+    <div className="fixed inset-x-0 bottom-tab-bar z-30 flex flex-col gap-2.5 border-t border-border bg-surface px-4 pt-3 pb-3 shadow-[0_-8px_28px_rgba(11,26,58,0.10)]">
       <div className="flex items-center justify-between text-label font-normal">
         <span>
           <b className="text-[15px] font-bold">{count}개</b> 담음{' '}
@@ -26,12 +26,7 @@ export function CartBar({ cart, onRent }: CartPanelProps) {
           </span>
         )}
       </div>
-      <Button
-        block
-        disabled={count === 0}
-        onClick={onRent}
-        className="h-[52px] rounded-lg text-base font-bold"
-      >
+      <Button block disabled={count === 0} onClick={onRent} size="lg">
         {count > 0 ? `${count}개 빌리기` : '빌릴 장비를 담아 주세요'}
       </Button>
     </div>

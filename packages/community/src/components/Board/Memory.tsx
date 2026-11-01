@@ -3,10 +3,9 @@ import { useNavigate, useSearch } from '@tanstack/react-router';
 import { FolderPlus } from 'lucide-react';
 
 import AlbumFormSheet from '~/components/Album/AlbumFormSheet';
-import { Button, Fab, Pagination } from '~/components/ui';
+import { Button, Chip, Fab, Pagination } from '~/components/ui';
 import { useAuth } from '~/contexts/auth';
 import { useAlbumsInPhotoBoard } from '~/hooks/queries/useAlbumQueries';
-import { cn } from '~/lib/utils';
 import { Board } from '~/services/types';
 import { canWrite } from './boardUtils';
 import { AlbumCardList, AlbumCardListSkeleton } from './PhotoBoard/AlbumCard';
@@ -15,14 +14,6 @@ import PhotoTabLayout from './PhotoBoard/PhotoTabLayout';
 
 /** Fixed by the API (`photoboard/:id/albums`). */
 const PAGE_SIZE = 12;
-
-const chipClassName = (selected: boolean) =>
-  cn(
-    'flex h-[34px] shrink-0 items-center rounded-full border px-3.5 text-label transition-colors',
-    selected
-      ? 'border-primary bg-primary text-white'
-      : 'border-border bg-surface font-medium text-gray-700 hover:border-gray-300',
-  );
 
 type MemoryProps = {
   boardInfo: Board;
@@ -79,26 +70,24 @@ function Memory({ boardInfo }: MemoryProps) {
       aria-label="카테고리"
       className="flex gap-2 overflow-x-auto border-b border-gray-100 bg-surface px-4 py-3 [scrollbar-width:none] md:border-0 md:bg-transparent md:p-0"
     >
-      <button
-        type="button"
+      <Chip
         aria-pressed={!category}
+        selected={!category}
         onClick={() => setCategory(undefined)}
-        className={chipClassName(!category)}
       >
         전체
-      </button>
+      </Chip>
       {boardInfo.categories.map((cate) => {
         const selected = category === cate.category_id;
         return (
-          <button
+          <Chip
             key={cate.category_id}
-            type="button"
             aria-pressed={selected}
+            selected={selected}
             onClick={() => setCategory(cate.category_id)}
-            className={chipClassName(selected)}
           >
             {cate.category_name}
-          </button>
+          </Chip>
         );
       })}
     </div>

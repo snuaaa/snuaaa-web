@@ -56,9 +56,7 @@ function MobileSheet({
             )}
           </div>
           <div className="min-h-0 flex-1 overflow-y-auto px-4">{children}</div>
-          <div className="px-4 pt-3 pb-[max(1.75rem,env(safe-area-inset-bottom))]">
-            {footer}
-          </div>
+          <div className="px-4 pt-3 pb-safe-7">{footer}</div>
         </Drawer.Content>
       </Drawer.Portal>
     </Drawer.Root>

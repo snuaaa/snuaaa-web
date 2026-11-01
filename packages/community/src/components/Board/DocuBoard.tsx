@@ -1,11 +1,19 @@
-import { type ReactNode } from 'react';
 import { Link, useNavigate, useSearch } from '@tanstack/react-router';
 import { ChevronDown, Download, FilePlus } from 'lucide-react';
 
-import Skeleton from '~/components/Common/Skeleton';
 import DownloadFile from '~/components/Post/DownloadFile';
 import FileTypeBadge from '~/components/Post/FileTypeBadge';
-import { Button, Fab, Pagination, Tag, Toast, useToast } from '~/components/ui';
+import {
+  Button,
+  Chip,
+  EmptyState,
+  Fab,
+  Pagination,
+  Skeleton,
+  Tag,
+  Toast,
+  useToast,
+} from '~/components/ui';
 import CreateDocu from './CreateDocu';
 import useLeaveWriteScreen from './useLeaveWriteScreen';
 import BoardLayout from './BoardLayout';
@@ -18,13 +26,6 @@ import { useAuth } from '~/contexts/auth';
 import { cn } from '~/lib/utils';
 
 const DOCROWNUM = 10;
-
-const chipClassName =
-  'flex h-[34px] shrink-0 items-center rounded-full border px-3.5 text-label transition-colors';
-const chipStateClassName = (selected: boolean) =>
-  selected
-    ? 'border-primary bg-primary text-white'
-    : 'border-border bg-surface font-medium text-gray-700 hover:border-gray-300';
 
 function FileChip({ file }: { file: File }) {
   return (
@@ -70,21 +71,6 @@ function DocumentCard({ doc }: { doc: DocumentListItem }) {
         </ul>
       )}
     </li>
-  );
-}
-
-function ListMessage({
-  title,
-  children,
-}: {
-  title: string;
-  children?: ReactNode;
-}) {
-  return (
-    <div className="flex flex-col items-center gap-1.5 px-4 py-16 text-center">
-      <p className="text-heading">{title}</p>
-      {children}
-    </div>
   );
 }
 
@@ -169,8 +155,7 @@ function DocuBoard({ boardInfo }: DocuBoardProps) {
         {/* A native select keeps the long list of 회기 easy to scroll. */}
         <label
           className={cn(
-            chipClassName,
-            'relative gap-1 pr-2.5 pl-3 font-semibold',
+            'relative flex h-8.5 shrink-0 items-center gap-1 rounded-full border pr-2.5 pl-3 text-label font-semibold transition-colors',
             generation
               ? 'border-primary bg-primary text-white'
               : 'border-primary bg-surface text-primary',
@@ -196,26 +181,24 @@ function DocuBoard({ boardInfo }: DocuBoardProps) {
         </label>
         <div className="my-1 w-px shrink-0 bg-border" aria-hidden />
         <div role="group" aria-label="카테고리" className="flex gap-2">
-          <button
-            type="button"
+          <Chip
             aria-pressed={!category}
+            selected={!category}
             onClick={() => setFilter({ category: undefined })}
-            className={cn(chipClassName, chipStateClassName(!category))}
           >
             전체
-          </button>
+          </Chip>
           {boardInfo.categories.map((cate) => {
             const selected = category === cate.category_id;
             return (
-              <button
+              <Chip
                 key={cate.category_id}
-                type="button"
                 aria-pressed={selected}
+                selected={selected}
                 onClick={() => setFilter({ category: cate.category_id })}
-                className={cn(chipClassName, chipStateClassName(selected))}
               >
                 {cate.category_name}
-              </button>
+              </Chip>
             );
           })}
         </div>
@@ -223,13 +206,14 @@ function DocuBoard({ boardInfo }: DocuBoardProps) {
 
       <div className="px-4 pt-3 md:px-0 md:pt-0">
         {isError ? (
-          <ListMessage title="문서를 불러오지 못했어요">
-            <div className="pt-3">
+          <EmptyState
+            title="문서를 불러오지 못했어요"
+            action={
               <Button variant="secondary" size="sm" onClick={() => refetch()}>
                 다시 시도
               </Button>
-            </div>
-          </ListMessage>
+            }
+          />
         ) : isLoading || !data ? (
           <ul className="flex flex-col gap-2.5">
             {Array.from({ length: 5 }, (_, i) => (
@@ -244,13 +228,12 @@ function DocuBoard({ boardInfo }: DocuBoardProps) {
             ))}
           </ul>
         ) : documents.length === 0 ? (
-          <ListMessage
+          <EmptyState
             title={
               isFiltered ? '조건에 맞는 문서가 없어요' : '아직 문서가 없어요'
             }
-          >
-            {isFiltered && (
-              <div className="pt-3">
+            action={
+              isFiltered && (
                 <Button
                   variant="secondary"
                   size="sm"
@@ -260,9 +243,9 @@ function DocuBoard({ boardInfo }: DocuBoardProps) {
                 >
                   필터 초기화
                 </Button>
-              </div>
-            )}
-          </ListMessage>
+              )
+            }
+          />
         ) : (
           <ul className="flex flex-col gap-2.5 md:gap-3">
             {documents.map((doc) => (

@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react';
-import { ChevronLeft } from 'lucide-react';
 
 import logo from '~/assets/img/logo_white.png';
 import { cn } from '~/lib/utils';
+import { BackButton } from '~/components/ui';
 
 // x%, y%, size px, opacity
 const STARS: [number, number, number, number][] = [
@@ -128,16 +128,13 @@ type StepHeaderProps = {
 /** ‹ and 2 / 3 with the progress bar, above each signup step. */
 export function StepHeader({ step, total, onBack }: StepHeaderProps) {
   return (
-    <div className="flex flex-col gap-2.5 pt-[max(0.5rem,env(safe-area-inset-top))] pr-4 pb-3.5 pl-1 md:p-0 md:pb-4">
+    <div className="flex flex-col gap-2.5 pt-safe-2 pr-4 pb-3.5 pl-1 md:p-0 md:pb-4">
       <div className="flex items-center justify-between">
-        <button
-          type="button"
+        <BackButton
           aria-label="이전"
           onClick={onBack}
-          className="flex size-11 items-center justify-center md:-ml-3 md:size-9"
-        >
-          <ChevronLeft className="size-[22px]" />
-        </button>
+          className="md:-ml-3 md:size-9"
+        />
         <span className="text-caption font-semibold text-fg-muted">
           {step} / {total}
         </span>

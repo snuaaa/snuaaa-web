@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react';
-import { Link, useRouter, type LinkProps } from '@tanstack/react-router';
-import { ChevronLeft } from 'lucide-react';
+import { Link, type LinkProps } from '@tanstack/react-router';
 
 import { cn } from '~/lib/utils';
+import { BackButton } from '~/components/ui';
 
 type AdminPageProps = {
   title: string;
@@ -32,24 +32,11 @@ export default function AdminPage({
   tabs,
   children,
 }: AdminPageProps) {
-  const router = useRouter();
-
   return (
-    <div className="flex flex-col pb-10 md:mx-auto md:w-full md:max-w-[1080px] md:gap-4 md:px-6 md:py-6">
+    <div className="flex flex-col pb-10 md:mx-auto md:w-full md:max-w-page md:gap-4 md:px-6 md:py-6">
       <div className="sticky top-0 z-20 bg-surface md:hidden">
-        <div className="flex h-[52px] items-center justify-between pt-[env(safe-area-inset-top)] pr-3 pl-1">
-          <button
-            type="button"
-            aria-label="뒤로"
-            onClick={() =>
-              router.history.canGoBack()
-                ? router.history.back()
-                : router.navigate({ to: '/' })
-            }
-            className="flex size-11 items-center justify-center"
-          >
-            <ChevronLeft className="size-[22px]" />
-          </button>
+        <div className="flex h-[52px] items-center justify-between pt-safe-0 pr-3 pl-1">
+          <BackButton />
           <h1 className="text-[15px] font-semibold">{title}</h1>
           <div className="flex min-w-11 justify-end">
             {allowed && mobileAction}

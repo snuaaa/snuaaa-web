@@ -1,9 +1,9 @@
 import { UserX } from 'lucide-react';
 
-import Skeleton from '~/components/Common/Skeleton';
 import { useUserInfo } from '~/hooks/queries/useUserQueries';
 import ActivityList, { type ActivityTab } from './ActivityList';
-import ProfileCard, { BackButton } from './ProfileCard';
+import ProfileCard from './ProfileCard';
+import { BackButton, Skeleton } from '~/components/ui';
 
 type Props = {
   /** Leave out for 마이페이지. */
@@ -33,7 +33,7 @@ function ProfileSkeleton() {
 function UnavailableUser({ deleted }: { deleted: boolean }) {
   return (
     <div className="flex flex-1 flex-col bg-surface md:rounded-xl md:shadow-sm">
-      <div className="px-1 pt-[max(0.5rem,env(safe-area-inset-top))] md:hidden">
+      <div className="px-1 pt-safe-2 md:hidden">
         <BackButton />
       </div>
       <div className="flex flex-col items-center gap-2.5 px-4 pt-24 pb-28 text-center">
@@ -59,7 +59,7 @@ function UserView({ userUuid, isMyInfo, tab, page }: Props) {
   const user = data?.userInfo;
 
   return (
-    <div className="mx-auto flex w-full max-w-[1080px] flex-1 flex-col md:grid md:grid-cols-[300px_minmax(0,1fr)] md:items-start md:gap-7 md:px-6 md:py-8">
+    <div className="mx-auto flex w-full max-w-page flex-1 flex-col md:grid md:grid-cols-[300px_minmax(0,1fr)] md:items-start md:gap-7 md:px-6 md:py-8">
       {isLoading ? (
         <ProfileSkeleton />
       ) : !user ? (

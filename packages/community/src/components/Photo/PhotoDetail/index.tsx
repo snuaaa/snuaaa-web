@@ -401,7 +401,7 @@ export default function PhotoDetailModal({
     body = (
       <>
         <div className="bg-navy-950 text-fg-on-brand">
-          <div className="flex items-center justify-between px-1 pt-[max(0.5rem,env(safe-area-inset-top))] pb-2">
+          <div className="flex items-center justify-between px-1 pt-safe-2 pb-2">
             {closeButton('')}
             <span className="min-w-0 truncate px-2 text-label font-normal text-fg-on-brand-muted">
               {contextLabel}

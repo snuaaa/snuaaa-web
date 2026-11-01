@@ -1,7 +1,7 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { User, Users } from 'lucide-react';
 
-import { Button, Field, Input, Sheet, Textarea } from '~/components/ui';
+import { Button, Chip, Field, Input, Sheet, Textarea } from '~/components/ui';
 import {
   useCreateAlbum,
   useUpdateAlbum,
@@ -196,21 +196,16 @@ export default function AlbumFormSheet({
               {categories.map((cate) => {
                 const selected = categoryId === cate.category_id;
                 return (
-                  <button
+                  <Chip
                     key={cate.category_id}
-                    type="button"
                     role="radio"
                     aria-checked={selected}
+                    selected={selected}
                     onClick={() => setCategoryId(cate.category_id)}
-                    className={cn(
-                      'flex h-9 items-center rounded-full border px-3.5 text-label transition-colors md:h-[34px]',
-                      selected
-                        ? 'border-primary bg-primary text-white'
-                        : 'border-border bg-surface font-medium text-gray-700 hover:border-gray-300',
-                    )}
+                    className="h-9 md:h-8.5"
                   >
                     {cate.category_name}
-                  </button>
+                  </Chip>
                 );
               })}
             </div>

@@ -77,7 +77,8 @@ export default function EquipmentDetailSheet({
           <Button
             variant="secondary"
             onClick={onClose}
-            className="h-[52px] rounded-lg px-5 text-[15px] md:h-11"
+            size="lg"
+            className="md:h-11"
           >
             닫기
           </Button>
@@ -85,8 +86,9 @@ export default function EquipmentDetailSheet({
             variant={inCart ? 'ghost' : 'primary'}
             disabled={!inCart && (!rentable || !canAdd)}
             onClick={onToggle}
+            size="lg"
             className={cn(
-              'h-[52px] flex-1 rounded-lg text-base font-bold md:h-11',
+              'flex-1 md:h-11',
               inCart && 'bg-info-soft text-primary',
             )}
           >

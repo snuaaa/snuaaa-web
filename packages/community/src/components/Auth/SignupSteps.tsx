@@ -52,14 +52,12 @@ function StepBody({
         </h1>
         {children}
       </div>
-      <div className="sticky bottom-0 border-t border-gray-100 bg-surface px-4 pt-3 pb-[max(1.75rem,env(safe-area-inset-bottom))] md:static md:border-0 md:p-0">
+      <div className="sticky bottom-0 border-t border-gray-100 bg-surface px-4 pt-3 pb-safe-7 md:static md:border-0 md:p-0">
         {footer}
       </div>
     </>
   );
 }
-
-const ctaClassName = 'h-[52px] rounded-lg text-base font-bold';
 
 function Numbered({
   n,
@@ -115,7 +113,7 @@ export function GuideStep({ onNext }: { onNext: () => void }) {
         </>
       }
       footer={
-        <Button block onClick={onNext} className={ctaClassName}>
+        <Button block size="lg" onClick={onNext}>
           확인했어요
         </Button>
       }
@@ -222,12 +220,7 @@ export function AccountStep({
     <StepBody
       title="로그인에 쓸 계정을 만들어요"
       footer={
-        <Button
-          block
-          onClick={next}
-          loading={idCheck === 'checking'}
-          className={ctaClassName}
-        >
+        <Button block onClick={next} loading={idCheck === 'checking'} size="lg">
           다음
         </Button>
       }
@@ -364,12 +357,7 @@ export function InfoStep({
               {error}
             </p>
           )}
-          <Button
-            block
-            onClick={submit}
-            loading={submitting}
-            className={ctaClassName}
-          >
+          <Button block onClick={submit} loading={submitting} size="lg">
             가입하기
           </Button>
         </>
@@ -515,7 +503,7 @@ export function DoneStep({
 }) {
   const gradeName = `${gradeAssigner(grade)}(${grade}등급)`;
   return (
-    <div className="flex flex-1 flex-col px-4 pb-[max(1.75rem,env(safe-area-inset-bottom))] text-fg-on-brand md:p-0 md:text-fg">
+    <div className="flex flex-1 flex-col px-4 pb-safe-7 text-fg-on-brand md:p-0 md:text-fg">
       <div className="flex flex-1 flex-col items-center justify-center gap-4 px-3 text-center md:py-8">
         <span className={cn('rounded-full p-1', GRADE_DOTS[grade])} aria-hidden>
           <span className="flex size-24 items-center justify-center rounded-full border-4 border-navy-950 bg-navy-800 text-[34px] font-bold text-white md:border-surface">
@@ -537,10 +525,8 @@ export function DoneStep({
         block
         variant="accent"
         onClick={onStart}
-        className={cn(
-          ctaClassName,
-          'md:bg-primary md:text-white md:hover:bg-primary-hover',
-        )}
+        size="lg"
+        className="md:bg-primary md:text-white md:hover:bg-primary-hover"
       >
         {loggedIn ? '시작하기' : '로그인하러 가기'}
       </Button>

@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react';
 import { ChevronDown, Search } from 'lucide-react';
 
-import Skeleton from '~/components/Common/Skeleton';
 import {
   useEquipmentCategories,
   useEquipmentList,
@@ -18,6 +17,7 @@ import {
   RentSort,
 } from './rentUtils';
 import { RentCart } from './useRentCart';
+import { Chip, Skeleton } from '~/components/ui';
 
 type RentCatalogProps = {
   filter: RentFilter;
@@ -27,14 +27,6 @@ type RentCatalogProps = {
   /** The mobile header's back button. */
   backButton?: React.ReactNode;
 };
-
-const chipClassName = (on: boolean) =>
-  cn(
-    'flex h-[34px] shrink-0 items-center rounded-full border px-3 text-label transition-colors',
-    on
-      ? 'border-primary bg-primary text-white'
-      : 'border-border bg-surface font-medium text-gray-700',
-  );
 
 const selectClassName =
   'h-10 rounded-md border border-border bg-surface px-2.5 text-sm text-fg';
@@ -238,7 +230,7 @@ export default function RentCatalog({
 
   return (
     <>
-      <div className="sticky top-0 z-20 flex flex-col gap-2.5 border-b border-gray-100 bg-surface pt-[max(0.5rem,env(safe-area-inset-top))] pr-4 pb-3 pl-1">
+      <div className="sticky top-0 z-20 flex flex-col gap-2.5 border-b border-gray-100 bg-surface pt-safe-2 pr-4 pb-3 pl-1">
         <div className="flex items-center gap-1">
           {backButton}
           <SearchBox
@@ -249,40 +241,36 @@ export default function RentCatalog({
           />
         </div>
         <div className="-mr-4 flex gap-2 overflow-x-auto pr-4 pl-3 [scrollbar-width:none]">
-          <button
-            type="button"
+          <Chip
+            tone="success"
             aria-pressed={filter.available ?? false}
+            selected={filter.available ?? false}
             onClick={() =>
               set({ available: filter.available ? undefined : true })
             }
-            className={cn(
-              'flex h-[34px] shrink-0 items-center rounded-full border px-3 text-label',
-              filter.available
-                ? 'border-success bg-success-soft text-success'
-                : 'border-border bg-surface text-gray-700',
-            )}
+            className="px-3"
           >
             대여 가능만
-          </button>
+          </Chip>
           <span className="my-1 w-px shrink-0 bg-border" aria-hidden />
-          <button
-            type="button"
+          <Chip
             aria-pressed={!filter.category_id}
+            selected={!filter.category_id}
             onClick={() => set({ category_id: undefined })}
-            className={chipClassName(!filter.category_id)}
+            className="px-3"
           >
             전체
-          </button>
+          </Chip>
           {categories.map((category) => (
-            <button
+            <Chip
               key={category.id}
-              type="button"
               aria-pressed={filter.category_id === category.id}
+              selected={filter.category_id === category.id}
               onClick={() => set({ category_id: category.id })}
-              className={chipClassName(filter.category_id === category.id)}
+              className="px-3"
             >
               {category.name}
-            </button>
+            </Chip>
           ))}
         </div>
       </div>

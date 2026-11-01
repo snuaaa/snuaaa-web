@@ -9,8 +9,7 @@ import {
   canManageUsers,
   GRADE_MANAGER_GRADE,
 } from '~/components/Layout/constants';
-import Skeleton from '~/components/Common/Skeleton';
-import { Avatar, Pagination, Toast, useToast } from '~/components/ui';
+import { Avatar, Pagination, Skeleton, Toast, useToast } from '~/components/ui';
 import { useAuth } from '~/contexts/auth';
 import { useUserList } from '~/hooks/queries/useUserQueries';
 import { cn } from '~/lib/utils';

@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Link, useNavigate, useSearch } from '@tanstack/react-router';
-import { ChevronLeft } from 'lucide-react';
 
 import { useAuth } from '~/contexts/auth';
 import { ViewportSize, useViewportSize } from '~/contexts/viewportSize';
@@ -10,6 +9,7 @@ import RentCatalog from './Rental/RentCatalog';
 import RentConfirmSheet from './Rental/RentConfirmSheet';
 import { EQUIP_ADMIN_GRADE, RentFilter } from './Rental/rentUtils';
 import useRentCart from './Rental/useRentCart';
+import { BackButton } from '~/components/ui';
 
 /** 장비 빌리기: pick items into the cart, then rent them together. */
 export default function EquipmentRent() {
@@ -40,13 +40,9 @@ export default function EquipmentRent() {
         onFilterChange={setFilter}
         cart={cart}
         backButton={
-          <Link
-            to="/equipment"
-            aria-label="뒤로"
-            className="flex size-11 shrink-0 items-center justify-center"
-          >
-            <ChevronLeft className="size-[22px]" />
-          </Link>
+          <BackButton asChild>
+            <Link to="/equipment" />
+          </BackButton>
         }
       />
       <CartBar cart={cart} onRent={() => setConfirming(true)} />

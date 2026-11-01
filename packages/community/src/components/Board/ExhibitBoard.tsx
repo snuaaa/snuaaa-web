@@ -2,9 +2,8 @@ import { FC, useState } from 'react';
 import { Link } from '@tanstack/react-router';
 import { ImagePlus } from 'lucide-react';
 
-import Skeleton from '~/components/Common/Skeleton';
 import ExhibitionFormSheet from '~/components/Exhibition/ExhibitionFormSheet';
-import { Button, Fab } from '~/components/ui';
+import { Button, Fab, Skeleton } from '~/components/ui';
 import { useAuth } from '~/contexts/auth';
 import { useExhibitionsInBoard } from '~/hooks/queries/useExhibitionQueries';
 import { resolveImageUrl } from '~/lib/utils';

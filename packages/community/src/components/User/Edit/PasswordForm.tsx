@@ -125,7 +125,8 @@ export default function PasswordForm() {
           type="submit"
           loading={isPending}
           disabled={touched && !valid}
-          className="h-[52px] rounded-lg text-base font-bold md:mt-1.5 md:h-11 md:self-start md:rounded-md md:px-5 md:text-[15px] md:font-semibold"
+          size="lg"
+          className="md:mt-1.5 md:h-11 md:self-start md:rounded-md md:text-[15px] md:font-semibold"
         >
           비밀번호 바꾸기
         </Button>

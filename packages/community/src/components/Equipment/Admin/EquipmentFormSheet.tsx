@@ -124,7 +124,8 @@ export default function EquipmentFormSheet({
           <Button
             variant="secondary"
             onClick={onClose}
-            className="h-[52px] rounded-lg px-5 text-[15px] md:h-10"
+            size="lg"
+            className="md:h-10"
           >
             취소
           </Button>
@@ -132,7 +133,8 @@ export default function EquipmentFormSheet({
             onClick={submit}
             loading={creating || updating}
             disabled={uploading}
-            className="h-[52px] flex-1 rounded-lg text-base font-bold md:h-10 md:flex-none md:px-5 md:text-sm"
+            size="lg"
+            className="flex-1 md:h-10 md:flex-none md:text-sm"
           >
             {editing ? '저장' : '등록'}
           </Button>

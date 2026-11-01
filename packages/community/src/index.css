@@ -111,6 +111,9 @@
   --shadow-md: 0 4px 12px rgba(11, 26, 58, 0.1);
   --shadow-lg: 0 -8px 28px rgba(11, 26, 58, 0.16);
 
+  /* Desktop content column (header, footer and every redesigned page) */
+  --container-page: 1080px;
+
   /* Member grade (planet) backgrounds for avatar rings and grade dots */
   --grade-1: linear-gradient(
     125deg,
@@ -203,6 +206,35 @@
 
 @utility bg-grade-* {
   background: --value(--grade-*);
+}
+
+/*
+ * Layout values that depend on the shell's --tab-bar-height (AppShell), so
+ * they are inlined into each utility instead of resolved on :root.
+ * `pb-tab-bar` clears the mobile tab bar, `bottom-tab-bar` sits on top of it.
+ */
+@theme inline {
+  --spacing-tab-bar: calc(var(--tab-bar-height) + env(safe-area-inset-bottom));
+}
+
+/*
+ * Safe-area padding with a minimum (viewport-fit=cover, index.html).
+ * `pt-safe-2` is max(0.5rem, the top inset): mobile top bars use it so the
+ * notch never covers them, and 0.5rem stays on devices without an inset.
+ * `pb-safe-7` does the same for sheet and screen footers.
+ */
+@utility pt-safe-* {
+  padding-top: max(
+    calc(var(--spacing) * --value(number)),
+    env(safe-area-inset-top)
+  );
+}
+
+@utility pb-safe-* {
+  padding-bottom: max(
+    calc(var(--spacing) * --value(number)),
+    env(safe-area-inset-bottom)
+  );
 }
 
 * {

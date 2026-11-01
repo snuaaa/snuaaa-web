@@ -15,6 +15,7 @@ import { formatListDate } from '~/components/Board/boardUtils';
 import AlbumFormSheet from '~/components/Album/AlbumFormSheet';
 import PhotoUploader from '~/components/Photo/PhotoUploader';
 import {
+  BackButton,
   Button,
   ConfirmDialog,
   Fab,
@@ -102,14 +103,10 @@ function AlbumHeader({
 
   return (
     <header className="bg-surface-brand text-fg-on-brand md:border-t md:border-surface-brand-raised">
-      <div className="flex items-center justify-between px-1 pt-[max(0.5rem,env(safe-area-inset-top))] md:hidden">
-        <Link
-          {...backLink}
-          aria-label="뒤로"
-          className="flex size-11 items-center justify-center"
-        >
-          <ChevronLeft className="size-[22px]" />
-        </Link>
+      <div className="flex items-center justify-between px-1 pt-safe-2 md:hidden">
+        <BackButton asChild>
+          <Link {...backLink} />
+        </BackButton>
         <button
           type="button"
           aria-label="앨범 메뉴"
@@ -120,7 +117,7 @@ function AlbumHeader({
           <Ellipsis className="size-5" />
         </button>
       </div>
-      <div className="mx-auto flex w-full max-w-[1080px] flex-col gap-2 px-5 pt-1 pb-[18px] md:gap-3.5 md:px-6 md:pt-5 md:pb-8">
+      <div className="mx-auto flex w-full max-w-page flex-col gap-2 px-5 pt-1 pb-[18px] md:gap-3.5 md:px-6 md:pt-5 md:pb-8">
         <Link
           {...backLink}
           className="hidden h-8 items-center gap-1 self-start text-label font-normal text-fg-on-brand-muted hover:text-fg-on-brand md:flex"
@@ -281,7 +278,7 @@ const AlbumPage: FC = () => {
         onUpload={() => setIsUploading(true)}
       />
 
-      <div className="mx-auto w-full max-w-[1080px] flex-1 md:px-6 md:py-6">
+      <div className="mx-auto w-full max-w-page flex-1 md:px-6 md:py-6">
         {photos.length === 0 ? (
           <div className="flex flex-col items-center gap-3 px-8 py-20 text-center">
             <span className="flex size-16 items-center justify-center rounded-[20px] bg-accent-soft text-primary">

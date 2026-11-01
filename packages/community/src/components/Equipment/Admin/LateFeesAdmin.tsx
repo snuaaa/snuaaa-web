@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { useNavigate, useSearch } from '@tanstack/react-router';
 
-import Skeleton from '~/components/Common/Skeleton';
 import {
   Badge,
   Button,
+  Chip,
   ConfirmDialog,
   Pagination,
   SegmentedControl,
+  Skeleton,
   Toast,
   useToast,
 } from '~/components/ui';
@@ -186,20 +187,15 @@ export default function LateFeesAdmin() {
       <div className="flex flex-col gap-2.5 pt-3 md:hidden">
         <div className="flex gap-1.5 overflow-x-auto px-4 [scrollbar-width:none]">
           {PENALTY_FILTERS.map(({ value, label }) => (
-            <button
+            <Chip
               key={value}
-              type="button"
               aria-pressed={status === value}
+              selected={status === value}
               onClick={() => setStatus(value)}
-              className={cn(
-                'flex h-[34px] shrink-0 items-center rounded-full border px-3 text-label',
-                status === value
-                  ? 'border-primary bg-primary text-white'
-                  : 'border-border bg-surface font-normal text-fg',
-              )}
+              className="px-3"
             >
               {label}
-            </button>
+            </Chip>
           ))}
         </div>
         <div className="px-4">{dateRange}</div>

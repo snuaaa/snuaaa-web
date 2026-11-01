@@ -14,6 +14,7 @@ import { canWrite } from '~/components/Board/boardUtils';
 import ExhibitPhotoUploader from '~/components/Exhibition/ExhibitPhotoUploader';
 import ExhibitionFormSheet from '~/components/Exhibition/ExhibitionFormSheet';
 import {
+  BackButton,
   Button,
   Fab,
   Sheet,
@@ -112,14 +113,10 @@ const ExhibitionPage: FC = () => {
   return (
     <div className="flex flex-1 flex-col bg-surface text-fg md:bg-transparent">
       <header className="bg-surface-brand text-fg-on-brand md:border-t md:border-surface-brand-raised">
-        <div className="flex items-center justify-between px-1 pt-[max(0.5rem,env(safe-area-inset-top))] md:hidden">
-          <Link
-            {...backLink}
-            aria-label="뒤로"
-            className="flex size-11 items-center justify-center"
-          >
-            <ChevronLeft className="size-[22px]" />
-          </Link>
+        <div className="flex items-center justify-between px-1 pt-safe-2 md:hidden">
+          <BackButton asChild>
+            <Link {...backLink} />
+          </BackButton>
           {isOwner ? (
             <button
               type="button"
@@ -141,7 +138,7 @@ const ExhibitionPage: FC = () => {
             </button>
           )}
         </div>
-        <div className="mx-auto flex w-full max-w-[1080px] flex-col gap-3.5 px-5 pt-1 pb-6 md:px-6 md:pt-5 md:pb-9">
+        <div className="mx-auto flex w-full max-w-page flex-col gap-3.5 px-5 pt-1 pb-6 md:px-6 md:pt-5 md:pb-9">
           <Link
             {...backLink}
             className="hidden h-8 items-center gap-1 self-start text-label font-normal text-fg-on-brand-muted hover:text-fg-on-brand md:flex"
@@ -206,7 +203,7 @@ const ExhibitionPage: FC = () => {
         </div>
       </header>
 
-      <div className="mx-auto w-full max-w-[1080px] flex-1 pt-5 pb-8 md:px-6 md:py-8">
+      <div className="mx-auto w-full max-w-page flex-1 pt-5 pb-8 md:px-6 md:py-8">
         {works.length === 0 ? (
           <div className="flex flex-col items-center gap-3 px-8 py-16 text-center">
             <span className="flex size-16 items-center justify-center rounded-[20px] bg-accent-soft text-primary">

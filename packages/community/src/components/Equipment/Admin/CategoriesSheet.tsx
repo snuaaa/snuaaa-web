@@ -119,7 +119,8 @@ export default function CategoriesSheet({
           variant="secondary"
           block
           onClick={close}
-          className="h-[52px] rounded-lg text-[15px] md:h-10"
+          size="lg"
+          className="md:h-10"
         >
           닫기
         </Button>

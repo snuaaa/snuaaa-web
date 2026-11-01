@@ -81,7 +81,7 @@ function BoardMobileHeader({ board, onSearch }: BoardMobileHeaderProps) {
   const [switcherOpen, setSwitcherOpen] = useState(false);
 
   return (
-    <header className="flex flex-col gap-1.5 bg-surface-brand pt-[max(0.5rem,env(safe-area-inset-top))] pr-2 pb-4 pl-5 text-fg-on-brand md:hidden">
+    <header className="flex flex-col gap-1.5 bg-surface-brand pt-safe-2 pr-2 pb-4 pl-5 text-fg-on-brand md:hidden">
       <div className="flex items-center justify-between">
         <button
           type="button"
@@ -147,7 +147,7 @@ export function BoardFrame({
   return (
     <div className="flex flex-1 flex-col text-fg">
       {mobileHeader}
-      <div className="mx-auto flex w-full max-w-[1080px] flex-1 flex-col md:grid md:grid-cols-[220px_minmax(0,1fr)] md:items-start md:gap-8 md:px-6 md:py-9">
+      <div className="mx-auto flex w-full max-w-page flex-1 flex-col md:grid md:grid-cols-[220px_minmax(0,1fr)] md:items-start md:gap-8 md:px-6 md:py-9">
         <BoardSidebar currentBoardId={currentBoardId} />
         <div className="flex flex-1 flex-col md:gap-5">
           <div className="hidden items-end justify-between gap-6 md:flex">

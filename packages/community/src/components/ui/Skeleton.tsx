@@ -6,13 +6,12 @@ type Props = {
   style?: CSSProperties;
 };
 
-const Skeleton = ({ className, style }: Props) => {
+/** A pulsing placeholder block; size and shape come from `className`. */
+export function Skeleton({ className, style }: Props) {
   return (
     <div
       className={cn('animate-pulse rounded-md bg-gray-200', className)}
       style={style}
     />
   );
-};
-
-export default Skeleton;
+}

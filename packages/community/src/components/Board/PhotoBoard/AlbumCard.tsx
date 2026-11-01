@@ -1,7 +1,6 @@
 import { Link } from '@tanstack/react-router';
 import { Images } from 'lucide-react';
-import Skeleton from '~/components/Common/Skeleton';
-import { Tag } from '~/components/ui';
+import { Skeleton, Tag } from '~/components/ui';
 import { resolveImageUrl } from '~/lib/utils';
 import { Album } from '~/services/types';
 import { getThumbnailPath } from '~/utils/getThumbnailPath';
