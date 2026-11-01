@@ -115,7 +115,7 @@ export default function ProfileCard({ user, isMine }: ProfileCardProps) {
             <dd
               className={cn(
                 'leading-relaxed break-words whitespace-pre-line',
-                !user.introduction && 'text-gray-400',
+                !user.introduction?.trim() && 'text-gray-400',
               )}
             >
               {user.introduction?.trim() || '아직 자기소개가 없어요'}
