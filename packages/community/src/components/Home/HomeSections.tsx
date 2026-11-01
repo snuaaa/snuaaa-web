@@ -200,7 +200,7 @@ function SectionHeader({ title, boardId }: { title: string; boardId: string }) {
 export function RecentAlbumsSection({ albums }: { albums: Album[] }) {
   return (
     <div className="flex flex-col gap-3">
-      <SectionHeader title="새 앨범" boardId={MEMORY_BOARD} />
+      <SectionHeader title="새 추억" boardId={MEMORY_BOARD} />
       <ul className="grid grid-cols-2 gap-1.5 md:grid-cols-4 md:gap-4">
         {albums.slice(0, 4).map((album) => {
           const thumbnail = getThumbnailPath(album);
@@ -240,7 +240,7 @@ export function RecentPhotosSection({ photos }: { photos: Photo[] }) {
   return (
     <div className="flex flex-col gap-3 md:gap-0 md:rounded-lg md:bg-surface md:p-[18px] md:shadow-sm">
       <div className="md:pb-2">
-        <SectionHeader title="새 사진" boardId={ASTRO_PHOTO_BOARD} />
+        <SectionHeader title="새 별사진" boardId={ASTRO_PHOTO_BOARD} />
       </div>
       <ul className="grid grid-cols-3 gap-1.5 md:min-h-72 md:flex-1 md:auto-rows-fr">
         {photos.slice(0, 6).map((photo) => (

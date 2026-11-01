@@ -110,7 +110,9 @@ export function TonightStrip() {
           shadeClassName="fill-navy-700"
           className="pointer-events-none"
         />
-        <span className="text-label">오늘 밤</span>
+        <span className="shrink-0 text-label tabular-nums">
+          {lunAge === undefined ? '월령 -' : `월령 ${Math.round(lunAge)}일`}
+        </span>
         <span className="flex flex-1 flex-wrap gap-x-2.5 text-label font-normal text-navy-200 tabular-nums">
           {summary.map((item) => (
             <span key={item}>{item}</span>
