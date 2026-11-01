@@ -1,7 +1,7 @@
-import { Link, useRouter } from '@tanstack/react-router';
-import { ChevronLeft, Settings } from 'lucide-react';
+import { Link } from '@tanstack/react-router';
+import { Settings } from 'lucide-react';
 
-import { Avatar, Button } from '~/components/ui';
+import { Avatar, BackButton, Button } from '~/components/ui';
 import { cn } from '~/lib/utils';
 import { User } from '~/services/types';
 import { gradeAssigner } from '~/utils/gradeAssigner';
@@ -17,25 +17,6 @@ const GRADE_DOTS: Record<number, string> = {
   8: 'bg-grade-8',
   9: 'bg-grade-9',
 };
-
-/** Back to wherever the user page was opened from, or home. */
-export function BackButton({ className }: { className?: string }) {
-  const router = useRouter();
-  return (
-    <button
-      type="button"
-      aria-label="뒤로"
-      onClick={() =>
-        router.history.canGoBack()
-          ? router.history.back()
-          : router.navigate({ to: '/' })
-      }
-      className={cn('flex size-11 items-center justify-center', className)}
-    >
-      <ChevronLeft className="size-[22px]" />
-    </button>
-  );
-}
 
 type ProfileCardProps = {
   user: User;
@@ -57,7 +38,7 @@ export default function ProfileCard({ user, isMine }: ProfileCardProps) {
   return (
     <div className="flex flex-col md:overflow-hidden md:rounded-xl md:bg-surface md:shadow-sm">
       <div className="flex flex-col gap-3.5 bg-surface-brand pb-[22px] text-fg-on-brand md:items-center md:gap-2.5 md:px-6 md:pt-7 md:text-center">
-        <div className="flex min-h-11 items-center justify-between px-1 pt-[max(0.5rem,env(safe-area-inset-top))] md:hidden">
+        <div className="flex min-h-11 items-center justify-between px-1 pt-safe-2 md:hidden">
           {isMine ? (
             <>
               <h1 className="pl-3 text-lg font-bold">마이</h1>

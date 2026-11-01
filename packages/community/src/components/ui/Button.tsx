@@ -21,6 +21,8 @@ const buttonVariants = cva(
           'bg-danger text-white hover:brightness-95 disabled:bg-surface-sunken disabled:text-gray-400',
       },
       size: {
+        // Full-width call to action at the bottom of a sheet or mobile screen
+        lg: 'h-13 rounded-lg px-5 text-base font-bold',
         md: 'h-11 px-[18px] text-sm',
         sm: 'h-9 px-3.5 text-label',
         icon: 'size-11 [&_svg]:size-5',
@@ -30,6 +32,14 @@ const buttonVariants = cva(
         true: 'w-full',
       },
     },
+    compoundVariants: [
+      // The 취소 / 닫기 next to a large CTA stays lighter than the CTA itself.
+      {
+        variant: 'secondary',
+        size: 'lg',
+        className: 'text-[15px] font-semibold',
+      },
+    ],
     defaultVariants: {
       variant: 'primary',
       size: 'md',

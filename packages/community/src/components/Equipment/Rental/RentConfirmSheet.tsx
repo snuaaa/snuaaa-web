@@ -69,7 +69,8 @@ export default function RentConfirmSheet({
               close();
               onDone();
             }}
-            className="h-[52px] rounded-lg text-base font-bold md:h-11"
+            size="lg"
+            className="md:h-11"
           >
             {none ? '확인' : '빌린 장비 보기'}
           </Button>
@@ -113,14 +114,16 @@ export default function RentConfirmSheet({
           <Button
             variant="secondary"
             onClick={close}
-            className="h-[52px] rounded-lg px-5 text-[15px] md:h-11"
+            size="lg"
+            className="md:h-11"
           >
             취소
           </Button>
           <Button
             onClick={submit}
             loading={isPending}
-            className="h-[52px] flex-1 rounded-lg text-base font-bold md:h-11"
+            size="lg"
+            className="flex-1 md:h-11"
           >
             빌리기
           </Button>

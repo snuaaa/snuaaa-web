@@ -7,8 +7,7 @@ import {
   desktopAllCommentColumns,
 } from '~/components/Board/AllCommentList';
 import { AllFeedLayout, AllFeedTabs } from '~/components/Board/AllFeed';
-import { ListMessage } from '~/components/Board/ListParts';
-import { Button, Pagination } from '~/components/ui';
+import { Button, EmptyState, Pagination } from '~/components/ui';
 import { ViewportSize, useViewportSize } from '~/contexts/viewportSize';
 import { useCommentList } from '~/hooks/queries/useCommentQueries';
 import { cn } from '~/lib/utils';
@@ -32,7 +31,7 @@ function AllComments() {
   };
 
   const errorMessage = (
-    <ListMessage
+    <EmptyState
       title="댓글을 불러오지 못했어요"
       description="잠시 후 다시 시도해 주세요."
       action={
@@ -42,7 +41,7 @@ function AllComments() {
       }
     />
   );
-  const emptyMessage = <ListMessage title="아직 댓글이 없어요" />;
+  const emptyMessage = <EmptyState title="아직 댓글이 없어요" />;
 
   if (isDesktop) {
     return (

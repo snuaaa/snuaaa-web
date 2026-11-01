@@ -42,7 +42,7 @@ export function NavDrawer({
         <DialogPrimitive.Overlay className="fixed inset-0 z-40 bg-navy-950/48 data-[state=closed]:animate-fade-out data-[state=open]:animate-fade-in motion-reduce:animate-none" />
         <DialogPrimitive.Content
           aria-describedby={undefined}
-          className="fixed inset-y-0 left-0 z-50 flex w-[min(18rem,85vw)] flex-col bg-surface-brand pt-[env(safe-area-inset-top)] text-fg-on-brand shadow-lg outline-none data-[state=closed]:animate-slide-out-left data-[state=open]:animate-slide-in-left motion-reduce:animate-none"
+          className="fixed inset-y-0 left-0 z-50 flex w-[min(18rem,85vw)] flex-col bg-surface-brand pt-safe-0 text-fg-on-brand shadow-lg outline-none data-[state=closed]:animate-slide-out-left data-[state=open]:animate-slide-in-left motion-reduce:animate-none"
         >
           <div className="flex h-14 shrink-0 items-center justify-between pr-2 pl-5">
             <DialogPrimitive.Title className="text-label text-fg-on-brand-muted">
@@ -66,7 +66,7 @@ export function NavDrawer({
             </CloseContext.Provider>
           </nav>
           {footer && (
-            <div className="shrink-0 border-t border-navy-800 px-5 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))]">
+            <div className="shrink-0 border-t border-navy-800 px-5 pt-3 pb-safe-4">
               {footer}
             </div>
           )}

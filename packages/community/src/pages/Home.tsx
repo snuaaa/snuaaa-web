@@ -20,7 +20,7 @@ function Home() {
   return (
     <div className="flex flex-col text-fg">
       <header
-        className="relative isolate flex flex-col gap-3 overflow-hidden bg-surface-brand px-4 pt-[max(0.75rem,env(safe-area-inset-top))] pb-4 md:hidden"
+        className="relative isolate flex flex-col gap-3 overflow-hidden bg-surface-brand px-4 pt-safe-3 pb-4 md:hidden"
         style={skyStyle(sky)}
       >
         <SkyBackdrop sky={sky} />
@@ -39,7 +39,7 @@ function Home() {
         style={skyStyle(sky)}
       >
         <SkyBackdrop sky={sky} />
-        <div className="mx-auto grid max-w-[1080px] grid-cols-2 items-stretch lg:grid-cols-[minmax(0,1fr)_520px] gap-5 px-6 pt-6 pb-7">
+        <div className="mx-auto grid max-w-page grid-cols-2 items-stretch lg:grid-cols-[minmax(0,1fr)_520px] gap-5 px-6 pt-6 pb-7">
           <SoundBoxCard soundBox={homeData?.soundBoxData} brand />
           <TonightCard sky={sky} />
         </div>
@@ -48,7 +48,7 @@ function Home() {
       {!homeData ? (
         <Loading />
       ) : (
-        <div className="mx-auto flex w-full max-w-[1080px] flex-col gap-5 px-4 py-5 md:gap-7 md:px-6 md:py-7">
+        <div className="mx-auto flex w-full max-w-page flex-col gap-5 px-4 py-5 md:gap-7 md:px-6 md:py-7">
           <div className="md:hidden">
             <SoundBoxCard soundBox={homeData.soundBoxData} />
           </div>

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 
-import Skeleton from '~/components/Common/Skeleton';
-import { Toast, useToast } from '~/components/ui';
+import { Skeleton, Toast, useToast } from '~/components/ui';
 import { cn } from '~/lib/utils';
 import { MyRent } from '~/services/types';
 import MyRentCard from './MyRentCard';

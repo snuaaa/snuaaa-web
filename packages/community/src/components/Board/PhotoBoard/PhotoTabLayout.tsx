@@ -44,7 +44,7 @@ export default function PhotoTabLayout({
 
   return (
     <div className="flex flex-1 flex-col text-fg">
-      <header className="flex flex-col gap-1 bg-surface-brand pt-[max(0.5rem,env(safe-area-inset-top))] pr-2 pl-5 text-fg-on-brand md:hidden">
+      <header className="flex flex-col gap-1 bg-surface-brand pt-safe-2 pr-2 pl-5 text-fg-on-brand md:hidden">
         <h1 className="flex h-11 items-center text-title">사진</h1>
         <nav aria-label="사진 게시판" className="flex gap-[22px]">
           {boards.map((b) => {
@@ -69,7 +69,7 @@ export default function PhotoTabLayout({
         </nav>
       </header>
       {toolbar}
-      <div className="mx-auto flex w-full max-w-[1080px] flex-1 flex-col md:gap-5 md:px-6 md:pt-8 md:pb-9">
+      <div className="mx-auto flex w-full max-w-page flex-1 flex-col md:gap-5 md:px-6 md:pt-8 md:pb-9">
         <div className="hidden items-end justify-between gap-6 border-b border-border md:flex">
           <div className="flex flex-col gap-3.5">
             <h1 className="text-display">사진</h1>

@@ -2,8 +2,8 @@ import { ChevronDown } from 'lucide-react';
 
 import AttachmentField from '~/components/Post/AttachmentField';
 import { currentGeneration } from '~/components/Board/boardUtils';
-import { cn } from '~/lib/utils';
 import { Category, File as AttachedFile } from '~/services/types';
+import { Chip } from '~/components/ui';
 
 type DocuFieldsProps = {
   generation: number;
@@ -92,21 +92,15 @@ export default function DocuFields({
             {categories.map((cate) => {
               const selected = categoryId === cate.category_id;
               return (
-                <button
+                <Chip
                   key={cate.category_id}
-                  type="button"
                   role="radio"
                   aria-checked={selected}
+                  selected={selected}
                   onClick={() => onCategoryChange(cate.category_id)}
-                  className={cn(
-                    'flex h-[34px] items-center rounded-full border px-3.5 text-label transition-colors',
-                    selected
-                      ? 'border-primary bg-primary text-white'
-                      : 'border-border bg-surface font-medium text-gray-700 hover:border-gray-300',
-                  )}
                 >
                   {cate.category_name}
-                </button>
+                </Chip>
               );
             })}
           </div>

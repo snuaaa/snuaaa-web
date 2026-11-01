@@ -1,20 +1,15 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { Link, useNavigate, useSearch } from '@tanstack/react-router';
-import {
-  ChevronLeft,
-  Heart,
-  MessageSquare,
-  PenLine,
-  Search,
-  X,
-} from 'lucide-react';
-import Skeleton from '~/components/Common/Skeleton';
+import { Heart, MessageSquare, PenLine, Search, X } from 'lucide-react';
 import {
   Avatar,
+  BackButton,
   Button,
+  EmptyState,
   Fab,
   Pagination,
   SegmentedControl,
+  Skeleton,
 } from '~/components/ui';
 import { useAuth } from '~/contexts/auth';
 import { ViewportSize, useViewportSize } from '~/contexts/viewportSize';
@@ -23,7 +18,7 @@ import { cn } from '~/lib/utils';
 import { Board, Content } from '~/services/types';
 import BoardLayout from '../BoardLayout';
 import Highlight from '../Highlight';
-import { ListMessage, NewDot } from '../ListParts';
+import { NewDot } from '../ListParts';
 import {
   canWrite,
   findSnippet,
@@ -407,19 +402,19 @@ const ListPost = ({ boardInfo, onClickCreate }: Props) => {
   const posts = data?.rows ?? [];
 
   const emptyMessage = isSearching ? (
-    <ListMessage
+    <EmptyState
       title="검색 결과가 없어요"
       description="다른 검색어나 검색 범위로 찾아보세요."
     />
   ) : (
-    <ListMessage
+    <EmptyState
       title="아직 글이 없어요"
       description={writable ? '첫 글을 남겨 보세요.' : undefined}
     />
   );
 
   const errorMessage = (
-    <ListMessage
+    <EmptyState
       title="글을 불러오지 못했어요"
       description="잠시 후 다시 시도해 주세요."
       action={
@@ -539,15 +534,8 @@ const ListPost = ({ boardInfo, onClickCreate }: Props) => {
 
   const mobileSearchHeader = (
     <div className="sticky top-0 z-30 flex flex-col border-b border-gray-100 bg-surface">
-      <div className="flex items-center gap-1 pt-[max(0.5rem,env(safe-area-inset-top))] pr-4 pb-2 pl-1">
-        <button
-          type="button"
-          aria-label="검색 닫기"
-          onClick={closeMobileSearch}
-          className="flex size-11 shrink-0 items-center justify-center"
-        >
-          <ChevronLeft className="size-[22px]" />
-        </button>
+      <div className="flex items-center gap-1 pt-safe-2 pr-4 pb-2 pl-1">
+        <BackButton aria-label="검색 닫기" onClick={closeMobileSearch} />
         <SearchField
           value={draft}
           onChange={(value) => {

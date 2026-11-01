@@ -169,10 +169,10 @@ export default function UploaderShell({
         role="dialog"
         aria-modal="true"
         aria-labelledby="uploader-title"
-        className="flex flex-1 flex-col md:h-[min(760px,100%)] md:w-full md:max-w-[1080px] md:flex-none md:overflow-hidden md:rounded-xl md:bg-surface md:shadow-xl"
+        className="flex flex-1 flex-col md:h-[min(760px,100%)] md:w-full md:max-w-page md:flex-none md:overflow-hidden md:rounded-xl md:bg-surface md:shadow-xl"
         {...dragProps}
       >
-        <header className="sticky top-0 z-20 flex shrink-0 items-center justify-between gap-2 border-b border-gray-100 bg-surface pt-[max(0.5rem,env(safe-area-inset-top))] pr-3 pb-2 pl-1 md:static md:h-16 md:px-5 md:py-0">
+        <header className="sticky top-0 z-20 flex shrink-0 items-center justify-between gap-2 border-b border-gray-100 bg-surface pt-safe-2 pr-3 pb-2 pl-1 md:static md:h-16 md:px-5 md:py-0">
           <button
             type="button"
             aria-label="닫기"
@@ -288,7 +288,7 @@ export default function UploaderShell({
         {status && (
           <p
             className={cn(
-              'sticky bottom-0 border-t border-border bg-surface px-4 py-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))] text-caption md:hidden',
+              'sticky bottom-0 border-t border-border bg-surface px-4 py-2.5 pb-safe-2.5 text-caption md:hidden',
               status.danger ? 'text-danger' : 'text-fg-muted',
             )}
           >

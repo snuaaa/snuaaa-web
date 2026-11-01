@@ -8,9 +8,14 @@ import {
 } from 'lucide-react';
 
 import { formatListDate } from '~/components/Board/boardUtils';
-import Skeleton from '~/components/Common/Skeleton';
 import { commentLink } from '~/components/Comment/commentLink';
-import { Pagination, Tabs, TabsList, TabsTrigger } from '~/components/ui';
+import {
+  Pagination,
+  Skeleton,
+  Tabs,
+  TabsList,
+  TabsTrigger,
+} from '~/components/ui';
 import { useCommentList } from '~/hooks/queries/useCommentQueries';
 import { usePhotoList } from '~/hooks/queries/usePhotoQueries';
 import { usePostList } from '~/hooks/queries/usePostQueries';

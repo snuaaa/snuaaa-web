@@ -41,7 +41,8 @@ export default function RentRecordsSheet({
           variant="secondary"
           block
           onClick={onClose}
-          className="h-[52px] rounded-lg text-[15px] md:hidden"
+          size="lg"
+          className="md:hidden"
         >
           닫기
         </Button>

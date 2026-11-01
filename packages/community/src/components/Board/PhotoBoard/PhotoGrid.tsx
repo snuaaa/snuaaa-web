@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link } from '@tanstack/react-router';
 import { Heart, MessageCircle } from 'lucide-react';
-import Skeleton from '~/components/Common/Skeleton';
 import { cn, resolveImageUrl } from '~/lib/utils';
 import { Photo } from '~/services/types';
+import { Skeleton } from '~/components/ui';
 
 const COLUMN_QUERIES: [string, number][] = [
   ['(min-width: 1024px)', 4],

@@ -1,8 +1,7 @@
 import { Link } from '@tanstack/react-router';
 import { CornerUpLeft } from 'lucide-react';
 import { commentLink } from '~/components/Comment/commentLink';
-import Skeleton from '~/components/Common/Skeleton';
-import { Avatar } from '~/components/ui';
+import { Avatar, Skeleton } from '~/components/ui';
 import { cn } from '~/lib/utils';
 import { Comment } from '~/services/types';
 import { BoardTag } from './AllPostList';

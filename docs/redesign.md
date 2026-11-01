@@ -60,6 +60,33 @@ Tailwind v4 `@theme`으로 정의합니다(`src/index.css`). 기존 `sass/common
 - **간격:** 4 단위. 화면 좌우 16, 섹션 사이 20, 터치 영역은 최소 44
 - **그림자:** sm(카드) `0 1px 2px rgba(11,26,58,.06)`, md(팝오버) `0 4px 12px rgba(11,26,58,.10)`, lg(시트) `0 -8px 28px rgba(11,26,58,.16)`
 
+### 레이아웃 토큰
+
+리디자인 화면을 만들면서 반복된 값을 토큰과 유틸리티로 정리했습니다. 정의는 `src/index.css`에 있고, `cn()`(`~/lib/utils`)도 이 클래스들을 알고 있어서 같은 속성의 다른 클래스와 겹치면 뒤의 것이 이깁니다.
+
+| 클래스 | 값 | 용도 |
+| --- | --- | --- |
+| `max-w-page` | 1080px | 데스크톱 본문 폭. 상단 네비, 푸터, 모든 리디자인 화면 |
+| `pt-safe-N` | max(N × 4px, 위쪽 safe area) | 모바일 상단 바. 보통 `pt-safe-2`(8px), 홈 하늘 헤더는 `pt-safe-3` |
+| `pb-safe-N` | max(N × 4px, 아래쪽 safe area) | 시트와 화면 아래 버튼 영역. 보통 `pb-safe-7`(28px) |
+| `pb-tab-bar`, `bottom-tab-bar`, `h-tab-bar` | 탭바 높이 + 아래쪽 safe area | 모바일 하단 탭바를 비키거나 그 위에 붙는 요소 |
+
+- **safe area:** `index.html`이 `viewport-fit=cover`라서 화면이 노치 아래까지 그려집니다. 화면 위·아래 끝에 붙는 요소는 위 유틸리티를 쓰고, `env(safe-area-inset-*)`를 직접 쓰지 않습니다. 좌우는 `#root`가 한 번에 비킵니다.
+- **탭바 높이:** `--tab-bar-height`(3.5rem)는 `AppShell`이 정합니다. 탭바가 없는 곳(데스크톱)에서는 각 화면이 `md:pb-0`처럼 직접 0으로 돌립니다.
+
+### 관측 모드 (적색광)
+
+`hooks/useObservationMode.ts`가 `<html data-observation="on">`을 켜면 `index.css`의 필터 하나가 모든 화면을 어둡게 뒤집고 빨간빛만 남깁니다. 브랜드 영역(navy)은 뒤집히면 밝은 빨강 띠가 되므로, 관측 모드에서는 브랜드 의미 토큰을 밝은 값으로 바꿔 두어 뒤집힌 뒤 어둡게 나오게 합니다.
+
+- 브랜드 영역(`bg-surface-brand`, `bg-surface-brand-raised`) 위의 글자와 선은 `fg-on-brand`, `fg-on-brand-muted` 같은 의미 토큰을 씁니다. 원시 navy 값을 써야 하면 `index.css`의 관측 모드 블록에 그 값도 뒤집어 둡니다(지금은 navy-200 / 300 / 500 / 700 / 800).
+- 사진, 영상, canvas는 먼저 한 번 뒤집어 두어서 음화가 아니라 빨간 밝기로 보입니다.
+- 새 화면은 따로 할 일이 없습니다. 브랜드 영역에 새 색을 쓸 때만 관측 모드에서 확인합니다.
+
+### 움직임
+
+- **애니메이션 토큰:** `animate-fade-in/out`, `animate-slide-in/out-left`(NavDrawer), `animate-accordion-down/up`, `animate-twinkle`(하늘 헤더의 별. 별마다 `--star-opacity`와 길이를 따로 줍니다).
+- **동작 줄이기:** 애니메이션과 트랜지션에는 `motion-reduce:animate-none`이나 `motion-reduce:transition-none`을 함께 붙여서 `prefers-reduced-motion`을 따릅니다.
+
 ### 등급 테두리
 
 기존 `sass/common/_profilemini.scss`의 행성 그라데이션을 그대로 유지합니다. 사용자가 애착을 가진 요소입니다. 이 값을 토큰(또는 유틸리티)으로 옮기고, Avatar의 테두리와 등급 배지 점에 씁니다.
@@ -84,9 +111,14 @@ shadcn/ui 방식을 씁니다. headless 라이브러리 위에 `cva`와 `tailwin
 
 | 컴포넌트 | 변형 / 비고 | 대체할 기존 코드 |
 | --- | --- | --- |
-| Button | primary, secondary, ghost, accent, danger / md 44, sm 36 / 아이콘 버튼, 로딩 상태 | `enif-btn-*`, `btn-ok`, `btn-cancel`, `board-btn-write` 등 클래스 |
+| Button | primary, secondary, ghost, accent, danger / lg 52(시트·모바일 화면 아래의 큰 버튼. 굵은 16px, 옆의 secondary는 15px), md 44, sm 36 / 아이콘 버튼, 로딩 상태 | `enif-btn-*`, `btn-ok`, `btn-cancel`, `board-btn-write` 등 클래스 |
 | Input, Textarea | 라벨은 입력칸 위에 고정 / 오류 메시지는 아래 / 16px | `InputField`, `InputText`, `Form/Input` (floating 라벨 폐지) |
 | Tag, Badge | 게시판 분류, 해시태그, 상태 칩, 숫자 배지 | `Tag` |
+| Chip | 34px 알약 모양 필터·선택 버튼(분류, 상태 등). `selected`, `tone="success"`(대여 가능만 같은 켜고 끄는 필터) / ARIA는 쓰는 곳에서 정함(선택 그룹은 `role="radio"`, 필터는 `aria-pressed`) | 화면마다 있던 `chipClassName` |
+| EmptyState | 목록 자리에 보이는 빈 상태와 불러오기 실패 / 제목, 설명, 버튼 | `ListMessage` |
+| Skeleton | 불러오는 동안의 자리 표시. 크기와 모양은 `className`으로 | `Common/Skeleton` |
+| BackButton | 모바일 상단 바 왼쪽의 44px ‹ / 기본은 뒤로 가기(기록이 없으면 홈), `onClick`이나 `asChild`(`Link`)로 바꿈 | 화면마다 있던 ChevronLeft 버튼 |
+| Toast | 화면 아래 잠깐 뜨는 알림(`useToast`). 모바일은 탭바 위 | `alert` |
 | Avatar | 56 / 40 / 28 / 20, 등급 테두리 옵션 / `profile_url` → `profile_path` → 이니셜 순으로 표시 | `ProfileMini`, 각 화면의 프로필 이미지 처리 |
 | Sheet | 액션 메뉴와 짧은 폼. 모바일·태블릿은 하단 시트, 데스크톱은 가운데 Dialog | `Drawer`, `ActionDrawer`, `UserActionDrawer` |
 | Dialog, ConfirmDialog | 모든 화면 크기에서 가운데 모달. 삭제할까요? 같은 확인 질문은 ConfirmDialog(바깥 클릭으로 닫히지 않음) | `PopUp`, `window.confirm` |

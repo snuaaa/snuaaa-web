@@ -67,11 +67,7 @@ export default function FindAccountSheet({
       title="계정 찾기"
       footer={
         sent ? (
-          <Button
-            block
-            onClick={close}
-            className="h-[52px] rounded-lg text-base font-bold"
-          >
+          <Button block onClick={close} size="lg">
             로그인하러 가기
           </Button>
         ) : (
@@ -79,7 +75,7 @@ export default function FindAccountSheet({
             block
             onClick={() => submit()}
             loading={findingId || findingPassword}
-            className="h-[52px] rounded-lg text-base font-bold"
+            size="lg"
           >
             {isPw ? '임시 비밀번호 받기' : '아이디 받기'}
           </Button>

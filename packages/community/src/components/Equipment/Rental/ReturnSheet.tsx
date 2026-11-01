@@ -78,18 +78,15 @@ export default function ReturnSheet({
       hideTitle
       footer={
         <div className="flex gap-2">
-          <Button
-            variant="secondary"
-            onClick={onClose}
-            className="h-[52px] rounded-lg px-5 text-[15px]"
-          >
+          <Button variant="secondary" onClick={onClose} size="lg">
             취소
           </Button>
           <Button
             onClick={submit}
             disabled={!photo?.url}
             loading={isPending}
-            className="h-[52px] flex-1 rounded-lg text-base font-bold"
+            size="lg"
+            className="flex-1"
           >
             {photo?.url || uploading
               ? '반납하기'

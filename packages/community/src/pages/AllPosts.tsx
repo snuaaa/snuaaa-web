@@ -7,8 +7,7 @@ import {
   desktopAllPostColumns,
 } from '~/components/Board/AllPostList';
 import { AllFeedLayout, AllFeedTabs } from '~/components/Board/AllFeed';
-import { ListMessage } from '~/components/Board/ListParts';
-import { Button, Pagination } from '~/components/ui';
+import { Button, EmptyState, Pagination } from '~/components/ui';
 import { ViewportSize, useViewportSize } from '~/contexts/viewportSize';
 import { useAllPosts } from '~/hooks/queries/useHomeQueries';
 import { cn } from '~/lib/utils';
@@ -30,7 +29,7 @@ function AllPosts() {
   };
 
   const errorMessage = (
-    <ListMessage
+    <EmptyState
       title="글을 불러오지 못했어요"
       description="잠시 후 다시 시도해 주세요."
       action={
@@ -40,7 +39,7 @@ function AllPosts() {
       }
     />
   );
-  const emptyMessage = <ListMessage title="아직 글이 없어요" />;
+  const emptyMessage = <EmptyState title="아직 글이 없어요" />;
 
   if (isDesktop) {
     return (

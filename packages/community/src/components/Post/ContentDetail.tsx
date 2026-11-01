@@ -14,6 +14,7 @@ import {
 import CommentSection from '~/components/Comment/CommentSection';
 import {
   Avatar,
+  BackButton,
   Button,
   ConfirmDialog,
   Sheet,
@@ -129,15 +130,8 @@ export default function ContentDetail({
   return (
     <div className="flex flex-1 flex-col bg-surface text-fg md:bg-transparent">
       {/* Mobile header */}
-      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-gray-100 bg-surface px-1 pt-[max(0.5rem,env(safe-area-inset-top))] pb-2 md:hidden">
-        <button
-          type="button"
-          aria-label="뒤로"
-          onClick={onBack}
-          className="flex size-11 items-center justify-center"
-        >
-          <ChevronLeft className="size-[22px]" />
-        </button>
+      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-gray-100 bg-surface px-1 pt-safe-2 pb-2 md:hidden">
+        <BackButton onClick={onBack} />
         <Link
           to="/board/$board_id"
           params={{ board_id: post.board.board_id }}

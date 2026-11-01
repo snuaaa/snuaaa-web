@@ -175,7 +175,7 @@ export default function TopNav() {
       className="sticky top-0 z-30 hidden bg-surface-brand text-fg-on-brand transition-colors duration-300 motion-reduce:transition-none md:block"
       style={headerStyle}
     >
-      <div className="mx-auto flex h-16 max-w-[1080px] items-center gap-8 px-6">
+      <div className="mx-auto flex h-16 max-w-page items-center gap-8 px-6">
         <BrandMark />
         <nav aria-label="주 메뉴" className="flex flex-1 items-center gap-1">
           <NavMenu label="게시판" active={isActive('board')}>

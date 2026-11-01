@@ -27,7 +27,7 @@ export default function DesktopRental({
   const [confirming, setConfirming] = useState(false);
 
   return (
-    <div className="mx-auto grid w-full max-w-[1080px] grid-cols-[minmax(0,1fr)_320px] items-start gap-6 px-6 py-7">
+    <div className="mx-auto grid w-full max-w-page grid-cols-[minmax(0,1fr)_320px] items-start gap-6 px-6 py-7">
       <div className="flex flex-col gap-[18px]">
         <div className="flex items-end justify-between">
           <h1 className="text-display">장비 대여</h1>

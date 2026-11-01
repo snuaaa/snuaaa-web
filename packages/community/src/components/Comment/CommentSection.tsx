@@ -65,9 +65,7 @@ const Composer = forwardRef<HTMLTextAreaElement, ComposerProps>(
           onSubmit={handleSubmit}
           className={cn(
             'sticky z-20 flex flex-col gap-1.5 border-t border-border bg-surface px-3 pt-2',
-            overTabBar
-              ? 'bottom-0 pb-[max(0.75rem,env(safe-area-inset-bottom))]'
-              : 'bottom-[calc(var(--tab-bar-height)+env(safe-area-inset-bottom))] pb-3',
+            overTabBar ? 'bottom-0 pb-safe-3' : 'bottom-tab-bar pb-3',
           )}
         >
           {replyTo && (

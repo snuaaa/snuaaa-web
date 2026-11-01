@@ -1,7 +1,6 @@
 import { Link } from '@tanstack/react-router';
 import { MessageSquare } from 'lucide-react';
-import Skeleton from '~/components/Common/Skeleton';
-import { Avatar, Tag } from '~/components/ui';
+import { Avatar, Skeleton, Tag } from '~/components/ui';
 import { useBoards } from '~/hooks/queries/useBoardQueries';
 import { cn } from '~/lib/utils';
 import { Board, Content } from '~/services/types';

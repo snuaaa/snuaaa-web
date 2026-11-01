@@ -67,8 +67,8 @@ export default function ComposerLayout({
   return (
     // Mobile: a full-screen layer above the tab bar (z-30) and below
     // dialogs (z-40), so the header and editor own the screen.
-    <div className="fixed inset-0 z-35 flex flex-col overflow-y-auto bg-surface pb-[env(safe-area-inset-bottom)] text-fg md:static md:pb-0 md:z-auto md:flex-1 md:overflow-visible md:bg-transparent">
-      <header className="sticky top-0 z-20 flex shrink-0 items-center justify-between gap-2 border-b border-gray-100 bg-surface pt-[max(0.5rem,env(safe-area-inset-top))] pr-3 pb-2 pl-1 md:hidden">
+    <div className="fixed inset-0 z-35 flex flex-col overflow-y-auto bg-surface pb-safe-0 text-fg md:static md:pb-0 md:z-auto md:flex-1 md:overflow-visible md:bg-transparent">
+      <header className="sticky top-0 z-20 flex shrink-0 items-center justify-between gap-2 border-b border-gray-100 bg-surface pt-safe-2 pr-3 pb-2 pl-1 md:hidden">
         <button
           type="button"
           aria-label="닫기"

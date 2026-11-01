@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react';
-import { useNavigate, useRouter } from '@tanstack/react-router';
-import { ChevronLeft } from 'lucide-react';
-import { Tabs, TabsList, TabsTrigger } from '~/components/ui';
+import { useNavigate } from '@tanstack/react-router';
+import { BackButton, Tabs, TabsList, TabsTrigger } from '~/components/ui';
 import { cn } from '~/lib/utils';
 import { BoardFrame } from './BoardLayout';
 
@@ -47,23 +46,11 @@ export function AllFeedTabs({
 }
 
 function MobileHeader({ tab }: { tab: AllFeedTab }) {
-  const router = useRouter();
   return (
     <div className="flex flex-col md:hidden">
-      <header className="flex flex-col gap-1 bg-surface-brand pt-[max(0.5rem,env(safe-area-inset-top))] pr-4 pb-4 pl-1 text-fg-on-brand">
+      <header className="flex flex-col gap-1 bg-surface-brand pt-safe-2 pr-4 pb-4 pl-1 text-fg-on-brand">
         <div className="flex items-center gap-1">
-          <button
-            type="button"
-            aria-label="뒤로"
-            onClick={() =>
-              router.history.canGoBack()
-                ? router.history.back()
-                : router.navigate({ to: '/' })
-            }
-            className="flex size-11 shrink-0 items-center justify-center"
-          >
-            <ChevronLeft className="size-[22px]" />
-          </button>
+          <BackButton />
           <h1 className="text-title">{TITLE}</h1>
         </div>
         <p className="pl-4 text-label font-normal leading-normal text-fg-on-brand-muted">

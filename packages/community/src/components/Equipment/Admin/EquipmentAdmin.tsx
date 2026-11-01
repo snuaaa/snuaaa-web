@@ -9,7 +9,6 @@ import {
   Trash2,
 } from 'lucide-react';
 
-import Skeleton from '~/components/Common/Skeleton';
 import {
   Badge,
   Button,
@@ -17,6 +16,7 @@ import {
   Fab,
   Sheet,
   SheetAction,
+  Skeleton,
   Toast,
   useToast,
 } from '~/components/ui';

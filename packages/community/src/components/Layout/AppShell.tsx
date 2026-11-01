@@ -59,7 +59,7 @@ const shellStyle = {
 
 function MobileHeader() {
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center bg-surface-brand px-4 pt-[env(safe-area-inset-top)] md:hidden">
+    <header className="sticky top-0 z-30 flex h-14 items-center bg-surface-brand px-4 pt-safe-0 md:hidden">
       <BrandMark />
     </header>
   );
@@ -77,12 +77,10 @@ function SiteFooter({ showOnMobile }: { showOnMobile: boolean }) {
       role="contentinfo"
       className={cn(
         'border-t border-border bg-surface',
-        showOnMobile
-          ? 'pb-[calc(var(--tab-bar-height)+env(safe-area-inset-bottom))] md:pb-0'
-          : 'hidden md:block',
+        showOnMobile ? 'pb-tab-bar md:pb-0' : 'hidden md:block',
       )}
     >
-      <div className="mx-auto flex max-w-[1080px] flex-col gap-3 px-4 py-6 text-caption text-fg-muted md:flex-row md:items-center md:justify-between md:px-6 md:py-8">
+      <div className="mx-auto flex max-w-page flex-col gap-3 px-4 py-6 text-caption text-fg-muted md:flex-row md:items-center md:justify-between md:px-6 md:py-8">
         <ul className="flex gap-4">
           {footerLinks.map((link) => (
             <li key={link.name}>
@@ -125,11 +123,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
       <TopNav />
       {!isRedesigned && <MobileHeader />}
       <main
-        className={cn(
-          'flex flex-1 flex-col',
-          !isHome &&
-            'pb-[calc(var(--tab-bar-height)+env(safe-area-inset-bottom))] md:pb-0',
-        )}
+        className={cn('flex flex-1 flex-col', !isHome && 'pb-tab-bar md:pb-0')}
       >
         {isRedesigned ? children : <LegacySection>{children}</LegacySection>}
       </main>

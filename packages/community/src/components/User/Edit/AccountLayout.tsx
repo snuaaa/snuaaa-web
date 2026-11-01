@@ -2,7 +2,7 @@ import { useState, type ReactNode } from 'react';
 import { Link } from '@tanstack/react-router';
 import { ChevronLeft } from 'lucide-react';
 
-import { ConfirmDialog } from '~/components/ui';
+import { BackButton, ConfirmDialog } from '~/components/ui';
 import { useAuth } from '~/contexts/auth';
 import { useDeleteUserInfo } from '~/hooks/queries/useUserQueries';
 import { cn } from '~/lib/utils';
@@ -67,15 +67,11 @@ export default function AccountLayout({
   );
 
   return (
-    <div className="flex flex-1 flex-col md:mx-auto md:grid md:w-full md:max-w-[1080px] md:grid-cols-[220px_minmax(0,1fr)] md:items-start md:gap-8 md:px-6 md:py-9">
-      <header className="sticky top-0 z-30 grid grid-cols-[1fr_auto_1fr] items-center border-b border-gray-100 bg-surface pt-[max(0.5rem,env(safe-area-inset-top))] pr-3 pb-2 pl-1 md:hidden">
-        <Link
-          {...back}
-          aria-label="뒤로"
-          className="flex size-11 items-center justify-center"
-        >
-          <ChevronLeft className="size-[22px]" />
-        </Link>
+    <div className="flex flex-1 flex-col md:mx-auto md:grid md:w-full md:max-w-page md:grid-cols-[220px_minmax(0,1fr)] md:items-start md:gap-8 md:px-6 md:py-9">
+      <header className="sticky top-0 z-30 grid grid-cols-[1fr_auto_1fr] items-center border-b border-gray-100 bg-surface pt-safe-2 pr-3 pb-2 pl-1 md:hidden">
+        <BackButton asChild>
+          <Link {...back} />
+        </BackButton>
         <h1 className="text-[15px] font-semibold">{title}</h1>
         <div className="flex justify-end">{action}</div>
       </header>

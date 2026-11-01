@@ -16,7 +16,7 @@ function MobileHome({ isAdmin }: { isAdmin: boolean }) {
 
   return (
     <div className="flex flex-1 flex-col">
-      <div className="flex flex-col gap-3.5 bg-surface-brand pt-[max(0.5rem,env(safe-area-inset-top))] pr-2 pb-5 pl-5 text-fg-on-brand">
+      <div className="flex flex-col gap-3.5 bg-surface-brand pt-safe-2 pr-2 pb-5 pl-5 text-fg-on-brand">
         <div className="flex min-h-11 items-center justify-between">
           <h1 className="text-title">장비 대여</h1>
           {isAdmin && (

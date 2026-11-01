@@ -152,7 +152,8 @@ function LogIn() {
             variant="accent"
             loading={pending === 'user'}
             disabled={pending !== null}
-            className="h-[52px] rounded-lg text-base md:bg-primary md:text-white md:hover:bg-primary-hover"
+            size="lg"
+            className="md:bg-primary md:text-white md:hover:bg-primary-hover"
           >
             로그인
           </Button>
