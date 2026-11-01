@@ -8,25 +8,28 @@ export interface CreateAlbumRequest {
   is_private: boolean;
 }
 
+export type AlbumSearchParams = {
+  search_type?: string;
+  search_keyword?: string;
+};
+
 const PhotoBoardService = {
   retrieveAlbumsInPhotoBoard: function (
     board_id: string,
     pageIdx: number,
     ctg_id?: string,
+    search?: AlbumSearchParams,
   ) {
-    if (!ctg_id) {
-      return API.get<{
-        albumInfo: Album[];
-        albumCount: number;
-      }>(`photoboard/${board_id}/albums?page=${pageIdx ? pageIdx : 1}`);
-    } else {
-      return API.get<{
-        albumInfo: Album[];
-        albumCount: number;
-      }>(
-        `photoboard/${board_id}/albums?category=${ctg_id}&page=${pageIdx ? pageIdx : 1}`,
-      );
-    }
+    return API.get<{
+      albumInfo: Album[];
+      albumCount: number;
+    }>(`photoboard/${board_id}/albums`, {
+      params: {
+        page: pageIdx || 1,
+        ...(ctg_id && { category: ctg_id }),
+        ...(search?.search_keyword && search),
+      },
+    });
   },
 
   createAlbum: function (board_id: string, data: CreateAlbumRequest) {

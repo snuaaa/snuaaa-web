@@ -8,6 +8,7 @@ import { useAuth } from '~/contexts/auth';
 import { useAlbumsInPhotoBoard } from '~/hooks/queries/useAlbumQueries';
 import { Board } from '~/services/types';
 import { canWrite } from './boardUtils';
+import { useBoardSearch } from './useBoardSearch';
 import { AlbumCardList, AlbumCardListSkeleton } from './PhotoBoard/AlbumCard';
 import PhotoEmpty from './PhotoBoard/PhotoEmpty';
 import PhotoTabLayout from './PhotoBoard/PhotoTabLayout';
@@ -19,7 +20,7 @@ type MemoryProps = {
   boardInfo: Board;
 };
 
-/** 추억 만들기: album cards filtered by category. */
+/** 추억 만들기: album cards filtered by category and search. */
 function Memory({ boardInfo }: MemoryProps) {
   const navigate = useNavigate({ from: '/board/$board_id' });
   const searchParams = useSearch({ from: '/board/$board_id' });
@@ -35,10 +36,14 @@ function Memory({ boardInfo }: MemoryProps) {
   const page = Number(searchParams.page ?? 1);
   const category = searchParams.category || undefined;
 
+  const search = useBoardSearch();
+  const { keyword, searchType } = search;
+
   const { data, isLoading, isError, refetch } = useAlbumsInPhotoBoard(
     boardInfo.board_id,
     page,
     category,
+    keyword ? { search_type: searchType, search_keyword: keyword } : undefined,
   );
 
   const setCategory = (next?: string) => {
@@ -94,7 +99,12 @@ function Memory({ boardInfo }: MemoryProps) {
   );
 
   return (
-    <PhotoTabLayout board={boardInfo} action={writable && createButton}>
+    <PhotoTabLayout
+      board={boardInfo}
+      action={writable && createButton}
+      search={search}
+      resultCount={data?.albumCount}
+    >
       {categoryChips}
       <div className="px-4 pt-3.5 md:p-0">
         {isError ? (
@@ -108,6 +118,15 @@ function Memory({ boardInfo }: MemoryProps) {
           />
         ) : isLoading || !data ? (
           <AlbumCardListSkeleton />
+        ) : data.albumInfo.length === 0 && keyword ? (
+          <PhotoEmpty
+            title="검색 결과가 없어요"
+            description={
+              categoryName
+                ? `${categoryName} 말고 전체에서 찾아보거나 다른 검색어를 넣어 보세요.`
+                : '다른 검색어나 검색 범위로 찾아보세요.'
+            }
+          />
         ) : data.albumInfo.length === 0 ? (
           <PhotoEmpty
             title={
@@ -121,7 +140,11 @@ function Memory({ boardInfo }: MemoryProps) {
             action={writable && createButton}
           />
         ) : (
-          <AlbumCardList albums={data.albumInfo} />
+          <AlbumCardList
+            albums={data.albumInfo}
+            keyword={keyword}
+            searchType={searchType}
+          />
         )}
         <Pagination
           page={page}

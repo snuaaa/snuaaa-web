@@ -4,7 +4,9 @@ import { Skeleton, Tag } from '~/components/ui';
 import { resolveImageUrl } from '~/lib/utils';
 import { Album } from '~/services/types';
 import { getThumbnailPath } from '~/utils/getThumbnailPath';
+import Highlight from '../Highlight';
 import { formatListDate } from '../boardUtils';
+import type { SearchType } from '../useBoardSearch';
 
 const listClassName =
   'grid grid-cols-1 gap-3.5 sm:grid-cols-2 md:gap-5 lg:grid-cols-3';
@@ -14,7 +16,18 @@ const listClassName =
  * TODO: the canvas shows a three-photo mosaic and the photo count, which
  * need new fields on the album list API (`main`) first.
  */
-export function AlbumCardList({ albums }: { albums: Album[] }) {
+export function AlbumCardList({
+  albums,
+  keyword,
+  searchType,
+}: {
+  albums: Album[];
+  /** Marks the search keyword in the title, or in the author for 글쓴이. */
+  keyword?: string;
+  searchType?: SearchType;
+}) {
+  const titleKeyword = searchType === 'user' ? undefined : keyword;
+  const userKeyword = searchType === 'user' ? keyword : undefined;
   return (
     <ul className={listClassName}>
       {albums.map((album) => {
@@ -42,11 +55,19 @@ export function AlbumCardList({ albums }: { albums: Album[] }) {
                 <span className="flex min-w-0 items-center gap-1.5">
                   {album.category && <Tag>{album.category.category_name}</Tag>}
                   <span className="truncate text-base font-semibold group-hover:text-navy-700 md:text-body">
-                    {album.title}
+                    <Highlight text={album.title} keyword={titleKeyword} />
                   </span>
                 </span>
                 <span className="text-caption text-fg-muted">
-                  {album.user?.nickname && `${album.user.nickname} · `}
+                  {album.user?.nickname && (
+                    <>
+                      <Highlight
+                        text={album.user.nickname}
+                        keyword={userKeyword}
+                      />
+                      {' · '}
+                    </>
+                  )}
                   {formatListDate(album.createdAt)}
                 </span>
               </span>
