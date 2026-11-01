@@ -80,7 +80,9 @@ type AuthLayoutProps = {
 
 /**
  * Login and signup: the night sky with the club name on the left and a
- * white card on the right on desktop; full-screen pages on mobile.
+ * white card on the right on desktop, both within the page column
+ * (max-w-page) so wide screens keep them together; full-screen pages on
+ * mobile.
  */
 export default function AuthLayout({ mobile, children }: AuthLayoutProps) {
   return (
@@ -91,28 +93,32 @@ export default function AuthLayout({ mobile, children }: AuthLayoutProps) {
       )}
     >
       <StarField className={cn(mobile === 'plain' && 'hidden md:block')} />
-      <div className="relative hidden flex-1 flex-col justify-between px-[72px] py-16 text-fg-on-brand md:flex">
-        <div className="flex items-center gap-3">
-          <ClubLogo className="size-11" />
-          <span className="text-lg font-semibold">
-            서울대학교 아마추어 천문회
-          </span>
+      {/* Caps the copy and the card to the page column, so they don't drift
+          to the screen edges on wide monitors. The sky stays full-bleed. */}
+      <div className="relative flex w-full md:mx-auto md:max-w-page">
+        <div className="relative hidden flex-1 flex-col justify-between px-[72px] py-16 text-fg-on-brand md:flex">
+          <div className="flex items-center gap-3">
+            <ClubLogo className="size-11" />
+            <span className="text-lg font-semibold">
+              서울대학교 아마추어 천문회
+            </span>
+          </div>
+          <div className="flex flex-col gap-3.5">
+            <p className="text-[44px] leading-tight font-bold tracking-[-1px]">
+              오늘 밤도
+              <br />
+              맑은 하늘을
+            </p>
+            <p className="text-base text-fg-on-brand-muted">
+              관측, 사진, 이야기를 나누는 AAA 커뮤니티
+            </p>
+          </div>
+          <span />
         </div>
-        <div className="flex flex-col gap-3.5">
-          <p className="text-[44px] leading-tight font-bold tracking-[-1px]">
-            오늘 밤도
-            <br />
-            맑은 하늘을
-          </p>
-          <p className="text-base text-fg-on-brand-muted">
-            관측, 사진, 이야기를 나누는 AAA 커뮤니티
-          </p>
-        </div>
-        <span />
-      </div>
-      <div className="relative flex w-full flex-col md:w-[560px] md:shrink-0 md:items-center md:justify-center md:p-8">
-        <div className="flex w-full flex-1 flex-col md:max-h-[calc(100dvh-4rem)] md:w-[460px] md:flex-none md:overflow-y-auto md:rounded-[20px] md:bg-surface md:px-8 md:pt-7 md:pb-6 md:shadow-lg">
-          {children}
+        <div className="relative flex w-full flex-col md:w-[560px] md:shrink-0 md:items-center md:justify-center md:p-8">
+          <div className="flex w-full flex-1 flex-col md:max-h-[calc(100dvh-4rem)] md:w-[460px] md:flex-none md:overflow-y-auto md:rounded-[20px] md:bg-surface md:px-8 md:pt-7 md:pb-6 md:shadow-lg">
+            {children}
+          </div>
         </div>
       </div>
     </div>
