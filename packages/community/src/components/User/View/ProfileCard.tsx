@@ -25,11 +25,13 @@ type ProfileCardProps = {
 
 /**
  * The navy profile band on mobile, the left card on desktop. Other members
- * don't see the email (docs/redesign.md, 이메일 비공개).
+ * don't see the email (docs/redesign.md, 이메일 비공개). 동아리 번호 and
+ * 자기소개 get their own labeled rows so they read as profile facts.
  */
 export default function ProfileCard({ user, isMine }: ProfileCardProps) {
   const gradeName = gradeAssigner(user.grade);
   const rows = [
+    user.aaa_no && { label: '동아리 번호', value: user.aaa_no },
     isMine && user.email && { label: '이메일', value: user.email },
     user.col_no && { label: '학번', value: `${user.col_no}학번` },
     user.major && { label: '전공', value: user.major },
@@ -80,20 +82,9 @@ export default function ProfileCard({ user, isMine }: ProfileCardProps) {
                   {gradeName}
                 </span>
               )}
-              {user.aaa_no && (
-                <span className="text-label font-normal text-fg-on-brand-muted">
-                  {user.aaa_no}
-                </span>
-              )}
             </div>
           </div>
         </div>
-
-        {user.introduction && (
-          <p className="px-4 text-sm leading-relaxed break-words whitespace-pre-line text-navy-200 md:mt-1 md:px-0">
-            {user.introduction}
-          </p>
-        )}
 
         {isMine && (
           <div className="px-4 md:hidden">
@@ -108,40 +99,44 @@ export default function ProfileCard({ user, isMine }: ProfileCardProps) {
         )}
       </div>
 
-      {(rows.length > 0 || isMine) && (
-        <div
-          className={cn(
-            'mb-2 flex flex-col bg-surface px-4 py-1 md:mb-0 md:px-6 md:pt-2 md:pb-4',
-            rows.length === 0 && 'hidden md:flex',
-          )}
-        >
-          <dl>
-            {rows.map((row) => (
-              <div
-                key={row.label}
-                className="flex gap-3 border-b border-gray-100 py-2.5 text-sm last:border-b-0 md:py-3 md:last:border-b"
-              >
-                <dt className="w-14 shrink-0 text-fg-muted">{row.label}</dt>
-                <dd className="min-w-0 truncate">{row.value}</dd>
-              </div>
-            ))}
-          </dl>
-          {isMine && (
-            <div className="hidden flex-col gap-2 pt-4 md:flex">
-              <Button asChild>
-                <Link to="/mypage/$view" params={{ view: 'profile' }}>
-                  프로필 수정
-                </Link>
-              </Button>
-              <Button asChild variant="secondary">
-                <Link to="/mypage/$view" params={{ view: 'password' }}>
-                  비밀번호 변경
-                </Link>
-              </Button>
+      <div className="mb-2 flex flex-col bg-surface px-4 py-1 md:mb-0 md:px-6 md:pt-2 md:pb-4">
+        <dl>
+          {rows.map((row) => (
+            <div
+              key={row.label}
+              className="flex gap-3 border-b border-gray-100 py-2.5 text-sm md:py-3"
+            >
+              <dt className="w-20 shrink-0 text-fg-muted">{row.label}</dt>
+              <dd className="min-w-0 truncate">{row.value}</dd>
             </div>
-          )}
-        </div>
-      )}
+          ))}
+          <div className="flex flex-col gap-1.5 py-3 text-sm md:pt-3.5">
+            <dt className="text-fg-muted">자기소개</dt>
+            <dd
+              className={cn(
+                'leading-relaxed break-words whitespace-pre-line',
+                !user.introduction && 'text-gray-400',
+              )}
+            >
+              {user.introduction?.trim() || '아직 자기소개가 없어요'}
+            </dd>
+          </div>
+        </dl>
+        {isMine && (
+          <div className="hidden flex-col gap-2 pt-4 md:flex">
+            <Button asChild>
+              <Link to="/mypage/$view" params={{ view: 'profile' }}>
+                프로필 수정
+              </Link>
+            </Button>
+            <Button asChild variant="secondary">
+              <Link to="/mypage/$view" params={{ view: 'password' }}>
+                비밀번호 변경
+              </Link>
+            </Button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
