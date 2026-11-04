@@ -2,7 +2,7 @@
 
 The API's PostgreSQL schema is managed by the SQL migrations in this folder, run with the [drizzle-kit](https://orm.drizzle.team/docs/kit-overview) migrator. Sequelize models no longer create or change tables (`sequelize.sync()` was removed), so every schema change needs a migration.
 
-- `0000_baseline.sql` is the schema as it was when migrations were introduced.
+- `0000_baseline.sql` is the prod schema as it was when migrations were introduced, dumped on 2026-11-01. It leaves out `tb_file_orphan_backup`, a leftover backup table that only exists on prod. It also keeps legacy columns the models no longer use (`tb_photo.album_id`, `tb_exhibit_photo.exhibition_id`).
 - `meta/_journal.json` lists the migrations in order. drizzle-kit writes it, so don't edit it by hand.
 - Applied migrations are recorded in the `drizzle.__drizzle_migrations` table.
 

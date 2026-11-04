@@ -30,13 +30,13 @@ CREATE TABLE public.tb_comment (
     comment_id integer NOT NULL,
     comment_uuid uuid,
     parent_id integer NOT NULL,
-    parent_comment_id integer,
     author_id integer NOT NULL,
     text text,
-    like_num integer DEFAULT 0,
+    like_num integer,
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
-    deleted_at timestamp with time zone
+    deleted_at timestamp with time zone,
+    parent_comment_id integer
 );
 --> statement-breakpoint
 
@@ -65,15 +65,15 @@ CREATE TABLE public.tb_content (
     board_id character varying(16),
     category_id character varying(16),
     type character varying(16),
-    parent_id integer,
-    title character varying(64),
+    title character varying(128),
     text text,
     view_num integer DEFAULT 0,
     comment_num integer DEFAULT 0,
     like_num integer DEFAULT 0,
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
-    deleted_at timestamp with time zone
+    deleted_at timestamp with time zone,
+    parent_id integer
 );
 --> statement-breakpoint
 
@@ -160,13 +160,12 @@ ALTER SEQUENCE public.tb_equipment_id_seq OWNED BY public.tb_equipment.id;
 
 CREATE TABLE public.tb_exhibit_photo (
     content_id integer NOT NULL,
+    exhibition_id integer,
     "order" integer,
     photographer_id integer,
     photographer_alt character varying(32),
     file_path character varying(256),
     thumbnail_path character varying(256),
-    img_url character varying(256),
-    thumbnail_url character varying(256),
     location character varying(256),
     camera character varying(256),
     lens character varying(256),
@@ -174,7 +173,9 @@ CREATE TABLE public.tb_exhibit_photo (
     focal_length character varying(32),
     f_stop character varying(8),
     iso character varying(8),
-    date timestamp with time zone
+    date timestamp with time zone,
+    img_url character varying(256),
+    thumbnail_url character varying(256)
 );
 --> statement-breakpoint
 
@@ -197,12 +198,12 @@ CREATE TABLE public.tb_file (
     parent_id integer NOT NULL,
     original_name character varying(256),
     file_path character varying(256),
-    file_url character varying(256),
     file_type character varying(16),
     download_count integer DEFAULT 0,
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
-    deleted_at timestamp with time zone
+    deleted_at timestamp with time zone,
+    file_url character varying(256)
 );
 --> statement-breakpoint
 
@@ -220,18 +221,19 @@ ALTER SEQUENCE public.tb_file_file_id_seq OWNED BY public.tb_file.file_id;
 
 CREATE TABLE public.tb_photo (
     content_id integer NOT NULL,
+    album_id integer,
     file_path character varying(256),
     thumbnail_path character varying(256),
-    img_url character varying(256),
-    thumbnail_url character varying(256),
     location character varying(256),
     camera character varying(256),
     lens character varying(256),
     exposure_time character varying(256),
-    focal_length character varying(32),
-    f_stop character varying(8),
-    iso character varying(8),
-    date timestamp with time zone
+    focal_length character varying(64),
+    f_stop character varying(64),
+    iso character varying(64),
+    date timestamp with time zone,
+    img_url character varying(256) NOT NULL,
+    thumbnail_url character varying(256) NOT NULL
 );
 --> statement-breakpoint
 
@@ -298,13 +300,13 @@ CREATE TABLE public.tb_user (
     mobile character varying(16),
     introduction text,
     profile_path character varying(256),
-    profile_url character varying(256),
-    grade integer,
     level integer,
     login_at timestamp with time zone,
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
-    deleted_at timestamp with time zone
+    deleted_at timestamp with time zone,
+    grade integer,
+    profile_url character varying(256)
 );
 --> statement-breakpoint
 
@@ -354,15 +356,7 @@ ALTER TABLE ONLY public.tb_category
 --> statement-breakpoint
 
 ALTER TABLE ONLY public.tb_comment_like
-    ADD CONSTRAINT tb_comment_like_comment_id_key UNIQUE (comment_id);
---> statement-breakpoint
-
-ALTER TABLE ONLY public.tb_comment_like
     ADD CONSTRAINT tb_comment_like_pkey PRIMARY KEY (comment_id, user_id);
---> statement-breakpoint
-
-ALTER TABLE ONLY public.tb_comment_like
-    ADD CONSTRAINT tb_comment_like_user_id_key UNIQUE (user_id);
 --> statement-breakpoint
 
 ALTER TABLE ONLY public.tb_comment
@@ -434,11 +428,7 @@ ALTER TABLE ONLY public.tb_user
 --> statement-breakpoint
 
 ALTER TABLE ONLY public.tb_album
-    ADD CONSTRAINT tb_album_content_id_fkey FOREIGN KEY (content_id) REFERENCES public.tb_content(content_id) ON UPDATE CASCADE ON DELETE CASCADE;
---> statement-breakpoint
-
-ALTER TABLE ONLY public.tb_album
-    ADD CONSTRAINT tb_album_tn_photo_id_fkey FOREIGN KEY (tn_photo_id) REFERENCES public.tb_content(content_id) ON UPDATE CASCADE;
+    ADD CONSTRAINT tb_album_content_id_fkey FOREIGN KEY (content_id) REFERENCES public.tb_content(content_id) ON UPDATE CASCADE;
 --> statement-breakpoint
 
 ALTER TABLE ONLY public.tb_category
@@ -447,18 +437,6 @@ ALTER TABLE ONLY public.tb_category
 
 ALTER TABLE ONLY public.tb_comment
     ADD CONSTRAINT tb_comment_author_id_fkey FOREIGN KEY (author_id) REFERENCES public.tb_user(user_id) ON UPDATE CASCADE;
---> statement-breakpoint
-
-ALTER TABLE ONLY public.tb_comment_like
-    ADD CONSTRAINT tb_comment_like_comment_id_fkey FOREIGN KEY (comment_id) REFERENCES public.tb_comment(comment_id) ON UPDATE CASCADE ON DELETE CASCADE;
---> statement-breakpoint
-
-ALTER TABLE ONLY public.tb_comment_like
-    ADD CONSTRAINT tb_comment_like_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.tb_comment(comment_id) ON UPDATE CASCADE ON DELETE CASCADE;
---> statement-breakpoint
-
-ALTER TABLE ONLY public.tb_comment
-    ADD CONSTRAINT tb_comment_parent_comment_id_fkey FOREIGN KEY (parent_comment_id) REFERENCES public.tb_comment(comment_id) ON UPDATE CASCADE ON DELETE CASCADE;
 --> statement-breakpoint
 
 ALTER TABLE ONLY public.tb_comment
@@ -475,18 +453,6 @@ ALTER TABLE ONLY public.tb_content
 
 ALTER TABLE ONLY public.tb_content
     ADD CONSTRAINT tb_content_category_id_fkey FOREIGN KEY (category_id) REFERENCES public.tb_category(category_id) ON UPDATE CASCADE;
---> statement-breakpoint
-
-ALTER TABLE ONLY public.tb_content_like
-    ADD CONSTRAINT tb_content_like_content_id_fkey FOREIGN KEY (content_id) REFERENCES public.tb_content(content_id) ON UPDATE CASCADE ON DELETE CASCADE;
---> statement-breakpoint
-
-ALTER TABLE ONLY public.tb_content_like
-    ADD CONSTRAINT tb_content_like_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.tb_user(user_id) ON UPDATE CASCADE ON DELETE CASCADE;
---> statement-breakpoint
-
-ALTER TABLE ONLY public.tb_content
-    ADD CONSTRAINT tb_content_parent_id_fkey FOREIGN KEY (parent_id) REFERENCES public.tb_content(content_id) ON UPDATE CASCADE;
 --> statement-breakpoint
 
 ALTER TABLE ONLY public.tb_content_tag
@@ -510,15 +476,23 @@ ALTER TABLE ONLY public.tb_exhibit_photo
 --> statement-breakpoint
 
 ALTER TABLE ONLY public.tb_exhibit_photo
+    ADD CONSTRAINT tb_exhibit_photo_exhibition_id_fkey FOREIGN KEY (exhibition_id) REFERENCES public.tb_content(content_id) ON UPDATE CASCADE;
+--> statement-breakpoint
+
+ALTER TABLE ONLY public.tb_exhibit_photo
     ADD CONSTRAINT tb_exhibit_photo_photographer_id_fkey FOREIGN KEY (photographer_id) REFERENCES public.tb_user(user_id) ON UPDATE CASCADE;
 --> statement-breakpoint
 
 ALTER TABLE ONLY public.tb_exhibition
-    ADD CONSTRAINT tb_exhibition_content_id_fkey FOREIGN KEY (content_id) REFERENCES public.tb_content(content_id) ON UPDATE CASCADE;
+    ADD CONSTRAINT tb_exhibition_content_id_fkey FOREIGN KEY (content_id) REFERENCES public.tb_content(content_id) ON UPDATE CASCADE ON DELETE CASCADE;
 --> statement-breakpoint
 
 ALTER TABLE ONLY public.tb_file
     ADD CONSTRAINT tb_file_parent_id_fkey FOREIGN KEY (parent_id) REFERENCES public.tb_content(content_id) ON UPDATE CASCADE;
+--> statement-breakpoint
+
+ALTER TABLE ONLY public.tb_photo
+    ADD CONSTRAINT tb_photo_album_id_fkey FOREIGN KEY (album_id) REFERENCES public.tb_content(content_id) ON UPDATE CASCADE ON DELETE CASCADE;
 --> statement-breakpoint
 
 ALTER TABLE ONLY public.tb_photo
@@ -546,4 +520,4 @@ ALTER TABLE ONLY public.tb_stats_login
 --> statement-breakpoint
 
 ALTER TABLE ONLY public.tb_tag
-    ADD CONSTRAINT tb_tag_board_id_fkey FOREIGN KEY (board_id) REFERENCES public.tb_board(board_id) ON UPDATE CASCADE ON DELETE CASCADE;
+    ADD CONSTRAINT tb_tag_board_id_fkey FOREIGN KEY (board_id) REFERENCES public.tb_board(board_id) ON UPDATE CASCADE;
