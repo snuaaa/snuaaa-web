@@ -119,7 +119,8 @@ Each package has its own ESLint flat config (`eslint.config.*`) with Prettier (s
   git push --force-with-lease origin <child-branch>
   ```
 
-  If the parent branch was already deleted, GitHub retargets the child PR to the parent's base automatically; otherwise change the child PR's base by hand. Rebase only your own work branches this way, never an `epic/*` or `sync/*` branch.
+  Open the child PR against the parent's branch as a draft. `/merge` has no rule for `<type>/*` ← `<type>/*`, so it can't land in the parent by mistake. When the parent merges, its head branch is deleted automatically and GitHub retargets the child PR to the parent's base. Rebase the child as above, mark it ready, and `/merge` it after CI passes. Rebase only your own work branches this way, never an `epic/*` or `sync/*` branch.
+- **`main` is always releasable.** There is no hotfix or release branch: a fix for production goes to `main` like any other PR and ships with the next release tag. Anything that isn't ready for production goes to an epic instead.
 - **Push to `main`:** deploys the web to the Cloudflare Pages preview (`develop` branch) and the API Docker image to the dev Lightsail server.
 - **Push to `epic/<name>`:** deploys the web to the Cloudflare Pages `<name>` alias (`https://<name>.snuaaa-web.pages.dev`), pointed at the dev API. The API is not deployed from epic branches.
 - **Release tagged `WEB-*`:** deploys the web to production Cloudflare Pages.
