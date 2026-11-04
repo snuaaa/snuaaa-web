@@ -108,6 +108,18 @@ Each package has its own ESLint flat config (`eslint.config.*`) with Prettier (s
   ```
 
   Then open a PR from `sync/<epic>-<yyyymmdd>` to `epic/<epic>` and `/merge` it after CI passes. The bot merges `sync/*` with a merge commit. Never squash `main` into an epic, and never open the PR from `main` itself (the conflict can't be resolved there); a squash duplicates main's commits and breaks the later epic → `main` merge. `Closes #N` only closes issues when the PR merges into `main`, so list an epic's issues on its epic → `main` PR.
+- **Stacked PRs:** when a branch is built on top of another open PR's branch, and that parent PR is squash-merged, the child branch still carries the parent's original commits, so it conflicts with the squash commit. Don't resolve this with a merge commit. Replay only the child's own commits onto the new base with `git rebase --onto`:
+
+  ```bash
+  git fetch origin
+  # <parent-tip>: the parent PR's last commit that the child was built on
+  # (the parent PR's head SHA, `origin/<parent-branch>` if it still exists,
+  #  or `git merge-base <child-branch> origin/<parent-branch>`)
+  git rebase --onto origin/main <parent-tip> <child-branch>   # use origin/epic/<name> if the parent merged into an epic
+  git push --force-with-lease origin <child-branch>
+  ```
+
+  If the parent branch was already deleted, GitHub retargets the child PR to the parent's base automatically; otherwise change the child PR's base by hand. Rebase only your own work branches this way, never an `epic/*` or `sync/*` branch.
 - **Push to `main`:** deploys the web to the Cloudflare Pages preview (`develop` branch) and the API Docker image to the dev Lightsail server.
 - **Push to `epic/<name>`:** deploys the web to the Cloudflare Pages `<name>` alias (`https://<name>.snuaaa-web.pages.dev`), pointed at the dev API. The API is not deployed from epic branches.
 - **Release tagged `WEB-*`:** deploys the web to production Cloudflare Pages.
