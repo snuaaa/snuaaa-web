@@ -120,7 +120,18 @@ Each package has its own ESLint flat config (`eslint.config.*`) with Prettier (s
   ```
 
   Open the child PR against the parent's branch as a draft. `/merge` has no rule for `<type>/*` ← `<type>/*`, so it can't land in the parent by mistake. When the parent merges, its head branch is deleted automatically and GitHub retargets the child PR to the parent's base. Rebase the child as above, mark it ready, and `/merge` it after CI passes. Rebase only your own work branches this way, never an `epic/*` or `sync/*` branch.
-- **`main` is always releasable.** There is no hotfix or release branch: a fix for production goes to `main` like any other PR and ships with the next release tag. Anything that isn't ready for production goes to an epic instead.
+- **`main` is always releasable.** A fix for production normally goes to `main` like any other PR and ships with the next release tag, and anything that isn't ready for production goes to an epic instead.
+- **Hotfix:** only when `main` holds changes that can't be released yet and production needs a fix now. Fix `main` first, then release the fix alone from the last release tag:
+  1. Open a normal `fix/*` PR to `main` and `/merge` it, so the fix is reviewed and can't go missing from `main`.
+  2. Cut `hotfix/<version>` from the last release tag, cherry-pick the squash commit, and push. CI runs on every push to `hotfix/**`, since there is no PR.
+
+     ```bash
+     git fetch origin --tags
+     git switch -c hotfix/1.8.3 WEB-1.8.2      # the last release tag of the package to fix
+     git cherry-pick <squash-commit-on-main>
+     git push -u origin hotfix/1.8.3
+     ```
+  3. After CI passes, publish a release whose tag (`WEB-1.8.3` / `API-1.8.3`) targets `hotfix/1.8.3`. The deploy checks out the tag, not `main`. Then delete the branch; the tag keeps the commit.
 - **Push to `main`:** deploys the web to the Cloudflare Pages preview (`develop` branch) and the API Docker image to the dev Lightsail server.
 - **Push to `epic/<name>`:** deploys the web to the Cloudflare Pages `<name>` alias (`https://<name>.snuaaa-web.pages.dev`), pointed at the dev API. The API is not deployed from epic branches.
 - **Release tagged `WEB-*`:** deploys the web to production Cloudflare Pages.

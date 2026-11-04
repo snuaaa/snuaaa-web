@@ -5,9 +5,13 @@ on:
     branches:
       - main
       - 'epic/**'
+  # hotfix/*는 PR 없이 태그로 릴리스하므로 push마다 검사한다
+  push:
+    branches:
+      - 'hotfix/**'
 
 concurrency:
-  group: ci-${{ github.event.pull_request.number }}
+  group: ci-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
