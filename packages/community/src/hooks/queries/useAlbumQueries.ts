@@ -8,6 +8,7 @@ import AlbumService, {
   UpdateAlbumThumbnailRequest,
 } from '~/services/AlbumService';
 import PhotoBoardService, {
+  AlbumSearchParams,
   CreateAlbumRequest,
 } from '~/services/PhotoBoardService';
 import { Content } from '~/services/types';
@@ -17,8 +18,12 @@ import { photoKeys } from './usePhotoQueries';
 export const albumKeys = {
   all: ['albums'] as const,
   detail: (id: number) => [...albumKeys.all, 'detail', id] as const,
-  inBoard: (boardId: string, page: number, category?: string) =>
-    [...albumKeys.all, 'inBoard', boardId, page, category] as const,
+  inBoard: (
+    boardId: string,
+    page: number,
+    category?: string,
+    search?: AlbumSearchParams,
+  ) => [...albumKeys.all, 'inBoard', boardId, page, category, search] as const,
 };
 
 // Query options
@@ -38,11 +43,17 @@ export const albumsInBoardQueryOptions = (
   boardId: string,
   page: number,
   category?: string,
+  search?: AlbumSearchParams,
 ) =>
   queryOptions({
-    queryKey: albumKeys.inBoard(boardId, page, category),
+    queryKey: albumKeys.inBoard(boardId, page, category, search),
     queryFn: () =>
-      PhotoBoardService.retrieveAlbumsInPhotoBoard(boardId, page, category),
+      PhotoBoardService.retrieveAlbumsInPhotoBoard(
+        boardId,
+        page,
+        category,
+        search,
+      ),
   });
 
 // Hooks
@@ -54,8 +65,13 @@ export function useAlbumsInPhotoBoard(
   boardId: string,
   page: number,
   category?: string,
+  search?: AlbumSearchParams,
+  options?: { enabled?: boolean },
 ) {
-  return useQuery(albumsInBoardQueryOptions(boardId, page, category));
+  return useQuery({
+    ...albumsInBoardQueryOptions(boardId, page, category, search),
+    ...options,
+  });
 }
 
 export function useDeleteAlbum() {
