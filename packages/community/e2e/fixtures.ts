@@ -25,7 +25,7 @@ type MockApi = {
   /** Every API call the page made, as `METHOD /path` (without `/api`). */
   requests: string[];
   /** Status `/auth/check` answers with for a valid token. */
-  checkStatus: 200 | 500;
+  checkStatus: 200 | 401 | 500;
   count: (pattern: string) => number;
 };
 

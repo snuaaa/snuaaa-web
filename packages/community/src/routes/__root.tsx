@@ -6,7 +6,7 @@ import {
   useNavigate,
   useRouter,
 } from '@tanstack/react-router';
-import React, { Suspense, useCallback } from 'react';
+import React, { Suspense, useCallback, useEffect } from 'react';
 
 import '../App.scss';
 import '../index.css';
@@ -19,6 +19,7 @@ import PhotoDetailModal from '~/components/Photo/PhotoDetail';
 import useVirtualKeyboard from '~/hooks/useVirtualKeyboard';
 import Loading from '~/components/Common/Loading';
 import { loadSession, PUBLIC_PATHS } from '~/lib/auth';
+import { useSession } from '~/hooks/queries/useAuthQueries';
 import { PhotoNavigationScope } from '~/services/PhotoService';
 
 const TanStackRouterDevtools =
@@ -46,8 +47,12 @@ export const Route = createRootRoute({
   // 모든 라우트의 loader보다 먼저 실행되므로, 로그인하지 않은 사용자는
   // 보호된 페이지의 데이터 요청 없이 바로 로그인 페이지로 이동한다.
   beforeLoad: async ({ location }) => {
+    // 공개 페이지는 세션 확인이 실패해도 열려야 하므로 여기서 확인하지 않는다.
+    if (PUBLIC_PATHS.includes(location.pathname)) {
+      return;
+    }
     const session = await loadSession();
-    if (!session && !PUBLIC_PATHS.includes(location.pathname)) {
+    if (!session) {
       throw redirect({
         to: '/auth/login',
         search: { redirect: location.href },
@@ -142,8 +147,18 @@ function ExhibitPhotoModal({ exhibitPhotoId }: { exhibitPhotoId: number }) {
 
 function RootComponent() {
   const location = useLocation();
+  const router = useRouter();
   const { photo, photoNavigation, exhibitPhoto } = Route.useSearch();
+  const { data: session } = useSession();
   useVirtualKeyboard();
+
+  // 페이지에 머무는 동안 세션 재검증이 401로 끝나면, beforeLoad를 다시 돌려
+  // 로그인 페이지로 보낸다.
+  useEffect(() => {
+    if (session === null && !PUBLIC_PATHS.includes(location.pathname)) {
+      router.invalidate();
+    }
+  }, [session, location.pathname, router]);
 
   // Auth pages render without the site chrome
   const isBarePage = location.pathname.startsWith('/auth');
