@@ -18,7 +18,7 @@ import ExhibitPhotoDetailModal from '~/components/Exhibition/ExhibitPhotoDetail'
 import PhotoDetailModal from '~/components/Photo/PhotoDetail';
 import useVirtualKeyboard from '~/hooks/useVirtualKeyboard';
 import Loading from '~/components/Common/Loading';
-import { loadSession, PUBLIC_PATHS } from '~/lib/auth';
+import { isLoggingOut, loadSession, PUBLIC_PATHS } from '~/lib/auth';
 import { useSession } from '~/hooks/queries/useAuthQueries';
 import { PhotoNavigationScope } from '~/services/PhotoService';
 
@@ -153,9 +153,13 @@ function RootComponent() {
   useVirtualKeyboard();
 
   // 페이지에 머무는 동안 세션 재검증이 401로 끝나면, beforeLoad를 다시 돌려
-  // 로그인 페이지로 보낸다.
+  // 로그인 페이지로 보낸다. 로그아웃은 스스로 이동하므로 제외한다.
   useEffect(() => {
-    if (session === null && !PUBLIC_PATHS.includes(location.pathname)) {
+    if (
+      session === null &&
+      !isLoggingOut() &&
+      !PUBLIC_PATHS.includes(location.pathname)
+    ) {
       router.invalidate();
     }
   }, [session, location.pathname, router]);

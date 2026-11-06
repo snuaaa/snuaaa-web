@@ -135,10 +135,14 @@ test.describe('로그인 상태', () => {
     page,
   }) => {
     await page.goto('/');
+    const visited: string[] = [];
+    page.on('framenavigated', (frame) => visited.push(frame.url()));
     await page.getByLabel('내 메뉴').click();
     await page.getByRole('menuitem', { name: '로그아웃' }).click();
 
     await expect(page).toHaveURL(/\/auth\/login$/);
+    // The next user must not land on the page the previous one was viewing.
+    expect(visited.filter((url) => url.includes('redirect='))).toEqual([]);
     expect(await getToken(page)).toBeUndefined();
 
     await page.goto('/');

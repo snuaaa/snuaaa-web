@@ -44,6 +44,21 @@ export function getSafeRedirect(redirect?: string) {
   return url.pathname + url.search + url.hash;
 }
 
+// 로그아웃은 직접 로그인 페이지로 이동하므로, 그동안에는 RootComponent의
+// 세션 만료 리다이렉트(redirect=현재 페이지)가 끼어들지 않게 한다.
+let loggingOut = false;
+
+export const isLoggingOut = () => loggingOut;
+
+export async function runLogout(task: () => Promise<unknown>) {
+  loggingOut = true;
+  try {
+    await task();
+  } finally {
+    loggingOut = false;
+  }
+}
+
 // 세션 외의 캐시는 등급에 따라 보이는 데이터가 달라지므로 로그인/로그아웃 시 비운다.
 export function removeNonSessionQueries() {
   queryClient.removeQueries({

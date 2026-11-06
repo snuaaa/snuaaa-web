@@ -9,7 +9,7 @@ import {
   sessionQueryOptions,
   useSession,
 } from '~/hooks/queries/useAuthQueries';
-import { removeNonSessionQueries } from '~/lib/auth';
+import { removeNonSessionQueries, runLogout } from '~/lib/auth';
 
 const loggedOutAuth: AuthType = {
   isLoggedIn: false,
@@ -46,12 +46,16 @@ const useAuth = () => {
     [queryClient],
   );
 
-  const authLogout = useCallback(async () => {
-    removeToken();
-    queryClient.setQueryData(sessionQueryOptions().queryKey, null);
-    await router.navigate({ to: '/auth/login' });
-    removeNonSessionQueries();
-  }, [queryClient, router]);
+  const authLogout = useCallback(
+    () =>
+      runLogout(async () => {
+        removeToken();
+        queryClient.setQueryData(sessionQueryOptions().queryKey, null);
+        await router.navigate({ to: '/auth/login' });
+        removeNonSessionQueries();
+      }),
+    [queryClient, router],
+  );
 
   return { authInfo, authLogin, authLogout };
 };
