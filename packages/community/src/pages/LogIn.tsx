@@ -1,13 +1,15 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useState, type FormEvent } from 'react';
 import { Link, useNavigate, useSearch } from '@tanstack/react-router';
 import { isAxiosError } from 'axios';
 
 import AuthLayout, { ClubLogo } from '~/components/Auth/AuthLayout';
 import FindAccountSheet from '~/components/Auth/FindAccountSheet';
 import { Button } from '~/components/ui';
-import { useAuth } from '~/contexts/auth';
+import useAuth from '~/hooks/useAuth';
+import { getSafeRedirect } from '~/lib/auth';
 import { cn } from '~/lib/utils';
 import AuthService from '~/services/AuthService';
+import { User } from '~/services/types';
 
 // Dark fields on the mobile sky, regular fields in the desktop card.
 const inputClassName =
@@ -17,7 +19,7 @@ const labelClassName = 'sr-only md:not-sr-only md:text-label md:text-fg';
 function LogIn() {
   const navigate = useNavigate();
   const search = useSearch({ from: '/auth/login' });
-  const { authInfo, authLogin } = useAuth();
+  const { authLogin } = useAuth();
   const [id, setId] = useState('');
   const [password, setPassword] = useState('');
   const [autoLogin, setAutoLogin] = useState(true);
@@ -25,12 +27,12 @@ function LogIn() {
   const [error, setError] = useState<string | null>(null);
   const [finding, setFinding] = useState(false);
 
-  // Move on once the login has landed in the auth context. Navigating
-  // right after authLogin would see the logged-out state and bounce back.
-  useEffect(() => {
-    if (!authInfo.isLoggedIn) return;
-    navigate({ to: search.redirect || '/', replace: true });
-  }, [authInfo.isLoggedIn, navigate, search.redirect]);
+  // authLogin updates the session cache synchronously, so the route guard
+  // already sees the login when we navigate right after it.
+  const completeLogIn = (token: string, autoLogin: boolean, userInfo: User) => {
+    authLogin(token, autoLogin, userInfo);
+    navigate({ href: getSafeRedirect(search.redirect), replace: true });
+  };
 
   const logIn = async (e: FormEvent) => {
     e.preventDefault();
@@ -42,7 +44,7 @@ function LogIn() {
     setError(null);
     try {
       const { data } = await AuthService.logIn({ id, password, autoLogin });
-      authLogin(data.token, data.autoLogin, data.userInfo);
+      completeLogIn(data.token, data.autoLogin, data.userInfo);
     } catch (err) {
       console.error(err);
       // 401 is a wrong id or password; anything else is worth a retry.
@@ -60,7 +62,7 @@ function LogIn() {
     setError(null);
     try {
       const { token, autoLogin, userInfo } = await AuthService.guestLogIn();
-      authLogin(token, autoLogin, userInfo);
+      completeLogIn(token, autoLogin, userInfo);
     } catch (err) {
       console.error(err);
       setError('게스트로 들어가지 못했어요. 잠시 후 다시 시도해 주세요.');

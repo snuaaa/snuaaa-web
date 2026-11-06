@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate, useSearch } from '@tanstack/react-router';
 
-import { useAuth } from '~/contexts/auth';
+import useAuth from '~/hooks/useAuth';
 import { ViewportSize, useViewportSize } from '~/contexts/viewportSize';
 import { CartBar } from './Rental/CartPanel';
 import DesktopRental from './Rental/DesktopRental';

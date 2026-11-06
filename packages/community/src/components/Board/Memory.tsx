@@ -4,7 +4,7 @@ import { FolderPlus } from 'lucide-react';
 
 import AlbumFormSheet from '~/components/Album/AlbumFormSheet';
 import { Button, Chip, Fab, Pagination } from '~/components/ui';
-import { useAuth } from '~/contexts/auth';
+import useAuth from '~/hooks/useAuth';
 import { useAlbumsInPhotoBoard } from '~/hooks/queries/useAlbumQueries';
 import { Board } from '~/services/types';
 import { canWrite } from './boardUtils';

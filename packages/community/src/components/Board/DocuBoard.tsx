@@ -22,7 +22,7 @@ import { canWrite, currentGeneration } from './boardUtils';
 import { Board, File } from '~/services/types';
 import { DocumentListItem } from '~/services/DocuService';
 import { useDocuments } from '~/hooks/queries/useDocuQueries';
-import { useAuth } from '~/contexts/auth';
+import useAuth from '~/hooks/useAuth';
 import { cn } from '~/lib/utils';
 
 const DOCROWNUM = 10;

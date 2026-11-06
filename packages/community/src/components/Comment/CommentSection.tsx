@@ -7,7 +7,7 @@ import {
   Sheet,
   SheetAction,
 } from '~/components/ui';
-import { useAuth } from '~/contexts/auth';
+import useAuth from '~/hooks/useAuth';
 import { ViewportSize, useViewportSize } from '~/contexts/viewportSize';
 import {
   useComments,

@@ -9,7 +9,7 @@ import {
   Pagination,
   Skeleton,
 } from '~/components/ui';
-import { useAuth } from '~/contexts/auth';
+import useAuth from '~/hooks/useAuth';
 import { ViewportSize, useViewportSize } from '~/contexts/viewportSize';
 import { usePostList } from '~/hooks/queries/usePostQueries';
 import { cn } from '~/lib/utils';

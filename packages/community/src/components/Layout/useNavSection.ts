@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import { useLocation } from '@tanstack/react-router';
 import { useBoards } from '~/hooks/queries/useBoardQueries';
-import { useAuth } from '~/contexts/auth';
+import useAuth from '~/hooks/useAuth';
 import { ASTRO_PHOTO_BOARD } from './constants';
 
 export type NavSection = 'home' | 'board' | 'photo' | 'equipment' | 'my';

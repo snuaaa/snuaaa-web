@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from '@tanstack/react-router';
 import { ChevronRight, Telescope } from 'lucide-react';
 
-import { useAuth } from '~/contexts/auth';
+import useAuth from '~/hooks/useAuth';
 import { ViewportSize, useViewportSize } from '~/contexts/viewportSize';
 import { useMyRentList } from '~/hooks/queries/useEquipmentQueries';
 import DesktopRental from './Rental/DesktopRental';

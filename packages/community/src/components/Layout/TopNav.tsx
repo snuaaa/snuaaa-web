@@ -4,7 +4,7 @@ import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { ChevronDown, ExternalLink } from 'lucide-react';
 import { skyStyle } from '~/components/Home/skyColors';
 import { Avatar } from '~/components/ui';
-import { useAuth } from '~/contexts/auth';
+import useAuth from '~/hooks/useAuth';
 import { useBoards } from '~/hooks/queries/useBoardQueries';
 import { useMyUserInfo } from '~/hooks/queries/useUserQueries';
 import { useSky } from '~/hooks/useSky';

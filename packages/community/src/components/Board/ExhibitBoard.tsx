@@ -4,7 +4,7 @@ import { ImagePlus } from 'lucide-react';
 
 import ExhibitionFormSheet from '~/components/Exhibition/ExhibitionFormSheet';
 import { Button, Fab, Skeleton } from '~/components/ui';
-import { useAuth } from '~/contexts/auth';
+import useAuth from '~/hooks/useAuth';
 import { useExhibitionsInBoard } from '~/hooks/queries/useExhibitionQueries';
 import { resolveImageUrl } from '~/lib/utils';
 import { Board, Exhibition } from '~/services/types';

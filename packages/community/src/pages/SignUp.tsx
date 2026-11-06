@@ -12,7 +12,7 @@ import {
   type InfoValues,
 } from '~/components/Auth/SignupSteps';
 import { gradeFor, nicknameFor } from '~/components/Auth/signupRules';
-import { useAuth } from '~/contexts/auth';
+import useAuth from '~/hooks/useAuth';
 import AuthService from '~/services/AuthService';
 
 type Step = 'guide' | 'account' | 'info' | 'done';

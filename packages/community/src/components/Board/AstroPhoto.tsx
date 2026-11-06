@@ -5,7 +5,7 @@ import { FolderPlus, Upload } from 'lucide-react';
 import AlbumFormSheet from '~/components/Album/AlbumFormSheet';
 import PhotoUploader from '~/components/Photo/PhotoUploader';
 import { Button, Fab, Pagination } from '~/components/ui';
-import { useAuth } from '~/contexts/auth';
+import useAuth from '~/hooks/useAuth';
 import { useAlbumsInPhotoBoard } from '~/hooks/queries/useAlbumQueries';
 import { usePhotoList } from '~/hooks/queries/usePhotoQueries';
 import { Board } from '~/services/types';

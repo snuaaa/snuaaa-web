@@ -37,6 +37,37 @@ jobs:
       - name: Build
         run: pnpm --filter @snuaaa/community-web build
 
+  web-e2e:
+    name: Web (e2e)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browser
+        run: pnpm --filter @snuaaa/community-web exec playwright install --with-deps chromium
+
+      - name: E2E tests
+        run: pnpm --filter @snuaaa/community-web test:e2e
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-test-results
+          path: packages/community/test-results
+          retention-days: 7
+
   api:
     name: API (lint, format, build)
     runs-on: ubuntu-latest
