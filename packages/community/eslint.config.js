@@ -37,5 +37,15 @@ export default tseslint.config(
       ],
     },
   },
+  {
+    // Playwright tests run in Node, and their fixtures' `use` is not a React hook.
+    files: ['e2e/**/*.ts', 'playwright.config.ts'],
+    languageOptions: {
+      globals: globals.node,
+    },
+    rules: {
+      'react-hooks/rules-of-hooks': 'off',
+    },
+  },
   eslintConfigPrettier,
 );
