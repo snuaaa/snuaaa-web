@@ -1,25 +1,18 @@
 import { createFileRoute } from '@tanstack/react-router';
-import EquipmentAdmin from '~/components/Equipment/Admin';
-import {
-  EquipSearchLocationState,
-  SortBy,
-  SortOrder,
-} from '~/components/Equipment/common';
-import { EquipmentRentStatus, EquipmentStatus } from '~/services/types';
+import EquipmentAdmin, {
+  EquipmentAdminSearch,
+} from '~/components/Equipment/Admin/EquipmentAdmin';
+import { EquipmentStatus } from '~/services/types';
 
 export const Route = createFileRoute('/equipment/admin/')({
   component: EquipmentAdmin,
-  validateSearch: (
-    search: Record<string, unknown>,
-  ): EquipSearchLocationState => {
-    return {
-      category_id: Number(search.category_id) || undefined,
-      keyword: (search.keyword as string) || undefined,
-      maker: (search.maker as string) || undefined,
-      status: (search.status as EquipmentStatus) || undefined,
-      rent_status: (search.rent_status as EquipmentRentStatus) || undefined,
-      sort_by: (search.sort_by as SortBy) || undefined,
-      sort_order: (search.sort_order as SortOrder) || undefined,
-    };
-  },
+  validateSearch: (search: Record<string, unknown>): EquipmentAdminSearch => ({
+    // The router parses `?keyword=123` as a number.
+    keyword:
+      typeof search.keyword === 'string' || typeof search.keyword === 'number'
+        ? String(search.keyword) || undefined
+        : undefined,
+    category_id: Number(search.category_id) || undefined,
+    status: (search.status as EquipmentStatus) || undefined,
+  }),
 });

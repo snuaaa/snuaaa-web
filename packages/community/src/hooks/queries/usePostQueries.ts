@@ -1,4 +1,9 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  keepPreviousData,
+  useQuery,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
 import PostService, { CreatePostRequest } from '~/services/PostService';
 
 // Query keys
@@ -28,6 +33,17 @@ export function usePostList(params: {
   return useQuery({
     queryKey: postKeys.list(params),
     queryFn: () => PostService.retrievePostList(params),
+    // Keep the current page on screen while the next page of the same list
+    // loads, but not when the board or the search changes.
+    placeholderData: (previousData, previousQuery) => {
+      const prev = previousQuery?.queryKey[2] as typeof params | undefined;
+      const sameList =
+        prev?.board_id === params.board_id &&
+        prev?.user_uuid === params.user_uuid &&
+        prev?.search_type === params.search_type &&
+        prev?.search_keyword === params.search_keyword;
+      return sameList ? keepPreviousData(previousData) : undefined;
+    },
   });
 }
 
