@@ -125,8 +125,12 @@ export const allRentRecordsQueryOptions = (
       }),
   });
 
-export function useAllRentRecords(filters: AllRentRecordFilters, page: number) {
-  return useQuery(allRentRecordsQueryOptions(filters, page));
+export function useAllRentRecords(
+  filters: AllRentRecordFilters,
+  page: number,
+  enabled = true,
+) {
+  return useQuery({ ...allRentRecordsQueryOptions(filters, page), enabled });
 }
 
 export function useUpdatePenaltyStatus() {

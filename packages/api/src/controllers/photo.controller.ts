@@ -13,63 +13,9 @@ import { resizeImageBuffer } from '../utils/resize';
 import path from 'path';
 import ContentTypeEnum from '../enums/contentTypeEnum';
 import { SearchType } from './post.controller';
+import { getSearchCondition } from '../utils/searchCondition';
 import { BASE_USER_FIELDS } from '../models/User';
 import { BadRequestError, NotFoundError } from '../errors';
-
-const getSearchCondition = (type?: SearchType, keyword?: string) => {
-  if (!type || !keyword || keyword.trim() === '') {
-    return {};
-  }
-  switch (type) {
-    case 'all': {
-      return {
-        content: {
-          [Op.or]: [
-            {
-              title: {
-                [Op.like]: `%${keyword}%`,
-              },
-            },
-            {
-              text: {
-                [Op.like]: `%${keyword}%`,
-              },
-            },
-          ],
-        },
-      };
-    }
-    case 'title': {
-      return {
-        content: {
-          title: {
-            [Op.like]: `%${keyword}%`,
-          },
-        },
-      };
-    }
-    case 'text': {
-      return {
-        content: {
-          text: {
-            [Op.like]: `%${keyword}%`,
-          },
-        },
-      };
-    }
-    case 'user': {
-      return {
-        user: {
-          nickname: {
-            [Op.like]: `%${keyword}%`,
-          },
-        },
-      };
-    }
-    default:
-      return {};
-  }
-};
 
 export type PhotoResponse = ContentModel & {
   photo: PhotoModel;
