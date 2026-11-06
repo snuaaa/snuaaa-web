@@ -4,7 +4,9 @@ import {
   useMutation,
   useQueryClient,
 } from '@tanstack/react-query';
-import CommentService from '~/services/CommentService';
+import CommentService, {
+  CreateCommentRequest,
+} from '~/services/CommentService';
 
 // Query keys
 export const commentKeys = {
@@ -54,7 +56,7 @@ export function useCreateComment() {
       data,
     }: {
       parentId: number;
-      data: { text: string };
+      data: CreateCommentRequest;
     }) => CommentService.createComment(parentId, data),
     onSuccess: (_, { parentId }) => {
       queryClient.invalidateQueries({

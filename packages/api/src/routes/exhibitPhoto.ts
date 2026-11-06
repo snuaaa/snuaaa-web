@@ -1,3 +1,4 @@
+import ContentTypeEnum from '../enums/contentTypeEnum';
 import express from 'express';
 import {
   AuthenticatedRequest,
@@ -54,7 +55,11 @@ router.patch(
   verifyTokenMiddleware,
   async (req: AuthenticatedRequest, res, next) => {
     try {
-      await assertCanEditContent(req.params.exhibitPhoto_id, req.decodedToken);
+      await assertCanEditContent(
+        req.params.exhibitPhoto_id,
+        req.decodedToken,
+        ContentTypeEnum.EXHIBITI_PHOTO,
+      );
       let photographer = null;
       if (req.body.photographer) {
         photographer = await retrieveUserByUserUuid(
@@ -95,7 +100,11 @@ router.delete(
   verifyTokenMiddleware,
   async (req: AuthenticatedRequest, res, next) => {
     try {
-      await assertCanEditContent(req.params.exhibitPhoto_id, req.decodedToken);
+      await assertCanEditContent(
+        req.params.exhibitPhoto_id,
+        req.decodedToken,
+        ContentTypeEnum.EXHIBITI_PHOTO,
+      );
       await deleteExhibitPhoto(req.params.exhibitPhoto_id);
       await deleteContent(req.params.exhibitPhoto_id);
       res.json({ success: true });

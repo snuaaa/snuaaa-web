@@ -9,7 +9,7 @@ function SpinningLoader({ size }: { size: number }) {
       height={size}
       viewBox="0 0 24 24"
       fill="none"
-      stroke="#49A0AE"
+      stroke="var(--color-primary)"
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"

@@ -25,10 +25,12 @@ Per package, run with `pnpm --filter <name> <script>`, or run the script from in
 
 | Package | Scripts |
 | --- | --- |
-| `@snuaaa/community-web` | `dev`, `build`, `lint`, `lint:fix`, `typecheck` |
+| `@snuaaa/community-web` | `dev`, `build`, `lint`, `lint:fix`, `typecheck`, `test:e2e` |
 | `@snuaaa/api` | `dev` (nodemon + ts-node on `src/main.ts`), `build` (tsc -> `dist`), `serve`, `lint`, `lint:fix`, `format`, `format:check` |
 
-There is no test suite in either package. Verify changes with `lint` and `build`. The web build does not run `tsc`, so also run `typecheck` for the web. PRs to `main` run the same checks in `.github/workflows/ci.yml` (web: `lint`, `typecheck`, `build`; api: `lint`, `format:check`, `build`). Non-draft PRs from this repository also get an automatic Claude review (`.github/workflows/claude-review.yml`, authenticated with the `CLAUDE_CODE_OAUTH_TOKEN` secret from `claude setup-token`).
+Verify changes with `lint` and `build`. The web build does not run `tsc`, so also run `typecheck` for the web. The API has no tests. PRs to `main` run the same checks in `.github/workflows/ci.yml` (web: `lint`, `typecheck`, `build`, `test:e2e`; api: `lint`, `format:check`, `build`).
+
+The web has Playwright E2E tests in `packages/community/e2e/` (`test:e2e`). Playwright starts the Vite dev server itself, and the API is never called: `e2e/fixtures.ts` answers every request with `page.route` and records the calls in the `api` fixture. That fixture also fails a test on a render loop (`Maximum update depth`) or the router's error screen, unless the test sets `test.use({ allowRouteError: true })`. Locally, install the browser once with `pnpm --filter @snuaaa/community-web exec playwright install chromium`. Add a test there when changing auth or routing behavior. Non-draft PRs from this repository also get an automatic Claude review (`.github/workflows/claude-review.yml`, authenticated with the `CLAUDE_CODE_OAUTH_TOKEN` secret from `claude setup-token`).
 
 Each package has its own ESLint flat config (`eslint.config.*`) with Prettier (single quotes). The root `.eslintrc.js` is legacy.
 
@@ -50,13 +52,17 @@ Each package has its own ESLint flat config (`eslint.config.*`) with Prettier (s
 ### Web (`packages/community/src`)
 
 - **Routing:** TanStack Router with file-based routes in `src/routes/`. The Vite plugin generates `src/routeTree.gen.ts`, so never edit that file by hand. Route files are thin: most render a component from `src/pages/`, which composes feature components from `src/components/<Feature>/`.
-- **Root layout:** `routes/__root.tsx` wires `QueryClientProvider`, `AuthProvider`, `ViewportSizeProvider`, the header, sidebar and footer. It also renders the photo and exhibit-photo detail modals, which are driven by the global `?photo=<id>` / `?exhibitPhoto=<id>` search params. To open a photo from anywhere, set that search param instead of navigating to a route.
+- **Root layout:** `index.jsx` wraps the router in `QueryClientProvider`. `routes/__root.tsx` wires `ViewportSizeProvider` and `components/Layout/AppShell` (desktop top nav, mobile bottom tab bar). Pages not yet redesigned render inside the legacy white column; `AppShell`'s `REDESIGNED_PATHS` lists the ones that draw their own layout. It also renders the photo and exhibit-photo detail modals, which are driven by the global `?photo=<id>` / `?exhibitPhoto=<id>` search params. To open a photo from anywhere, set that search param instead of navigating to a route.
 - **Data layer, in three steps:**
   1. `src/services/index.ts` defines the shared axios instance and `API` wrapper. An interceptor attaches `Bearer <token>` from the cookie (`utils/token`).
   2. `src/services/*Service.ts` holds the endpoint functions, and `services/types.ts` holds the response types.
   3. `src/hooks/queries/use*Queries.ts` wraps those functions in TanStack Query hooks, each file with a `xxxKeys` query-key factory. New server calls should follow the same service → query-hook pattern, and mutations should invalidate through the key factories.
-- **Auth:** `contexts/auth` (`useAuth`). On load, the provider validates the cookie token and redirects to `/auth/login?redirect=...` unless the page is public (`/auth/login`, `/auth/signup`).
+- **Auth:** the session (`/auth/check` result, or `null` when logged out) is a TanStack Query cache entry (`hooks/queries/useAuthQueries.ts`), revalidated at most every 5 minutes. The root route's `beforeLoad` loads it through `loadSession()` (`lib/auth.ts`) and redirects to `/auth/login?redirect=...` unless the page is public (`PUBLIC_PATHS`). It runs before any loader, so guard pages there, not with `<Navigate>` in components. Only a 401 logs the user out. `useAuth()` (`hooks/useAuth.ts`) exposes `authInfo`, plus `authLogin`/`authLogout`, which update the session cache directly, so navigating right after `authLogin` passes the guard. Pass a `redirect` value through `getSafeRedirect()` before navigating to it.
 - **Styling:** Tailwind v4 via `@tailwindcss/vite`, alongside legacy SCSS in `src/sass/` and `App.scss`.
+  - Design tokens live in the `@theme` block of `src/index.css` (see `docs/redesign.md`). Tailwind's default palette is cleared, so only token colors exist (`bg-primary`, `text-fg-muted`, `border-border`, `bg-navy-500`, ...). Prefer semantic tokens over raw palette steps, and don't add hex values in class names.
+  - Legacy SCSS color variables in `sass/common/_color.scss` point at the same tokens via `var()`, so Sass color functions can't take them.
+  - Shared UI primitives (Button, Field/Input, Tag, Avatar, Sheet, Dialog, NavDrawer, Tabs, Pagination, ...) live in `src/components/ui/` and are imported from `~/components/ui`. Merge classes with `cn()` from `~/lib/utils`, and use lucide-react for new icons.
+- **Redesign:** A UI redesign and design-system migration is in progress. Read `docs/redesign.md` before any UI work; it holds the tokens, component plan, decisions and PR order. It runs as an epic, and `docs/redesign.md` names the branch.
 - **Rich text:** CKEditor 5 v38, bundled via `@ckeditor/vite-plugin-ckeditor5`.
 - **Imports:** the `~/` alias maps to `src/`.
 
@@ -108,7 +114,21 @@ Each package has its own ESLint flat config (`eslint.config.*`) with Prettier (s
   ```
 
   Then open a PR from `sync/<epic>-<yyyymmdd>` to `epic/<epic>` and `/merge` it after CI passes. The bot merges `sync/*` with a merge commit. Never squash `main` into an epic, and never open the PR from `main` itself (the conflict can't be resolved there); a squash duplicates main's commits and breaks the later epic → `main` merge. `Closes #N` only closes issues when the PR merges into `main`, so list an epic's issues on its epic → `main` PR.
+- **Stacked PRs:** when a branch is built on top of another open PR's branch, and that parent PR is squash-merged, the child branch still carries the parent's original commits, so it conflicts with the squash commit. Don't resolve this with a merge commit. Replay only the child's own commits onto the new base with `git rebase --onto`:
+
+  ```bash
+  git fetch origin
+  # <parent-tip>: the parent PR's last commit that the child was built on
+  # (the parent PR's head SHA, `origin/<parent-branch>` if it still exists,
+  #  or `git merge-base <child-branch> origin/<parent-branch>`)
+  git rebase --onto origin/main <parent-tip> <child-branch>   # use origin/epic/<name> if the parent merged into an epic
+  git push --force-with-lease origin <child-branch>
+  ```
+
+  Open the child PR against the parent's branch as a draft. `/merge` has no rule for `<type>/*` ← `<type>/*`, so it can't land in the parent by mistake. When the parent merges, its head branch is deleted automatically and GitHub retargets the child PR to the parent's base. Rebase the child as above, mark it ready, and `/merge` it after CI passes. Rebase only your own work branches this way, never an `epic/*` or `sync/*` branch.
+- **`main` is always releasable.** A fix for production goes to `main` like any other PR and ships with the next release tag, and anything that isn't ready for production goes to an epic instead.
 - **Push to `main`:** deploys the web to the Cloudflare Pages preview (`develop` branch) and the API Docker image to the dev Lightsail server.
 - **Push to `epic/<name>`:** deploys the web to the Cloudflare Pages `<name>` alias (`https://<name>.snuaaa-web.pages.dev`), pointed at the dev API. The API is not deployed from epic branches.
 - **Release tagged `WEB-*`:** deploys the web to production Cloudflare Pages.
 - **Release tagged `API-*`:** deploys the API to the production Lightsail server. The image is built from `packages/api/Dockerfile` with `pnpm deploy`.
+- **Release notes:** don't use GitHub's "Generate release notes" button, because it lists every PR in the range, web and API alike. Publish the release with an empty body, or with your own summary only. `.github/workflows/release-notes.yml` then fills in the PRs that touched the tag's package (`WEB-*` → `packages/community`, `API-*` → `packages/api`), compared with the previous tag of the same prefix (`.github/scripts/release-notes.sh`). The list goes between `<!-- release-notes:start/end -->` markers, below any text you wrote. To regenerate it, run the workflow manually with the tag.

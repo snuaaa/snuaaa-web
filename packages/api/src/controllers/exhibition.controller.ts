@@ -83,6 +83,38 @@ export async function createExhibition(content_id, data) {
   });
 }
 
+const EXHIBITION_UPDATE_FIELDS = [
+  'exhibition_no',
+  'slogan',
+  'date_start',
+  'date_end',
+  'place',
+  'poster_path',
+  'poster_thumbnail_path',
+  'poster_url',
+  'poster_thumbnail_url',
+] as const;
+
+export async function updateExhibition(
+  content_id,
+  data: Partial<Record<(typeof EXHIBITION_UPDATE_FIELDS)[number], unknown>>,
+) {
+  if (!content_id) {
+    throw new BadRequestError('content_id can not be null');
+  }
+
+  const values = Object.fromEntries(
+    EXHIBITION_UPDATE_FIELDS.filter((key) => data[key] !== undefined).map(
+      (key) => [key, data[key]],
+    ),
+  );
+  if (Object.keys(values).length === 0) {
+    return;
+  }
+
+  await ExhibitionModel.update(values, { where: { content_id } });
+}
+
 export async function migrateExhibitionPosters() {
   const exhibitions = await ExhibitionModel.findAll({
     where: {

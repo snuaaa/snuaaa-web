@@ -1,3 +1,4 @@
+import ContentTypeEnum from '../enums/contentTypeEnum';
 import express from 'express';
 
 import {
@@ -21,6 +22,7 @@ import {
 } from '../controllers/photo.controller';
 import { checkLike } from '../controllers/contentLike.controller';
 import {
+  assertCanEditContent,
   updateContent,
   deleteContent,
   increaseViewNum,
@@ -170,39 +172,57 @@ router.post(
   },
 );
 
-router.patch('/:photo_id', verifyTokenMiddleware, async (req, res, next) => {
-  try {
-    const contentData = {
-      title: req.body.title,
-      text: req.body.text,
-    };
-    const photoData = req.body.photo;
-    const tagData = req.body.tags;
+router.patch(
+  '/:photo_id',
+  verifyTokenMiddleware,
+  async (req: AuthenticatedRequest, res, next) => {
+    try {
+      await assertCanEditContent(
+        req.params.photo_id,
+        req.decodedToken,
+        ContentTypeEnum.PHOTO,
+      );
+      const contentData = {
+        title: req.body.title,
+        text: req.body.text,
+      };
+      const photoData = req.body.photo;
+      const tagData = req.body.tags;
 
-    if (!req.params.photo_id || !contentData || !photoData || !tagData) {
-      return next(new BadRequestError('bad request'));
+      if (!req.params.photo_id || !contentData || !photoData || !tagData) {
+        return next(new BadRequestError('bad request'));
+      }
+
+      await Promise.all([
+        updateContent(req.params.photo_id, contentData),
+        updatePhoto(req.params.photo_id, photoData),
+        updateContentTag(Number(req.params.photo_id), tagData),
+      ]);
+      res.json({ success: true });
+    } catch (err) {
+      next(err);
     }
+  },
+);
 
-    await Promise.all([
-      updateContent(req.params.photo_id, contentData),
-      updatePhoto(req.params.photo_id, photoData),
-      updateContentTag(Number(req.params.photo_id), tagData),
-    ]);
-    res.json({ success: true });
-  } catch (err) {
-    next(err);
-  }
-});
-
-router.delete('/:photo_id', verifyTokenMiddleware, async (req, res, next) => {
-  try {
-    await deletePhoto(req.params.photo_id);
-    await deleteContent(req.params.photo_id);
-    res.json({ success: true });
-  } catch (err) {
-    next(err);
-  }
-});
+router.delete(
+  '/:photo_id',
+  verifyTokenMiddleware,
+  async (req: AuthenticatedRequest, res, next) => {
+    try {
+      await assertCanEditContent(
+        req.params.photo_id,
+        req.decodedToken,
+        ContentTypeEnum.PHOTO,
+      );
+      await deletePhoto(req.params.photo_id);
+      await deleteContent(req.params.photo_id);
+      res.json({ success: true });
+    } catch (err) {
+      next(err);
+    }
+  },
+);
 
 router.post('/migrate', verifyTokenMiddleware, async (req, res, next) => {
   try {

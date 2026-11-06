@@ -1,43 +1,272 @@
 @import "tailwindcss";
+@import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
 
-body {
-  margin: 0;
-  padding: 0;
-  font-family: 'NanumSquareNeo';
+/* While the on-screen keyboard is up (hooks/useVirtualKeyboard). */
+@custom-variant keyboard-open (:root[data-keyboard-open] &);
+
+/*
+ * Design tokens (docs/redesign.md §2).
+ * Components reference the semantic tokens; the raw palette is only for defining them.
+ * `static` keeps every variable on :root so SCSS can read them with var().
+ */
+@theme static {
+  --color-*: initial;
+
+  --color-white: #ffffff;
+  --color-black: #000000;
+
+  /* Raw palette */
+  --color-navy-50: #f2f5fb;
+  --color-navy-100: #e6ecf7;
+  --color-navy-200: #cdd9ea;
+  --color-navy-300: #9db2d6;
+  --color-navy-500: #466890;
+  --color-navy-700: #23407a;
+  --color-navy-800: #16284f;
+  --color-navy-900: #0b1a3a;
+  --color-navy-950: #07112a;
+
+  --color-star-50: #fffaeb;
+  --color-star-100: #fff4d1;
+  --color-star-200: #ffe6a4;
+  --color-star-300: #ffd973;
+  --color-star-400: #ffd45f;
+  --color-star-500: #f5c542;
+  --color-star-600: #d9a61f;
+  --color-star-700: #a87c10;
+  --color-star-800: #6e520b;
+
+  --color-gray-50: #f4f5f8;
+  --color-gray-100: #eceef3;
+  --color-gray-200: #e3e6ee;
+  --color-gray-300: #c9ceda;
+  --color-gray-400: #9aa1b2;
+  --color-gray-500: #6b7488;
+  --color-gray-600: #5b6478;
+  --color-gray-700: #4a5570;
+  --color-gray-900: #141a2a;
+
+  /* Status */
+  --color-danger: #c73a52;
+  --color-danger-soft: #fbe7eb;
+  --color-success: #2e7d6f;
+  --color-success-soft: #e1f2ee;
+  --color-warning: #b7791f;
+  --color-warning-soft: #fdf1dc;
+  --color-info: #3a5a99;
+  --color-info-soft: #e6ecf7;
+
+  /* Semantic */
+  --color-bg: var(--color-gray-50);
+  --color-surface: var(--color-white);
+  --color-surface-sunken: var(--color-gray-100);
+  --color-surface-brand: var(--color-navy-900);
+  --color-surface-brand-raised: var(--color-navy-800);
+  --color-fg: var(--color-gray-900);
+  --color-fg-muted: var(--color-gray-600);
+  --color-fg-on-brand: var(--color-white);
+  --color-fg-on-brand-muted: var(--color-navy-300);
+  --color-border: var(--color-gray-200);
+  --color-primary: var(--color-navy-900);
+  --color-primary-hover: var(--color-navy-700);
+  --color-primary-soft: var(--color-navy-100);
+  /* accent: fill only, never as text on a light background */
+  --color-accent: var(--color-star-500);
+  --color-accent-soft: var(--color-star-100);
+
+  /* Typography: size / line-height / weight */
+  --font-sans:
+    'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont,
+    system-ui, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic',
+    sans-serif;
+
+  --text-display: 26px;
+  --text-display--line-height: 1.3;
+  --text-display--font-weight: 700;
+  --text-display--letter-spacing: -0.5px;
+  --text-title: 20px;
+  --text-title--line-height: 1.4;
+  --text-title--font-weight: 700;
+  --text-title--letter-spacing: -0.3px;
+  --text-heading: 17px;
+  --text-heading--line-height: 1.4;
+  --text-heading--font-weight: 700;
+  --text-body: 15px;
+  --text-body--line-height: 1.6;
+  --text-body--font-weight: 400;
+  --text-label: 13px;
+  --text-label--line-height: 1.4;
+  --text-label--font-weight: 600;
+  --text-caption: 12px;
+  --text-caption--line-height: 1.4;
+  --text-caption--font-weight: 400;
+  --text-micro: 11px;
+  --text-micro--line-height: 1.3;
+  --text-micro--font-weight: 600;
+
+  /* Shape and depth */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  --shadow-sm: 0 1px 2px rgba(11, 26, 58, 0.06);
+  --shadow-md: 0 4px 12px rgba(11, 26, 58, 0.1);
+  --shadow-lg: 0 -8px 28px rgba(11, 26, 58, 0.16);
+
+  /* Desktop content column (header, footer and every redesigned page) */
+  --container-page: 1080px;
+
+  /* Member grade (planet) backgrounds for avatar rings and grade dots */
+  --grade-1: linear-gradient(
+    125deg,
+    #e86200 0%,
+    #ffb000 20%,
+    #ffec9f 30%,
+    #ffa100 50%,
+    #ffec9f 70%,
+    #ffb000 80%,
+    #e86200 100%
+  );
+  --grade-3: linear-gradient(
+    125deg,
+    #fff900 0%,
+    #fff900 10%,
+    #29d5d6 40%,
+    #2fa9ea 70%,
+    #84ff00 100%
+  );
+  --grade-4: linear-gradient(180deg, #f3f1e6 0%, #de7702 25%);
+  --grade-5: linear-gradient(
+    180deg,
+    #ecddb3 10%,
+    #efbf71 25%,
+    #ecddb3 50%,
+    #efbf71 75%,
+    #ecddb3 90%
+  );
+  --grade-6: linear-gradient(180deg, #ecddb3 25%, #4a4a4a 50%, #ecddb3 75%);
+  --grade-7: #ade8e1;
+  --grade-8: #74a9ff;
+  --grade-9: #999999;
+
+  /* Radix enter/exit animations (NavDrawer) */
+  --animate-fade-in: fade-in 200ms ease-out;
+  --animate-fade-out: fade-out 200ms ease-in;
+  --animate-slide-in-left: slide-in-left 250ms ease-out;
+  --animate-slide-out-left: slide-out-left 200ms ease-in;
+  --animate-accordion-down: accordion-down 200ms ease-out;
+  --animate-accordion-up: accordion-up 200ms ease-in;
+  /* 하늘 헤더 stars; each star sets --star-opacity and its own duration */
+  --animate-twinkle: twinkle 4s ease-in-out infinite;
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+  @keyframes fade-out {
+    to {
+      opacity: 0;
+    }
+  }
+  @keyframes slide-in-left {
+    from {
+      transform: translateX(-100%);
+    }
+  }
+  @keyframes slide-out-left {
+    to {
+      transform: translateX(-100%);
+    }
+  }
+  @keyframes twinkle {
+    0%,
+    100% {
+      opacity: var(--star-opacity);
+    }
+    50% {
+      opacity: calc(var(--star-opacity) * 0.35);
+    }
+  }
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--radix-accordion-content-height);
+    }
+  }
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+    to {
+      height: 0;
+    }
+  }
 }
 
-@font-face {
-  font-family: 'S-CoreDream-5Medium';
-  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-5Medium.woff') format('woff');
-  font-weight: normal;
-  font-style: normal;
+@utility bg-grade-* {
+  background: --value(--grade-*);
 }
 
-@font-face {
-  font-family: 'NanumSquareNeo';
-  src: url('../src/assets/fonts/NanumSquareNeo.woff2') format('woff2');
-  font-weight: normal;
-  font-style: normal;
+/*
+ * Layout values that depend on the shell's --tab-bar-height (AppShell), so
+ * they are inlined into each utility instead of resolved on :root.
+ * `pb-tab-bar` clears the mobile tab bar, `bottom-tab-bar` sits on top of it.
+ */
+@theme inline {
+  --spacing-tab-bar: calc(var(--tab-bar-height) + env(safe-area-inset-bottom));
+}
+
+/*
+ * Safe-area padding with a minimum (viewport-fit=cover, index.html).
+ * `pt-safe-2` is max(0.5rem, the top inset): mobile top bars use it so the
+ * notch never covers them, and 0.5rem stays on devices without an inset.
+ * `pb-safe-7` does the same for sheet and screen footers.
+ */
+@utility pt-safe-* {
+  padding-top: max(
+    calc(var(--spacing) * --value(number)),
+    env(safe-area-inset-top)
+  );
+}
+
+@utility pb-safe-* {
+  padding-bottom: max(
+    calc(var(--spacing) * --value(number)),
+    env(safe-area-inset-bottom)
+  );
 }
 
 * {
   box-sizing: border-box;
 }
 
+html {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-size: 100%;
+  line-height: 1;
+  font-family: var(--font-sans);
+}
+
 #root {
   height: 100%;
+  /* viewport-fit=cover lets the page run under the notch in landscape;
+     keep content clear of it. Zero on devices without an inset. */
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
 }
 
 .font-20 {
   font-size: 20px;
-}
-
-html { height: 100%; } /* always display scrollbars */
-body {
-  height: 100%;
-  font-size: 100%;
-  line-height: 1;
-  font-family:  'NanumSquareNeo', Arial, Tahoma, Verdana, sans-serif;
 }
 
 button {
@@ -45,3 +274,99 @@ button {
 }
 
 input, select, textarea { outline: none; }
+
+/*
+ * CKEditor in the write screen (components/Post/PostComposer.tsx). Kept
+ * here, unlayered, because CKEditor's and the legacy .sa-editor rules are
+ * unlayered too. The editor is to be replaced, so only light overrides.
+ */
+.post-composer-editor {
+  .sa-editor {
+    border: 0;
+  }
+  /* CSS sticky under the header instead of CKEditor's own, which tracks
+     the window and doesn't know about the headers. */
+  .ck.ck-editor__top {
+    position: sticky;
+    top: calc(3.75rem + env(safe-area-inset-top));
+    z-index: 10;
+  }
+  .ck-sticky-panel__content_sticky {
+    position: static !important;
+  }
+  .ck-sticky-panel__placeholder {
+    display: none !important;
+  }
+  .ck.ck-editor__top .ck-sticky-panel .ck-sticky-panel__content,
+  .ck.ck-toolbar {
+    border: 0;
+    border-bottom: 1px solid var(--color-border);
+    border-radius: 0;
+    background: var(--color-gray-50);
+  }
+  .ck.ck-editor__main > .ck-editor__editable,
+  .ck.ck-editor__main > .ck-editor__editable.ck-focused {
+    min-height: 300px;
+    border: 0;
+    box-shadow: none;
+    padding: 0.5rem 1rem;
+    font-size: var(--text-base);
+    line-height: 1.75;
+  }
+  .ck-content > * + * {
+    margin-top: 0.875rem;
+  }
+
+  @media (width >= 48rem) {
+    .ck.ck-editor__top {
+      top: 4rem;
+    }
+    .ck.ck-toolbar {
+      padding: 0 0.5rem;
+    }
+    .ck.ck-editor__main > .ck-editor__editable,
+    .ck.ck-editor__main > .ck-editor__editable.ck-focused {
+      min-height: 420px;
+      padding: 1rem 1.75rem;
+    }
+  }
+}
+
+/*
+ * 관측 모드 (red-light night mode), toggled by hooks/useObservationMode.ts.
+ * One filter on the root covers every screen, legacy ones and portals
+ * included: the page turns dark and only red light is left, which keeps the
+ * eyes dark-adapted at the telescope. Media is inverted back first, so a
+ * photo ends up as red brightness rather than a negative.
+ */
+:root[data-observation='on'] {
+  background: #000;
+  filter: url(#observation-filter);
+
+  /* The filter inverts brightness, so the navy chrome is made light here
+     to come out dark, instead of as a bright red bar. */
+  --color-surface-brand: #ffffff;
+  --color-surface-brand-raised: #e3e6ee;
+  --color-fg-on-brand: #141a2a;
+  --color-fg-on-brand-muted: #4a5570;
+  --color-navy-300: #4a5570;
+  --color-navy-800: #e3e6ee;
+
+  /* Raw navy shades drawn on the navy surfaces (소리통, 오늘 밤), flipped
+     only inside them so light pages keep their own. */
+  .bg-surface-brand,
+  .bg-surface-brand-raised {
+    --color-navy-200: #4a5570;
+    --color-navy-500: #9db2d6;
+    --color-navy-700: #cdd9ea;
+    /* the moon's lit side stays the brightest thing on the surface */
+    --color-accent: var(--color-star-800);
+  }
+
+  img,
+  video,
+  canvas,
+  iframe {
+    filter: invert(1);
+  }
+}

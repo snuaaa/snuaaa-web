@@ -217,6 +217,9 @@ router.post(
         return next(new BadRequestError('BAD PASSWORD CONFIRM'));
       }
 
+      // Throws ConflictError (409) when the id is taken
+      await checkDupId(req.body.id);
+
       let nickname = '';
 
       if (req.body.aaaNum) {

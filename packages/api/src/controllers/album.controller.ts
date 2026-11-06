@@ -8,7 +8,17 @@ import {
 } from '../models';
 import { Op } from 'sequelize';
 import { BASE_USER_FIELDS } from '../models/User';
-import { BadRequestError, NotFoundError } from '../errors';
+import { AuthorizationError, BadRequestError, NotFoundError } from '../errors';
+import { JWTPayload } from '../utils/token';
+import { canEditContent } from './content.controller';
+import ContentTypeEnum from '../enums/contentTypeEnum';
+import { SearchType } from './post.controller';
+import { getSearchCondition } from '../utils/searchCondition';
+
+export type AlbumSearch = {
+  search_type?: SearchType;
+  search_keyword?: string;
+};
 
 export type AlbumResponse = ContentModel & {
   album: AlbumModel;
@@ -94,10 +104,18 @@ export async function retrieveNextAlbum(album_id, board_id) {
   });
 }
 
-export async function retrieveAlbumCount(board_id, category_id) {
+export async function retrieveAlbumCount(
+  board_id,
+  category_id,
+  search: AlbumSearch = {},
+) {
   if (!board_id) {
     throw new BadRequestError('id can not be null');
   }
+  const { content, user } = getSearchCondition(
+    search.search_type,
+    search.search_keyword,
+  );
 
   return ContentModel.count({
     include: [
@@ -106,10 +124,22 @@ export async function retrieveAlbumCount(board_id, category_id) {
         as: 'album',
         required: true,
       },
+      ...(user
+        ? [
+            {
+              model: UserModel,
+              required: true,
+              attributes: [],
+              paranoid: false,
+              where: user,
+            },
+          ]
+        : []),
     ],
     where: {
       ...(board_id && { board_id: board_id }),
       ...(category_id && { category_id: category_id }),
+      ...content,
     },
   });
 }
@@ -119,10 +149,15 @@ export async function retrieveAlbumsInBoard(
   rowNum,
   offset,
   category_id,
+  search: AlbumSearch = {},
 ) {
   if (!board_id) {
     throw new BadRequestError('board_id can not be null');
   }
+  const { content, user } = getSearchCondition(
+    search.search_type,
+    search.search_keyword,
+  );
 
   return ContentModel.findAll({
     include: [
@@ -149,6 +184,7 @@ export async function retrieveAlbumsInBoard(
         required: true,
         attributes: BASE_USER_FIELDS,
         paranoid: false,
+        where: user,
       },
       {
         model: CategoryModel,
@@ -172,6 +208,7 @@ export async function retrieveAlbumsInBoard(
     where: {
       board_id: board_id,
       ...(category_id && { category_id: category_id }),
+      ...content,
     },
     order: [['created_at', 'DESC']],
     limit: rowNum,
@@ -205,6 +242,36 @@ export async function updateAlbum(album_id, data) {
       },
     },
   );
+}
+
+/**
+ * The photo must be in the album, or it's not found. Whoever can edit the
+ * album may pick any of its photos as the cover. The author of a photo in the
+ * album may also pick that photo, as the web has always allowed.
+ */
+export async function assertCanSetAlbumThumbnail(
+  album_id,
+  photo_id,
+  user: JWTPayload,
+) {
+  if (!photo_id) {
+    throw new BadRequestError('tn_photo_id can not be null');
+  }
+  const photo = await ContentModel.findOne({
+    attributes: ['content_id', 'author_id'],
+    where: {
+      content_id: photo_id,
+      parent_id: album_id,
+      type: ContentTypeEnum.PHOTO,
+    },
+  });
+  if (!photo) {
+    throw new NotFoundError('Photo not found in album');
+  }
+  if (photo.getDataValue('author_id') === user._id) return;
+  if (!(await canEditContent(album_id, user, ContentTypeEnum.ALBUM))) {
+    throw new AuthorizationError('Permission denied', { code: 4001 });
+  }
 }
 
 export async function updateAlbumThumbnail(album_id, photo_id) {
