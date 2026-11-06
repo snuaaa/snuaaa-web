@@ -10,7 +10,7 @@ import {
   GRADE_MANAGER_GRADE,
 } from '~/components/Layout/constants';
 import { Avatar, Pagination, Skeleton, Toast, useToast } from '~/components/ui';
-import { useAuth } from '~/contexts/auth';
+import useAuth from '~/hooks/useAuth';
 import { useUserList } from '~/hooks/queries/useUserQueries';
 import { cn } from '~/lib/utils';
 import { User } from '~/services/types';

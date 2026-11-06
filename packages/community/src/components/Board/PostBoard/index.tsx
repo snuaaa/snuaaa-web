@@ -2,7 +2,7 @@ import { Board } from '~/services/types';
 import CreatePost from './Create';
 import ListPost from './List';
 import { useSearch, useNavigate } from '@tanstack/react-router';
-import { useAuth } from '~/contexts/auth';
+import useAuth from '~/hooks/useAuth';
 import { canWrite } from '../boardUtils';
 import useLeaveWriteScreen from '../useLeaveWriteScreen';
 

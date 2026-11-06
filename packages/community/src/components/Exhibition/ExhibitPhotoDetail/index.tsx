@@ -25,7 +25,7 @@ import {
   Toast,
   useToast,
 } from '~/components/ui';
-import { useAuth } from '~/contexts/auth';
+import useAuth from '~/hooks/useAuth';
 import { ViewportSize, useViewportSize } from '~/contexts/viewportSize';
 import { useLikeContent } from '~/hooks/queries/useContentQueries';
 import {

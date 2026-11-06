@@ -2,7 +2,7 @@ import { Link } from '@tanstack/react-router';
 import { Check, ChevronRight, FileText, Image, List } from 'lucide-react';
 import { Sheet, Tag } from '~/components/ui';
 import { useNavSection } from '~/components/Layout/useNavSection';
-import { useAuth } from '~/contexts/auth';
+import useAuth from '~/hooks/useAuth';
 import { useBoards } from '~/hooks/queries/useBoardQueries';
 import { cn } from '~/lib/utils';
 import { Board } from '~/services/types';

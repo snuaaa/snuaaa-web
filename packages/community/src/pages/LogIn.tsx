@@ -5,7 +5,7 @@ import { isAxiosError } from 'axios';
 import AuthLayout, { ClubLogo } from '~/components/Auth/AuthLayout';
 import FindAccountSheet from '~/components/Auth/FindAccountSheet';
 import { Button } from '~/components/ui';
-import { useAuth } from '~/contexts/auth';
+import useAuth from '~/hooks/useAuth';
 import { getSafeRedirect } from '~/lib/auth';
 import { cn } from '~/lib/utils';
 import AuthService from '~/services/AuthService';

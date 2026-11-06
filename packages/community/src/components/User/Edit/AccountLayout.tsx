@@ -3,7 +3,7 @@ import { Link } from '@tanstack/react-router';
 import { ChevronLeft } from 'lucide-react';
 
 import { BackButton, ConfirmDialog } from '~/components/ui';
-import { useAuth } from '~/contexts/auth';
+import useAuth from '~/hooks/useAuth';
 import { useDeleteUserInfo } from '~/hooks/queries/useUserQueries';
 import { cn } from '~/lib/utils';
 

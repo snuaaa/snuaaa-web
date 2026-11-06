@@ -22,7 +22,7 @@ import {
   Toast,
   useToast,
 } from '~/components/ui';
-import { useAuth } from '~/contexts/auth';
+import useAuth from '~/hooks/useAuth';
 import {
   exhibitionKeys,
   useExhibition,

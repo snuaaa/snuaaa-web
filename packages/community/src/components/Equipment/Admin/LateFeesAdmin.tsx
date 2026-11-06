@@ -16,7 +16,7 @@ import {
   useAllRentRecords,
   useUpdatePenaltyStatus,
 } from '~/hooks/queries/useEquipmentQueries';
-import { useAuth } from '~/contexts/auth';
+import useAuth from '~/hooks/useAuth';
 import { cn } from '~/lib/utils';
 import { PenaltyStatus, RentWithEquipment } from '~/services/types';
 import {

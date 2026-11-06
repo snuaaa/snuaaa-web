@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import { Link } from '@tanstack/react-router';
 import { ChevronDown, Search } from 'lucide-react';
-import { useAuth } from '~/contexts/auth';
+import useAuth from '~/hooks/useAuth';
 import { useBoards } from '~/hooks/queries/useBoardQueries';
 import { cn } from '~/lib/utils';
 import { Board } from '~/services/types';

@@ -24,7 +24,7 @@ import {
   Toast,
   useToast,
 } from '~/components/ui';
-import { useAuth } from '~/contexts/auth';
+import useAuth from '~/hooks/useAuth';
 import { ViewportSize, useViewportSize } from '~/contexts/viewportSize';
 import { useUpdateAlbumThumbnail } from '~/hooks/queries/useAlbumQueries';
 import { useBoards } from '~/hooks/queries/useBoardQueries';

@@ -3,7 +3,7 @@ import { Link } from '@tanstack/react-router';
 
 import AdminPage, { AdminTab, AdminTabs } from '~/components/Admin/AdminPage';
 import { CountBadge } from '~/components/ui';
-import { useAuth } from '~/contexts/auth';
+import useAuth from '~/hooks/useAuth';
 import {
   useAllRentRecords,
   useEquipmentList,

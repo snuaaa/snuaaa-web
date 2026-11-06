@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { Link, type LinkProps } from '@tanstack/react-router';
 import { House, Image, List, Telescope, User } from 'lucide-react';
-import { useAuth } from '~/contexts/auth';
+import useAuth from '~/hooks/useAuth';
 import { cn } from '~/lib/utils';
 import { EQUIPMENT_GRADE } from './constants';
 import { NavSection, useNavSection } from './useNavSection';

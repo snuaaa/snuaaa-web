@@ -2,7 +2,7 @@ import { type ReactNode, useState } from 'react';
 import { Link } from '@tanstack/react-router';
 import { Search } from 'lucide-react';
 import { Button } from '~/components/ui';
-import { useAuth } from '~/contexts/auth';
+import useAuth from '~/hooks/useAuth';
 import { ViewportSize, useViewportSize } from '~/contexts/viewportSize';
 import { useBoards } from '~/hooks/queries/useBoardQueries';
 import { cn } from '~/lib/utils';
