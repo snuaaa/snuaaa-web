@@ -10,7 +10,6 @@ export const BASE_USER_FIELDS: Attributes<UserModel> = [
   'introduction',
   'grade',
   'level',
-  'email',
   'profile_path',
   'profile_url',
   'deleted_at',
