@@ -81,7 +81,7 @@ function LogIn() {
               서울대학교 아마추어 천문회
             </h1>
             <p className="text-sm text-fg-on-brand-muted">
-              오늘 밤도 맑은 하늘을
+              Amateur Astronomy Association
             </p>
           </div>
         </div>

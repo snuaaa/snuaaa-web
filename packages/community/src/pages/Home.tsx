@@ -5,7 +5,7 @@ import {
   RecentPostsCard,
   SoundBoxCard,
 } from '~/components/Home/HomeSections';
-import { SkyBackdrop } from '~/components/Home/Sky';
+import { SkyBackdrop, SkyConstellation } from '~/components/Home/Sky';
 import { skyStyle } from '~/components/Home/skyColors';
 import { TonightCard, TonightStrip } from '~/components/Home/Tonight';
 import BrandMark from '~/components/Layout/BrandMark';
@@ -24,6 +24,11 @@ function Home() {
         style={skyStyle(sky)}
       >
         <SkyBackdrop sky={sky} />
+        {/* Between the club name and the 관측 모드 toggle */}
+        <SkyConstellation
+          sky={sky}
+          className="top-[calc(env(safe-area-inset-top)+4px)] right-16 h-14"
+        />
         <div className="flex min-h-11 items-center justify-between gap-3">
           <BrandMark />
           {/* 동아리 소개 is in the footer, so this corner holds 관측 모드. */}
@@ -39,6 +44,10 @@ function Home() {
         style={skyStyle(sky)}
       >
         <SkyBackdrop sky={sky} />
+        {/* In the top nav's empty stretch, left of 관측 모드 and the avatar */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 mx-auto hidden h-16 max-w-page lg:block">
+          <SkyConstellation sky={sky} className="top-1.5 right-44 h-[52px]" />
+        </div>
         <div className="mx-auto grid max-w-page grid-cols-2 items-stretch lg:grid-cols-[minmax(0,1fr)_520px] gap-5 px-6 pt-6 pb-7">
           <SoundBoxCard soundBox={homeData?.soundBoxData} brand />
           <TonightCard sky={sky} />

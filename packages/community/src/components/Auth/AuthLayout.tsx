@@ -107,9 +107,11 @@ export default function AuthLayout({ mobile, children }: AuthLayoutProps) {
           <div className="flex flex-col gap-3.5">
             <AaaConstellation className="mb-6 h-[180px] self-start" />
             <p className="text-[44px] leading-tight font-bold tracking-[-1px]">
-              오늘 밤도
+              Amateur
               <br />
-              맑은 하늘을
+              Astronomy
+              <br />
+              Association
             </p>
             <p className="text-base text-fg-on-brand-muted">
               관측, 사진, 이야기를 나누는 AAA 커뮤니티
