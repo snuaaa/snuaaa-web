@@ -148,7 +148,7 @@ export default function AaaConstellation({
             d={`M${point(from)} L${point(to)}`}
             pathLength={1}
             strokeDasharray="1 1"
-              className="animate-constellation-draw motion-reduce:animate-none"
+            className="animate-constellation-draw motion-reduce:animate-none"
             style={{
               animationDelay: `${CROSSBARS_AT + i * 0.15}s`,
               animationDuration: '0.5s',
