@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import logo from '~/assets/img/logo_white.png';
 import { cn } from '~/lib/utils';
 import { BackButton } from '~/components/ui';
+import AaaConstellation from '~/components/Layout/AaaConstellation';
 
 // x%, y%, size px, opacity
 const STARS: [number, number, number, number][] = [
@@ -104,10 +105,13 @@ export default function AuthLayout({ mobile, children }: AuthLayoutProps) {
             </span>
           </div>
           <div className="flex flex-col gap-3.5">
+            <AaaConstellation className="mb-6 h-[180px] self-start" />
             <p className="text-[44px] leading-tight font-bold tracking-[-1px]">
-              오늘 밤도
+              Amateur
               <br />
-              맑은 하늘을
+              Astronomy
+              <br />
+              Association
             </p>
             <p className="text-base text-fg-on-brand-muted">
               관측, 사진, 이야기를 나누는 AAA 커뮤니티

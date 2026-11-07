@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react';
+import AaaConstellation from '~/components/Layout/AaaConstellation';
 import { cn } from '~/lib/utils';
 import type { Sky } from './skyColors';
 
@@ -133,6 +134,30 @@ export function SunArc({ sky }: { sky: Sky }) {
           style={{ left: `${t * 100}%`, top: `${(y / 40) * 100}%` }}
         />
       )}
+    </div>
+  );
+}
+
+/**
+ * The AAA constellation up in the home sky. It comes out with the stars
+ * (fading with `starOpacity`), so it is only there at dusk and at night,
+ * and draws itself once when the home page opens. The parent places it.
+ */
+export function SkyConstellation({
+  sky,
+  className,
+}: {
+  sky?: Sky;
+  className?: string;
+}) {
+  if (!sky || sky.starOpacity < 0.05) return null;
+  return (
+    <div
+      aria-hidden
+      className={cn('pointer-events-none absolute -z-10', className)}
+      style={{ opacity: Math.min(1, sky.starOpacity * 0.9) }}
+    >
+      <AaaConstellation className="h-full text-white" strokeWidth={5.5} />
     </div>
   );
 }

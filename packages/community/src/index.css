@@ -159,6 +159,9 @@
   --animate-accordion-up: accordion-up 200ms ease-in;
   /* 하늘 헤더 stars; each star sets --star-opacity and its own duration */
   --animate-twinkle: twinkle 4s ease-in-out infinite;
+  /* AAA 별자리 (AaaConstellation): stars come out, then the lines draw */
+  --animate-star-in: star-in 700ms ease-out both;
+  --animate-constellation-draw: constellation-draw 2.4s ease-in-out both;
 
   @keyframes fade-in {
     from {
@@ -187,6 +190,21 @@
     }
     50% {
       opacity: calc(var(--star-opacity) * 0.35);
+    }
+  }
+  @keyframes star-in {
+    from {
+      opacity: 0;
+      transform: scale(0.3);
+    }
+    60% {
+      opacity: 1;
+      transform: scale(1.25);
+    }
+  }
+  @keyframes constellation-draw {
+    from {
+      stroke-dashoffset: 1;
     }
   }
   @keyframes accordion-down {
