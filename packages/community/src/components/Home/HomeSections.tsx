@@ -161,6 +161,7 @@ export function RecentPostsCard({ posts }: { posts: Content[] }) {
                     variant={
                       isNotice(post.board.board_id) ? 'brand' : 'neutral'
                     }
+                    className="shrink-0"
                   >
                     {post.board.board_name}
                   </Tag>

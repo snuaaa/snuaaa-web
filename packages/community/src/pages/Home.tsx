@@ -52,7 +52,7 @@ function Home() {
           <div className="md:hidden">
             <SoundBoxCard soundBox={homeData.soundBoxData} />
           </div>
-          <div className="grid gap-5 md:grid-cols-2 md:gap-6">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-6">
             <RecentPostsCard posts={homeData.recentPosts} />
             <RecentPhotosSection photos={homeData.recentAstroPhoto} />
           </div>
