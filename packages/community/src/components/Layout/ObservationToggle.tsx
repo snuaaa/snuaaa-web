@@ -1,10 +1,11 @@
-import { Moon } from 'lucide-react';
+import { Flashlight } from 'lucide-react';
 import { useObservationMode } from '~/hooks/useObservationMode';
 import { cn } from '~/lib/utils';
 
 /**
- * 관측 모드 switch for the navy header: a moon that fills in, red, while the
- * red-light theme is on.
+ * 관측 모드 switch for the navy header: a flashlight, like the red torch
+ * observers carry, that fills in while the red-light theme is on. Not a
+ * moon, which reads as a dark-theme switch.
  */
 export default function ObservationToggle({
   className,
@@ -25,7 +26,7 @@ export default function ObservationToggle({
         className,
       )}
     >
-      <Moon className={cn('size-5', on && 'fill-current')} aria-hidden />
+      <Flashlight className={cn('size-5', on && 'fill-current')} aria-hidden />
     </button>
   );
 }
