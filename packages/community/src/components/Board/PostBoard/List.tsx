@@ -275,7 +275,7 @@ const ListPost = ({ boardInfo, onClickCreate }: Props) => {
   );
 
   const writeAction = writable ? (
-    <Button onClick={onClickCreate} className="[&_svg]:text-accent">
+    <Button onClick={onClickCreate}>
       <PenLine className="size-[18px]!" />
       글쓰기
     </Button>

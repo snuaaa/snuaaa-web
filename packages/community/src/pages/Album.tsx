@@ -255,10 +255,7 @@ const AlbumPage: FC = () => {
   };
 
   const uploadButton = (
-    <Button
-      onClick={() => setIsUploading(true)}
-      className="[&_svg]:text-accent"
-    >
+    <Button onClick={() => setIsUploading(true)}>
       <Upload className="size-[18px]!" />
       사진 올리기
     </Button>

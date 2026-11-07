@@ -14,9 +14,10 @@ const buttonVariants = cva(
         secondary:
           'border border-gray-300 bg-surface text-fg hover:bg-gray-50 disabled:text-gray-400',
         ghost: 'text-navy-700 hover:bg-primary-soft disabled:text-gray-400',
-        // Accent is for the single most important action on a screen.
+        // Accent is for the single most important action on a screen. Old mint
+        // with navy text (white would be 3.0:1); it stays mint on dark surfaces.
         accent:
-          'bg-accent font-bold text-navy-900 hover:bg-star-400 disabled:bg-surface-sunken disabled:text-gray-400',
+          'bg-mint-500 font-bold text-navy-900 hover:bg-mint-400 disabled:bg-surface-sunken disabled:text-gray-400',
         danger:
           'bg-danger text-white hover:brightness-95 disabled:bg-surface-sunken disabled:text-gray-400',
       },

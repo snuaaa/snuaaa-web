@@ -5,7 +5,7 @@ const FILE_TYPE_STYLES: Record<string, string> = {
   HWP: 'bg-info-soft text-navy-700',
   DOC: 'bg-info-soft text-navy-700',
   XLS: 'bg-success-soft text-success',
-  ZIP: 'bg-accent-soft text-star-800',
+  ZIP: 'bg-accent-soft text-mint-800',
 };
 
 /** PDF / HWP / ZIP … label in front of an attached file's name. */
