@@ -59,10 +59,11 @@ Each package has its own ESLint flat config (`eslint.config.*`) with Prettier (s
   3. `src/hooks/queries/use*Queries.ts` wraps those functions in TanStack Query hooks, each file with a `xxxKeys` query-key factory. New server calls should follow the same service → query-hook pattern, and mutations should invalidate through the key factories.
 - **Auth:** the session (`/auth/check` result, or `null` when logged out) is a TanStack Query cache entry (`hooks/queries/useAuthQueries.ts`), revalidated at most every 5 minutes. The root route's `beforeLoad` loads it through `loadSession()` (`lib/auth.ts`) and redirects to `/auth/login?redirect=...` unless the page is public (`PUBLIC_PATHS`). It runs before any loader, so guard pages there, not with `<Navigate>` in components. Only a 401 logs the user out. `useAuth()` (`hooks/useAuth.ts`) exposes `authInfo`, plus `authLogin`/`authLogout`, which update the session cache directly, so navigating right after `authLogin` passes the guard. Pass a `redirect` value through `getSafeRedirect()` before navigating to it.
 - **Styling:** Tailwind v4 via `@tailwindcss/vite`, alongside legacy SCSS in `src/sass/` and `App.scss`.
-  - Design tokens live in the `@theme` block of `src/index.css` (see `docs/redesign.md`). Tailwind's default palette is cleared, so only token colors exist (`bg-primary`, `text-fg-muted`, `border-border`, `bg-navy-500`, ...). Prefer semantic tokens over raw palette steps, and don't add hex values in class names.
+  - Design tokens live in the `@theme` block of `src/index.css` (see `docs/design.md`). Tailwind's default palette is cleared, so only token colors exist (`bg-primary`, `text-fg-muted`, `border-border`, `bg-navy-500`, ...). Prefer semantic tokens over raw palette steps, and don't add hex values in class names.
   - Legacy SCSS color variables in `sass/common/_color.scss` point at the same tokens via `var()`, so Sass color functions can't take them.
   - Shared UI primitives (Button, Field/Input, Tag, Avatar, Sheet, Dialog, NavDrawer, Tabs, Pagination, ...) live in `src/components/ui/` and are imported from `~/components/ui`. Merge classes with `cn()` from `~/lib/utils`, and use lucide-react for new icons.
-- **Redesign:** A UI redesign and design-system migration is in progress. Read `docs/redesign.md` before any UI work; it holds the tokens, component plan, decisions and PR order. It runs as an epic, and `docs/redesign.md` names the branch.
+- **Design system:** Read `docs/design.md` before any UI work. It holds the tokens, the motion rules, the component list, the screen decisions and the planned work. The redesign epic that built it has merged into `main`; screens it hasn't moved yet still render in the legacy column.
+- **Motion:** elements appear by brightening and coming into focus (`animate-light-in` / `animate-light-out`, `ease-night`, `--duration-*` in `index.css`), not by sliding or scaling. Route changes get a view transition from `router.tsx` only when the path changes. Pair every animation or transition with `motion-reduce:`.
 - **Rich text:** CKEditor 5 v38, bundled via `@ckeditor/vite-plugin-ckeditor5`.
 - **Imports:** the `~/` alias maps to `src/`.
 
@@ -91,7 +92,7 @@ Each package has its own ESLint flat config (`eslint.config.*`) with Prettier (s
     - Remove the old behavior only after the epic ships to production (contract), and add that cleanup to the epic PR's list.
     - Write `Epic: #<epic PR number>` in the PR body, so it shows up in the epic PR's timeline.
   - `<name>` must not be `develop` or `main`, because it becomes the preview alias.
-  - Each epic keeps its plan under `docs/` on the epic branch (e.g. `docs/redesign.md` on `epic/redesign`). Read it before working on that epic.
+  - Each epic keeps its plan under `docs/` on the epic branch (e.g. `docs/<name>.md` on `epic/<name>`). Read it before working on that epic.
 - Branch names follow `<type>/<short-description>` (e.g. `fix/profile-path`, `feat/late-fee-management`), where `<type>` is `feat`, `fix`, `chore` or `refactor`. Commit messages and PR titles use `[feat]`, `[fix]`, `[refactor]`, `[chore]` prefixes, often written in Korean.
 - **Merging:** comment `/merge` on the PR instead of using the merge button. `.github/workflows/merge-command.yml` picks the method from the branches and titles the commit `<PR title> (#<PR number>)`:
 

@@ -5,9 +5,10 @@ import { X } from 'lucide-react';
 import { cn } from '~/lib/utils';
 import { Button } from './Button';
 
-const overlayClassName = 'fixed inset-0 z-40 bg-navy-950/48';
+const overlayClassName =
+  'fixed inset-0 z-40 bg-navy-950/48 data-[state=open]:animate-overlay-in data-[state=closed]:animate-overlay-out motion-reduce:animate-none';
 const contentClassName =
-  'fixed top-1/2 left-1/2 z-50 flex max-h-[85vh] w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 flex-col rounded-lg bg-surface shadow-md outline-none';
+  'fixed top-1/2 left-1/2 z-50 flex max-h-[85vh] w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 flex-col rounded-lg bg-surface shadow-md outline-none data-[state=open]:animate-light-in data-[state=closed]:animate-light-out motion-reduce:animate-none';
 
 export type DialogProps = {
   open: boolean;

@@ -172,7 +172,7 @@ export default function TopNav() {
 
   return (
     <header
-      className="sticky top-0 z-30 hidden bg-surface-brand text-fg-on-brand transition-colors duration-300 motion-reduce:transition-none md:block"
+      className="sticky top-0 z-30 hidden bg-surface-brand [view-transition-name:top-nav] text-fg-on-brand transition-colors duration-300 motion-reduce:transition-none md:block"
       style={headerStyle}
     >
       <div className="mx-auto flex h-16 max-w-page items-center gap-8 px-6">

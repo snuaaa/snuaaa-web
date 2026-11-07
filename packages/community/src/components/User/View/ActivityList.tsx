@@ -367,13 +367,19 @@ export default function ActivityList({
           ))}
         </TabsList>
       </Tabs>
-      {
+      {/* Keyed so each tab's list comes in with the light-in rule. */}
+      <div
+        key={tab}
+        className="flex flex-1 flex-col animate-light-in motion-reduce:animate-none"
+      >
         {
-          posts: <PostList {...listProps} />,
-          photos: <PhotoList {...listProps} />,
-          comments: <CommentList {...listProps} />,
-        }[tab]
-      }
+          {
+            posts: <PostList {...listProps} />,
+            photos: <PhotoList {...listProps} />,
+            comments: <CommentList {...listProps} />,
+          }[tab]
+        }
+      </div>
     </div>
   );
 }
