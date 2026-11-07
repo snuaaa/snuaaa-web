@@ -1,11 +1,10 @@
-import { Flashlight } from 'lucide-react';
+import { Binoculars } from 'lucide-react';
 import { useObservationMode } from '~/hooks/useObservationMode';
 import { cn } from '~/lib/utils';
 
 /**
- * 관측 모드 switch for the navy header: a flashlight, like the red torch
- * observers carry, that fills in while the red-light theme is on. Not a
- * moon, which reads as a dark-theme switch.
+ * 관측 모드 switch for the navy header: binoculars that fill in while the
+ * red-light theme is on. Not a moon, which reads as a dark-theme switch.
  */
 export default function ObservationToggle({
   className,
@@ -26,7 +25,7 @@ export default function ObservationToggle({
         className,
       )}
     >
-      <Flashlight className={cn('size-5', on && 'fill-current')} aria-hidden />
+      <Binoculars className={cn('size-5', on && 'fill-current')} aria-hidden />
     </button>
   );
 }
