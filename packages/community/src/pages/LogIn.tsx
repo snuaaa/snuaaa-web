@@ -75,7 +75,7 @@ function LogIn() {
     <AuthLayout mobile="night">
       <div className="flex flex-1 flex-col px-6 pb-8 md:p-0">
         <div className="flex flex-col items-center gap-3.5 pt-[min(120px,14dvh)] text-center text-fg-on-brand md:hidden">
-          <AaaConstellation className="mb-2 h-[132px]" />
+          <AaaConstellation className="mb-2 h-[132px]" strokeWidth={2.75} />
           <div className="flex flex-col gap-1.5">
             <h1 className="text-[22px] font-bold tracking-[-0.4px]">
               서울대학교 아마추어 천문회

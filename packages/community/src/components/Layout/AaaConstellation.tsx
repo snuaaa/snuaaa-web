@@ -96,6 +96,13 @@ type AaaConstellationProps = {
   className?: string;
   /** Accessible name; leave out when the club name is written next to it. */
   label?: string;
+  /**
+   * Line width in the drawing's own units (it is 310 wide), so pass a
+   * larger value when it is drawn small. Not non-scaling-stroke: with that,
+   * some browsers measure the pathLength dashes in screen pixels and the
+   * lines stop drawing in.
+   */
+  strokeWidth?: number;
 };
 
 /**
@@ -107,6 +114,7 @@ type AaaConstellationProps = {
 export default function AaaConstellation({
   className,
   label,
+  strokeWidth = 2,
 }: AaaConstellationProps) {
   return (
     <svg
@@ -119,17 +127,15 @@ export default function AaaConstellation({
       <g
         fill="none"
         stroke="currentColor"
-        strokeWidth={1.25}
+        strokeWidth={strokeWidth}
         strokeLinecap="round"
         strokeLinejoin="round"
-        vectorEffect="non-scaling-stroke"
         opacity={0.6}
       >
         <path
           d={`M${STROKE.map(point).join(' L')}`}
           pathLength={1}
           strokeDasharray="1 1"
-          vectorEffect="non-scaling-stroke"
           className="animate-constellation-draw motion-reduce:animate-none"
           style={{
             animationDelay: `${LINES_AT}s`,
@@ -142,8 +148,7 @@ export default function AaaConstellation({
             d={`M${point(from)} L${point(to)}`}
             pathLength={1}
             strokeDasharray="1 1"
-            vectorEffect="non-scaling-stroke"
-            className="animate-constellation-draw motion-reduce:animate-none"
+              className="animate-constellation-draw motion-reduce:animate-none"
             style={{
               animationDelay: `${CROSSBARS_AT + i * 0.15}s`,
               animationDuration: '0.5s',

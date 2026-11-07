@@ -157,7 +157,7 @@ export function SkyConstellation({
       className={cn('pointer-events-none absolute -z-10', className)}
       style={{ opacity: Math.min(1, sky.starOpacity * 0.9) }}
     >
-      <AaaConstellation className="h-full text-white" />
+      <AaaConstellation className="h-full text-white" strokeWidth={5.5} />
     </div>
   );
 }
