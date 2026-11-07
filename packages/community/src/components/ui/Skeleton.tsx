@@ -6,11 +6,14 @@ type Props = {
   style?: CSSProperties;
 };
 
-/** A pulsing placeholder block; size and shape come from `className`. */
+/** A slowly breathing placeholder block; size and shape come from `className`. */
 export function Skeleton({ className, style }: Props) {
   return (
     <div
-      className={cn('animate-pulse rounded-md bg-gray-200', className)}
+      className={cn(
+        'animate-breathe rounded-md bg-gray-200 motion-reduce:animate-none',
+        className,
+      )}
       style={style}
     />
   );
