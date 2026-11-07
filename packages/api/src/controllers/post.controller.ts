@@ -80,7 +80,7 @@ export async function retrievePostsInBoard(board_id, rowNum, offset) {
       {
         model: UserModel,
         required: true,
-        attributes: ['nickname'],
+        attributes: ['nickname', 'profile_path', 'profile_url'],
         paranoid: false,
       },
     ],
@@ -178,7 +178,7 @@ export function retrievePostsWithFilter(filter: PostFilter) {
       {
         model: UserModel,
         required: true,
-        attributes: ['nickname'],
+        attributes: ['nickname', 'profile_path', 'profile_url'],
         paranoid: false, // 삭제된 유저의 글도 보이도록
         where: user,
       },
@@ -276,7 +276,7 @@ export async function searchPostsInBoard(
       {
         model: UserModel,
         required: true,
-        attributes: ['nickname'],
+        attributes: ['nickname', 'profile_path', 'profile_url'],
         where: userCondition,
         paranoid: false,
       },
