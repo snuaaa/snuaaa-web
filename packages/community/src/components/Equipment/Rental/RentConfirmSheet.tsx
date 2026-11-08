@@ -155,7 +155,7 @@ export default function RentConfirmSheet({
           ))}
         </ul>
         <div className="flex flex-col gap-1 rounded-lg bg-accent-soft px-4 py-3.5">
-          <span className="text-caption font-semibold text-star-800">
+          <span className="text-caption font-semibold text-mint-800">
             반납 기한
           </span>
           <span className="text-xl font-bold tracking-[-0.3px]">

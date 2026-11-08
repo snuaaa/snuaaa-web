@@ -131,10 +131,7 @@ const ExhibitBoard: FC<ExhibitBoardProps> = ({ boardInfo }) => {
       board={boardInfo}
       action={
         writable && (
-          <Button
-            onClick={() => setIsCreating(true)}
-            className="[&_svg]:text-accent"
-          >
+          <Button onClick={() => setIsCreating(true)}>
             <ImagePlus className="size-[18px]!" />
             사진전 만들기
           </Button>

@@ -143,7 +143,7 @@ function DocuBoard({ boardInfo }: DocuBoardProps) {
   }
 
   const createAction = writable ? (
-    <Button onClick={openCreate} className="[&_svg]:text-accent">
+    <Button onClick={openCreate}>
       <FilePlus className="size-[18px]!" />
       문서 등록
     </Button>
