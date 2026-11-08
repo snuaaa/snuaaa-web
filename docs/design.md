@@ -110,7 +110,7 @@ Tailwind v4 `@theme`으로 정의합니다(`src/index.css`). 기존 `sass/common
 | --- | --- |
 | `animate-light-in` / `animate-light-out` | Dialog, ConfirmDialog의 본문(`data-[state=open]` / `data-[state=closed]`), Sheet 안의 내용, 바뀌는 탭 내용(`key`로 다시 그려서 재생) |
 | `animate-overlay-in` / `animate-overlay-out` | 다이얼로그 뒤의 어두운 막 |
-| `animate-toast-in` | Toast. 들어올 때 노란 별빛 테두리가 한 번 번졌다가 사라집니다 |
+| `animate-toast-in` | Toast. 들어올 때 `accent` 테두리가 한 번 번졌다가 사라집니다(어두운 토스트 위라 노랑 별빛) |
 | `animate-breathe` | Skeleton. 빠른 pulse 대신 2.4초 주기로 천천히 숨 쉽니다 |
 | `animate-fade-in/out` | 드롭다운 메뉴, NavDrawer의 막 |
 | `animate-slide-in/out-left` | NavDrawer |
@@ -120,7 +120,7 @@ Tailwind v4 `@theme`으로 정의합니다(`src/index.css`). 기존 `sass/common
 - **페이지 이동:** `router.tsx`가 경로가 바뀔 때만 View Transitions API로 `page` 전환을 겁니다. 옛 화면은 흐려지며 사라지고 새 화면이 선명해지며 나타나고, 상단 네비(`top-nav`)와 탭바(`tab-bar`)는 제자리에 있습니다. `?photo=<id>`처럼 search param만 바뀌는 이동에는 걸지 않습니다. 전환 타입을 지원하지 않는 브라우저와 관측 모드에서는 바로 바뀝니다.
 - **예외:** 화면 가장자리에 붙어 손가락을 따라가는 요소는 미끄러짐을 유지합니다. 하단 시트(vaul)는 끌어서 닫을 수 있어서 시트 자체는 미끄러지고, 그 안의 내용만 `animate-light-in`을 따릅니다. NavDrawer도 왼쪽에서 열리되 곡선은 `ease-night`를 씁니다.
 - **동작 줄이기:** 애니메이션과 트랜지션에는 `motion-reduce:animate-none`이나 `motion-reduce:transition-none`을 함께 붙여서 `prefers-reduced-motion`을 따릅니다. 퇴장 애니메이션 끝에 숨기는 요소는 `motion-reduce:hidden`으로 바로 숨깁니다(Toast). 페이지 전환도 꺼집니다.
-- **관측 모드:** blur와 brightness는 관측 모드 필터와 겹쳐도 어둡게 남습니다. 새로 노란빛(accent)을 번지게 하는 효과를 넣을 때는 관측 모드에서 확인합니다.
+- **관측 모드:** blur와 brightness는 관측 모드 필터와 겹쳐도 어둡게 남습니다. `accent` 빛을 번지게 하는 효과를 새로 넣을 때는 관측 모드에서 확인합니다.
 
 ### 등급 테두리
 
