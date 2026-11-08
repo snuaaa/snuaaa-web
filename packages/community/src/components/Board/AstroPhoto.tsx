@@ -242,10 +242,7 @@ function AstroPhoto({ boardInfo }: AstroPhotoProps) {
       resultCount={resultCount}
       action={
         writable && (
-          <Button
-            onClick={() => setIsCreating(true)}
-            className="[&_svg]:text-accent"
-          >
+          <Button onClick={() => setIsCreating(true)}>
             <ActionIcon className="size-[18px]!" />
             {actionLabel}
           </Button>

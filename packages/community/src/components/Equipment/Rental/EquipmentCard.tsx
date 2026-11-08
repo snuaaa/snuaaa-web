@@ -142,7 +142,7 @@ export default function EquipmentCard({
           className={cn(
             'flex size-11 shrink-0 items-center justify-center self-center rounded-full border transition-colors disabled:opacity-40',
             inCart
-              ? 'border-primary bg-primary text-accent'
+              ? 'border-primary bg-primary text-white'
               : 'border-gray-300 bg-surface text-fg',
           )}
         >

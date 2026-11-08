@@ -131,7 +131,7 @@ export default function ReturnSheet({
             htmlFor="return-photo"
             className="flex h-60 cursor-pointer flex-col items-center justify-center gap-2.5 rounded-xl border-[1.5px] border-dashed border-gray-400 bg-bg text-[15px] font-semibold text-gray-700"
           >
-            <span className="flex size-14 items-center justify-center rounded-full bg-primary text-accent">
+            <span className="flex size-14 items-center justify-center rounded-full bg-primary text-white">
               <Camera className="size-[26px]" strokeWidth={1.8} />
             </span>
             사진 찍기 · 앨범에서 선택

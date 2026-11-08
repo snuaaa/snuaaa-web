@@ -166,7 +166,7 @@ export default function CreatePost({ board, onCreate, onClose }: Props) {
               <Button
                 size="sm"
                 variant="secondary"
-                className="border-star-600 bg-transparent"
+                className="border-mint-600 bg-transparent"
                 onClick={startOver}
               >
                 새로 쓰기

@@ -36,6 +36,17 @@
   --color-star-700: #a87c10;
   --color-star-800: #6e520b;
 
+  /* The old site's mint (pre-redesign $color_aqua #49a0ae), the brand point color */
+  --color-mint-50: #eef8f8;
+  --color-mint-100: #ddf1f2;
+  --color-mint-200: #a6dde1;
+  --color-mint-300: #6fc3cc;
+  --color-mint-400: #57adb6;
+  --color-mint-500: #49a0ae;
+  --color-mint-600: #2f7f8c;
+  --color-mint-700: #246773;
+  --color-mint-800: #1a4e57;
+
   --color-gray-50: #f4f5f8;
   --color-gray-100: #eceef3;
   --color-gray-200: #e3e6ee;
@@ -67,12 +78,15 @@
   --color-fg-on-brand: var(--color-white);
   --color-fg-on-brand-muted: var(--color-navy-300);
   --color-border: var(--color-gray-200);
-  --color-primary: var(--color-navy-900);
-  --color-primary-hover: var(--color-navy-700);
-  --color-primary-soft: var(--color-navy-100);
-  /* accent: fill only, never as text on a light background */
-  --color-accent: var(--color-star-500);
-  --color-accent-soft: var(--color-star-100);
+  /* primary: buttons and selection on light surfaces. White text is 4.6:1. */
+  --color-primary: var(--color-mint-600);
+  --color-primary-hover: var(--color-mint-700);
+  --color-primary-soft: var(--color-mint-100);
+  /* accent: the point color. Mint on light surfaces; dark surfaces switch it
+     to star yellow (see "Dark surfaces" below). Fill only, never as text on
+     a light background. */
+  --color-accent: var(--color-mint-500);
+  --color-accent-soft: var(--color-mint-100);
 
   /* Typography: size / line-height / weight */
   --font-sans:
@@ -431,6 +445,20 @@ input, select, textarea { outline: none; }
 }
 
 /*
+ * Dark surfaces: the point color is star yellow on navy (starlight), mint on
+ * light surfaces. Buttons stay mint everywhere (Button `accent` uses mint
+ * directly), so only icons, underlines, dots and tags turn yellow here.
+ */
+.bg-surface-brand,
+.bg-surface-brand-raised,
+.bg-navy-900,
+.bg-navy-950,
+.bg-gray-900 {
+  --color-accent: var(--color-star-500);
+  --color-accent-soft: var(--color-star-100);
+}
+
+/*
  * 관측 모드 (red-light night mode), toggled by hooks/useObservationMode.ts.
  * One filter on the root covers every screen, legacy ones and portals
  * included: the page turns dark and only red light is left, which keeps the
@@ -459,6 +487,7 @@ input, select, textarea { outline: none; }
     --color-navy-700: #cdd9ea;
     /* the moon's lit side stays the brightest thing on the surface */
     --color-accent: var(--color-star-800);
+    --color-star-500: var(--color-star-800);
   }
 
   img,

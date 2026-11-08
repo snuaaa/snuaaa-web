@@ -181,7 +181,7 @@ export function MobileTagFilterBar({
             {selectedTags.map((tag) => (
               <li
                 key={tag.tag_id}
-                className="flex h-[34px] shrink-0 items-center gap-0.5 rounded-full bg-primary-soft pr-1.5 pl-3 text-label text-navy-700"
+                className="flex h-[34px] shrink-0 items-center gap-0.5 rounded-full bg-primary-soft pr-1.5 pl-3 text-label text-mint-800"
               >
                 {tag.tag_name}
                 <button

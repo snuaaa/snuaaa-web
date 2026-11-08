@@ -212,7 +212,7 @@ const ExhibitionPage: FC = () => {
             <p className="text-heading">아직 걸린 작품이 없어요</p>
             {writable && (
               <div className="pt-2">
-                <Button onClick={openUpload} className="[&_svg]:text-accent">
+                <Button onClick={openUpload}>
                   <ImagePlus className="size-[18px]!" />
                   작품 올리기
                 </Button>

@@ -38,7 +38,18 @@ type AvatarProps = {
   className?: string;
 };
 
-/** Shows profile_url, then profile_path, then the nickname's first letter. */
+/**
+ * Nicknames start with the join year ("23홍길동"), so the first letter would
+ * be the same digit for most members. Skip leading digits and use the name's
+ * first letter, falling back to the first character for all-digit nicknames.
+ */
+function initialOf(nickname: string) {
+  const trimmed = nickname.trim();
+  const name = trimmed.replace(/^[0-9\s]+/, '');
+  return (name || trimmed).charAt(0);
+}
+
+/** Shows profile_url, then profile_path, then the nickname's initial. */
 export function Avatar({
   user,
   size = 40,
@@ -67,10 +78,10 @@ export function Avatar({
       )}
       <AvatarPrimitive.Fallback
         delayMs={src ? 300 : 0}
-        className="flex size-full items-center justify-center font-bold text-navy-700"
+        className="flex size-full items-center justify-center font-bold text-mint-800"
         aria-label={user.nickname}
       >
-        {user.nickname.trim().charAt(0)}
+        {initialOf(user.nickname)}
       </AvatarPrimitive.Fallback>
     </AvatarPrimitive.Root>
   );
