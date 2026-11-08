@@ -43,7 +43,7 @@ export default function BottomTabBar() {
   return (
     <nav
       aria-label="주 메뉴"
-      className="fixed inset-x-0 bottom-0 z-30 grid h-tab-bar auto-cols-fr grid-flow-col border-t border-border bg-surface pr-[max(0.25rem,env(safe-area-inset-right))] pb-safe-0 pl-[max(0.25rem,env(safe-area-inset-left))] keyboard-open:hidden md:hidden"
+      className="fixed inset-x-0 bottom-0 z-30 grid [view-transition-name:tab-bar] h-tab-bar auto-cols-fr grid-flow-col border-t border-border bg-surface pr-[max(0.25rem,env(safe-area-inset-right))] pb-safe-0 pl-[max(0.25rem,env(safe-area-inset-left))] keyboard-open:hidden md:hidden"
     >
       <Tab to="/" label="홈" icon={<House />} active={isActive('home')} />
       <Tab

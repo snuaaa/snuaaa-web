@@ -5,7 +5,7 @@
 @custom-variant keyboard-open (:root[data-keyboard-open] &);
 
 /*
- * Design tokens (docs/redesign.md §2).
+ * Design tokens (docs/design.md §2).
  * Components reference the semantic tokens; the raw palette is only for defining them.
  * `static` keeps every variable on :root so SCSS can read them with var().
  */
@@ -164,11 +164,36 @@
   --grade-8: #74a9ff;
   --grade-9: #999999;
 
-  /* Radix enter/exit animations (NavDrawer) */
-  --animate-fade-in: fade-in 200ms ease-out;
-  --animate-fade-out: fade-out 200ms ease-in;
-  --animate-slide-in-left: slide-in-left 250ms ease-out;
-  --animate-slide-out-left: slide-out-left 200ms ease-in;
+  /*
+   * Motion (docs/design.md §2 움직임): things appear by brightening and
+   * coming into focus, not by sliding in or bouncing. One curve for all of
+   * it; exits run at 60% of the enter length.
+   */
+  --ease-night: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-quick: 240ms;
+  --duration-base: 450ms;
+  --duration-slow: 900ms;
+
+  /* Dialogs and page content: brighten and sharpen in, soften out. */
+  --animate-light-in: light-in var(--duration-base) var(--ease-night);
+  --animate-light-out: light-out calc(var(--duration-base) * 0.6)
+    var(--ease-night) forwards;
+  /* The dimmed layer behind a dialog or drawer */
+  --animate-overlay-in: fade-in var(--duration-base) var(--ease-night);
+  --animate-overlay-out: fade-out calc(var(--duration-base) * 0.6)
+    var(--ease-night) forwards;
+  /* Toast: comes in with a brief starlight ring */
+  --animate-toast-in: toast-in var(--duration-slow) var(--ease-night);
+  /* Skeleton: slow breathing instead of a fast pulse */
+  --animate-breathe: breathe 2.4s ease-in-out infinite;
+
+  /* Menus (quick) and the edge-anchored NavDrawer */
+  --animate-fade-in: fade-in var(--duration-quick) var(--ease-night);
+  --animate-fade-out: fade-out calc(var(--duration-quick) * 0.6) ease-in;
+  --animate-slide-in-left: slide-in-left var(--duration-base)
+    var(--ease-night);
+  --animate-slide-out-left: slide-out-left calc(var(--duration-base) * 0.6)
+    var(--ease-night);
   --animate-accordion-down: accordion-down 200ms ease-out;
   --animate-accordion-up: accordion-up 200ms ease-in;
   /* 하늘 헤더 stars; each star sets --star-opacity and its own duration */
@@ -185,6 +210,37 @@
   @keyframes fade-out {
     to {
       opacity: 0;
+    }
+  }
+  @keyframes light-in {
+    from {
+      opacity: 0;
+      filter: blur(8px) brightness(0.6);
+    }
+  }
+  @keyframes light-out {
+    to {
+      opacity: 0;
+      filter: blur(4px);
+    }
+  }
+  @keyframes toast-in {
+    0% {
+      opacity: 0;
+      filter: blur(8px) brightness(0.6);
+      box-shadow: 0 0 0 0 transparent;
+    }
+    45% {
+      opacity: 1;
+      filter: blur(0) brightness(1);
+      box-shadow:
+        0 0 0 1px color-mix(in srgb, var(--color-accent) 45%, transparent),
+        0 0 26px -4px color-mix(in srgb, var(--color-accent) 55%, transparent);
+    }
+  }
+  @keyframes breathe {
+    50% {
+      opacity: 0.45;
     }
   }
   @keyframes slide-in-left {
@@ -236,6 +292,30 @@
     to {
       height: 0;
     }
+  }
+}
+
+/*
+ * Page navigation (router.tsx sets the view transition type `page` when the
+ * path changes). The old page softens out while the new one comes into
+ * focus; the top nav and tab bar stay put.
+ */
+:root:active-view-transition-type(page)::view-transition-old(root) {
+  animation: light-out calc(var(--duration-base) * 0.5) var(--ease-night)
+    forwards;
+}
+:root:active-view-transition-type(page)::view-transition-new(root) {
+  animation: light-in var(--duration-base) var(--ease-night);
+}
+:root:active-view-transition-type(page)::view-transition-group(top-nav),
+:root:active-view-transition-type(page)::view-transition-group(tab-bar) {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
   }
 }
 
