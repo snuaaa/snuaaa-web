@@ -55,9 +55,9 @@ Tailwind v4 `@theme`으로 정의합니다(`src/index.css`). 기존 `sass/common
 | `accent` / `accent-soft` | 밝은 면 mint-500 / 100, 어두운 면 star-500 / 100 | 브랜드 포인트 |
 | `danger` | danger | 삭제, 오류 |
 
-- **포인트 색 규칙: 어두운 면은 노랑, 밝은 면은 민트, 버튼은 민트.** `accent`는 기본이 민트이고, `index.css`의 "Dark surfaces" 규칙이 `bg-surface-brand`, `bg-surface-brand-raised`, `bg-navy-900`, `bg-navy-950`, `bg-gray-900` 안에서 노랑으로 바꿉니다. 그래서 같은 `text-accent`, `bg-accent`가 놓인 면에 따라 알맞은 색이 됩니다. 새 어두운 면을 만들면 그 목록에 넣습니다.
+- **포인트 색 규칙: 어두운 면은 노랑, 밝은 면은 민트, 버튼은 민트.** `accent`는 기본이 민트이고, `index.css`의 "Dark surfaces" 규칙이 `bg-surface-brand`, `bg-surface-brand-raised`, `bg-navy-900`, `bg-navy-950`, `bg-gray-900` 안에서 노랑으로 바꿉니다. 그래서 같은 `text-accent`, `bg-accent`가 놓인 면에 따라 알맞은 색이 됩니다. 새 어두운 면을 만들면 그 목록에 넣습니다. 변수 상속으로 동작하므로, 어두운 면 안에 밝은 면(`bg-surface` 등)을 넣으면 그 안에서 `--color-accent`를 다시 민트로 되돌립니다.
 - **버튼:** `primary` 버튼은 mint-600에 흰 글자, `accent` 버튼은 어두운 면에서도 mint-500에 navy-900 글자입니다(mint-500 위 흰 글자는 3.0:1로 부족합니다). 버튼 안 아이콘은 버튼 글자색을 따르고, `[&_svg]:text-accent`로 따로 칠하지 않습니다.
-- **accent 쓰는 법:** 채움, 아이콘, 밑줄, 점으로 씁니다. 밝은 면에서 글자색으로 쓰면 대비가 부족합니다(2.8:1). 연한 바탕(`accent-soft`, `primary-soft`) 위 글자는 mint-800입니다. 가장 중요한 행동 하나에만 쓰고, 화면당 하나로 제한합니다.
+- **accent 쓰는 법:** 채움, 아이콘, 밑줄, 점으로 씁니다. 밝은 면에서 글자색으로 쓰면 대비가 부족합니다(2.8:1). 연한 바탕(`accent-soft`, `primary-soft`) 위 글자는 `text-primary`(mint-600, 4.0:1)가 아니라 mint-800입니다. 가장 중요한 행동 하나에만 쓰고, 화면당 하나로 제한합니다.
 
 ### 그 밖의 토큰
 
