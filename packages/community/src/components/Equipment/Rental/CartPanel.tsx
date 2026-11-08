@@ -76,7 +76,7 @@ export function CartCard({ cart, onRent }: CartPanelProps) {
       )}
       {count > 0 && (
         <div className="flex flex-col gap-0.5 rounded-md bg-accent-soft p-3">
-          <span className="text-caption font-semibold text-star-800">
+          <span className="text-caption font-semibold text-mint-800">
             반납 기한
           </span>
           <span className="text-base font-bold">

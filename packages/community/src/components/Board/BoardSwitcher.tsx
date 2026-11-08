@@ -40,7 +40,7 @@ function BoardRow({
       <span
         className={cn(
           'flex size-9 shrink-0 items-center justify-center rounded-md [&_svg]:size-[18px]',
-          current ? 'bg-primary text-accent' : 'bg-gray-100 text-gray-700',
+          current ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700',
         )}
         aria-hidden
       >

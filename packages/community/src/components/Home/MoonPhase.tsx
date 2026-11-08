@@ -50,7 +50,7 @@ export default function MoonPhase({
     >
       <circle cx="40" cy="40" r="38" className={shadeClassName} />
       {lunAge !== undefined && (
-        <path d={litPath(lunAge, 40, 38)} className="fill-accent" />
+        <path d={litPath(lunAge, 40, 38)} className="fill-star-500" />
       )}
     </svg>
   );

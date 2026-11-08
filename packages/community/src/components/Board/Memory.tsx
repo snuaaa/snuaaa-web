@@ -63,7 +63,7 @@ function Memory({ boardInfo }: MemoryProps) {
   )?.category_name;
 
   const createButton = (
-    <Button onClick={() => setIsCreating(true)} className="[&_svg]:text-accent">
+    <Button onClick={() => setIsCreating(true)}>
       <FolderPlus className="size-[18px]!" />
       앨범 만들기
     </Button>

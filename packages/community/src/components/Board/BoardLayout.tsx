@@ -12,7 +12,7 @@ const sidebarLinkClassName = (current: boolean) =>
   cn(
     'flex h-[38px] items-center rounded-md px-3 text-sm transition-colors',
     current
-      ? 'bg-primary-soft font-semibold text-primary'
+      ? 'bg-primary-soft font-semibold text-mint-800'
       : 'text-gray-700 hover:bg-gray-100 hover:text-fg',
   );
 

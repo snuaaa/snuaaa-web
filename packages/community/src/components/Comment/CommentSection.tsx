@@ -228,7 +228,7 @@ function CommentItem({
         <div className="flex flex-wrap items-center gap-1.5 text-label">
           <b className="font-bold">{comment.user.nickname}</b>
           {isContentAuthor && (
-            <span className="rounded-[4px] bg-primary-soft px-1.5 py-0.5 text-[10px] font-bold text-navy-700">
+            <span className="rounded-[4px] bg-primary-soft px-1.5 py-0.5 text-[10px] font-bold text-mint-800">
               글쓴이
             </span>
           )}

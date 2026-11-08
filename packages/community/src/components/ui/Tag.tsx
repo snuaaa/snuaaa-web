@@ -9,8 +9,8 @@ const tagVariants = cva(
       variant: {
         // Board category chips
         neutral: 'rounded-sm bg-gray-100 px-2 py-1 text-gray-700',
-        brand: 'rounded-sm bg-primary-soft px-2 py-1 text-navy-700',
-        accent: 'rounded-sm bg-accent-soft px-2 py-1 text-star-800',
+        brand: 'rounded-sm bg-primary-soft px-2 py-1 text-mint-800',
+        accent: 'rounded-sm bg-accent-soft px-2 py-1 text-mint-800',
         // Hashtags
         outline:
           'rounded-full border border-gray-300 px-2 py-[3px] text-gray-700',
