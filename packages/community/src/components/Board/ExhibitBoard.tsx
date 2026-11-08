@@ -68,7 +68,7 @@ function FeaturedExhibition({ content }: { content: Exhibition }) {
           </span>
           {exhibition.place && <span>{exhibition.place}</span>}
         </span>
-        <span className="mt-2 hidden h-11 items-center self-start rounded-md bg-surface px-[18px] text-sm font-semibold text-primary transition-colors group-hover:bg-primary-soft md:flex">
+        <span className="mt-2 hidden h-11 items-center self-start rounded-md bg-surface px-[18px] text-sm font-semibold text-primary transition-colors group-hover:bg-primary-soft group-hover:text-mint-800 md:flex">
           작품 보러가기
         </span>
       </span>

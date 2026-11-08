@@ -78,7 +78,7 @@ export function Avatar({
       )}
       <AvatarPrimitive.Fallback
         delayMs={src ? 300 : 0}
-        className="flex size-full items-center justify-center font-bold text-navy-700"
+        className="flex size-full items-center justify-center font-bold text-mint-800"
         aria-label={user.nickname}
       >
         {initialOf(user.nickname)}
