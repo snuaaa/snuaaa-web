@@ -25,7 +25,7 @@ type ProfileCardProps = {
 
 /**
  * The navy profile band on mobile, the left card on desktop. Other members
- * don't see the email (docs/redesign.md, 이메일 비공개). 동아리 번호 and
+ * don't see the email (docs/design.md, 이메일 비공개). 동아리 번호 and
  * 자기소개 get their own labeled rows so they read as profile facts.
  */
 export default function ProfileCard({ user, isMine }: ProfileCardProps) {

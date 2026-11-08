@@ -55,7 +55,11 @@ function MobileSheet({
               </Drawer.Description>
             )}
           </div>
-          <div className="min-h-0 flex-1 overflow-y-auto px-4">{children}</div>
+          {/* The sheet itself slides with the finger (vaul), so only its
+              contents follow the light-in rule. */}
+          <div className="min-h-0 flex-1 overflow-y-auto px-4 animate-light-in motion-reduce:animate-none">
+            {children}
+          </div>
           <div className="px-4 pt-3 pb-safe-7">{footer}</div>
         </Drawer.Content>
       </Drawer.Portal>

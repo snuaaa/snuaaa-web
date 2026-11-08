@@ -32,7 +32,7 @@ export const TabsTrigger = forwardRef<
   <TabsPrimitive.Trigger
     ref={ref}
     className={cn(
-      '-mb-px flex min-h-11 shrink-0 items-center border-b-2 border-transparent text-sm font-medium whitespace-nowrap text-fg-muted transition-colors hover:text-fg data-[state=active]:border-primary data-[state=active]:font-bold data-[state=active]:text-primary',
+      '-mb-px flex min-h-11 shrink-0 items-center border-b-2 border-transparent text-sm font-medium whitespace-nowrap text-fg-muted transition-colors duration-(--duration-quick) ease-night hover:text-fg motion-reduce:transition-none data-[state=active]:border-primary data-[state=active]:font-bold data-[state=active]:text-primary',
       className,
     )}
     {...props}
@@ -74,7 +74,7 @@ export function SegmentedControl<T extends string>({
         <ToggleGroupPrimitive.Item
           key={option.value}
           value={option.value}
-          className="h-9 rounded-full px-4 text-label text-fg-muted transition-colors hover:text-fg data-[state=on]:bg-surface data-[state=on]:text-fg data-[state=on]:shadow-sm"
+          className="h-9 rounded-full px-4 text-label text-fg-muted transition-colors duration-(--duration-quick) ease-night hover:text-fg motion-reduce:transition-none data-[state=on]:bg-surface data-[state=on]:text-fg data-[state=on]:shadow-sm"
         >
           {option.label}
         </ToggleGroupPrimitive.Item>
