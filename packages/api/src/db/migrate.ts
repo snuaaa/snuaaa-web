@@ -13,7 +13,8 @@ const MIGRATION_LOCK_KEY = 155;
 /**
  * Databases created before migrations were introduced already have the tables
  * in `0000_baseline.sql`. Record the baseline as applied on such a database so
- * that the migrator does not try to create them again.
+ * that the migrator does not try to create them again. A database with only
+ * some of those tables is rejected rather than marked.
  */
 async function markBaselineIfExistingDatabase(client: Client) {
   await client.query('CREATE SCHEMA IF NOT EXISTS drizzle');
@@ -32,14 +33,28 @@ async function markBaselineIfExistingDatabase(client: Client) {
     return;
   }
 
-  const existing = await client.query(
-    "SELECT to_regclass('public.tb_user') IS NOT NULL AS exists",
+  const [baseline] = readMigrationFiles({ migrationsFolder });
+  const baselineTables = [
+    ...baseline.sql.join('\n').matchAll(/CREATE TABLE public\.(\w+)/g),
+  ].map((match) => match[1]);
+  const existing = await client.query<{ table_name: string }>(
+    "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'",
   );
-  if (!existing.rows[0].exists) {
+  const existingTables = new Set(existing.rows.map((row) => row.table_name));
+  const missingTables = baselineTables.filter((t) => !existingTables.has(t));
+
+  if (missingTables.length === baselineTables.length) {
+    // An empty database: the migrator creates it from the baseline.
     return;
   }
+  if (missingTables.length > 0) {
+    // Marking the baseline would leave these tables missing for good.
+    throw new Error(
+      `The DB has some of the baseline tables but not ${missingTables.join(', ')}. ` +
+        'Create the missing tables, or migrate an empty DB instead.',
+    );
+  }
 
-  const [baseline] = readMigrationFiles({ migrationsFolder });
   await client.query(
     'INSERT INTO drizzle.__drizzle_migrations (hash, created_at) VALUES ($1, $2)',
     [baseline.hash, baseline.folderMillis],

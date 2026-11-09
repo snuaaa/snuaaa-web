@@ -10,7 +10,7 @@ The API's PostgreSQL schema is managed by the SQL migrations in this folder, run
 
 The API runs pending migrations on startup (`src/db/migrate.ts`, called from `main.ts`) and only starts listening once they succeed. If a migration fails, the whole batch is rolled back and the process exits.
 
-A database that already has the tables (prod and dev, which were created by `sync()`) but no `drizzle.__drizzle_migrations` rows gets the baseline recorded as applied instead of run. An empty database runs the baseline and is created from scratch.
+A database that already has the tables (prod and dev, which were created by `sync()`) but no `drizzle.__drizzle_migrations` rows gets the baseline recorded as applied instead of run. An empty database runs the baseline and is created from scratch. A database that has only some of the baseline tables is rejected, and the API doesn't start.
 
 You can also run them by hand from `packages/api`:
 
