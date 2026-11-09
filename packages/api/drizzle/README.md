@@ -32,7 +32,9 @@ Never edit a migration that has already been deployed. Add a new one instead.
 
 ## Setting up a local DB
 
-Create an empty database, set the `POSTGRESQL_*` and `DB_HOST` variables in `packages/api/.env`, and either start the API or run `pnpm db:migrate`. The baseline creates every table.
+Create an empty database on PostgreSQL 10 or later (16 recommended; the baseline uses `CREATE SEQUENCE ... AS integer`, which 9.x rejects), set the `POSTGRESQL_*` and `DB_HOST` variables in `packages/api/.env`, and either start the API or run `pnpm db:migrate`. The baseline creates every table.
+
+A local DB created before migrations were introduced (by `sequelize.sync()`) does not match the baseline, but would still be marked as applied. Drop it and create an empty one instead.
 
 ## Backups
 

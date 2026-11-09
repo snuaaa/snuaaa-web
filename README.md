@@ -57,7 +57,7 @@ pnpm dev
 
 ### 4. Run API server
 
-Create an empty PostgreSQL database for `POSTGRESQL_DATABASE`. The API runs the migrations in `packages/api/drizzle/` on startup, so the tables are created the first time it starts.
+Create an empty PostgreSQL (10 or later, 16 recommended) database for `POSTGRESQL_DATABASE`. If you have a local DB created before migrations were introduced, drop it and start from an empty one. The API runs the migrations in `packages/api/drizzle/` on startup, so the tables are created the first time it starts.
 
 ```bash
 pnpm --filter @snuaaa/api dev
