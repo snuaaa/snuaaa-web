@@ -49,6 +49,8 @@ type RetrievePhotoListParams = {
   board_id?: string;
   user_uuid?: string;
   tags?: Tag['tag_id'][];
+  search_type?: string;
+  search_keyword?: string;
 };
 
 const PhotoService = {

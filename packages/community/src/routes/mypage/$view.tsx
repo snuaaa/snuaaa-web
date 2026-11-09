@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import MyPage from '../../pages/MyPage';
 
-// type View = 'info' | 'profile';
+// $view is 'info', 'profile' or 'password'; anything else shows 'info'.
 
 type Tab = 'posts' | 'photos' | 'comments';
 

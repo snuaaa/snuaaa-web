@@ -72,6 +72,8 @@ export interface Content {
 export interface Album extends Content {
   album: {
     is_private: boolean;
+    /** The cover photo's content_id, when one was picked. */
+    tn_photo_id?: number | null;
     thumbnail: Photo;
   };
   children: Photo[];
