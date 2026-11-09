@@ -1,5 +1,6 @@
-import { useRef, type ReactNode, type TouchEvent } from 'react';
+import { useRef, useState, type ReactNode, type TouchEvent } from 'react';
 import { ChevronLeft, ChevronRight, Maximize2 } from 'lucide-react';
+import { Skeleton } from '~/components/ui';
 import { cn, resolveImageUrl } from '~/lib/utils';
 
 /** Horizontal travel, in px, that counts as a swipe. */
@@ -14,11 +15,16 @@ type PhotoStageProps = {
   onNext?: () => void;
   /** Pill at the bottom on desktop, e.g. the album title. */
   label?: ReactNode;
+  /**
+   * Keeps the arrows in place but inactive, e.g. while the next photo's
+   * details load, so the stage doesn't jump.
+   */
+  navDisabled?: boolean;
   className?: string;
 };
 
 const arrowClassName =
-  'absolute top-1/2 hidden size-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 md:flex';
+  'absolute top-1/2 hidden size-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 disabled:pointer-events-none disabled:opacity-40 motion-reduce:transition-none md:flex';
 
 /**
  * The photo on a dark stage. Mobile swipes between photos; desktop has
@@ -30,10 +36,16 @@ export default function PhotoStage({
   onPrev,
   onNext,
   label,
+  navDisabled,
   className,
 }: PhotoStageProps) {
   const stageRef = useRef<HTMLDivElement>(null);
   const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const url = resolveImageUrl(src);
+  // The image the browser has finished loading, and whether it was already
+  // in the cache when it mounted (then it shows at once, without fading in).
+  const [loaded, setLoaded] = useState<{ url: string; cached: boolean }>();
+  const isLoaded = !!url && loaded?.url === url;
 
   const handleTouchStart = (e: TouchEvent) => {
     // Two fingers are a pinch zoom, not a swipe.
@@ -51,6 +63,7 @@ export default function PhotoStage({
     const dx = e.changedTouches[0].clientX - start.x;
     const dy = e.changedTouches[0].clientY - start.y;
     if (Math.abs(dx) < SWIPE_DISTANCE || Math.abs(dx) < Math.abs(dy)) return;
+    if (navDisabled) return;
     if (dx < 0) onNext?.();
     else onPrev?.();
   };
@@ -73,12 +86,34 @@ export default function PhotoStage({
         className,
       )}
     >
-      {src && (
+      {!isLoaded && (
+        <Skeleton className="absolute inset-10 rounded-lg bg-white/5" />
+      )}
+      {url && (
         <img
-          src={resolveImageUrl(src)}
+          // A new element per photo, so the previous photo never stays up
+          // half-replaced while the next one downloads.
+          key={url}
+          ref={(img) => {
+            if (img?.complete && img.naturalWidth > 0 && loaded?.url !== url) {
+              setLoaded({ url, cached: true });
+            }
+          }}
+          src={url}
           alt={alt}
+          onLoad={() =>
+            setLoaded((prev) =>
+              prev?.url === url ? prev : { url, cached: false },
+            )
+          }
           onClick={toggleFullscreen}
-          className="max-h-full max-w-full object-contain md:cursor-zoom-in"
+          className={cn(
+            'relative max-h-full max-w-full object-contain md:cursor-zoom-in',
+            !isLoaded && 'opacity-0',
+            isLoaded &&
+              !loaded?.cached &&
+              'animate-light-in motion-reduce:animate-none',
+          )}
         />
       )}
       {onPrev && (
@@ -86,6 +121,7 @@ export default function PhotoStage({
           type="button"
           aria-label="이전 사진"
           onClick={onPrev}
+          disabled={navDisabled}
           className={cn(arrowClassName, 'left-4')}
         >
           <ChevronLeft className="size-[22px]" />
@@ -96,6 +132,7 @@ export default function PhotoStage({
           type="button"
           aria-label="다음 사진"
           onClick={onNext}
+          disabled={navDisabled}
           className={cn(arrowClassName, 'right-4')}
         >
           <ChevronRight className="size-[22px]" />
