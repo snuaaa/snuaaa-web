@@ -90,7 +90,7 @@ const Pagination = ({ currentPage, totalPageCount }: Props) => {
             <i className="ri-more-line text-xl text-gray-500"></i>
           ) : (
             <Link
-              className={`${buttonClassName} ${page === currentPage ? 'text-white bg-[#7193C4] rounded-full' : ''}`}
+              className={`${buttonClassName} ${page === currentPage ? 'text-white bg-navy-500 rounded-full' : ''}`}
               to="."
               search={(prev) => ({ ...prev, page })}
             >

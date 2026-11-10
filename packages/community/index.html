@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#010f2d">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
@@ -20,6 +20,14 @@
   <!-- Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-154430849-1"></script>
   <title>서울대학교 아마추어 천문회</title>
+  <!-- 관측 모드: apply before first paint so the page never flashes white (hooks/useObservationMode.ts). -->
+  <script>
+    try {
+      if (localStorage.getItem('aaa:observationMode') === 'on') {
+        document.documentElement.dataset.observation = 'on';
+      }
+    } catch (e) {}
+  </script>
 </head>
 
 <body>
@@ -28,6 +36,19 @@
   </noscript>
   <div id="root"></div>
   <div id="full-screen-root"></div>
+  <!--
+    관측 모드 red-light filter (index.css). Inverts luminance so the page turns
+    dark, then keeps only the red channel, capped below full brightness.
+  -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <filter id="observation-filter" color-interpolation-filters="sRGB">
+      <feColorMatrix type="matrix" values="
+        -0.17 -0.57 -0.06 0 0.8
+        0 0 0 0 0
+        0 0 0 0 0
+        0 0 0 1 0" />
+    </filter>
+  </svg>
   <script type="module" src="/src/index.jsx"></script>
 </body>
 

@@ -1,29 +1,26 @@
 import {
   createRootRoute,
   Outlet,
+  redirect,
   useLocation,
   useNavigate,
   useRouter,
 } from '@tanstack/react-router';
-import { QueryClientProvider } from '@tanstack/react-query';
-import React, { Suspense, useCallback } from 'react';
+import React, { Suspense, useCallback, useEffect } from 'react';
 
 import '../App.scss';
 import '../index.css';
 
-import { AuthProvider } from '../contexts/auth';
-
 import { ViewportSizeProvider } from '../contexts/viewportSize';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import RiseSet from '~/components/Home/RiseSet';
-import SideBar from '~/components/Home/SideBar';
+import AppShell from '~/components/Layout/AppShell';
 import FullScreenPortal from '~/components/Common/FullScreenPortal';
-import PhotoDetailModal from '~/components/Photo/DetailModal';
-import { queryClient } from '~/lib/queryClient';
+import ExhibitPhotoDetailModal from '~/components/Exhibition/ExhibitPhotoDetail';
+import PhotoDetailModal from '~/components/Photo/PhotoDetail';
+import useVirtualKeyboard from '~/hooks/useVirtualKeyboard';
+import Loading from '~/components/Common/Loading';
+import { isLoggingOut, loadSession, PUBLIC_PATHS } from '~/lib/auth';
+import { useSession } from '~/hooks/queries/useAuthQueries';
 import { PhotoNavigationScope } from '~/services/PhotoService';
-
-const ExhibitPhotoPage = React.lazy(() => import('~/pages/ExhibitPhoto'));
 
 const TanStackRouterDevtools =
   process.env.NODE_ENV === 'production'
@@ -47,6 +44,23 @@ export const Route = createRootRoute({
       search.photoNavigation === 'user' ? search.photoNavigation : undefined,
     exhibitPhoto: search.exhibitPhoto ? Number(search.exhibitPhoto) : undefined,
   }),
+  // 모든 라우트의 loader보다 먼저 실행되므로, 로그인하지 않은 사용자는
+  // 보호된 페이지의 데이터 요청 없이 바로 로그인 페이지로 이동한다.
+  beforeLoad: async ({ location }) => {
+    // 공개 페이지는 세션 확인이 실패해도 열려야 하므로 여기서 확인하지 않는다.
+    if (PUBLIC_PATHS.includes(location.pathname)) {
+      return;
+    }
+    const session = await loadSession();
+    if (!session) {
+      throw redirect({
+        to: '/auth/login',
+        search: { redirect: location.href },
+        replace: true,
+      });
+    }
+  },
+  pendingComponent: Loading,
   component: RootComponent,
 });
 
@@ -95,54 +109,82 @@ function PhotoModal({
 }
 
 function ExhibitPhotoModal({ exhibitPhotoId }: { exhibitPhotoId: number }) {
+  const router = useRouter();
+  const navigate = useNavigate();
+
+  const handleMovePhoto = useCallback(
+    (newPhotoId: number) => {
+      navigate({
+        to: '.',
+        search: (prev: Record<string, unknown>) => ({
+          ...prev,
+          exhibitPhoto: newPhotoId,
+        }),
+        replace: true,
+      });
+    },
+    [navigate],
+  );
+
+  const handleClosePhoto = useCallback(() => {
+    if (window.history.length > 2) {
+      router.history.back();
+    } else {
+      navigate({ to: '/' });
+    }
+  }, [router, navigate]);
+
   return (
-    <Suspense fallback={null}>
-      <ExhibitPhotoPage exhibitPhotoId={exhibitPhotoId} />
-    </Suspense>
+    <FullScreenPortal>
+      <ExhibitPhotoDetailModal
+        exhibitPhotoId={exhibitPhotoId}
+        onClose={handleClosePhoto}
+        onMovePhoto={handleMovePhoto}
+      />
+    </FullScreenPortal>
   );
 }
 
 function RootComponent() {
   const location = useLocation();
+  const router = useRouter();
   const { photo, photoNavigation, exhibitPhoto } = Route.useSearch();
+  const { data: session } = useSession();
+  useVirtualKeyboard();
 
-  // Check if the current path is an auth path (login or signup)
-  const isAuthPage = location.pathname.startsWith('/auth');
+  // 페이지에 머무는 동안 세션 재검증이 401로 끝나면, beforeLoad를 다시 돌려
+  // 로그인 페이지로 보낸다. 로그아웃은 스스로 이동하므로 제외한다.
+  useEffect(() => {
+    if (
+      session === null &&
+      !isLoggingOut() &&
+      !PUBLIC_PATHS.includes(location.pathname)
+    ) {
+      router.invalidate();
+    }
+  }, [session, location.pathname, router]);
+
+  // Auth pages render without the site chrome
+  const isBarePage = location.pathname.startsWith('/auth');
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <>
       <div className="min-h-full flex flex-col">
         <ViewportSizeProvider>
-          <AuthProvider>
-            {isAuthPage ? (
+          {isBarePage ? (
+            <Outlet />
+          ) : (
+            <AppShell>
               <Outlet />
-            ) : (
-              <>
-                <Header />
-                <div className="section-wrapper">
-                  <section>
-                    <div className="side-left">
-                      <RiseSet />
-                    </div>
-                    <SideBar />
-                    <Outlet />
-                  </section>
-                </div>
-                <Footer />
-              </>
-            )}
-            {photo && (
-              <PhotoModal photoId={photo} navigation={photoNavigation} />
-            )}
-            {exhibitPhoto && (
-              <ExhibitPhotoModal exhibitPhotoId={exhibitPhoto} />
-            )}
-          </AuthProvider>
+            </AppShell>
+          )}
+          {photo && <PhotoModal photoId={photo} navigation={photoNavigation} />}
+          {exhibitPhoto && <ExhibitPhotoModal exhibitPhotoId={exhibitPhoto} />}
         </ViewportSizeProvider>
       </div>
       <Suspense fallback={null}>
         <TanStackRouterDevtools />
       </Suspense>
-    </QueryClientProvider>
+    </>
   );
 }
