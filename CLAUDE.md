@@ -4,10 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-A pnpm-workspace monorepo for the SNUAAA (Seoul National University Amateur Astronomy Association) community website (https://our.snuaaa.net/). It has two packages:
+A pnpm-workspace monorepo for the SNUAAA (Seoul National University Amateur Astronomy Association) community website (https://our.snuaaa.net/). It has three packages:
 
 - `packages/community` (`@snuaaa/community-web`) is the React 18 + Vite SPA.
 - `packages/api` (`@snuaaa/api`) is the Express + Sequelize (PostgreSQL) REST API.
+- `packages/home` (`@snuaaa/home-web`) is the club intro site (https://www.snuaaa.net/), moved from the `snuaaa-home` repo. It is one React 18 + Vite page styled with `@emotion/css`, and `build` prerenders it to static HTML (`vite build`, then `vite build --ssr src/entry-server.tsx`, then `scripts/prerender.js` fills `<!--app-head-->`/`<!--app-html-->` in `build/index.html`) so crawlers that don't run JS see the content. Keep `window`/`document` access inside effects, because the page is rendered in Node at build time. It has no CI or deploy workflow yet.
 
 Use pnpm (not yarn or npm) for installing and running scripts.
 
@@ -27,6 +28,7 @@ Per package, run with `pnpm --filter <name> <script>`, or run the script from in
 | --- | --- |
 | `@snuaaa/community-web` | `dev`, `build`, `lint`, `lint:fix`, `typecheck`, `test:e2e` |
 | `@snuaaa/api` | `dev` (nodemon + ts-node on `src/main.ts`), `build` (tsc -> `dist`), `serve`, `lint`, `lint:fix`, `format`, `format:check`, `db:generate`, `db:migrate` |
+| `@snuaaa/home-web` | `dev` (http://localhost:3001), `build` (prerendered -> `packages/home/build`), `preview`, `lint`, `lint:fix`, `typecheck` |
 
 Verify changes with `lint` and `build`. The web build does not run `tsc`, so also run `typecheck` for the web. The API has no tests. PRs to `main` run the same checks in `.github/workflows/ci.yml` (web: `lint`, `typecheck`, `build`, `test:e2e`; api: `lint`, `format:check`, `build`).
 
