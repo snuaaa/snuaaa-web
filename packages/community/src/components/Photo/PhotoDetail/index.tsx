@@ -14,7 +14,6 @@ import {
 
 import CommentSection from '~/components/Comment/CommentSection';
 import { formatListDate } from '~/components/Board/boardUtils';
-import SpinningLoader from '~/components/Common/SpinningLoader';
 import {
   Avatar,
   Button,
@@ -132,6 +131,31 @@ function PanelSkeleton() {
         <Skeleton className="h-9 w-20 rounded-full" />
         <Skeleton className="size-9 rounded-full" />
       </div>
+    </div>
+  );
+}
+
+/** The details below the photo on mobile, while they load. */
+function MobileDetailsSkeleton() {
+  return (
+    <div
+      className="flex flex-col gap-5 px-4 pt-5 pb-6 animate-fade-in [animation-delay:150ms] [animation-fill-mode:backwards] motion-reduce:animate-none"
+      aria-hidden
+    >
+      <div className="flex flex-col gap-3">
+        <Skeleton className="h-7 w-3/4" />
+        <div className="flex items-center gap-2.5">
+          <Skeleton className="size-9 rounded-full" />
+          <div className="flex flex-1 flex-col gap-1.5">
+            <Skeleton className="h-3.5 w-24" />
+            <Skeleton className="h-3 w-32" />
+          </div>
+          <Skeleton className="h-9 w-20 rounded-full" />
+        </div>
+        <Skeleton className="mt-1 h-4 w-full" />
+        <Skeleton className="h-4 w-5/6" />
+      </div>
+      <Skeleton className="h-20 w-full rounded-lg" />
     </div>
   );
 }
@@ -440,35 +464,9 @@ export default function PhotoDetailModal({
         </div>
       </>
     );
-  } else if (!photo) {
-    body = (
-      <div className="flex flex-1 flex-col items-center justify-center gap-4 text-fg-on-brand">
-        {pending ? (
-          <SpinningLoader size={40} />
-        ) : (
-          isError && (
-            <>
-              <p className="text-heading">사진을 불러오지 못했어요</p>
-              <p className="text-sm text-fg-on-brand-muted">
-                삭제되었거나 볼 수 없는 사진일 수 있어요.
-              </p>
-              <div className="flex gap-2">
-                <Button variant="secondary" onClick={() => refetch()}>
-                  다시 시도
-                </Button>
-                <Button variant="accent" onClick={onClose}>
-                  닫기
-                </Button>
-              </div>
-            </>
-          )
-        )}
-        {closeButton('absolute top-4 right-4 rounded-full bg-white/10')}
-      </div>
-    );
-  } else if (editing) {
+  } else if (editing && photo) {
     body = editForm;
-  } else {
+  } else if (photo || pending) {
     body = (
       <>
         <div className="bg-navy-950 text-fg-on-brand">
@@ -477,63 +475,96 @@ export default function PhotoDetailModal({
             <span className="min-w-0 truncate px-2 text-label font-normal text-fg-on-brand-muted">
               {contextLabel}
             </span>
-            {menuButton('')}
+            {photo ? (
+              menuButton('')
+            ) : (
+              <span className="size-11 shrink-0" aria-hidden />
+            )}
           </div>
           <PhotoStage
-            src={photo.photo.img_url ?? photo.photo.file_path}
-            alt={photo.title}
+            src={stageSrc}
+            alt={stageAlt}
             onPrev={goPrev}
             onNext={goNext}
+            navDisabled={pending}
             className="h-[min(460px,60dvh)]"
           />
         </div>
-        <div className="flex flex-col gap-5 px-4 pt-5 pb-6">
-          <div className="flex flex-col gap-3">
-            <h1 className="text-[22px] leading-[1.35] font-bold tracking-[-0.4px] break-keep">
-              {photo.title}
-            </h1>
-            <AuthorRow photo={photo} trailing={likeButton('md')} />
-            {photo.text && (
-              <p className="text-body leading-[1.7] whitespace-pre-line">
-                {photo.text}
-              </p>
-            )}
-          </div>
-          <PhotoMeta photo={photo.photo} />
-          <TagLinks photo={photo} size="md" />
-          {album && (
-            <Link
-              to="/album/$album_id"
-              params={{ album_id: String(album.content_id) }}
-              className="flex items-center gap-3 rounded-[12px] border border-border p-3"
-            >
-              <span className="flex size-10 shrink-0 items-center justify-center rounded-sm bg-navy-800 text-navy-300">
-                <Images className="size-5" aria-hidden />
-              </span>
-              <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                <span className="truncate text-sm font-semibold">
-                  {album.title}
-                </span>
-                <span className="text-caption text-fg-muted">
-                  앨범의 다른 사진 보기
-                </span>
-              </span>
-              <ChevronRight className="size-4 text-fg-muted" aria-hidden />
-            </Link>
-          )}
-        </div>
-        {canComment && (
+        {!photo ? (
+          <MobileDetailsSkeleton />
+        ) : (
           <>
-            <div className="h-2 shrink-0 bg-gray-50" aria-hidden />
-            <CommentSection
-              contentId={photoId}
-              contentAuthorId={photo.author_id}
-              initialCount={photo.comment_num}
-              variant="panel"
-            />
+            <div className="flex flex-col gap-5 px-4 pt-5 pb-6">
+              <div className="flex flex-col gap-3">
+                <h1 className="text-[22px] leading-[1.35] font-bold tracking-[-0.4px] break-keep">
+                  {photo.title}
+                </h1>
+                <AuthorRow photo={photo} trailing={likeButton('md')} />
+                {photo.text && (
+                  <p className="text-body leading-[1.7] whitespace-pre-line">
+                    {photo.text}
+                  </p>
+                )}
+              </div>
+              <PhotoMeta photo={photo.photo} />
+              <TagLinks photo={photo} size="md" />
+              {album && (
+                <Link
+                  to="/album/$album_id"
+                  params={{ album_id: String(album.content_id) }}
+                  className="flex items-center gap-3 rounded-[12px] border border-border p-3"
+                >
+                  <span className="flex size-10 shrink-0 items-center justify-center rounded-sm bg-navy-800 text-navy-300">
+                    <Images className="size-5" aria-hidden />
+                  </span>
+                  <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                    <span className="truncate text-sm font-semibold">
+                      {album.title}
+                    </span>
+                    <span className="text-caption text-fg-muted">
+                      앨범의 다른 사진 보기
+                    </span>
+                  </span>
+                  <ChevronRight className="size-4 text-fg-muted" aria-hidden />
+                </Link>
+              )}
+            </div>
+            {canComment && (
+              <>
+                <div className="h-2 shrink-0 bg-gray-50" aria-hidden />
+                <CommentSection
+                  contentId={photoId}
+                  contentAuthorId={photo.author_id}
+                  initialCount={photo.comment_num}
+                  variant="panel"
+                />
+              </>
+            )}
           </>
         )}
       </>
+    );
+  } else {
+    body = (
+      <div className="flex flex-1 flex-col items-center justify-center gap-4 text-fg-on-brand">
+        {isError && (
+          <>
+            <p className="text-heading">사진을 불러오지 못했어요</p>
+            <p className="text-sm text-fg-on-brand-muted">
+              삭제되었거나 볼 수 없는 사진일 수 있어요.
+            </p>
+            <div className="flex gap-2">
+              <Button variant="secondary" onClick={() => refetch()}>
+                다시 시도
+              </Button>
+              <Button variant="accent" onClick={onClose}>
+                닫기
+              </Button>
+            </div>
+          </>
+        )}
+        {closeButton('absolute top-4 right-4 rounded-full bg-white/10')}
+      </div>
     );
   }
 
@@ -551,7 +582,7 @@ export default function PhotoDetailModal({
           ? 'items-center justify-center bg-navy-950/92'
           : cn(
               'flex-col overflow-y-auto',
-              photo ? 'bg-surface' : 'bg-navy-950',
+              photo || pending ? 'bg-surface' : 'bg-navy-950',
             ),
       )}
     >
