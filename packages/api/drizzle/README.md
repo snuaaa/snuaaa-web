@@ -36,6 +36,28 @@ Create an empty database on PostgreSQL 10 or later (16 recommended; the baseline
 
 A local DB created before migrations were introduced (by `sequelize.sync()`) does not match the baseline, but would still be marked as applied. Drop it and create an empty one instead.
 
+## Local seed data
+
+An empty DB has no boards, so most pages show nothing. Fill a local DB with:
+
+```bash
+pnpm db:seed
+```
+
+`src/db/seed.ts` runs the pending migrations, then applies `seed/base.sql` (boards, categories, tags and equipment categories, copied from the dev DB) and creates a grade 1 admin account. The account is `admin` / `snuaaa2026` unless `SEED_ADMIN_ID` and `SEED_ADMIN_PASSWORD` are set in `.env`. Rows that already exist are skipped, so it is safe to run again.
+
+The seed is for local DBs only. It refuses to run when `NODE_ENV` is `production` or `DB_HOST` isn't `localhost`, `127.0.0.1`, `::1` or `host.docker.internal`. It is not a migration, so it never runs on dev or prod.
+
+To refresh `seed/base.sql` after the boards change on the dev DB:
+
+```bash
+pg_dump --data-only --inserts --column-inserts --no-owner \
+  -t public.tb_board -t public.tb_category -t public.tb_tag -t public.tb_equipment_category \
+  "$DATABASE_URL"
+```
+
+Then copy the `INSERT` lines into `seed/base.sql`, keeping `tb_board` first and `ON CONFLICT DO NOTHING` on each.
+
 ## Backups
 
 Take a backup before deploying a migration to prod, and before any manual change to a server's DB:

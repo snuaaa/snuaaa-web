@@ -63,6 +63,12 @@ Create an empty PostgreSQL (10 or later, 16 recommended) database for `POSTGRESQ
 pnpm --filter @snuaaa/api dev
 ```
 
+To fill the local DB with the boards, categories, tags and an admin account (`admin` / `snuaaa2026`), run the seed once. See [Local seed data](packages/api/drizzle/README.md#local-seed-data).
+
+```bash
+pnpm --filter @snuaaa/api db:seed
+```
+
 ## Scripts
 
 | Command | Description |
@@ -74,6 +80,7 @@ pnpm --filter @snuaaa/api dev
 | `pnpm --filter @snuaaa/api format` | Format the API server with Prettier |
 | `pnpm --filter @snuaaa/api db:migrate` | Apply pending DB migrations ([details](packages/api/drizzle/README.md)) |
 | `pnpm --filter @snuaaa/api db:generate --name <name>` | Add an empty SQL migration |
+| `pnpm --filter @snuaaa/api db:seed` | Fill a local DB with base data and an admin account ([details](packages/api/drizzle/README.md#local-seed-data)) |
 
 ## Deployment
 
