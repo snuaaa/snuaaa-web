@@ -83,3 +83,43 @@ test.describe('사진 상세 (데스크탑)', () => {
     );
   });
 });
+
+test.describe('사진 상세 (모바일)', () => {
+  test.use({ viewport: { width: 390, height: 844 }, hasTouch: true });
+
+  test.beforeEach(async ({ page }) => {
+    await setToken(page, VALID_TOKEN);
+    await page.route(`${IMAGE_ORIGIN}/**`, (route) =>
+      route.fulfill({ contentType: 'image/png', body: PNG }),
+    );
+  });
+
+  test('사진을 넘기는 동안 화면 구성을 유지한다', async ({ page }) => {
+    let release: () => void = () => {};
+    await page.route(`${API_ORIGIN}/api/photo/*`, async (route) => {
+      const id = Number(new URL(route.request().url()).pathname.split('/')[3]);
+      if (id === 1) await new Promise<void>((r) => (release = r));
+      await route.fulfill({ json: detail(id) });
+    });
+
+    await page.goto('/?photo=2');
+    const dialog = page.getByRole('dialog', { name: '사진 2' });
+    await expect(dialog.getByRole('heading', { name: '사진 2' })).toBeVisible();
+
+    await page.keyboard.press('ArrowRight');
+
+    // The header and the stage stay; only the details below load.
+    const loading = page.getByRole('dialog', { name: '사진' });
+    await expect(loading.getByRole('img', { name: '사진 1' })).toBeVisible();
+    await expect(loading.getByText('테스트 앨범')).toBeVisible();
+    await expect(loading.getByRole('button', { name: '닫기' })).toBeVisible();
+    await expect(loading.getByRole('heading')).toHaveCount(0);
+
+    release();
+    await expect(
+      page
+        .getByRole('dialog', { name: '사진 1' })
+        .getByRole('heading', { name: '사진 1' }),
+    ).toBeVisible();
+  });
+});
