@@ -21,7 +21,8 @@
     "lint": "eslint \"src/**/*.{ts,js}\"",
     "lint:fix": "eslint \"src/**/*.{ts,js}\" --fix",
     "db:generate": "drizzle-kit generate --custom",
-    "db:migrate": "ts-node src/db/migrate.ts"
+    "db:migrate": "ts-node src/db/migrate.ts",
+    "db:seed": "ts-node src/db/seed.ts"
   },
   "keywords": [],
   "license": "UNLICENSED",
