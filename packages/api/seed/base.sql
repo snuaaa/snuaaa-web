@@ -1,5 +1,6 @@
 -- Base data for a local development DB: boards, categories, tags and
--- equipment categories, copied from the dev DB on 2026-11-11.
+-- equipment categories, copied from the dev DB on 2026-11-11. Only the boards
+-- shown in prod (menu 1–4) are kept; hidden ones (menu 0) are left out.
 -- Applied by `pnpm db:seed` (src/db/seed.ts). Never run this on dev or prod.
 -- Every insert skips rows that already exist, so it is safe to run again.
 
@@ -13,12 +14,8 @@ INSERT INTO public.tb_board (board_id, board_name, board_type, board_desc, menu,
 INSERT INTO public.tb_board (board_id, board_name, board_type, board_desc, menu, "order", lv_read, lv_write, lv_edit) VALUES ('brd05', '관측정보', 'N', '관측과 관련된 정보들', 2, 3, 8, 8, 1) ON CONFLICT DO NOTHING;
 INSERT INTO public.tb_board (board_id, board_name, board_type, board_desc, menu, "order", lv_read, lv_write, lv_edit) VALUES ('brd32', '별사진', 'A', NULL, 4, 2, 8, 8, 1) ON CONFLICT DO NOTHING;
 INSERT INTO public.tb_board (board_id, board_name, board_type, board_desc, menu, "order", lv_read, lv_write, lv_edit) VALUES ('brd31', '추억 만들기', 'M', '동아리의 추억들을 사진으로 만나보세요~', 4, 1, 8, 8, 1) ON CONFLICT DO NOTHING;
-INSERT INTO public.tb_board (board_id, board_name, board_type, board_desc, menu, "order", lv_read, lv_write, lv_edit) VALUES ('brd07', '시그너스', 'N', NULL, 0, 5, 8, 8, 1) ON CONFLICT DO NOTHING;
-INSERT INTO public.tb_board (board_id, board_name, board_type, board_desc, menu, "order", lv_read, lv_write, lv_edit) VALUES ('brd04', '모임게시판', 'N', NULL, 0, 2, 8, 8, 1) ON CONFLICT DO NOTHING;
 INSERT INTO public.tb_board (board_id, board_name, board_type, board_desc, menu, "order", lv_read, lv_write, lv_edit) VALUES ('brd41', '사진전', 'E', '동아리 역대 사진전', 4, 3, 10, 6, 1) ON CONFLICT DO NOTHING;
-INSERT INTO public.tb_board (board_id, board_name, board_type, board_desc, menu, "order", lv_read, lv_write, lv_edit) VALUES ('brd92', '손님방', 'N', NULL, 0, NULL, 10, 9, 1) ON CONFLICT DO NOTHING;
 INSERT INTO public.tb_board (board_id, board_name, board_type, board_desc, menu, "order", lv_read, lv_write, lv_edit) VALUES ('brd99', 'Dev.log', 'N', NULL, 3, 3, 8, 1, 1) ON CONFLICT DO NOTHING;
-INSERT INTO public.tb_board (board_id, board_name, board_type, board_desc, menu, "order", lv_read, lv_write, lv_edit) VALUES ('brd98', 'Secret', 'N', NULL, 0, NULL, 1, 1, 1) ON CONFLICT DO NOTHING;
 INSERT INTO public.tb_board (board_id, board_name, board_type, board_desc, menu, "order", lv_read, lv_write, lv_edit) VALUES ('brd02', '공지게시판', 'N', '행사를 제외한 동아리의 각종 공지사항.', 1, 2, 8, 7, 1) ON CONFLICT DO NOTHING;
 INSERT INTO public.tb_board (board_id, board_name, board_type, board_desc, menu, "order", lv_read, lv_write, lv_edit) VALUES ('brd10', '자기소개', 'N', NULL, 2, 5, 8, 8, 1) ON CONFLICT DO NOTHING;
 

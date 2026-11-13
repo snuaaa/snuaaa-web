@@ -44,9 +44,9 @@ An empty DB has no boards, so most pages show nothing. Fill a local DB with:
 pnpm db:seed
 ```
 
-`src/db/seed.ts` runs the pending migrations, then applies `seed/base.sql` (boards, categories, tags and equipment categories, copied from the dev DB) and creates a grade 1 admin account. The account is `admin` / `snuaaa2026` unless `SEED_ADMIN_ID` and `SEED_ADMIN_PASSWORD` are set in `.env`. Rows that already exist are skipped, so it is safe to run again.
+`src/db/seed.ts` runs the pending migrations, then applies `seed/base.sql` (the boards shown in prod, their categories and tags, and equipment categories, copied from the dev DB) and creates a grade 1 admin account. The account is `admin` / `snuaaa2026` unless `SEED_ADMIN_ID` and `SEED_ADMIN_PASSWORD` are set in `.env`. Rows that already exist are skipped, so it is safe to run again.
 
-The seed is for local DBs only. It refuses to run when `NODE_ENV` is `production` or `DB_HOST` isn't `localhost`, `127.0.0.1`, `::1` or `host.docker.internal`. It is not a migration, so it never runs on dev or prod.
+The seed is for local DBs only. It refuses to run when `NODE_ENV` is `production` or `DB_HOST` isn't `localhost`, `127.0.0.1`, `::1` or `host.docker.internal`. It is not a migration, so it never runs on dev or prod. The host check can't tell a remote DB forwarded to `localhost` (e.g. an SSH tunnel), so don't run it while such a tunnel is open.
 
 To refresh `seed/base.sql` after the boards change on the dev DB:
 
