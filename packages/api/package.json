@@ -22,6 +22,7 @@
     "lint:fix": "eslint \"src/**/*.{ts,js}\" \"test/**/*.ts\" vitest.config.ts --fix",
     "db:generate": "drizzle-kit generate --custom",
     "db:migrate": "ts-node src/db/migrate.ts",
+    "db:seed": "ts-node src/db/seed.ts",
     "test:watch": "vitest",
     "typecheck": "tsc -p tsconfig.test.json"
   },

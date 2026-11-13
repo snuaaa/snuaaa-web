@@ -45,7 +45,7 @@ ContentModel.init(
       type: DataTypes.INTEGER,
     },
     title: {
-      type: DataTypes.STRING(64),
+      type: DataTypes.STRING(128),
     },
     text: {
       type: DataTypes.TEXT,

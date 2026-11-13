@@ -26,7 +26,7 @@ Per package, run with `pnpm --filter <name> <script>`, or run the script from in
 | Package | Scripts |
 | --- | --- |
 | `@snuaaa/community-web` | `dev`, `build`, `lint`, `lint:fix`, `typecheck`, `test:e2e` |
-| `@snuaaa/api` | `dev` (nodemon + ts-node on `src/main.ts`), `build` (tsc -> `dist`), `serve`, `lint`, `lint:fix`, `format`, `format:check`, `typecheck`, `test`, `test:watch`, `db:generate`, `db:migrate` |
+| `@snuaaa/api` | `dev` (nodemon + ts-node on `src/main.ts`), `build` (tsc -> `dist`), `serve`, `lint`, `lint:fix`, `format`, `format:check`, `db:generate`, `db:migrate`, `db:seed` (local DB only), `typecheck`, `test`, `test:watch` |
 
 Verify changes with `lint` and `build`. The web build does not run `tsc`, so also run `typecheck` for the web. PRs to `main` run the same checks in `.github/workflows/ci.yml` (web: `lint`, `typecheck`, `build`, `test:e2e`; api: `lint`, `format:check`, `typecheck`, `build`, `test`).
 

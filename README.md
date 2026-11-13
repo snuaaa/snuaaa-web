@@ -63,6 +63,12 @@ Create an empty PostgreSQL (10 or later, 16 recommended) database for `POSTGRESQ
 pnpm --filter @snuaaa/api dev
 ```
 
+To fill the local DB with the boards, categories, tags and an admin account (`admin` / `snuaaa2026`), run the seed once. See [Local seed data](packages/api/drizzle/README.md#local-seed-data).
+
+```bash
+pnpm --filter @snuaaa/api db:seed
+```
+
 ### 5. Run API tests
 
 The API tests need a PostgreSQL server but not the API's `.env`. Each run drops and recreates a database named `snuaaa_test` (never your dev DB). They connect to `localhost` as `postgres` / `postgres` by default; set `TEST_DB_HOST`, `TEST_POSTGRESQL_USERNAME`, `TEST_POSTGRESQL_PASSWORD` or `TEST_POSTGRESQL_DATABASE` (must end with `_test`) to change that. The user needs permission to create databases.
@@ -84,6 +90,7 @@ pnpm --filter @snuaaa/api test
 | `pnpm --filter @snuaaa/api test` | Run the API tests (needs a local PostgreSQL, see below) |
 | `pnpm --filter @snuaaa/api db:migrate` | Apply pending DB migrations ([details](packages/api/drizzle/README.md)) |
 | `pnpm --filter @snuaaa/api db:generate --name <name>` | Add an empty SQL migration |
+| `pnpm --filter @snuaaa/api db:seed` | Fill a local DB with base data and an admin account ([details](packages/api/drizzle/README.md#local-seed-data)) |
 
 ## Deployment
 
