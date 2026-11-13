@@ -42,10 +42,15 @@ export default function PhotoStage({
   const stageRef = useRef<HTMLDivElement>(null);
   const touchStart = useRef<{ x: number; y: number } | null>(null);
   const url = resolveImageUrl(src);
-  // The image the browser has finished loading, and whether it was already
+  // The image the browser has finished loading (or failed to), and whether it was already
   // in the cache when it mounted (then it shows at once, without fading in).
   const [loaded, setLoaded] = useState<{ url: string; cached: boolean }>();
   const isLoaded = !!url && loaded?.url === url;
+  const settle = () => {
+    if (url) {
+      setLoaded((prev) => (prev?.url === url ? prev : { url, cached: false }));
+    }
+  };
 
   const handleTouchStart = (e: TouchEvent) => {
     // Two fingers are a pinch zoom, not a swipe.
@@ -101,11 +106,10 @@ export default function PhotoStage({
           }}
           src={url}
           alt={alt}
-          onLoad={() =>
-            setLoaded((prev) =>
-              prev?.url === url ? prev : { url, cached: false },
-            )
-          }
+          onLoad={settle}
+          // A failed image settles too, so the skeleton doesn't stay up
+          // forever and the browser's broken-image/alt shows as before.
+          onError={settle}
           onClick={toggleFullscreen}
           className={cn(
             'relative max-h-full max-w-full object-contain md:cursor-zoom-in',

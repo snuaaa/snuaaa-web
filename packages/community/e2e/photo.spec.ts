@@ -82,6 +82,23 @@ test.describe('사진 상세 (데스크탑)', () => {
       0,
     );
   });
+
+  test('이미지를 불러오지 못해도 스켈레톤에 갇히지 않는다', async ({
+    page,
+  }) => {
+    await page.route(`${IMAGE_ORIGIN}/**`, (route) =>
+      route.fulfill({ status: 404 }),
+    );
+    await page.route(`${API_ORIGIN}/api/photo/*`, (route) =>
+      route.fulfill({ json: detail(2) }),
+    );
+
+    await page.goto('/?photo=2');
+    const dialog = page.getByRole('dialog', { name: '사진 2' });
+    await expect(dialog.getByRole('heading', { name: '사진 2' })).toBeVisible();
+    await expect(dialog.locator('img[alt="사진 2"]')).toHaveCSS('opacity', '1');
+    await expect(dialog.locator('.animate-breathe')).toHaveCount(0);
+  });
 });
 
 test.describe('사진 상세 (모바일)', () => {
