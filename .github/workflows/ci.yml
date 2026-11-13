@@ -69,8 +69,21 @@ jobs:
           retention-days: 7
 
   api:
+    # Keep this name: branch protection may require it as a status check.
     name: API (lint, format, build)
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     steps:
       - uses: actions/checkout@v4
 
@@ -91,5 +104,11 @@ jobs:
       - name: Format check
         run: pnpm --filter @snuaaa/api format:check
 
+      - name: Typecheck
+        run: pnpm --filter @snuaaa/api typecheck
+
       - name: Build
         run: pnpm --filter @snuaaa/api build
+
+      - name: Test
+        run: pnpm --filter @snuaaa/api test
