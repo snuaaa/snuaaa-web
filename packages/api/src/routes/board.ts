@@ -21,7 +21,7 @@ import { resizeImageBuffer } from '../utils/resize';
 import { uploadImageToS3 } from '../utils/upload';
 import uuid4 from 'uuid4';
 import type { AuthenticatedRequest } from '../middlewares/auth';
-import { BadRequestError } from '../errors';
+import { AuthorizationError, BadRequestError } from '../errors';
 
 const router = express.Router();
 const memoryUpload = multer({ storage: multer.memoryStorage() });
@@ -49,12 +49,9 @@ router.get(
     try {
       const boardInfo = await retrieveBoard(req.params.board_id);
       if ((boardInfo.get('lv_read') as number) < decodedToken.grade) {
-        const err = {
-          status: 403,
-          code: 4001,
-        };
-        next(err);
-        return;
+        return next(
+          new AuthorizationError('Permission denied', { code: 4001 }),
+        );
       }
       res.json({
         boardInfo: boardInfo,

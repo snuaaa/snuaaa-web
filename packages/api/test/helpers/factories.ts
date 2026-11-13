@@ -3,6 +3,7 @@ import uuid4 from 'uuid4';
 import UserModel from '../../src/models/User';
 import BoardModel from '../../src/models/Board';
 import { createToken } from '../../src/utils/token';
+import { createPost as createPostRow } from '../../src/controllers/post.controller';
 
 let sequence = 0;
 const next = () => ++sequence;
@@ -70,4 +71,21 @@ export async function bearer(user: UserModel, { autoLogin = false } = {}) {
     autoLogin,
   });
   return `Bearer ${token}`;
+}
+
+/** Creates a post (a `Content` row of type PO with its `Post` row). */
+export async function createPost(
+  author: UserModel,
+  board: BoardModel,
+  overrides: { title?: string; text?: string } = {},
+) {
+  const n = next();
+  const contentId: number = await createPostRow({
+    author_id: author.get('user_id'),
+    board_id: board.get('board_id'),
+    title: `Post ${n}`,
+    text: `Text ${n}`,
+    ...overrides,
+  });
+  return contentId;
 }
