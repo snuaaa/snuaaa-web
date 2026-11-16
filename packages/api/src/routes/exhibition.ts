@@ -25,6 +25,7 @@ import {
   deleteContent,
   updateContent,
 } from '../controllers/content.controller';
+import { assertBoardAccessById } from '../controllers/board.controller';
 import { BadRequestError } from '../errors';
 
 const router = express.Router();
@@ -155,6 +156,11 @@ router.post(
     }
 
     try {
+      await assertBoardAccessById(
+        req.body.board_id,
+        decodedToken.grade,
+        'write',
+      );
       const photoInfo = JSON.parse(req.body.photoInfo);
 
       const resizedOriginalBuffer = await resizeImageBuffer(file.buffer);

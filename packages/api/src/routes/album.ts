@@ -20,7 +20,7 @@ import {
 import { retrievePhotosInAlbum } from '../controllers/photo.controller';
 import { retrieveTagsOnBoard } from '../controllers/tag.controller';
 import { retrieveCategoryByBoard } from '../controllers/category.controller';
-import { AuthorizationError } from '../errors';
+import { assertBoardAccess } from '../controllers/board.controller';
 
 const router = express.Router();
 
@@ -33,9 +33,7 @@ router.get(
     try {
       const albumInfo = await retrieveAlbum(req.params.album_id);
 
-      if (albumInfo.board.lv_read < decodedToken.grade) {
-        return next(new AuthorizationError(undefined, { code: 4001 }));
-      }
+      assertBoardAccess(albumInfo.board, decodedToken.grade, 'read');
 
       const [categoryInfo, tagInfo] = await Promise.all([
         retrieveCategoryByBoard(albumInfo.getDataValue('board_id')),

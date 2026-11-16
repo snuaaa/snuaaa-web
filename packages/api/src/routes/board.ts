@@ -3,6 +3,8 @@ import multer from 'multer';
 import { AuthenticatedRequestWithFile } from '../middlewares/upload';
 import { verifyTokenMiddleware } from '../middlewares/auth';
 import {
+  assertBoardAccess,
+  assertBoardAccessById,
   retrieveBoard,
   retrieveBoardsCanAccess,
 } from '../controllers/board.controller';
@@ -21,7 +23,7 @@ import { resizeImageBuffer } from '../utils/resize';
 import { uploadImageToS3 } from '../utils/upload';
 import uuid4 from 'uuid4';
 import type { AuthenticatedRequest } from '../middlewares/auth';
-import { AuthorizationError, BadRequestError } from '../errors';
+import { BadRequestError } from '../errors';
 
 const router = express.Router();
 const memoryUpload = multer({ storage: multer.memoryStorage() });
@@ -48,11 +50,11 @@ router.get(
 
     try {
       const boardInfo = await retrieveBoard(req.params.board_id);
-      if ((boardInfo.get('lv_read') as number) < decodedToken.grade) {
-        return next(
-          new AuthorizationError('Permission denied', { code: 4001 }),
-        );
-      }
+      assertBoardAccess(
+        boardInfo.get({ plain: true }),
+        decodedToken.grade,
+        'read',
+      );
       res.json({
         boardInfo: boardInfo,
       });
@@ -65,7 +67,7 @@ router.get(
 router.get(
   '/:board_id/posts',
   verifyTokenMiddleware,
-  async (req, res, next) => {
+  async (req: AuthenticatedRequest, res, next) => {
     let offset = 0;
     const ROWNUM = 10;
     const query = req.query;
@@ -74,6 +76,11 @@ router.get(
     }
 
     try {
+      await assertBoardAccessById(
+        req.params.board_id,
+        req.decodedToken.grade,
+        'read',
+      );
       const postInfo = await retrievePostsInBoard(
         req.params.board_id,
         ROWNUM,
@@ -89,14 +96,23 @@ router.get(
   },
 );
 
-router.get('/:board_id/tags', verifyTokenMiddleware, async (req, res, next) => {
-  try {
-    const tags = await retrieveTagsOnBoard(req.params.board_id);
-    res.json(tags);
-  } catch (err) {
-    next(err);
-  }
-});
+router.get(
+  '/:board_id/tags',
+  verifyTokenMiddleware,
+  async (req: AuthenticatedRequest, res, next) => {
+    try {
+      await assertBoardAccessById(
+        req.params.board_id,
+        req.decodedToken.grade,
+        'read',
+      );
+      const tags = await retrieveTagsOnBoard(req.params.board_id);
+      res.json(tags);
+    } catch (err) {
+      next(err);
+    }
+  },
+);
 
 router.post(
   '/:board_id/post',
@@ -111,6 +127,11 @@ router.post(
     };
 
     try {
+      await assertBoardAccessById(
+        req.params.board_id,
+        decodedToken.grade,
+        'write',
+      );
       const content_id = await createPost(postData);
       res.json({
         content_id: content_id,
@@ -129,6 +150,11 @@ router.post(
     const decodedToken = req.decodedToken;
 
     try {
+      await assertBoardAccessById(
+        req.params.board_id,
+        decodedToken.grade,
+        'write',
+      );
       const user_id = decodedToken._id;
 
       const data = {
@@ -156,8 +182,13 @@ router.post(
 router.get(
   '/:board_id/exhibitions',
   verifyTokenMiddleware,
-  async (req, res, next) => {
+  async (req: AuthenticatedRequest, res, next) => {
     try {
+      await assertBoardAccessById(
+        req.params.board_id,
+        req.decodedToken.grade,
+        'read',
+      );
       const exhibitionInfo = await retrieveExhibitions();
       res.json(exhibitionInfo);
     } catch (err) {
@@ -179,6 +210,11 @@ router.post(
     }
 
     try {
+      await assertBoardAccessById(
+        req.params.board_id,
+        decodedToken.grade,
+        'write',
+      );
       const resizedOriginalBuffer = await resizeImageBuffer(file.buffer);
       const resizedThumbnailBuffer = await resizeImageBuffer(file.buffer, {
         shortSideSize: 300,
