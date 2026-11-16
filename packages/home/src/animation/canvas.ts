@@ -83,6 +83,12 @@ class Canvas {
 
   private observer: IntersectionObserver;
 
+  private frameId = 0;
+
+  private readonly onResize = () => {
+    this.resize();
+  };
+
   constructor(element: HTMLCanvasElement) {
     this.canvas = element;
     const context = element.getContext('2d', {});
@@ -114,9 +120,7 @@ class Canvas {
     this.observer = new IntersectionObserver(callback);
     this.observer.observe(element);
 
-    window.addEventListener('resize', () => {
-      this.resize();
-    });
+    window.addEventListener('resize', this.onResize);
     this.resize();
     this.animate();
   }
@@ -138,7 +142,9 @@ class Canvas {
 
   public animate() {
     if (this.isIntersecting) {
-      requestAnimationFrame(() => this.animate());
+      // One loop at a time: start() can run again before the last scheduled frame fires.
+      cancelAnimationFrame(this.frameId);
+      this.frameId = requestAnimationFrame(() => this.animate());
       this.context.clearRect(0, 0, this.width, this.height);
       this.drawBuilding();
       this.drawHill();
@@ -155,6 +161,14 @@ class Canvas {
 
   private stop() {
     this.isIntersecting = false;
+    cancelAnimationFrame(this.frameId);
+  }
+
+  public destroy() {
+    this.stop();
+    this.observer.disconnect();
+    window.removeEventListener('resize', this.onResize);
+    window.clearTimeout(this.busTimer);
   }
 
   private drawHill() {

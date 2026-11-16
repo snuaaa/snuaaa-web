@@ -1,5 +1,5 @@
 import { css, cx } from '@emotion/css';
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import Canvas from '~/animation/canvas';
 import Page from '~/components/page';
 
@@ -76,11 +76,11 @@ const styles = {
 };
 
 const Contact: React.FC = () => {
-  const canvasRef = useCallback((ref: HTMLCanvasElement) => {
-    if (ref) {
-      const canvas = new Canvas(ref);
-      canvas.animate();
-    }
+  const canvas = useRef<Canvas | null>(null);
+  // React calls the ref with the element on mount and with null on unmount.
+  const canvasRef = useCallback((ref: HTMLCanvasElement | null) => {
+    canvas.current?.destroy();
+    canvas.current = ref ? new Canvas(ref) : null;
   }, []);
 
   return (
