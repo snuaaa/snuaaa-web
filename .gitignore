@@ -12,6 +12,7 @@ playwright-report
 
 # production
 build
+build-server
 dist
 
 # misc
