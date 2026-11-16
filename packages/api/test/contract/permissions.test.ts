@@ -266,6 +266,18 @@ describe('board write level (lv_write)', () => {
     },
   );
 
+  it('POST /api/photo returns 404 for a non-numeric album_id', async () => {
+    const board = await createBoard({ lv_write: 9 });
+    const member = await createUser({ grade: 8 });
+
+    const res = await api()
+      .post('/api/photo')
+      .set('Authorization', await bearer(member))
+      .send({ board_id: board.get('board_id'), album_id: 'abc', list: [] });
+
+    expect(res.status).toBe(404);
+  });
+
   it('POST /api/photo rejects a request without board_id with 400', async () => {
     const member = await createUser({ grade: 8 });
 

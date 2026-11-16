@@ -56,6 +56,10 @@ export async function assertContentInBoard(
   board_id: unknown,
   type: string,
 ) {
+  // A non-numeric id would make Postgres throw (a 500), so treat it as missing.
+  if (!/^\d+$/.test(String(content_id))) {
+    throw new NotFoundError('Content not found');
+  }
   const content = await ContentModel.findByPk(content_id, {
     attributes: ['content_id', 'board_id', 'type'],
   });
