@@ -68,6 +68,37 @@ jobs:
           path: packages/community/test-results
           retention-days: 7
 
+  home:
+    name: Home (lint, typecheck, build)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm --filter @snuaaa/home-web lint
+
+      - name: Typecheck
+        run: pnpm --filter @snuaaa/home-web typecheck
+
+      - name: Build (prerender)
+        run: pnpm --filter @snuaaa/home-web build
+
+      # Crawlers that don't run JS only see what prerender wrote into #root,
+      # so fail if the page shell came out empty.
+      - name: Check prerendered HTML
+        run: grep -q '<div id="root"><' packages/home/build/index.html
+
   api:
     # Keep this name: branch protection may require it as a status check.
     name: API (lint, format, build)

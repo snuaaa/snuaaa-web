@@ -6,12 +6,13 @@
 
 This project is for the website community of the [Seoul National University Amateur Astronomy Association](https://our.snuaaa.net/).
 
-It is a [pnpm](https://pnpm.io/) workspace monorepo with two packages:
+It is a [pnpm](https://pnpm.io/) workspace monorepo with three packages:
 
 | Package | Path | Description |
 | --- | --- | --- |
 | `@snuaaa/community-web` | `packages/community` | Community web app (React SPA) |
 | `@snuaaa/api` | `packages/api` | REST API server (Express + PostgreSQL) |
+| `@snuaaa/home-web` | `packages/home` | Club intro site ([www.snuaaa.net](https://www.snuaaa.net/), prerendered static page) |
 
 # Getting Started
 
