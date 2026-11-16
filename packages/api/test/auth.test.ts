@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { api } from './helpers/request';
+import { query } from './helpers/sql';
 import { bearer, createUser, DEFAULT_PASSWORD } from './helpers/factories';
 
 describe('POST /api/auth/login', () => {
@@ -16,7 +17,7 @@ describe('POST /api/auth/login', () => {
     expect(res.body.autoLogin).toBe(false);
     expect(typeof res.body.token).toBe('string');
     expect(res.body.userInfo).toMatchObject({
-      user_id: user.get('user_id'),
+      user_id: user.user_id,
       id: 'aaa',
       grade: 7,
     });
@@ -48,12 +49,12 @@ describe('GET /api/auth/check', () => {
 
     const res = await api()
       .get('/api/auth/check')
-      .set('Authorization', await bearer(user));
+      .set('Authorization', bearer(user));
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
     expect(res.body.userInfo).toMatchObject({
-      user_id: user.get('user_id'),
+      user_id: user.user_id,
       grade: 5,
     });
     expect(typeof res.body.token).toBe('string');
@@ -81,8 +82,8 @@ describe('GET /api/auth/check', () => {
 
   it('rejects a token whose user no longer exists', async () => {
     const user = await createUser();
-    const authorization = await bearer(user);
-    await user.destroy({ force: true });
+    const authorization = bearer(user);
+    await query('DELETE FROM tb_user WHERE user_id = $1', [user.user_id]);
 
     const res = await api()
       .get('/api/auth/check')

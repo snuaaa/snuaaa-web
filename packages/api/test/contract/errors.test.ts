@@ -1,11 +1,7 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
-import { BoardModel } from '../../src/models';
+import { describe, expect, it } from 'vitest';
 import { api } from '../helpers/request';
 import { bearer, createUser } from '../helpers/factories';
-
-afterEach(() => {
-  vi.restoreAllMocks();
-});
+import { query } from '../helpers/sql';
 
 describe('error response format', () => {
   it('answers malformed JSON with 400', async () => {
@@ -36,14 +32,17 @@ describe('error response format', () => {
   });
 
   it('answers an unexpected error with a generic 500', async () => {
-    vi.spyOn(BoardModel, 'findAll').mockRejectedValue(
-      new Error('connection lost: secret details'),
-    );
     const user = await createUser();
 
-    const res = await api()
-      .get('/api/board')
-      .set('Authorization', await bearer(user));
+    // Hide the table the endpoint reads, so its query fails the way a
+    // broken DB would, whatever ORM runs it.
+    await query('ALTER TABLE tb_board RENAME TO tb_board_hidden');
+    let res;
+    try {
+      res = await api().get('/api/board').set('Authorization', bearer(user));
+    } finally {
+      await query('ALTER TABLE tb_board_hidden RENAME TO tb_board');
+    }
 
     expect(res.status).toBe(500);
     // No message or stack from the original error reaches the client.

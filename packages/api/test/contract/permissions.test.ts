@@ -1,12 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import UserModel from '../../src/models/User';
 import { api } from '../helpers/request';
 import {
   bearer,
   createBoard,
   createPost,
   createUser,
+  User,
 } from '../helpers/factories';
+import { query } from '../helpers/sql';
 
 // Lower grade = more privilege. 8/9 are regular members.
 
@@ -24,7 +25,7 @@ describe('board read level (lv_read)', () => {
 
     const res = await api()
       .get('/api/board/b_member')
-      .set('Authorization', await bearer(member));
+      .set('Authorization', bearer(member));
 
     expect(res.status).toBe(200);
     expect(res.body.boardInfo).toMatchObject({ board_id: 'b_member' });
@@ -36,7 +37,7 @@ describe('board read level (lv_read)', () => {
 
     const res = await api()
       .get('/api/board/b_staff')
-      .set('Authorization', await bearer(member));
+      .set('Authorization', bearer(member));
 
     expect(res.status).toBe(403);
     expect(res.body).toEqual(FORBIDDEN);
@@ -50,7 +51,7 @@ describe('board read level (lv_read)', () => {
 
     const res = await api()
       .get(`/api/post/${postId}`)
-      .set('Authorization', await bearer(member));
+      .set('Authorization', bearer(member));
 
     expect(res.status).toBe(403);
     expect(res.body).toEqual(FORBIDDEN);
@@ -63,7 +64,7 @@ describe('board read level (lv_read)', () => {
 
     const res = await api()
       .get(`/api/post/${postId}`)
-      .set('Authorization', await bearer(author));
+      .set('Authorization', bearer(author));
 
     expect(res.status).toBe(200);
     expect(res.body.postInfo).toMatchObject({
@@ -101,7 +102,7 @@ describe('editing a post (author or board lv_edit)', () => {
       method === 'PATCH'
         ? api().patch(`/api/post/${postId}`).send({ title: 'edited' })
         : api().delete(`/api/post/${postId}`);
-    const res = await req.set('Authorization', await bearer(actor));
+    const res = await req.set('Authorization', bearer(actor));
 
     if (allowed) {
       expect(res.status).toBe(200);
@@ -117,7 +118,7 @@ describe('editing a post (author or board lv_edit)', () => {
 
     const res = await api()
       .delete('/api/post/999999')
-      .set('Authorization', await bearer(user));
+      .set('Authorization', bearer(user));
 
     expect(res.status).toBe(404);
     expect(res.body).toEqual({
@@ -129,11 +130,18 @@ describe('editing a post (author or board lv_edit)', () => {
 });
 
 describe('PATCH /api/user/:user_uuid/grade', () => {
-  const change = async (actor: UserModel, target: UserModel, grade: number) =>
+  const change = (actor: User, target: User, grade: number) =>
     api()
-      .patch(`/api/user/${target.get('user_uuid')}/grade`)
-      .set('Authorization', await bearer(actor))
+      .patch(`/api/user/${target.user_uuid}/grade`)
+      .set('Authorization', bearer(actor))
       .send({ grade });
+
+  const gradeOf = async (user: User) => {
+    const [row] = await query('SELECT grade FROM tb_user WHERE user_id = $1', [
+      user.user_id,
+    ]);
+    return row.grade;
+  };
 
   it('lets grade 1-3 lower a member below their own grade', async () => {
     const manager = await createUser({ grade: 3 });
@@ -142,8 +150,7 @@ describe('PATCH /api/user/:user_uuid/grade', () => {
     const res = await change(manager, member, 8);
 
     expect(res.status).toBe(200);
-    await member.reload();
-    expect(member.get('grade')).toBe(8);
+    expect(await gradeOf(member)).toBe(8);
   });
 
   it.each([
@@ -158,8 +165,7 @@ describe('PATCH /api/user/:user_uuid/grade', () => {
 
     expect(res.status).toBe(403);
     expect(res.body.error).toBe('FORBIDDEN');
-    await target.reload();
-    expect(target.get('grade')).toBe(targetGrade);
+    expect(await gradeOf(target)).toBe(targetGrade);
   });
 
   it('rejects a grade that does not exist with 400', async () => {
@@ -181,7 +187,7 @@ describe('equipment admin endpoints', () => {
   ] as const)('%s rejects grade 7 with 403', async (_e, method, url) => {
     const member = await createUser({ grade: 7 });
 
-    const authorization = await bearer(member);
+    const authorization = bearer(member);
     const res = await api()[method](url).set('Authorization', authorization);
 
     expect(res.status).toBe(403);
