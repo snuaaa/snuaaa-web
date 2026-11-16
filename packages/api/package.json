@@ -14,14 +14,17 @@
     "babel-node": "babel-node src/main.js",
     "dev": "nodemon",
     "debug": "nodemon --exec --inspect npm run babel-node",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest run",
     "clean": "rm -rf ./dist",
-    "format": "prettier --write \"src/**/*.{ts,js,json}\"",
-    "format:check": "prettier --check \"src/**/*.{ts,js,json}\"",
-    "lint": "eslint \"src/**/*.{ts,js}\"",
-    "lint:fix": "eslint \"src/**/*.{ts,js}\" --fix",
+    "format": "prettier --write \"src/**/*.{ts,js,json}\" \"test/**/*.ts\" vitest.config.ts",
+    "format:check": "prettier --check \"src/**/*.{ts,js,json}\" \"test/**/*.ts\" vitest.config.ts",
+    "lint": "eslint \"src/**/*.{ts,js}\" \"test/**/*.ts\" vitest.config.ts",
+    "lint:fix": "eslint \"src/**/*.{ts,js}\" \"test/**/*.ts\" vitest.config.ts --fix",
     "db:generate": "drizzle-kit generate --custom",
-    "db:migrate": "ts-node src/db/migrate.ts"
+    "db:migrate": "ts-node src/db/migrate.ts",
+    "db:seed": "ts-node src/db/seed.ts",
+    "test:watch": "vitest",
+    "typecheck": "tsc -p tsconfig.test.json"
   },
   "keywords": [],
   "license": "UNLICENSED",
@@ -62,13 +65,17 @@
     "@types/express": "^4.17.25",
     "@types/multer": "^2.3.0",
     "@types/node": "^20.19.43",
+    "@types/supertest": "^7.2.1",
+    "aws-sdk-client-mock": "^4.1.0",
     "drizzle-kit": "^0.31.11",
     "eslint": "^9.39.5",
     "globals": "^16.5.0",
     "nodemon": "^3.1.14",
     "prettier": "^3.9.9",
+    "supertest": "^7.3.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.71.0"
+    "typescript-eslint": "^8.71.0",
+    "vitest": "^3.2.7"
   }
 }

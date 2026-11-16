@@ -16,6 +16,10 @@ POSTGRESQL_PASSWORD=
 
 RISESET_SERVICE_KEY=
 
+# Local seed admin account (optional, `pnpm db:seed`; defaults to admin / snuaaa2026)
+SEED_ADMIN_ID=
+SEED_ADMIN_PASSWORD=
+
 # AWS
 AWS_ACCESS_KEY_ID=
 AWS_SECRET_ACCESS_KEY=

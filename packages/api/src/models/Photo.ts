@@ -39,9 +39,11 @@ PhotoModel.init(
     },
     img_url: {
       type: DataTypes.STRING(256),
+      allowNull: false,
     },
     thumbnail_url: {
       type: DataTypes.STRING(256),
+      allowNull: false,
     },
     location: {
       type: DataTypes.STRING(256),
@@ -56,13 +58,13 @@ PhotoModel.init(
       type: DataTypes.STRING(256),
     },
     focal_length: {
-      type: DataTypes.STRING(32),
+      type: DataTypes.STRING(64),
     },
     f_stop: {
-      type: DataTypes.STRING(8),
+      type: DataTypes.STRING(64),
     },
     iso: {
-      type: DataTypes.STRING(8),
+      type: DataTypes.STRING(64),
     },
     date: {
       type: DataTypes.DATE,
