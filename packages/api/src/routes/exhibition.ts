@@ -22,6 +22,7 @@ import { uploadImageToS3 } from '../utils/upload';
 import { retrieveUserByUserUuid } from '../controllers/user.controller';
 import {
   assertCanEditContent,
+  assertContentInBoard,
   deleteContent,
   updateContent,
 } from '../controllers/content.controller';
@@ -160,6 +161,11 @@ router.post(
         req.body.board_id,
         decodedToken.grade,
         'write',
+      );
+      await assertContentInBoard(
+        req.params.exhibition_id,
+        req.body.board_id,
+        ContentTypeEnum.EXHIBITION,
       );
       const photoInfo = JSON.parse(req.body.photoInfo);
 

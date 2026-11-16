@@ -23,6 +23,7 @@ import {
 import { checkLike } from '../controllers/contentLike.controller';
 import {
   assertCanEditContent,
+  assertContentInBoard,
   updateContent,
   deleteContent,
   increaseViewNum,
@@ -148,6 +149,9 @@ router.post(
 
     try {
       await assertBoardAccessById(boardId, decodedToken.grade, 'write');
+      if (albumId) {
+        await assertContentInBoard(albumId, boardId, ContentTypeEnum.ALBUM);
+      }
       const contentIdList = await Promise.all(
         list.map(async (photo: Record<string, unknown>) => {
           const contentId = await createPhoto({

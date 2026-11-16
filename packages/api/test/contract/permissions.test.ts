@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Test } from 'supertest';
+import uuid4 from 'uuid4';
 import ContentModel from '../../src/models/Content';
 import UserModel from '../../src/models/User';
 import { api } from '../helpers/request';
@@ -213,6 +214,57 @@ describe('board write level (lv_write)', () => {
       await ContentModel.count({ where: { board_id: boardId, type } }),
     ).toBe(1);
   });
+
+  // The lv_write check uses the board_id the client sends, so the parent the
+  // content is attached to must be in that board.
+  it.each([
+    [
+      'POST /api/photo',
+      'AL',
+      (boardId: string, parentId: number) =>
+        api()
+          .post('/api/photo')
+          .send({ board_id: boardId, album_id: parentId, list: [] }),
+    ],
+    [
+      'POST /api/exhibition/:exhibition_id/exhibitPhoto',
+      'EH',
+      (boardId: string, parentId: number) =>
+        api()
+          .post(`/api/exhibition/${parentId}/exhibitPhoto`)
+          .field('board_id', boardId)
+          .field('photoInfo', '{}')
+          .attach('exhibitPhoto', Buffer.from('photo'), 'photo.jpg'),
+    ],
+  ] as const)(
+    '%s rejects a parent in a board other than board_id with 400',
+    async (_route, type, request) => {
+      const restricted = await createBoard({ lv_write: 6 });
+      const open = await createBoard({ lv_write: 9 });
+      const staff = await createUser({ grade: 6 });
+      const parent = await ContentModel.create({
+        content_uuid: uuid4(),
+        author_id: staff.get('user_id'),
+        board_id: restricted.get('board_id'),
+        title: 'parent',
+        text: 'text',
+        type,
+      });
+      const member = await createUser({ grade: 8 });
+
+      const res = await request(
+        open.get('board_id') as string,
+        parent.get('content_id') as number,
+      ).set('Authorization', await bearer(member));
+
+      expect(res.status).toBe(400);
+      expect(
+        await ContentModel.count({
+          where: { parent_id: parent.get('content_id') },
+        }),
+      ).toBe(0);
+    },
+  );
 
   it('POST /api/photo rejects a request without board_id with 400', async () => {
     const member = await createUser({ grade: 8 });
