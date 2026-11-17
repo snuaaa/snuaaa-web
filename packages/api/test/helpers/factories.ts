@@ -80,11 +80,19 @@ export async function createBoard(overrides: BoardOverrides = {}) {
   });
 }
 
-/** Creates a post: a `tb_content` row of type PO and its `tb_post` row. */
-export async function createPost(
+/**
+ * Creates a `tb_content` row, without a detail row (e.g. a parent album the
+ * test only needs to exist). `createPost` adds the `tb_post` row too.
+ */
+export async function createContent(
   author: User,
   board: Board,
-  overrides: { title?: string; text?: string } = {},
+  overrides: {
+    type?: string;
+    title?: string;
+    text?: string;
+    parent_id?: number;
+  } = {},
 ) {
   const n = next();
   const content = await insert<{ content_id: number }>('tb_content', {
@@ -92,14 +100,27 @@ export async function createPost(
     author_id: author.user_id,
     board_id: board.board_id,
     type: 'PO',
-    title: `Post ${n}`,
+    title: `Content ${n}`,
     text: `Text ${n}`,
     created_at: new Date(),
     updated_at: new Date(),
     ...overrides,
   });
-  await insert('tb_post', { content_id: content.content_id });
   return content.content_id;
+}
+
+/** Creates a post: a `tb_content` row of type PO and its `tb_post` row. */
+export async function createPost(
+  author: User,
+  board: Board,
+  overrides: { title?: string; text?: string } = {},
+) {
+  const contentId = await createContent(author, board, {
+    ...overrides,
+    type: 'PO',
+  });
+  await insert('tb_post', { content_id: contentId });
+  return contentId;
 }
 
 /**

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { api } from './helpers/request';
-import { query } from './helpers/sql';
+import { deleteUser } from './helpers/db';
 import { bearer, createUser, DEFAULT_PASSWORD } from './helpers/factories';
 
 describe('POST /api/auth/login', () => {
@@ -83,7 +83,7 @@ describe('GET /api/auth/check', () => {
   it('rejects a token whose user no longer exists', async () => {
     const user = await createUser();
     const authorization = bearer(user);
-    await query('DELETE FROM tb_user WHERE user_id = $1', [user.user_id]);
+    await deleteUser(user);
 
     const res = await api()
       .get('/api/auth/check')

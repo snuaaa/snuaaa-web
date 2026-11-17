@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { api } from '../helpers/request';
 import { bearer, createUser } from '../helpers/factories';
-import { query } from '../helpers/sql';
+import { withTableMissing } from '../helpers/db';
 
 describe('error response format', () => {
   it('answers malformed JSON with 400', async () => {
@@ -34,15 +34,10 @@ describe('error response format', () => {
   it('answers an unexpected error with a generic 500', async () => {
     const user = await createUser();
 
-    // Hide the table the endpoint reads, so its query fails the way a
-    // broken DB would, whatever ORM runs it.
-    await query('ALTER TABLE tb_board RENAME TO tb_board_hidden');
-    let res;
-    try {
-      res = await api().get('/api/board').set('Authorization', bearer(user));
-    } finally {
-      await query('ALTER TABLE tb_board_hidden RENAME TO tb_board');
-    }
+    // The endpoint's query fails like it would on a broken DB.
+    const res = await withTableMissing('tb_board', () =>
+      api().get('/api/board').set('Authorization', bearer(user)),
+    );
 
     expect(res.status).toBe(500);
     // No message or stack from the original error reaches the client.

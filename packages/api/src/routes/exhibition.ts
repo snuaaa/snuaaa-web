@@ -22,9 +22,11 @@ import { uploadImageToS3 } from '../utils/upload';
 import { retrieveUserByUserUuid } from '../controllers/user.controller';
 import {
   assertCanEditContent,
+  assertContentInBoard,
   deleteContent,
   updateContent,
 } from '../controllers/content.controller';
+import { assertBoardAccessById } from '../controllers/board.controller';
 import { BadRequestError } from '../errors';
 
 const router = express.Router();
@@ -155,6 +157,16 @@ router.post(
     }
 
     try {
+      await assertBoardAccessById(
+        req.body.board_id,
+        decodedToken.grade,
+        'write',
+      );
+      await assertContentInBoard(
+        req.params.exhibition_id,
+        req.body.board_id,
+        ContentTypeEnum.EXHIBITION,
+      );
       const photoInfo = JSON.parse(req.body.photoInfo);
 
       const resizedOriginalBuffer = await resizeImageBuffer(file.buffer);
