@@ -5,6 +5,7 @@ import {
   verifyTokenMiddleware,
 } from '../middlewares/auth';
 
+import { assertBoardAccessById } from '../controllers/board.controller';
 import { createContent } from '../controllers/content.controller';
 import {
   createAlbum,
@@ -40,6 +41,11 @@ router.get(
     };
 
     try {
+      await assertBoardAccessById(
+        req.params.board_id,
+        req.decodedToken.grade,
+        'read',
+      );
       const albumCount = await retrieveAlbumCount(
         req.params.board_id,
         req.query.category,
@@ -101,6 +107,11 @@ router.post(
     const user_id = decodedToken._id;
 
     try {
+      await assertBoardAccessById(
+        req.params.board_id,
+        decodedToken.grade,
+        'write',
+      );
       const content_id = await createContent(
         user_id,
         req.params.board_id,

@@ -11,7 +11,7 @@ describe('GET /api/board', () => {
     const member = await createUser({ grade: 8 });
     const res = await api()
       .get('/api/board')
-      .set('Authorization', await bearer(member));
+      .set('Authorization', bearer(member));
 
     expect(res.status).toBe(200);
     expect(res.body.map((b) => b.board_id)).toEqual(['b_member', 'b_all']);
