@@ -9,15 +9,9 @@ import {
 import { AuthenticatedRequestWithFile } from '../middlewares/upload';
 import { uploadFileToS3 } from '../utils/upload';
 
-import {
-  checkLike,
-  likeContent,
-  dislikeContent,
-} from '../controllers/contentLike.controller';
-import {
-  retrieveComments,
-  createComment,
-} from '../controllers/comment.controller';
+import { retrieveComments } from '../controllers/comment.controller';
+import { createComment } from '../services/comment.service';
+import { toggleContentLike } from '../services/contentLike.service';
 import {
   retrieveAttachedFile,
   increaseDownloadCount,
@@ -122,10 +116,8 @@ router.post(
   '/:content_id/comment',
   verifyTokenMiddleware,
   async (req: AuthenticatedRequest, res, next) => {
-    const { decodedToken } = req;
-
     try {
-      await createComment(decodedToken._id, req.params.content_id, req.body);
+      await createComment(req.decodedToken, req.params.content_id, req.body);
       res.json({ success: true });
     } catch (err) {
       next(err);
@@ -137,17 +129,8 @@ router.post(
   '/:content_id/like',
   verifyTokenMiddleware,
   async (req: AuthenticatedRequest, res, next) => {
-    const { decodedToken } = req;
-    const content_id = req.params.content_id;
-    const user_id = decodedToken._id;
-
     try {
-      const isLiked = await checkLike(content_id, user_id);
-      if (isLiked) {
-        await dislikeContent(content_id, user_id);
-      } else {
-        await likeContent(content_id, user_id);
-      }
+      await toggleContentLike(req.decodedToken, req.params.content_id);
       res.json({ success: true });
     } catch (err) {
       next(err);

@@ -1,8 +1,8 @@
 import { BoardModel, CommentModel, ContentModel, UserModel } from '../models';
 import { Op } from 'sequelize';
 import { BASE_USER_FIELDS } from '../models/User';
-import { AuthorizationError, BadRequestError, NotFoundError } from '../errors';
-import { JWTPayload } from '../utils/token';
+import { BadRequestError } from '../errors';
+import type { Tx } from '../db/transaction';
 
 export type CommentFilter = {
   author_id?: string;
@@ -215,29 +215,25 @@ export async function retrieveCommentsByUserUuid(user_uuid) {
   });
 }
 
-export async function createComment(user_id, parent_id, data) {
+export async function createComment(user_id, parent_id, data, tx?: Tx) {
   if (!user_id || !parent_id) {
     throw new BadRequestError('id can not be null');
   }
 
-  const comment = await CommentModel.create({
-    parent_id: parent_id,
-    parent_comment_id: data.parent_comment_id ? data.parent_comment_id : null,
-    author_id: user_id,
-    text: data.text,
-  });
+  const comment = await CommentModel.create(
+    {
+      parent_id: parent_id,
+      parent_comment_id: data.parent_comment_id ? data.parent_comment_id : null,
+      author_id: user_id,
+      text: data.text,
+    },
+    { transaction: tx },
+  );
 
-  const comment_id = comment.getDataValue('comment_id');
-
-  await ContentModel.increment('comment_num', {
-    where: { content_id: parent_id },
-    silent: true,
-  });
-
-  return comment_id;
+  return comment.getDataValue('comment_id');
 }
 
-export async function updateComment(comment_id, data) {
+export async function updateComment(comment_id, data, tx?: Tx) {
   if (!comment_id) {
     throw new BadRequestError('id can not be null');
   }
@@ -250,42 +246,37 @@ export async function updateComment(comment_id, data) {
       where: {
         comment_id: comment_id,
       },
+      transaction: tx,
     },
   );
 }
 
-export async function deleteComment(comment_id) {
+/** Soft-deletes the comment. */
+export async function deleteComment(comment_id, tx?: Tx) {
   if (!comment_id) {
     throw new BadRequestError('id can not be null');
   }
-
-  const comment = await CommentModel.findOne({
-    where: {
-      comment_id: comment_id,
-    },
-  });
-
-  await ContentModel.decrement('comment_num', {
-    where: {
-      content_id: comment.getDataValue('parent_id'),
-    },
-    silent: true,
-  });
 
   await CommentModel.destroy({
     where: {
       comment_id: comment_id,
     },
+    transaction: tx,
   });
 }
 
 /**
- * Throws unless the user wrote the comment or their grade is within the edit
- * level of the board the comment's content belongs to.
+ * What deciding who may edit the comment needs: its author, the content it
+ * is on, and the edit level of that content's board. Null when the comment
+ * doesn't exist (or is deleted).
  */
-export async function assertCanEditComment(comment_id, user: JWTPayload) {
+export async function retrieveCommentForEdit(comment_id, tx?: Tx) {
+  // A non-numeric id would make Postgres throw (a 500), so treat it as missing.
+  if (!/^\d+$/.test(String(comment_id))) {
+    return null;
+  }
   const comment = await CommentModel.findByPk(comment_id, {
-    attributes: ['comment_id', 'author_id'],
+    attributes: ['comment_id', 'author_id', 'parent_id'],
     include: [
       {
         model: ContentModel,
@@ -293,15 +284,17 @@ export async function assertCanEditComment(comment_id, user: JWTPayload) {
         include: [{ model: BoardModel, attributes: ['lv_edit'] }],
       },
     ],
+    transaction: tx,
   });
   if (!comment) {
-    throw new NotFoundError('Comment not found');
+    return null;
   }
   const content = comment.get('content') as ContentModel | undefined;
   const board = content?.get('board') as BoardModel | undefined;
-  const isAuthor = comment.getDataValue('author_id') === user._id;
-  const canEditBoard = !!board && user.grade <= board.getDataValue('lv_edit');
-  if (!isAuthor && !canEditBoard) {
-    throw new AuthorizationError('Permission denied', { code: 4001 });
-  }
+  return {
+    comment_id: comment.getDataValue('comment_id'),
+    author_id: comment.getDataValue('author_id'),
+    parent_id: comment.getDataValue('parent_id'),
+    lv_edit: board?.getDataValue('lv_edit') ?? null,
+  };
 }
