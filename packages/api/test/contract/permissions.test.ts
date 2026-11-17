@@ -1,15 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import type { Test } from 'supertest';
-import uuid4 from 'uuid4';
-import ContentModel from '../../src/models/Content';
-import UserModel from '../../src/models/User';
 import { api } from '../helpers/request';
 import {
   bearer,
   createBoard,
+  createContent,
   createPost,
   createUser,
+  User,
 } from '../helpers/factories';
+import { countContents, gradeOf } from '../helpers/db';
 
 // Lower grade = more privilege. 8/9 are regular members.
 
@@ -27,7 +27,7 @@ describe('board read level (lv_read)', () => {
 
     const res = await api()
       .get('/api/board/b_member')
-      .set('Authorization', await bearer(member));
+      .set('Authorization', bearer(member));
 
     expect(res.status).toBe(200);
     expect(res.body.boardInfo).toMatchObject({ board_id: 'b_member' });
@@ -39,7 +39,7 @@ describe('board read level (lv_read)', () => {
 
     const res = await api()
       .get('/api/board/b_staff')
-      .set('Authorization', await bearer(member));
+      .set('Authorization', bearer(member));
 
     expect(res.status).toBe(403);
     expect(res.body).toEqual(FORBIDDEN);
@@ -53,7 +53,7 @@ describe('board read level (lv_read)', () => {
 
     const res = await api()
       .get(`/api/post/${postId}`)
-      .set('Authorization', await bearer(member));
+      .set('Authorization', bearer(member));
 
     expect(res.status).toBe(403);
     expect(res.body).toEqual(FORBIDDEN);
@@ -66,7 +66,7 @@ describe('board read level (lv_read)', () => {
 
     const res = await api()
       .get(`/api/post/${postId}`)
-      .set('Authorization', await bearer(author));
+      .set('Authorization', bearer(author));
 
     expect(res.status).toBe(200);
     expect(res.body.postInfo).toMatchObject({
@@ -90,8 +90,8 @@ describe('board read level (lv_read)', () => {
       const member = await createUser({ grade: 8 });
 
       const res = await api()
-        .get(route.replace(':board_id', board.get('board_id') as string))
-        .set('Authorization', await bearer(member));
+        .get(route.replace(':board_id', board.board_id))
+        .set('Authorization', bearer(member));
 
       expect(res.status).toBe(200);
     },
@@ -104,8 +104,8 @@ describe('board read level (lv_read)', () => {
       const member = await createUser({ grade: 8 });
 
       const res = await api()
-        .get(route.replace(':board_id', board.get('board_id') as string))
-        .set('Authorization', await bearer(member));
+        .get(route.replace(':board_id', board.board_id))
+        .set('Authorization', bearer(member));
 
       expect(res.status).toBe(403);
       expect(res.body).toEqual(FORBIDDEN);
@@ -117,7 +117,7 @@ describe('board read level (lv_read)', () => {
 
     const res = await api()
       .get('/api/board/b_missing/posts')
-      .set('Authorization', await bearer(member));
+      .set('Authorization', bearer(member));
 
     expect(res.status).toBe(404);
   });
@@ -126,11 +126,8 @@ describe('board read level (lv_read)', () => {
 describe('board write level (lv_write)', () => {
   async function setup() {
     const board = await createBoard({ lv_read: 9, lv_write: 6 });
-    return { board, boardId: board.get('board_id') as string };
+    return { board, boardId: board.board_id };
   }
-
-  const countContents = async (boardId: string) =>
-    ContentModel.count({ where: { board_id: boardId } });
 
   // Each request is what the web sends, minus anything the check runs before.
   const WRITE_REQUESTS: [string, (boardId: string) => Test][] = [
@@ -183,14 +180,11 @@ describe('board write level (lv_write)', () => {
       const { boardId } = await setup();
       const member = await createUser({ grade: 8 });
 
-      const res = await request(boardId).set(
-        'Authorization',
-        await bearer(member),
-      );
+      const res = await request(boardId).set('Authorization', bearer(member));
 
       expect(res.status).toBe(403);
       expect(res.body).toEqual(FORBIDDEN);
-      expect(await countContents(boardId)).toBe(0);
+      expect(await countContents({ board_id: boardId })).toBe(0);
     },
   );
 
@@ -203,16 +197,11 @@ describe('board write level (lv_write)', () => {
     const staff = await createUser({ grade: 6 });
     const request = WRITE_REQUESTS.find(([r]) => r === route)![1];
 
-    const res = await request(boardId).set(
-      'Authorization',
-      await bearer(staff),
-    );
+    const res = await request(boardId).set('Authorization', bearer(staff));
 
     expect(res.status).toBe(200);
     expect(res.body).toMatchObject({ success: true });
-    expect(
-      await ContentModel.count({ where: { board_id: boardId, type } }),
-    ).toBe(1);
+    expect(await countContents({ board_id: boardId, type })).toBe(1);
   });
 
   // The lv_write check uses the board_id the client sends, so the parent the
@@ -242,27 +231,16 @@ describe('board write level (lv_write)', () => {
       const restricted = await createBoard({ lv_write: 6 });
       const open = await createBoard({ lv_write: 9 });
       const staff = await createUser({ grade: 6 });
-      const parent = await ContentModel.create({
-        content_uuid: uuid4(),
-        author_id: staff.get('user_id'),
-        board_id: restricted.get('board_id'),
-        title: 'parent',
-        text: 'text',
-        type,
-      });
+      const parentId = await createContent(staff, restricted, { type });
       const member = await createUser({ grade: 8 });
 
-      const res = await request(
-        open.get('board_id') as string,
-        parent.get('content_id') as number,
-      ).set('Authorization', await bearer(member));
+      const res = await request(open.board_id, parentId).set(
+        'Authorization',
+        bearer(member),
+      );
 
       expect(res.status).toBe(400);
-      expect(
-        await ContentModel.count({
-          where: { parent_id: parent.get('content_id') },
-        }),
-      ).toBe(0);
+      expect(await countContents({ parent_id: parentId })).toBe(0);
     },
   );
 
@@ -272,8 +250,8 @@ describe('board write level (lv_write)', () => {
 
     const res = await api()
       .post('/api/photo')
-      .set('Authorization', await bearer(member))
-      .send({ board_id: board.get('board_id'), album_id: 'abc', list: [] });
+      .set('Authorization', bearer(member))
+      .send({ board_id: board.board_id, album_id: 'abc', list: [] });
 
     expect(res.status).toBe(404);
   });
@@ -283,7 +261,7 @@ describe('board write level (lv_write)', () => {
 
     const res = await api()
       .post('/api/photo')
-      .set('Authorization', await bearer(member))
+      .set('Authorization', bearer(member))
       .send({ list: [] });
 
     expect(res.status).toBe(400);
@@ -314,7 +292,7 @@ describe('editing a post (author or board lv_edit)', () => {
       method === 'PATCH'
         ? api().patch(`/api/post/${postId}`).send({ title: 'edited' })
         : api().delete(`/api/post/${postId}`);
-    const res = await req.set('Authorization', await bearer(actor));
+    const res = await req.set('Authorization', bearer(actor));
 
     if (allowed) {
       expect(res.status).toBe(200);
@@ -330,7 +308,7 @@ describe('editing a post (author or board lv_edit)', () => {
 
     const res = await api()
       .delete('/api/post/999999')
-      .set('Authorization', await bearer(user));
+      .set('Authorization', bearer(user));
 
     expect(res.status).toBe(404);
     expect(res.body).toEqual({
@@ -342,10 +320,10 @@ describe('editing a post (author or board lv_edit)', () => {
 });
 
 describe('PATCH /api/user/:user_uuid/grade', () => {
-  const change = async (actor: UserModel, target: UserModel, grade: number) =>
+  const change = (actor: User, target: User, grade: number) =>
     api()
-      .patch(`/api/user/${target.get('user_uuid')}/grade`)
-      .set('Authorization', await bearer(actor))
+      .patch(`/api/user/${target.user_uuid}/grade`)
+      .set('Authorization', bearer(actor))
       .send({ grade });
 
   it('lets grade 1-3 lower a member below their own grade', async () => {
@@ -355,8 +333,7 @@ describe('PATCH /api/user/:user_uuid/grade', () => {
     const res = await change(manager, member, 8);
 
     expect(res.status).toBe(200);
-    await member.reload();
-    expect(member.get('grade')).toBe(8);
+    expect(await gradeOf(member)).toBe(8);
   });
 
   it.each([
@@ -371,8 +348,7 @@ describe('PATCH /api/user/:user_uuid/grade', () => {
 
     expect(res.status).toBe(403);
     expect(res.body.error).toBe('FORBIDDEN');
-    await target.reload();
-    expect(target.get('grade')).toBe(targetGrade);
+    expect(await gradeOf(target)).toBe(targetGrade);
   });
 
   it('rejects a grade that does not exist with 400', async () => {
@@ -394,7 +370,7 @@ describe('equipment admin endpoints', () => {
   ] as const)('%s rejects grade 7 with 403', async (_e, method, url) => {
     const member = await createUser({ grade: 7 });
 
-    const authorization = await bearer(member);
+    const authorization = bearer(member);
     const res = await api()[method](url).set('Authorization', authorization);
 
     expect(res.status).toBe(403);
