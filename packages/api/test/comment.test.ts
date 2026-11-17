@@ -118,12 +118,12 @@ describe('DELETE /api/comment/:comment_id', () => {
     expect((await commentState(commentId)).deleted).toBe(true);
   });
 
-  it('keeps the count when the delete fails', async () => {
+  it('keeps the comment when uncounting it fails', async () => {
     const { contentId } = await setup();
     const user = await createUser({ grade: 8 });
     const commentId = await createComment(user, contentId);
 
-    const res = await withFailingWrites('tb_comment', 'UPDATE', () =>
+    const res = await withFailingWrites('tb_content', 'UPDATE', () =>
       api()
         .delete(`/api/comment/${commentId}`)
         .set('Authorization', bearer(user)),
@@ -132,6 +132,30 @@ describe('DELETE /api/comment/:comment_id', () => {
     expect(res.status).toBe(500);
     expect((await commentState(commentId)).deleted).toBe(false);
     expect((await contentCounters(contentId)).comment_num).toBe(1);
+  });
+
+  it('uncounts the comment once when deleted twice at once', async () => {
+    const { contentId } = await setup();
+    const user = await createUser({ grade: 8 });
+    const commentId = await createComment(user, contentId);
+
+    const responses = await Promise.all([
+      api()
+        .delete(`/api/comment/${commentId}`)
+        .set('Authorization', bearer(user)),
+      api()
+        .delete(`/api/comment/${commentId}`)
+        .set('Authorization', bearer(user)),
+    ]);
+
+    // The second gets 404 when it reads the comment after the first commits.
+    const statuses = responses.map((r) => r.status).sort();
+    expect([
+      [200, 200],
+      [200, 404],
+    ]).toContainEqual(statuses);
+    expect((await commentState(commentId)).deleted).toBe(true);
+    expect((await contentCounters(contentId)).comment_num).toBe(0);
   });
 
   it('returns 404 for an unknown comment', async () => {
@@ -188,5 +212,23 @@ describe('POST /api/comment/:comment_id/like', () => {
 
     expect(await hasCommentLike(user, commentId)).toBe(false);
     expect(await hasCommentLike(author, commentId)).toBe(true);
+  });
+
+  it('handles two calls at once as like then unlike', async () => {
+    const { contentId, author } = await setup();
+    const user = await createUser({ grade: 8 });
+    const commentId = await createComment(author, contentId);
+
+    const responses = await Promise.all([
+      api()
+        .post(`/api/comment/${commentId}/like`)
+        .set('Authorization', bearer(user)),
+      api()
+        .post(`/api/comment/${commentId}/like`)
+        .set('Authorization', bearer(user)),
+    ]);
+
+    expect(responses.map((r) => r.status)).toEqual([200, 200]);
+    expect(await hasCommentLike(user, commentId)).toBe(false);
   });
 });

@@ -69,4 +69,21 @@ describe('POST /api/content/:content_id/like', () => {
     expect(await hasContentLike(user, contentId)).toBe(true);
     expect((await contentCounters(contentId)).like_num).toBe(3);
   });
+
+  it('handles two calls at once as like then unlike', async () => {
+    const { contentId, user } = await setup();
+
+    const responses = await Promise.all([
+      api()
+        .post(`/api/content/${contentId}/like`)
+        .set('Authorization', bearer(user)),
+      api()
+        .post(`/api/content/${contentId}/like`)
+        .set('Authorization', bearer(user)),
+    ]);
+
+    expect(responses.map((r) => r.status)).toEqual([200, 200]);
+    expect(await hasContentLike(user, contentId)).toBe(false);
+    expect((await contentCounters(contentId)).like_num).toBe(3);
+  });
 });

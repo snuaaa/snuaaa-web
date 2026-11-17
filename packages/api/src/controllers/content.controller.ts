@@ -146,3 +146,20 @@ export async function addToContentCounter(
     transaction: tx,
   });
 }
+
+/**
+ * Locks the content's row until `tx` ends, so requests that change the same
+ * content (e.g. like toggles) run one after another. Returns whether the
+ * content exists.
+ */
+export async function lockContent(content_id, tx: Tx) {
+  if (!/^\d+$/.test(String(content_id))) {
+    return false;
+  }
+  const content = await ContentModel.findByPk(content_id, {
+    attributes: ['content_id'],
+    lock: tx.LOCK.UPDATE,
+    transaction: tx,
+  });
+  return !!content;
+}

@@ -251,18 +251,37 @@ export async function updateComment(comment_id, data, tx?: Tx) {
   );
 }
 
-/** Soft-deletes the comment. */
+/**
+ * Soft-deletes the comment. Returns how many rows it deleted: 0 when another
+ * request deleted it first.
+ */
 export async function deleteComment(comment_id, tx?: Tx) {
   if (!comment_id) {
     throw new BadRequestError('id can not be null');
   }
 
-  await CommentModel.destroy({
+  return CommentModel.destroy({
     where: {
       comment_id: comment_id,
     },
     transaction: tx,
   });
+}
+
+/**
+ * Locks the comment's row until `tx` ends, so requests that change the same
+ * comment run one after another. Returns whether the comment exists.
+ */
+export async function lockComment(comment_id, tx: Tx) {
+  if (!/^\d+$/.test(String(comment_id))) {
+    return false;
+  }
+  const comment = await CommentModel.findByPk(comment_id, {
+    attributes: ['comment_id'],
+    lock: tx.LOCK.UPDATE,
+    transaction: tx,
+  });
+  return !!comment;
 }
 
 /**
