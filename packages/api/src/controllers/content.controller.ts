@@ -45,6 +45,32 @@ export async function canEditContent(
   return isAuthor || canEditBoard;
 }
 
+/**
+ * Throws 404 unless `content_id` is a content of `type`, and 400 unless it
+ * belongs to `board_id`. Write routes check lv_write on the `board_id` the
+ * client sends, so a child (an album's photo, an exhibition's photo) must not
+ * point at a parent in another board.
+ */
+export async function assertContentInBoard(
+  content_id,
+  board_id: unknown,
+  type: string,
+) {
+  // A non-numeric id would make Postgres throw (a 500), so treat it as missing.
+  if (!/^\d+$/.test(String(content_id))) {
+    throw new NotFoundError('Content not found');
+  }
+  const content = await ContentModel.findByPk(content_id, {
+    attributes: ['content_id', 'board_id', 'type'],
+  });
+  if (!content || content.getDataValue('type') !== type) {
+    throw new NotFoundError('Content not found');
+  }
+  if (content.getDataValue('board_id') !== board_id) {
+    throw new BadRequestError('board_id does not match the parent content');
+  }
+}
+
 /** Throws unless `canEditContent` allows the user. */
 export async function assertCanEditContent(
   content_id,
