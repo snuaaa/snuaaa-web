@@ -34,7 +34,7 @@ const stars = JSON.parse(readFileSync(input, 'utf8'))
     mag: Number(s.V),
     k: Number(s.K) || 6000,
   }))
-  // Brightest first, so a renderer can draw only the first N stars on small screens.
+  // Brightest first, so the file is stable across rebuilds and easy to trim by magnitude.
   .sort((a, b) => a.mag - b.mag);
 
 const buf = Buffer.alloc(stars.length * 6);

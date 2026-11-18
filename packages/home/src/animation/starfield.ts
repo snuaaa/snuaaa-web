@@ -158,6 +158,16 @@ class Starfield {
 
   private startTime = performance.now();
 
+  // True once a frame with no visible stars has been drawn, so the loop can skip identical frames.
+  private blank = false;
+
+  private readonly canvas: HTMLCanvasElement;
+
+  private readonly onContextLost = () => {
+    this.stop();
+    this.onLost?.();
+  };
+
   private readonly tmp = new Vector3();
 
   private readonly onResize = () => this.resize();
@@ -176,7 +186,15 @@ class Starfield {
     }
   };
 
-  constructor(canvas: HTMLCanvasElement, catalog: DataView, page: number) {
+  // `onLost` is called when the browser drops the WebGL context (it happens on mobile under memory
+  // pressure), so the caller can fall back to the static background.
+  constructor(
+    canvas: HTMLCanvasElement,
+    catalog: DataView,
+    page: number,
+    private readonly onLost?: () => void,
+  ) {
+    this.canvas = canvas;
     this.reducedMotion = window.matchMedia(
       '(prefers-reduced-motion: reduce)',
     ).matches;
@@ -255,6 +273,7 @@ class Starfield {
     window.addEventListener('resize', this.onResize);
     window.addEventListener('pointermove', this.onPointerMove);
     document.addEventListener('visibilitychange', this.onVisibilityChange);
+    canvas.addEventListener('webglcontextlost', this.onContextLost);
 
     this.resize();
     this.start();
@@ -278,6 +297,7 @@ class Starfield {
     window.removeEventListener('resize', this.onResize);
     window.removeEventListener('pointermove', this.onPointerMove);
     document.removeEventListener('visibilitychange', this.onVisibilityChange);
+    this.canvas.removeEventListener('webglcontextlost', this.onContextLost);
     this.geometry.dispose();
     this.material.dispose();
     this.renderer.dispose();
@@ -380,6 +400,13 @@ class Starfield {
       page - lower,
     );
     this.material.uniforms.uTime.value = time;
+
+    // On the daylight page no star is visible: draw one empty frame, then skip until something changes.
+    const hidden =
+      this.material.uniforms.uOpacity.value === 0 &&
+      this.page.current === this.page.to;
+    if (hidden && this.blank) return;
+    this.blank = hidden;
 
     this.renderer.render(this.scene, this.camera);
   }

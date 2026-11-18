@@ -62,7 +62,7 @@ const Background: React.FC = () => {
   const indexRef = useRef(index);
   indexRef.current = index;
   // 'loading' until the 3D starfield is ready; the gradient alone shows meanwhile, and the stars brighten in.
-  // 'failed' (no WebGL, or the catalog didn't load) falls back to the static star images.
+  // 'failed' (no WebGL, the catalog didn't load, or the WebGL context was lost) falls back to the static star images.
   const [status, setStatus] = useState<'loading' | 'ready' | 'failed'>(
     'loading',
   );
@@ -81,6 +81,7 @@ const Background: React.FC = () => {
           canvas,
           catalog,
           indexRef.current,
+          () => setStatus('failed'),
         );
         setStatus('ready');
       })
@@ -94,6 +95,13 @@ const Background: React.FC = () => {
       starfieldRef.current = null;
     };
   }, []);
+
+  useEffect(() => {
+    if (status === 'failed') {
+      starfieldRef.current?.destroy();
+      starfieldRef.current = null;
+    }
+  }, [status]);
 
   useEffect(() => {
     starfieldRef.current?.setPage(index);
