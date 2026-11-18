@@ -83,6 +83,24 @@ describe('POST /api/content/:content_id/comment', () => {
     expect(await countComments(contentId)).toBe(0);
   });
 
+  it('refuses a body over 100kb with 413, like Express did', async () => {
+    const { contentId } = await setup();
+    const user = await createUser({ grade: 8 });
+
+    const response = await api()
+      .post(`/api/content/${contentId}/comment`)
+      .set('Authorization', bearer(user))
+      .send({ text: 'a'.repeat(101 * 1024) });
+
+    expect(response.status).toBe(413);
+    expect(response.body).toEqual({
+      success: false,
+      error: 'BAD_REQUEST',
+      message: 'request entity too large',
+    });
+    expect(await countComments(contentId)).toBe(0);
+  });
+
   it('answers malformed JSON with 400', async () => {
     const { contentId } = await setup();
     const user = await createUser({ grade: 8 });
