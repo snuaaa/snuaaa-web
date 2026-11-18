@@ -20,7 +20,8 @@ import {
 } from '../controllers/post.controller';
 import { checkLike } from '../controllers/contentLike.controller';
 import { retrieveUserByUserUuid } from '../controllers/user.controller';
-import { AuthorizationError, NotFoundError } from '../errors';
+import { NotFoundError } from '../errors';
+import { assertBoardAccess } from '../controllers/board.controller';
 
 const router = express.Router();
 
@@ -67,11 +68,7 @@ router.get(
     try {
       const postInfo = await retrievePost(req.params.post_id);
 
-      if (postInfo.board.lv_read < decodedToken.grade) {
-        return next(
-          new AuthorizationError('Permission denied', { code: 4001 }),
-        );
-      }
+      assertBoardAccess(postInfo.board, decodedToken.grade, 'read');
 
       const [likeInfo] = await Promise.all([
         checkLike(req.params.post_id, decodedToken._id),

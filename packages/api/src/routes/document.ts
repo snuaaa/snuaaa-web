@@ -6,6 +6,7 @@ import {
   verifyTokenMiddleware,
 } from '../middlewares/auth';
 
+import { assertBoardAccess } from '../controllers/board.controller';
 import {
   retrieveDocumentCount,
   retrieveDocument,
@@ -64,13 +65,7 @@ router.get(
     try {
       const docInfo = await retrieveDocument(req.params.doc_id);
 
-      if (docInfo.board.lv_read < decodedToken.grade) {
-        const err = {
-          status: 403,
-          code: 4001,
-        };
-        return next(err);
-      }
+      assertBoardAccess(docInfo.board, decodedToken.grade, 'read');
 
       const [likeInfo] = await Promise.all([
         checkLike(req.params.doc_id, decodedToken._id),

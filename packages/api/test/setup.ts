@@ -1,7 +1,7 @@
 import { afterAll, beforeEach } from 'vitest';
-import { sequelize } from '../src/models/sequelize';
 import { s3Mock, sesMock } from './helpers/aws';
 import { resetDb } from './helpers/db';
+import { pool } from './helpers/sql';
 
 beforeEach(async () => {
   s3Mock.reset();
@@ -10,5 +10,5 @@ beforeEach(async () => {
 });
 
 afterAll(async () => {
-  await sequelize.close();
+  await pool.end();
 });

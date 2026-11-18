@@ -23,4 +23,39 @@ export default tseslint.config(
       ],
     },
   },
+  {
+    // Tests talk to the API over HTTP and set up data through test/helpers,
+    // so they keep working when the code behind the routes is replaced (#158).
+    files: ['test/**/*.test.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            { name: 'pg', message: 'Use a helper in test/helpers/db.ts.' },
+            {
+              name: 'sequelize',
+              message: 'Use a helper in test/helpers/db.ts.',
+            },
+          ],
+          patterns: [
+            {
+              group: ['**/helpers/sql'],
+              message:
+                'Keep SQL in test/helpers: add a helper to db.ts or factories.ts.',
+            },
+            {
+              group: [
+                '**/src/models/**',
+                '**/src/controllers/**',
+                '**/src/utils/**',
+              ],
+              message:
+                'Tests must not depend on the code under test. Use test/helpers.',
+            },
+          ],
+        },
+      ],
+    },
+  },
 );

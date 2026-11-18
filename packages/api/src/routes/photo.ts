@@ -23,6 +23,7 @@ import {
 import { checkLike } from '../controllers/contentLike.controller';
 import {
   assertCanEditContent,
+  assertContentInBoard,
   updateContent,
   deleteContent,
   increaseViewNum,
@@ -34,7 +35,11 @@ import {
 } from '../controllers/contentTag.controller';
 import { retrieveUserByUserUuid } from '../controllers/user.controller';
 import { SearchType } from '../controllers/post.controller';
-import { AuthorizationError, BadRequestError, NotFoundError } from '../errors';
+import { BadRequestError, NotFoundError } from '../errors';
+import {
+  assertBoardAccess,
+  assertBoardAccessById,
+} from '../controllers/board.controller';
 
 const router = express.Router();
 
@@ -81,11 +86,7 @@ router.get(
     try {
       const photoInfo = await retrievePhoto(req.params.photo_id);
 
-      if (photoInfo.board.lv_read < decodedToken.grade) {
-        return next(
-          new AuthorizationError('Permission denied', { code: 4001 }),
-        );
-      }
+      assertBoardAccess(photoInfo.board, decodedToken.grade, 'read');
 
       const isUserNavigation = req.query.navigation === 'user';
       const prevPhotoPromise = isUserNavigation
@@ -147,6 +148,10 @@ router.post(
     const albumId = req.body.album_id;
 
     try {
+      await assertBoardAccessById(boardId, decodedToken.grade, 'write');
+      if (albumId) {
+        await assertContentInBoard(albumId, boardId, ContentTypeEnum.ALBUM);
+      }
       const contentIdList = await Promise.all(
         list.map(async (photo: Record<string, unknown>) => {
           const contentId = await createPhoto({

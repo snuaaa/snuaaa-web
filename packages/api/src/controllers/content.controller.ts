@@ -2,6 +2,7 @@ import { BoardModel, ContentModel } from '../models';
 import uuid4 from 'uuid4';
 import { AuthorizationError, BadRequestError, NotFoundError } from '../errors';
 import { JWTPayload } from '../utils/token';
+import type { Tx } from '../db/transaction';
 
 export async function createContent(user_id, board_id, data, type) {
   if (!user_id || !board_id) {
@@ -43,6 +44,32 @@ export async function canEditContent(
   const isAuthor = content.getDataValue('author_id') === user._id;
   const canEditBoard = !!board && user.grade <= board.getDataValue('lv_edit');
   return isAuthor || canEditBoard;
+}
+
+/**
+ * Throws 404 unless `content_id` is a content of `type`, and 400 unless it
+ * belongs to `board_id`. Write routes check lv_write on the `board_id` the
+ * client sends, so a child (an album's photo, an exhibition's photo) must not
+ * point at a parent in another board.
+ */
+export async function assertContentInBoard(
+  content_id,
+  board_id: unknown,
+  type: string,
+) {
+  // A non-numeric id would make Postgres throw (a 500), so treat it as missing.
+  if (!/^\d+$/.test(String(content_id))) {
+    throw new NotFoundError('Content not found');
+  }
+  const content = await ContentModel.findByPk(content_id, {
+    attributes: ['content_id', 'board_id', 'type'],
+  });
+  if (!content || content.getDataValue('type') !== type) {
+    throw new NotFoundError('Content not found');
+  }
+  if (content.getDataValue('board_id') !== board_id) {
+    throw new BadRequestError('board_id does not match the parent content');
+  }
 }
 
 /** Throws unless `canEditContent` allows the user. */
@@ -96,4 +123,43 @@ export async function increaseViewNum(content_id) {
     where: { content_id: content_id },
     silent: true,
   });
+}
+
+/**
+ * Adds `by` (negative to subtract) to one of the content's counters, without
+ * touching `updated_at`.
+ */
+export async function addToContentCounter(
+  content_id,
+  counter: 'comment_num' | 'like_num',
+  by: number,
+  tx?: Tx,
+) {
+  if (!content_id) {
+    throw new BadRequestError('id can not be null');
+  }
+
+  await ContentModel.increment(counter, {
+    by,
+    where: { content_id: content_id },
+    silent: true,
+    transaction: tx,
+  });
+}
+
+/**
+ * Locks the content's row until `tx` ends, so requests that change the same
+ * content (e.g. like toggles) run one after another. Returns whether the
+ * content exists.
+ */
+export async function lockContent(content_id, tx: Tx) {
+  if (!/^\d+$/.test(String(content_id))) {
+    return false;
+  }
+  const content = await ContentModel.findByPk(content_id, {
+    attributes: ['content_id'],
+    lock: tx.LOCK.UPDATE,
+    transaction: tx,
+  });
+  return !!content;
 }

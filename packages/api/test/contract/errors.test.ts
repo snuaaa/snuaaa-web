@@ -1,11 +1,7 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
-import { BoardModel } from '../../src/models';
+import { describe, expect, it } from 'vitest';
 import { api } from '../helpers/request';
 import { bearer, createUser } from '../helpers/factories';
-
-afterEach(() => {
-  vi.restoreAllMocks();
-});
+import { withTableMissing } from '../helpers/db';
 
 describe('error response format', () => {
   it('answers malformed JSON with 400', async () => {
@@ -36,14 +32,12 @@ describe('error response format', () => {
   });
 
   it('answers an unexpected error with a generic 500', async () => {
-    vi.spyOn(BoardModel, 'findAll').mockRejectedValue(
-      new Error('connection lost: secret details'),
-    );
     const user = await createUser();
 
-    const res = await api()
-      .get('/api/board')
-      .set('Authorization', await bearer(user));
+    // The endpoint's query fails like it would on a broken DB.
+    const res = await withTableMissing('tb_board', () =>
+      api().get('/api/board').set('Authorization', bearer(user)),
+    );
 
     expect(res.status).toBe(500);
     // No message or stack from the original error reaches the client.
