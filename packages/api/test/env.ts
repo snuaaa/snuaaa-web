@@ -18,7 +18,7 @@ export const testEnv = {
   S3_BUCKET_NAME: 'snuaaa-test',
   SENTRY_DSN: '',
   // Short, so the lock timeout test doesn't wait the default 5 seconds.
-  DB_LOCK_TIMEOUT_MS: '500',
+  DATABASE_LOCK_TIMEOUT_MILLISECONDS: '500',
 };
 
 if (!testEnv.POSTGRESQL_DATABASE.endsWith('_test')) {

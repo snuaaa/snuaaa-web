@@ -1,5 +1,5 @@
 import { and, eq } from 'drizzle-orm';
-import { db, type Executor } from '../db/client';
+import { database, type Executor } from '../db/client';
 import { commentLike, contentLike } from '../db/schema';
 
 /*
@@ -9,9 +9,9 @@ import { commentLike, contentLike } from '../db/schema';
 export async function hasContentLike(
   contentId: number,
   userId: number,
-  ex: Executor = db,
+  executor: Executor = database,
 ) {
-  const rows = await ex
+  const rows = await executor
     .select({ content_id: contentLike.content_id })
     .from(contentLike)
     .where(
@@ -26,9 +26,9 @@ export async function hasContentLike(
 export async function insertContentLike(
   contentId: number,
   userId: number,
-  ex: Executor = db,
+  executor: Executor = database,
 ) {
-  await ex
+  await executor
     .insert(contentLike)
     .values({ content_id: contentId, user_id: userId });
 }
@@ -37,9 +37,9 @@ export async function insertContentLike(
 export async function deleteContentLike(
   contentId: number,
   userId: number,
-  ex: Executor = db,
+  executor: Executor = database,
 ) {
-  const rows = await ex
+  const rows = await executor
     .delete(contentLike)
     .where(
       and(
@@ -54,9 +54,9 @@ export async function deleteContentLike(
 export async function hasCommentLike(
   commentId: number,
   userId: number,
-  ex: Executor = db,
+  executor: Executor = database,
 ) {
-  const rows = await ex
+  const rows = await executor
     .select({ comment_id: commentLike.comment_id })
     .from(commentLike)
     .where(
@@ -71,9 +71,9 @@ export async function hasCommentLike(
 export async function insertCommentLike(
   commentId: number,
   userId: number,
-  ex: Executor = db,
+  executor: Executor = database,
 ) {
-  await ex
+  await executor
     .insert(commentLike)
     .values({ comment_id: commentId, user_id: userId });
 }
@@ -81,9 +81,9 @@ export async function insertCommentLike(
 export async function deleteCommentLike(
   commentId: number,
   userId: number,
-  ex: Executor = db,
+  executor: Executor = database,
 ) {
-  await ex
+  await executor
     .delete(commentLike)
     .where(
       and(

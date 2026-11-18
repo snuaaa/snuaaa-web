@@ -1,4 +1,4 @@
-import { withTransaction, type Tx } from '../db/transaction';
+import { withTransaction, type Transaction } from '../db/transaction';
 import { NotFoundError } from '../errors';
 import * as comments from '../repositories/comment.repository';
 import * as contents from '../repositories/content.repository';
@@ -20,8 +20,8 @@ export function createComment(
   contentId: string,
   input: CommentInput,
 ) {
-  return withTransaction(async (tx) => {
-    if (!(await contents.lock(contentId, tx))) {
+  return withTransaction(async (transaction) => {
+    if (!(await contents.lock(contentId, transaction))) {
       throw new NotFoundError('Content not found');
     }
     const id = Number(contentId);
@@ -32,9 +32,9 @@ export function createComment(
         text: input.text,
         parent_comment_id: input.parent_comment_id,
       },
-      tx,
+      transaction,
     );
-    await contents.addToCounter(id, 'comment_num', 1, tx);
+    await contents.addToCounter(id, 'comment_num', 1, transaction);
     return commentId;
   });
 }
@@ -44,8 +44,12 @@ export function createComment(
  * an unknown or deleted comment and 403 when the actor is neither its author
  * nor within the board's edit level.
  */
-async function loadEditableComment(actor: Actor, commentId: string, tx?: Tx) {
-  const comment = await comments.findForEdit(commentId, tx);
+async function loadEditableComment(
+  actor: Actor,
+  commentId: string,
+  transaction?: Transaction,
+) {
+  const comment = await comments.findForEdit(commentId, transaction);
   if (!comment) {
     throw new NotFoundError('Comment not found');
   }
@@ -71,10 +75,15 @@ export async function updateComment(
  * takes, deletes nothing, and so leaves the count alone.
  */
 export function deleteComment(actor: Actor, commentId: string) {
-  return withTransaction(async (tx) => {
-    const comment = await loadEditableComment(actor, commentId, tx);
-    if ((await comments.softDelete(comment.comment_id, tx)) > 0) {
-      await contents.addToCounter(comment.parent_id, 'comment_num', -1, tx);
+  return withTransaction(async (transaction) => {
+    const comment = await loadEditableComment(actor, commentId, transaction);
+    if ((await comments.softDelete(comment.comment_id, transaction)) > 0) {
+      await contents.addToCounter(
+        comment.parent_id,
+        'comment_num',
+        -1,
+        transaction,
+      );
     }
   });
 }
@@ -85,15 +94,15 @@ export function deleteComment(actor: Actor, commentId: string) {
  * the other instead of both inserting. 404 for an unknown comment.
  */
 export function toggleCommentLike(actor: Actor, commentId: string) {
-  return withTransaction(async (tx) => {
-    if (!(await comments.lock(commentId, tx))) {
+  return withTransaction(async (transaction) => {
+    if (!(await comments.lock(commentId, transaction))) {
       throw new NotFoundError('Comment not found');
     }
     const id = Number(commentId);
-    if (await likes.hasCommentLike(id, actor._id, tx)) {
-      await likes.deleteCommentLike(id, actor._id, tx);
+    if (await likes.hasCommentLike(id, actor._id, transaction)) {
+      await likes.deleteCommentLike(id, actor._id, transaction);
     } else {
-      await likes.insertCommentLike(id, actor._id, tx);
+      await likes.insertCommentLike(id, actor._id, transaction);
     }
   });
 }

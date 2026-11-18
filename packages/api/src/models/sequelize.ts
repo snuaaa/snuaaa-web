@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import { Sequelize } from 'sequelize';
-import { DB_TIMEOUTS } from '../db/timeouts';
+import { DATABASE_TIMEOUTS } from '../db/timeouts';
 
 const sequelize = (function () {
   const seq = new Sequelize(
@@ -12,11 +12,12 @@ const sequelize = (function () {
       dialect: 'postgres',
       logging: false,
       dialectOptions: {
-        lock_timeout: DB_TIMEOUTS.lock,
-        statement_timeout: DB_TIMEOUTS.statement,
-        idle_in_transaction_session_timeout: DB_TIMEOUTS.idleInTransaction,
+        lock_timeout: DATABASE_TIMEOUTS.lock,
+        statement_timeout: DATABASE_TIMEOUTS.statement,
+        idle_in_transaction_session_timeout:
+          DATABASE_TIMEOUTS.idleInTransaction,
       },
-      pool: { acquire: DB_TIMEOUTS.acquire },
+      pool: { acquire: DATABASE_TIMEOUTS.acquire },
     },
   );
 
@@ -26,8 +27,8 @@ const sequelize = (function () {
       // The schema is managed by migrations in `drizzle/` (see `db/migrate.ts`).
       console.log('Connected to PostgreSQL server');
     })
-    .catch((e) => {
-      console.log('Failed to connect to PostgreSQL server >> ', e);
+    .catch((error) => {
+      console.log('Failed to connect to PostgreSQL server >> ', error);
     });
 
   return seq;

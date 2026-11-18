@@ -1,15 +1,18 @@
-import { db, type Tx } from './client';
+import { database, type Transaction } from './client';
 
-export type { Tx };
+export type { Transaction };
 
 /**
- * Runs `fn` in one Drizzle transaction: it commits when `fn` resolves and
- * rolls back when it throws, rethrowing the error. Every query that should be
- * part of it must run on `tx`; a query on `db` runs outside the transaction.
+ * Runs `work` in one Drizzle transaction: it commits when `work` resolves
+ * and rolls back when it throws, rethrowing the error. Every query that
+ * should be part of it must run on `transaction`; a query on `database` runs
+ * outside the transaction.
  *
  * Only Drizzle repositories can join it. Sequelize keeps its own connections,
  * so a domain gets transactions once its writes move to Drizzle (#158).
  */
-export function withTransaction<T>(fn: (tx: Tx) => Promise<T>): Promise<T> {
-  return db.transaction(fn);
+export function withTransaction<T>(
+  work: (transaction: Transaction) => Promise<T>,
+): Promise<T> {
+  return database.transaction(work);
 }

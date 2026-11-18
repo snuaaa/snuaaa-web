@@ -1,5 +1,5 @@
 import { and, eq, isNull } from 'drizzle-orm';
-import { db, type Executor, type Tx } from '../db/client';
+import { database, type Executor, type Transaction } from '../db/client';
 import { board, comment, content } from '../db/schema';
 import { parseId } from './ids';
 
@@ -11,10 +11,10 @@ export async function insert(
     text?: string | null;
     parent_comment_id?: number | null;
   },
-  ex: Executor = db,
+  executor: Executor = database,
 ) {
   const now = new Date();
-  const [row] = await ex
+  const [row] = await executor
     .insert(comment)
     .values({
       parent_id: values.parent_id,
@@ -32,9 +32,9 @@ export async function insert(
 export async function updateText(
   commentId: number,
   text: string | null | undefined,
-  ex: Executor = db,
+  executor: Executor = database,
 ) {
-  const rows = await ex
+  const rows = await executor
     .update(comment)
     .set({ text: text ?? null, updated_at: new Date() })
     .where(and(eq(comment.comment_id, commentId), isNull(comment.deleted_at)))
@@ -46,8 +46,11 @@ export async function updateText(
  * Soft-deletes the comment. Returns how many rows it deleted: 0 when another
  * request deleted it first.
  */
-export async function softDelete(commentId: number, ex: Executor = db) {
-  const rows = await ex
+export async function softDelete(
+  commentId: number,
+  executor: Executor = database,
+) {
+  const rows = await executor
     .update(comment)
     .set({ deleted_at: new Date() })
     .where(and(eq(comment.comment_id, commentId), isNull(comment.deleted_at)))
@@ -60,12 +63,15 @@ export async function softDelete(commentId: number, ex: Executor = db) {
  * is on, and the edit level of that content's board. Null when the comment
  * doesn't exist or is deleted.
  */
-export async function findForEdit(commentId: string, ex: Executor = db) {
+export async function findForEdit(
+  commentId: string,
+  executor: Executor = database,
+) {
   const id = parseId(commentId);
   if (id === null) {
     return null;
   }
-  const [row] = await ex
+  const [row] = await executor
     .select({
       comment_id: comment.comment_id,
       author_id: comment.author_id,
@@ -80,16 +86,19 @@ export async function findForEdit(commentId: string, ex: Executor = db) {
 }
 
 /**
- * Locks the comment's row until `tx` ends, so requests that change the same
- * comment run one after another. Returns whether the comment exists, deleted
+ * Locks the comment's row until `transaction` ends, so requests that change
+ * the same comment run one after another. Returns whether the comment exists, deleted
  * ones included.
  */
-export async function lock(commentId: string | number, tx: Tx) {
+export async function lock(
+  commentId: string | number,
+  transaction: Transaction,
+) {
   const id = parseId(commentId);
   if (id === null) {
     return false;
   }
-  const rows = await tx
+  const rows = await transaction
     .select({ comment_id: comment.comment_id })
     .from(comment)
     .where(eq(comment.comment_id, id))

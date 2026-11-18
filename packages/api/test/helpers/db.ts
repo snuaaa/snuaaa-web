@@ -155,7 +155,9 @@ export async function withRowsLocked<T>(
   fn: () => PromiseLike<T>,
 ) {
   const client = await pool.connect();
-  const conditions = Object.keys(where).map((c, i) => `"${c}" = $${i + 1}`);
+  const conditions = Object.keys(where).map(
+    (column, index) => `"${column}" = $${index + 1}`,
+  );
   try {
     await client.query('BEGIN');
     await client.query(

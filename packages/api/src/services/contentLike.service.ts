@@ -11,18 +11,18 @@ import type { Actor } from './types';
  * inserting. 404 for an unknown content.
  */
 export function toggleContentLike(actor: Actor, contentId: string) {
-  return withTransaction(async (tx) => {
-    if (!(await contents.lock(contentId, tx))) {
+  return withTransaction(async (transaction) => {
+    if (!(await contents.lock(contentId, transaction))) {
       throw new NotFoundError('Content not found');
     }
     const id = Number(contentId);
-    if (await likes.hasContentLike(id, actor._id, tx)) {
-      if ((await likes.deleteContentLike(id, actor._id, tx)) > 0) {
-        await contents.addToCounter(id, 'like_num', -1, tx);
+    if (await likes.hasContentLike(id, actor._id, transaction)) {
+      if ((await likes.deleteContentLike(id, actor._id, transaction)) > 0) {
+        await contents.addToCounter(id, 'like_num', -1, transaction);
       }
     } else {
-      await likes.insertContentLike(id, actor._id, tx);
-      await contents.addToCounter(id, 'like_num', 1, tx);
+      await likes.insertContentLike(id, actor._id, transaction);
+      await contents.addToCounter(id, 'like_num', 1, transaction);
     }
   });
 }

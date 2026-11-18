@@ -2,7 +2,7 @@ import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
 import * as schema from './schema';
-import { DB_TIMEOUTS } from './timeouts';
+import { DATABASE_TIMEOUTS } from './timeouts';
 
 /**
  * The Drizzle connection pool, used by `repositories/`. Sequelize keeps its
@@ -14,16 +14,18 @@ export const pool = new Pool({
   user: process.env.POSTGRESQL_USERNAME,
   password: process.env.POSTGRESQL_PASSWORD,
   max: 5,
-  connectionTimeoutMillis: DB_TIMEOUTS.acquire,
-  lock_timeout: DB_TIMEOUTS.lock,
-  statement_timeout: DB_TIMEOUTS.statement,
-  idle_in_transaction_session_timeout: DB_TIMEOUTS.idleInTransaction,
+  connectionTimeoutMillis: DATABASE_TIMEOUTS.acquire,
+  lock_timeout: DATABASE_TIMEOUTS.lock,
+  statement_timeout: DATABASE_TIMEOUTS.statement,
+  idle_in_transaction_session_timeout: DATABASE_TIMEOUTS.idleInTransaction,
 });
 
-export const db = drizzle(pool, { schema });
+export const database = drizzle(pool, { schema });
 
 /** A transaction handle from `withTransaction` (`db/transaction.ts`). */
-export type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
+export type Transaction = Parameters<
+  Parameters<typeof database.transaction>[0]
+>[0];
 
 /** Where a repository function runs its query: the pool, or a transaction. */
-export type Executor = typeof db | Tx;
+export type Executor = typeof database | Transaction;

@@ -162,13 +162,15 @@ describe.each(PROTECTED_ENDPOINTS)('%s', (endpoint) => {
  */
 it('lists every Hono endpoint above', () => {
   const endpoints = honoApp.routes
-    .filter((r) => r.method !== 'ALL') // middleware
-    .map((r) => `${r.method} ${r.path}`);
+    .filter((route) => route.method !== 'ALL') // middleware
+    .map((route) => `${route.method} ${route.path}`);
 
   expect(endpoints.length).toBeGreaterThan(0);
   expect(
     endpoints.filter(
-      (e) => !PROTECTED_ENDPOINTS.includes(e) && !PUBLIC_ENDPOINTS.includes(e),
+      (endpoint) =>
+        !PROTECTED_ENDPOINTS.includes(endpoint) &&
+        !PUBLIC_ENDPOINTS.includes(endpoint),
     ),
   ).toEqual([]);
 });

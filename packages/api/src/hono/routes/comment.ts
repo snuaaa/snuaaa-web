@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
-import { requireAuth, type AuthEnv } from '../auth';
+import { requireAuth, type AuthEnvironment } from '../auth';
 import { validationHook } from '../errors';
 import {
   createComment,
@@ -17,45 +17,51 @@ const commentBody = z.object({
 });
 
 /** `/api/comment/...` */
-export const commentRoutes = new Hono<AuthEnv>()
+export const commentRoutes = new Hono<AuthEnvironment>()
   .use(requireAuth)
   .patch(
     '/:comment_id',
     zValidator('json', commentBody, validationHook),
-    async (c) => {
+    async (context) => {
       await updateComment(
-        c.get('actor'),
-        c.req.param('comment_id'),
-        c.req.valid('json'),
+        context.get('actor'),
+        context.req.param('comment_id'),
+        context.req.valid('json'),
       );
-      return c.json({ success: true });
+      return context.json({ success: true });
     },
   )
-  .delete('/:comment_id', async (c) => {
-    await deleteComment(c.get('actor'), c.req.param('comment_id'));
-    return c.json({ success: true });
+  .delete('/:comment_id', async (context) => {
+    await deleteComment(context.get('actor'), context.req.param('comment_id'));
+    return context.json({ success: true });
   })
-  .post('/:comment_id/like', async (c) => {
-    await toggleCommentLike(c.get('actor'), c.req.param('comment_id'));
-    return c.json({ success: true });
+  .post('/:comment_id/like', async (context) => {
+    await toggleCommentLike(
+      context.get('actor'),
+      context.req.param('comment_id'),
+    );
+    return context.json({ success: true });
   });
 
 /** The comment and like endpoints under `/api/content/...`. */
-export const contentCommentRoutes = new Hono<AuthEnv>()
+export const contentCommentRoutes = new Hono<AuthEnvironment>()
   .use(requireAuth)
   .post(
     '/:content_id/comment',
     zValidator('json', commentBody, validationHook),
-    async (c) => {
+    async (context) => {
       await createComment(
-        c.get('actor'),
-        c.req.param('content_id'),
-        c.req.valid('json'),
+        context.get('actor'),
+        context.req.param('content_id'),
+        context.req.valid('json'),
       );
-      return c.json({ success: true });
+      return context.json({ success: true });
     },
   )
-  .post('/:content_id/like', async (c) => {
-    await toggleContentLike(c.get('actor'), c.req.param('content_id'));
-    return c.json({ success: true });
+  .post('/:content_id/like', async (context) => {
+    await toggleContentLike(
+      context.get('actor'),
+      context.req.param('content_id'),
+    );
+    return context.json({ success: true });
   });

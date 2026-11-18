@@ -24,11 +24,11 @@ export function honoBridge(app: Hono): RequestHandler {
   }
   const listener = getRequestListener(app.fetch);
 
-  return (req, res, next) => {
-    const [matches] = owned.match(req.method, req.path);
+  return (request, response, next) => {
+    const [matches] = owned.match(request.method, request.path);
     if (matches.length === 0) {
       return next();
     }
-    listener(req, res).catch(next);
+    listener(request, response).catch(next);
   };
 }

@@ -4,12 +4,16 @@ import * as Sentry from '@sentry/node';
 import { AppError, BadRequestError, ConflictError } from '../errors';
 
 /** Postgres error codes that are the client's fault. */
-const PG_UNIQUE_VIOLATION = '23505';
+const POSTGRES_UNIQUE_VIOLATION = '23505';
 
 /** The Postgres error behind a Drizzle query error, if any. */
-function pgCode(err: unknown): string | undefined {
-  for (let e = err; e; e = (e as { cause?: unknown }).cause) {
-    const code = (e as { code?: unknown }).code;
+function postgresErrorCode(error: unknown): string | undefined {
+  for (
+    let current = error;
+    current;
+    current = (current as { cause?: unknown }).cause
+  ) {
+    const code = (current as { code?: unknown }).code;
     if (typeof code === 'string') {
       return code;
     }
@@ -21,15 +25,15 @@ function pgCode(err: unknown): string | undefined {
  * Maps known client errors to an `AppError`, like the Express error handler
  * (`middlewares/errorHandler.ts`). Returns `null` for anything unexpected.
  */
-function toAppError(err: unknown): AppError | null {
-  if (err instanceof AppError) {
-    return err;
+function toAppError(error: unknown): AppError | null {
+  if (error instanceof AppError) {
+    return error;
   }
-  if (err instanceof HTTPException && err.status < 500) {
+  if (error instanceof HTTPException && error.status < 500) {
     // e.g. a malformed JSON body.
-    return new AppError(err.status, 'BAD_REQUEST', err.message);
+    return new AppError(error.status, 'BAD_REQUEST', error.message);
   }
-  if (pgCode(err) === PG_UNIQUE_VIOLATION) {
+  if (postgresErrorCode(error) === POSTGRES_UNIQUE_VIOLATION) {
     return new ConflictError('Resource already exists');
   }
   return null;
@@ -39,14 +43,14 @@ function toAppError(err: unknown): AppError | null {
  * Answers in the same `{ success: false, error, message, code? }` format as
  * Express. Only unexpected errors become a 500 and go to Sentry.
  */
-export const onError: ErrorHandler = (err, c) => {
-  const appError = toAppError(err);
+export const onError: ErrorHandler = (error, context) => {
+  const appError = toAppError(error);
 
   if (appError) {
     console.warn(
-      `${c.req.method} ${c.req.path} ${appError.status} ${appError.message}`,
+      `${context.req.method} ${context.req.path} ${appError.status} ${appError.message}`,
     );
-    return c.json(
+    return context.json(
       {
         success: false,
         error: appError.error,
@@ -57,9 +61,9 @@ export const onError: ErrorHandler = (err, c) => {
     );
   }
 
-  console.error(err);
-  Sentry.captureException(err);
-  return c.json(
+  console.error(error);
+  Sentry.captureException(error);
+  return context.json(
     {
       success: false,
       error: 'INTERNAL_SERVER_ERROR',
@@ -76,7 +80,11 @@ export function validationHook(result: {
 }) {
   if (!result.success) {
     const message = (result.error?.issues ?? [])
-      .map((i) => (i.path.length ? `${i.path.join('.')}: ` : '') + i.message)
+      .map(
+        (issue) =>
+          (issue.path.length ? `${issue.path.join('.')}: ` : '') +
+          issue.message,
+      )
       .join(', ');
     throw new BadRequestError(message || 'Invalid request');
   }
