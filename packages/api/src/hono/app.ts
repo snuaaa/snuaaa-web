@@ -19,7 +19,8 @@ const MAXIMUM_BODY_BYTES = 100 * 1024;
  * Every route here requires a token unless its router says otherwise; list
  * new ones in `test/contract/auth-required.test.ts` like Express routes.
  */
-export const honoApp = new Hono()
+// `strict: false` ignores a trailing slash, like Express.
+export const honoApp = new Hono({ strict: false })
   .basePath('/api')
   .use(
     bodyLimit({

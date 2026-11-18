@@ -147,6 +147,20 @@ describe('PATCH /api/comment/:comment_id', () => {
     expect((await commentState(commentId)).text).toBe('mine');
   });
 
+  it('accepts a trailing slash, like Express', async () => {
+    const { contentId } = await setup();
+    const user = await createUser({ grade: 8 });
+    const commentId = await createComment(user, contentId);
+
+    const response = await api()
+      .patch(`/api/comment/${commentId}/`)
+      .set('Authorization', bearer(user))
+      .send({ text: 'edited' });
+
+    expect(response.status).toBe(200);
+    expect((await commentState(commentId)).text).toBe('edited');
+  });
+
   it('returns 404 for a deleted comment', async () => {
     const { contentId } = await setup();
     const user = await createUser({ grade: 8 });

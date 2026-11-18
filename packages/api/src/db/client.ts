@@ -20,6 +20,13 @@ export const pool = new Pool({
   idle_in_transaction_session_timeout: DATABASE_TIMEOUTS.idleInTransaction,
 });
 
+// A pooled connection that drops while idle (e.g. the DB restarts) emits
+// `error` on the pool. Without a listener that would crash the process; the
+// pool already discards the broken client and opens a new one when needed.
+pool.on('error', (error) => {
+  console.error('Idle PostgreSQL client error', error);
+});
+
 export const database = drizzle(pool, { schema });
 
 /** A transaction handle from `withTransaction` (`db/transaction.ts`). */

@@ -25,7 +25,11 @@ export function honoBridge(app: Hono): RequestHandler {
   const listener = getRequestListener(app.fetch);
 
   return (request, response, next) => {
-    const [matches] = owned.match(request.method, request.path);
+    // Express ignores a trailing slash, so `/api/comment/1/` must reach the
+    // Hono route too (the Hono app is created with `strict: false`).
+    const path =
+      request.path.length > 1 ? request.path.replace(/\/+$/, '') : '/';
+    const [matches] = owned.match(request.method, path);
     if (matches.length === 0) {
       return next();
     }
