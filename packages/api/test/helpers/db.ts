@@ -1,4 +1,4 @@
-import { query } from './sql';
+import { pool, query } from './sql';
 import type { User } from './factories';
 
 /*
@@ -141,5 +141,31 @@ export async function withFailingWrites<T>(
     return await fn();
   } finally {
     await query(`DROP TRIGGER test_fail_write ON public.${table}`);
+  }
+}
+
+/**
+ * Runs `fn` while another connection holds `SELECT ... FOR UPDATE` on the
+ * rows matching `where`, as a slow concurrent request would. The lock is
+ * released afterwards.
+ */
+export async function withRowsLocked<T>(
+  table: string,
+  where: Record<string, unknown>,
+  fn: () => PromiseLike<T>,
+) {
+  const client = await pool.connect();
+  const conditions = Object.keys(where).map((c, i) => `"${c}" = $${i + 1}`);
+  try {
+    await client.query('BEGIN');
+    await client.query(
+      `SELECT 1 FROM public.${table} WHERE ${conditions.join(' AND ')} ` +
+        'FOR UPDATE',
+      Object.values(where),
+    );
+    return await fn();
+  } finally {
+    await client.query('ROLLBACK');
+    client.release();
   }
 }

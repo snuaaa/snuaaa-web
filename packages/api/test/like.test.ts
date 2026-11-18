@@ -11,6 +11,7 @@ import {
   contentCounters,
   hasContentLike,
   withFailingWrites,
+  withRowsLocked,
 } from './helpers/db';
 
 async function setup() {
@@ -83,6 +84,23 @@ describe('POST /api/content/:content_id/like', () => {
     ]);
 
     expect(responses.map((r) => r.status)).toEqual([200, 200]);
+    expect(await hasContentLike(user, contentId)).toBe(false);
+    expect((await contentCounters(contentId)).like_num).toBe(3);
+  });
+
+  it('gives up with a 500 instead of waiting forever on a held lock', async () => {
+    const { contentId, user } = await setup();
+
+    const res = await withRowsLocked(
+      'tb_content',
+      { content_id: contentId },
+      () =>
+        api()
+          .post(`/api/content/${contentId}/like`)
+          .set('Authorization', bearer(user)),
+    );
+
+    expect(res.status).toBe(500);
     expect(await hasContentLike(user, contentId)).toBe(false);
     expect((await contentCounters(contentId)).like_num).toBe(3);
   });

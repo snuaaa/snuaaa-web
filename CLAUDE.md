@@ -47,6 +47,8 @@ Each package has its own ESLint flat config (`eslint.config.*`) with Prettier (s
   - `AWS_REGION`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `S3_BUCKET_NAME`
 
   `NODE_ENV=develop` switches the CORS allow-list to the dev origins, which include localhost:3000.
+
+  Optional DB timeouts, in milliseconds (`DB_TIMEOUTS` in `models/sequelize.ts`): `DB_LOCK_TIMEOUT_MS` (default 5000), `DB_STATEMENT_TIMEOUT_MS` (30000), `DB_IDLE_IN_TRANSACTION_TIMEOUT_MS` (60000) and `DB_POOL_ACQUIRE_TIMEOUT_MS` (10000). They make a stuck query or transaction fail with a 500 instead of hanging. Migrations (`db/migrate.ts`) use their own connection without them.
 - **Sentry (optional):** error monitoring is off unless a DSN is set.
   - Web: `REACT_APP_SENTRY_DSN`, `REACT_APP_SENTRY_ENVIRONMENT`. Source maps are uploaded at build time only when `SENTRY_AUTH_TOKEN`, `SENTRY_ORG` and `SENTRY_PROJECT` are set (see `deploy-web.yml`).
   - API: `SENTRY_DSN`, `SENTRY_ENVIRONMENT`, `SENTRY_TRACES_SAMPLE_RATE`. `src/instrument.ts` must stay the first import in `main.ts`. Only unexpected (500) errors are reported, from `middlewares/errorHandler.ts`.
