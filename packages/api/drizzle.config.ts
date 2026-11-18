@@ -3,8 +3,9 @@ import { defineConfig } from 'drizzle-kit';
 
 export default defineConfig({
   dialect: 'postgresql',
-  // Drizzle tables are not defined yet, so new migrations are written by hand
-  // with `pnpm db:generate --name <name>`.
+  // `src/db/schema.ts` defines only the tables moved off Sequelize so far, so
+  // migrations are still written by hand (`pnpm db:generate --name <name>`
+  // creates an empty one).
   schema: './src/db/schema.ts',
   out: './drizzle',
   dbCredentials: {

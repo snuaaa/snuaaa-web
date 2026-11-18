@@ -49,6 +49,10 @@ export default tseslint.config(
                 '**/src/models/**',
                 '**/src/controllers/**',
                 '**/src/utils/**',
+                '**/src/services/**',
+                '**/src/repositories/**',
+                '**/src/db/client',
+                '**/src/db/schema',
               ],
               message:
                 'Tests must not depend on the code under test. Use test/helpers.',

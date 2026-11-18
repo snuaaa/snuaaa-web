@@ -9,11 +9,6 @@ import {
   retrieveCommentsWithFilter,
   CommentFilter,
 } from '../controllers/comment.controller';
-import {
-  deleteComment,
-  toggleCommentLike,
-  updateComment,
-} from '../services/comment.service';
 import { retrieveUserByUserUuid } from '../controllers/user.controller';
 import { NotFoundError } from '../errors';
 
@@ -50,43 +45,7 @@ router.get(
   },
 );
 
-router.patch(
-  '/:comment_id',
-  verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res, next) => {
-    try {
-      await updateComment(req.decodedToken, req.params.comment_id, req.body);
-      res.json({ success: true });
-    } catch (err) {
-      next(err);
-    }
-  },
-);
-
-router.delete(
-  '/:comment_id',
-  verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res, next) => {
-    try {
-      await deleteComment(req.decodedToken, req.params.comment_id);
-      res.json({ success: true });
-    } catch (err) {
-      next(err);
-    }
-  },
-);
-
-router.post(
-  '/:comment_id/like',
-  verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res, next) => {
-    try {
-      await toggleCommentLike(req.decodedToken, req.params.comment_id);
-      res.json({ success: true });
-    } catch (err) {
-      next(err);
-    }
-  },
-);
+// PATCH/DELETE /:comment_id and POST /:comment_id/like are served by Hono
+// (`hono/routes/comment.ts`).
 
 export default router;

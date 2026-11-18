@@ -10,8 +10,6 @@ import { AuthenticatedRequestWithFile } from '../middlewares/upload';
 import { uploadFileToS3 } from '../utils/upload';
 
 import { retrieveComments } from '../controllers/comment.controller';
-import { createComment } from '../services/comment.service';
-import { toggleContentLike } from '../services/contentLike.service';
 import {
   retrieveAttachedFile,
   increaseDownloadCount,
@@ -112,30 +110,7 @@ router.post(
   },
 );
 
-router.post(
-  '/:content_id/comment',
-  verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res, next) => {
-    try {
-      await createComment(req.decodedToken, req.params.content_id, req.body);
-      res.json({ success: true });
-    } catch (err) {
-      next(err);
-    }
-  },
-);
-
-router.post(
-  '/:content_id/like',
-  verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res, next) => {
-    try {
-      await toggleContentLike(req.decodedToken, req.params.content_id);
-      res.json({ success: true });
-    } catch (err) {
-      next(err);
-    }
-  },
-);
+// POST /:content_id/comment and /:content_id/like are served by Hono
+// (`hono/routes/comment.ts`).
 
 export default router;

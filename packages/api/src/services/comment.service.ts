@@ -1,38 +1,51 @@
 import { withTransaction, type Tx } from '../db/transaction';
 import { NotFoundError } from '../errors';
-import * as comments from '../controllers/comment.controller';
-import * as commentLikes from '../controllers/commentLike.controller';
-import { addToContentCounter } from '../controllers/content.controller';
+import * as comments from '../repositories/comment.repository';
+import * as contents from '../repositories/content.repository';
+import * as likes from '../repositories/like.repository';
 import { assertCanEdit } from './permissions';
 import type { Actor } from './types';
 
-type CommentInput = { text?: string; parent_comment_id?: number | null };
+export type CommentInput = {
+  text?: string | null;
+  parent_comment_id?: number | null;
+};
 
-/** Adds a comment to the content and counts it in `comment_num`. */
+/**
+ * Adds a comment to the content and counts it in `comment_num`. The content
+ * row is locked first, which also checks that it exists (404 otherwise).
+ */
 export function createComment(
   actor: Actor,
   contentId: string,
   input: CommentInput,
 ) {
   return withTransaction(async (tx) => {
-    const commentId = await comments.createComment(
-      actor._id,
-      contentId,
-      input,
+    if (!(await contents.lock(contentId, tx))) {
+      throw new NotFoundError('Content not found');
+    }
+    const id = Number(contentId);
+    const commentId = await comments.insert(
+      {
+        parent_id: id,
+        author_id: actor._id,
+        text: input.text,
+        parent_comment_id: input.parent_comment_id,
+      },
       tx,
     );
-    await addToContentCounter(contentId, 'comment_num', 1, tx);
+    await contents.addToCounter(id, 'comment_num', 1, tx);
     return commentId;
   });
 }
 
 /**
  * Loads the comment and checks that the actor may change it. Throws 404 for
- * an unknown comment and 403 when the actor is neither its author nor within
- * the board's edit level.
+ * an unknown or deleted comment and 403 when the actor is neither its author
+ * nor within the board's edit level.
  */
 async function loadEditableComment(actor: Actor, commentId: string, tx?: Tx) {
-  const comment = await comments.retrieveCommentForEdit(commentId, tx);
+  const comment = await comments.findForEdit(commentId, tx);
   if (!comment) {
     throw new NotFoundError('Comment not found');
   }
@@ -40,13 +53,16 @@ async function loadEditableComment(actor: Actor, commentId: string, tx?: Tx) {
   return comment;
 }
 
+/** Changes the text. 404 when the comment is deleted before the change. */
 export async function updateComment(
   actor: Actor,
   commentId: string,
   input: CommentInput,
 ) {
-  await loadEditableComment(actor, commentId);
-  await comments.updateComment(commentId, input);
+  const comment = await loadEditableComment(actor, commentId);
+  if ((await comments.updateText(comment.comment_id, input.text)) === 0) {
+    throw new NotFoundError('Comment not found');
+  }
 }
 
 /**
@@ -57,9 +73,8 @@ export async function updateComment(
 export function deleteComment(actor: Actor, commentId: string) {
   return withTransaction(async (tx) => {
     const comment = await loadEditableComment(actor, commentId, tx);
-    const deleted = await comments.deleteComment(commentId, tx);
-    if (deleted > 0) {
-      await addToContentCounter(comment.parent_id, 'comment_num', -1, tx);
+    if ((await comments.softDelete(comment.comment_id, tx)) > 0) {
+      await contents.addToCounter(comment.parent_id, 'comment_num', -1, tx);
     }
   });
 }
@@ -67,16 +82,18 @@ export function deleteComment(actor: Actor, commentId: string) {
 /**
  * Likes the comment, or takes the like back if the actor already likes it.
  * The comment's row is locked first, so two toggles at once run one after
- * the other instead of both inserting.
+ * the other instead of both inserting. 404 for an unknown comment.
  */
 export function toggleCommentLike(actor: Actor, commentId: string) {
   return withTransaction(async (tx) => {
-    await comments.lockComment(commentId, tx);
-    const liked = await commentLikes.checkCommentLike(commentId, actor._id, tx);
-    if (liked) {
-      await commentLikes.dislikeComment(commentId, actor._id, tx);
+    if (!(await comments.lock(commentId, tx))) {
+      throw new NotFoundError('Comment not found');
+    }
+    const id = Number(commentId);
+    if (await likes.hasCommentLike(id, actor._id, tx)) {
+      await likes.deleteCommentLike(id, actor._id, tx);
     } else {
-      await commentLikes.likeComment(commentId, actor._id, tx);
+      await likes.insertCommentLike(id, actor._id, tx);
     }
   });
 }

@@ -26,7 +26,7 @@ Drizzle table definitions don't exist yet (see #158), so migrations are written 
 pnpm db:generate --name add_user_nickname
 ```
 
-This creates `drizzle/NNNN_add_user_nickname.sql` and updates the journal. Write the SQL below the generated comment line, separating statements with `--> statement-breakpoint`. Then update the Sequelize model to match, and run `pnpm db:migrate` against your local DB.
+This creates `drizzle/NNNN_add_user_nickname.sql` and updates the journal. Write the SQL below the generated comment line, separating statements with `--> statement-breakpoint`. Then update the Sequelize model to match (and the table in `src/db/schema.ts`, if Drizzle already uses it), and run `pnpm db:migrate` against your local DB.
 
 Never edit a migration that has already been deployed. Add a new one instead.
 

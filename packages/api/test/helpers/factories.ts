@@ -132,7 +132,11 @@ export async function createPost(
 export async function createComment(
   author: User,
   contentId: number,
-  overrides: { text?: string; parent_comment_id?: number } = {},
+  overrides: {
+    text?: string;
+    parent_comment_id?: number;
+    deleted_at?: Date;
+  } = {},
 ) {
   const n = next();
   const comment = await insert<{ comment_id: number }>('tb_comment', {
