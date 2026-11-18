@@ -47,6 +47,8 @@ Each package has its own ESLint flat config (`eslint.config.*`) with Prettier (s
   - `AWS_REGION`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `S3_BUCKET_NAME`
 
   `NODE_ENV=develop` switches the CORS allow-list to the dev origins, which include localhost:3000.
+
+  Optional DB timeouts, in milliseconds (`DB_TIMEOUTS` in `models/sequelize.ts`): `DB_LOCK_TIMEOUT_MS` (default 5000), `DB_STATEMENT_TIMEOUT_MS` (30000), `DB_IDLE_IN_TRANSACTION_TIMEOUT_MS` (60000) and `DB_POOL_ACQUIRE_TIMEOUT_MS` (10000). They make a stuck query or transaction fail with a 500 instead of hanging. Migrations (`db/migrate.ts`) use their own connection without them.
 - **Sentry (optional):** error monitoring is off unless a DSN is set.
   - Web: `REACT_APP_SENTRY_DSN`, `REACT_APP_SENTRY_ENVIRONMENT`. Source maps are uploaded at build time only when `SENTRY_AUTH_TOKEN`, `SENTRY_ORG` and `SENTRY_PROJECT` are set (see `deploy-web.yml`).
   - API: `SENTRY_DSN`, `SENTRY_ENVIRONMENT`, `SENTRY_TRACES_SAMPLE_RATE`. `src/instrument.ts` must stay the first import in `main.ts`. Only unexpected (500) errors are reported, from `middlewares/errorHandler.ts`.
@@ -74,7 +76,13 @@ Each package has its own ESLint flat config (`eslint.config.*`) with Prettier (s
 ### API (`packages/api/src`)
 
 - **Entry:** `main.ts` mounts every router under `/api` (see `routes/index.ts`) and serves `/static` from `upload/`.
-- **Layering:** `routes/*.ts` handles HTTP parsing and responses, and `controllers/*.controller.ts` holds the Sequelize queries and business logic. Controllers are plain async functions, not Express handlers.
+- **Layering:** the API is moving to three layers, one domain at a time (comments and likes so far):
+  - `routes/*.ts` handles HTTP only: it reads the request, calls a service, and sends the response or `next(err)`.
+  - `services/*.service.ts` holds permission checks, business rules and transactions. A service takes the signed-in user as an `Actor` (`services/types.ts`) plus plain values, never `req`/`res`, so it survives the move to another framework (#158). Shared rules such as who may edit live in `services/permissions.ts`.
+  - `controllers/*.controller.ts` holds the Sequelize queries only. Write functions take an optional `tx` last. Controllers are plain async functions, not Express handlers, and become Drizzle repositories as domains move (#158).
+
+  Routes not yet moved still call controllers directly, and some controllers still check permissions (`canEditContent`, `assertBoardAccess`). Move those into services when you touch the domain.
+- **Transactions:** a service that writes more than once wraps the writes in `withTransaction(async (tx) => ...)` from `db/transaction.ts` and passes `tx` to every query, including the reads it decides on. A query without `tx` runs outside the transaction. Sequelize and Drizzle can't share a transaction, so the writes of one service must move to Drizzle together. Tests check rollback with `withFailingWrites` (`test/helpers/db.ts`), which makes a table's writes fail through a trigger.
 - **Auth:** the global token middleware is commented out, so each route opts in with `verifyTokenMiddleware`. That middleware reads the `Authorization: Bearer` header and sets `req.decodedToken` (type `AuthenticatedRequest`).
 - **Errors:** expected failures are `AppError` subclasses from `src/errors` (`BadRequestError` 400, `AuthenticationError` 401, `AuthorizationError` 403, `NotFoundError` 404, `ConflictError` 409). Controllers throw them, and routes forward every error with `catch (err) { next(err); }` (or `return next(new XxxError(...))`). Express 4 does not catch rejected promises, so never leave an `await` outside `try` in a handler. `middlewares/errorHandler.ts` responds `{ success: false, error, message, code? }`. Any other error becomes a 500 and goes to Sentry. `code` is a legacy numeric code that the web still reads in some places (e.g. 1011–1014 for password changes).
 - **Permissions:** permissions depend on the user's `grade`, where a lower number means more privilege. Boards filter visibility by comparing their read level against `decodedToken.grade`.

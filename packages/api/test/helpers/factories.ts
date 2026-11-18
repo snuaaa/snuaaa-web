@@ -92,6 +92,8 @@ export async function createContent(
     title?: string;
     text?: string;
     parent_id?: number;
+    comment_num?: number;
+    like_num?: number;
   } = {},
 ) {
   const n = next();
@@ -121,6 +123,44 @@ export async function createPost(
   });
   await insert('tb_post', { content_id: contentId });
   return contentId;
+}
+
+/**
+ * Creates a comment on the content. Like the API, it does not touch the
+ * content's `comment_num`; pass `comment_num` to `createContent` for that.
+ */
+export async function createComment(
+  author: User,
+  contentId: number,
+  overrides: { text?: string; parent_comment_id?: number } = {},
+) {
+  const n = next();
+  const comment = await insert<{ comment_id: number }>('tb_comment', {
+    comment_uuid: randomUUID(),
+    parent_id: contentId,
+    author_id: author.user_id,
+    text: `Comment ${n}`,
+    created_at: new Date(),
+    updated_at: new Date(),
+    ...overrides,
+  });
+  return comment.comment_id;
+}
+
+/** Records that the user likes the content, without touching `like_num`. */
+export async function createContentLike(user: User, contentId: number) {
+  await insert('tb_content_like', {
+    content_id: contentId,
+    user_id: user.user_id,
+  });
+}
+
+/** Records that the user likes the comment. */
+export async function createCommentLike(user: User, commentId: number) {
+  await insert('tb_comment_like', {
+    comment_id: commentId,
+    user_id: user.user_id,
+  });
 }
 
 /**

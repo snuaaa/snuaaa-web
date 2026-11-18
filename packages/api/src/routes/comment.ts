@@ -6,17 +6,14 @@ import {
 } from '../middlewares/auth';
 
 import {
-  assertCanEditComment,
-  updateComment,
-  deleteComment,
   retrieveCommentsWithFilter,
   CommentFilter,
 } from '../controllers/comment.controller';
 import {
-  checkCommentLike,
-  dislikeComment,
-  likeComment,
-} from '../controllers/commentLike.controller';
+  deleteComment,
+  toggleCommentLike,
+  updateComment,
+} from '../services/comment.service';
 import { retrieveUserByUserUuid } from '../controllers/user.controller';
 import { NotFoundError } from '../errors';
 
@@ -58,8 +55,7 @@ router.patch(
   verifyTokenMiddleware,
   async (req: AuthenticatedRequest, res, next) => {
     try {
-      await assertCanEditComment(req.params.comment_id, req.decodedToken);
-      await updateComment(req.params.comment_id, req.body);
+      await updateComment(req.decodedToken, req.params.comment_id, req.body);
       res.json({ success: true });
     } catch (err) {
       next(err);
@@ -72,8 +68,7 @@ router.delete(
   verifyTokenMiddleware,
   async (req: AuthenticatedRequest, res, next) => {
     try {
-      await assertCanEditComment(req.params.comment_id, req.decodedToken);
-      await deleteComment(req.params.comment_id);
+      await deleteComment(req.decodedToken, req.params.comment_id);
       res.json({ success: true });
     } catch (err) {
       next(err);
@@ -85,17 +80,8 @@ router.post(
   '/:comment_id/like',
   verifyTokenMiddleware,
   async (req: AuthenticatedRequest, res, next) => {
-    const { decodedToken } = req;
-    const comment_id = req.params.comment_id;
-    const user_id = decodedToken._id;
-
     try {
-      const isLiked = await checkCommentLike(comment_id, user_id);
-      if (isLiked) {
-        await dislikeComment(comment_id, user_id);
-      } else {
-        await likeComment(comment_id, user_id);
-      }
+      await toggleCommentLike(req.decodedToken, req.params.comment_id);
       res.json({ success: true });
     } catch (err) {
       next(err);
