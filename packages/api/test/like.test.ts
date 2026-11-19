@@ -104,4 +104,14 @@ describe('POST /api/content/:content_id/like', () => {
     expect(await hasContentLike(user, contentId)).toBe(false);
     expect((await contentCounters(contentId)).like_num).toBe(3);
   });
+
+  it('returns 404 for an unknown content', async () => {
+    const user = await createUser({ grade: 8 });
+
+    const res = await api()
+      .post('/api/content/999999/like')
+      .set('Authorization', bearer(user));
+
+    expect(res.status).toBe(404);
+  });
 });

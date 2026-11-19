@@ -6,6 +6,8 @@ import * as bodyParser from 'body-parser';
 import { errorHandler } from './middlewares/errorHandler';
 import logger from './middlewares/logger';
 import helmet from 'helmet';
+import { honoBridge } from './hono/bridge';
+import { honoApp } from './hono/app';
 
 const app = express();
 
@@ -17,9 +19,6 @@ app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 if (process.env.NODE_ENV !== 'test') {
   app.use(logger);
 }
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-app.use(cookieParser());
 
 const devServerOrigins = [
   'https://dev.snuaaa.net',
@@ -34,6 +33,14 @@ const origin =
   process.env.NODE_ENV == 'develop' ? devServerOrigins : prodServerOrigins;
 
 app.use(cors({ origin, optionsSuccessStatus: 200 }));
+
+// Endpoints moved to Hono (#158). Before the body parsers, so Hono reads the
+// raw body; after helmet, the access log and CORS, so those still apply.
+app.use(honoBridge(honoApp));
+
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(cookieParser());
 
 app.use('/static', express.static(__dirname + '/../upload'));
 

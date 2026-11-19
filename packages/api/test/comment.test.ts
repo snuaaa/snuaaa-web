@@ -54,6 +54,66 @@ describe('POST /api/content/:content_id/comment', () => {
     expect(await countComments(contentId)).toBe(0);
     expect((await contentCounters(contentId)).comment_num).toBe(1);
   });
+
+  it('returns 404 for an unknown or non-numeric content', async () => {
+    const user = await createUser({ grade: 8 });
+
+    for (const id of ['999999', 'abc']) {
+      const res = await api()
+        .post(`/api/content/${id}/comment`)
+        .set('Authorization', bearer(user))
+        .send({ text: 'hello' });
+
+      expect(res.status).toBe(404);
+      expect(res.body).toMatchObject({ success: false, error: 'NOT_FOUND' });
+    }
+  });
+
+  it('answers a body of the wrong shape with 400', async () => {
+    const { contentId } = await setup();
+    const user = await createUser({ grade: 8 });
+
+    const res = await api()
+      .post(`/api/content/${contentId}/comment`)
+      .set('Authorization', bearer(user))
+      .send({ text: 42 });
+
+    expect(res.status).toBe(400);
+    expect(res.body).toMatchObject({ success: false, error: 'BAD_REQUEST' });
+    expect(await countComments(contentId)).toBe(0);
+  });
+
+  it('refuses a body over 100kb with 413, like Express did', async () => {
+    const { contentId } = await setup();
+    const user = await createUser({ grade: 8 });
+
+    const response = await api()
+      .post(`/api/content/${contentId}/comment`)
+      .set('Authorization', bearer(user))
+      .send({ text: 'a'.repeat(101 * 1024) });
+
+    expect(response.status).toBe(413);
+    expect(response.body).toEqual({
+      success: false,
+      error: 'BAD_REQUEST',
+      message: 'request entity too large',
+    });
+    expect(await countComments(contentId)).toBe(0);
+  });
+
+  it('answers malformed JSON with 400', async () => {
+    const { contentId } = await setup();
+    const user = await createUser({ grade: 8 });
+
+    const res = await api()
+      .post(`/api/content/${contentId}/comment`)
+      .set('Authorization', bearer(user))
+      .set('Content-Type', 'application/json')
+      .send('{"text": ');
+
+    expect(res.status).toBe(400);
+    expect(res.body).toMatchObject({ success: false, error: 'BAD_REQUEST' });
+  });
 });
 
 describe('PATCH /api/comment/:comment_id', () => {
@@ -85,6 +145,37 @@ describe('PATCH /api/comment/:comment_id', () => {
 
     expect(res.status).toBe(403);
     expect((await commentState(commentId)).text).toBe('mine');
+  });
+
+  it('accepts a trailing slash, like Express', async () => {
+    const { contentId } = await setup();
+    const user = await createUser({ grade: 8 });
+    const commentId = await createComment(user, contentId);
+
+    const response = await api()
+      .patch(`/api/comment/${commentId}/`)
+      .set('Authorization', bearer(user))
+      .send({ text: 'edited' });
+
+    expect(response.status).toBe(200);
+    expect((await commentState(commentId)).text).toBe('edited');
+  });
+
+  it('returns 404 for a deleted comment', async () => {
+    const { contentId } = await setup();
+    const user = await createUser({ grade: 8 });
+    const commentId = await createComment(user, contentId, {
+      text: 'gone',
+      deleted_at: new Date(),
+    });
+
+    const res = await api()
+      .patch(`/api/comment/${commentId}`)
+      .set('Authorization', bearer(user))
+      .send({ text: 'edited' });
+
+    expect(res.status).toBe(404);
+    expect((await commentState(commentId)).text).toBe('gone');
   });
 });
 
@@ -230,5 +321,15 @@ describe('POST /api/comment/:comment_id/like', () => {
 
     expect(responses.map((r) => r.status)).toEqual([200, 200]);
     expect(await hasCommentLike(user, commentId)).toBe(false);
+  });
+
+  it('returns 404 for an unknown comment', async () => {
+    const user = await createUser({ grade: 8 });
+
+    const res = await api()
+      .post('/api/comment/999999/like')
+      .set('Authorization', bearer(user));
+
+    expect(res.status).toBe(404);
   });
 });

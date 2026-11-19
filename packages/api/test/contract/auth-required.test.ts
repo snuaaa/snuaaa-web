@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import jwt from 'jsonwebtoken';
 import app from '../../src/app';
+import { honoApp } from '../../src/hono/app';
 import { verifyTokenMiddleware } from '../../src/middlewares/auth';
 import { api } from '../helpers/request';
 
@@ -153,6 +154,25 @@ describe.each(PROTECTED_ENDPOINTS)('%s', (endpoint) => {
       message: 'Token is not valid.',
     });
   });
+});
+
+/**
+ * Keeps the lists above in sync with the Hono routes (#158). Each must be in
+ * one of the lists; the 401 tests above then check the protected ones.
+ */
+it('lists every Hono endpoint above', () => {
+  const endpoints = honoApp.routes
+    .filter((route) => route.method !== 'ALL') // middleware
+    .map((route) => `${route.method} ${route.path}`);
+
+  expect(endpoints.length).toBeGreaterThan(0);
+  expect(
+    endpoints.filter(
+      (endpoint) =>
+        !PROTECTED_ENDPOINTS.includes(endpoint) &&
+        !PUBLIC_ENDPOINTS.includes(endpoint),
+    ),
+  ).toEqual([]);
 });
 
 /**

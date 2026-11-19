@@ -2,7 +2,6 @@ import { BoardModel, ContentModel } from '../models';
 import uuid4 from 'uuid4';
 import { AuthorizationError, BadRequestError, NotFoundError } from '../errors';
 import { JWTPayload } from '../utils/token';
-import type { Tx } from '../db/transaction';
 
 export async function createContent(user_id, board_id, data, type) {
   if (!user_id || !board_id) {
@@ -123,43 +122,4 @@ export async function increaseViewNum(content_id) {
     where: { content_id: content_id },
     silent: true,
   });
-}
-
-/**
- * Adds `by` (negative to subtract) to one of the content's counters, without
- * touching `updated_at`.
- */
-export async function addToContentCounter(
-  content_id,
-  counter: 'comment_num' | 'like_num',
-  by: number,
-  tx?: Tx,
-) {
-  if (!content_id) {
-    throw new BadRequestError('id can not be null');
-  }
-
-  await ContentModel.increment(counter, {
-    by,
-    where: { content_id: content_id },
-    silent: true,
-    transaction: tx,
-  });
-}
-
-/**
- * Locks the content's row until `tx` ends, so requests that change the same
- * content (e.g. like toggles) run one after another. Returns whether the
- * content exists.
- */
-export async function lockContent(content_id, tx: Tx) {
-  if (!/^\d+$/.test(String(content_id))) {
-    return false;
-  }
-  const content = await ContentModel.findByPk(content_id, {
-    attributes: ['content_id'],
-    lock: tx.LOCK.UPDATE,
-    transaction: tx,
-  });
-  return !!content;
 }
