@@ -1,9 +1,11 @@
+import { useEffect, useRef, useState } from 'react';
 import Image from '~/components/image';
 import { css, cx } from '@emotion/css';
 import stars from '~/assets/img/stars.png';
 import starsMobile from '~/assets/img/stars_mobile.png';
 import usePage from '~/hooks/usePage';
 import { pages } from '~/constants/index';
+import type Starfield from '~/animation/starfield';
 
 const styles = {
   background: css({
@@ -35,33 +37,109 @@ const styles = {
       display: 'block',
     },
   }),
+  canvas: css({
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100vw',
+    height: '100%',
+    pointerEvents: 'none',
+    opacity: 0,
+    transition: 'opacity 1.2s ease',
+    '@media (prefers-reduced-motion: reduce)': {
+      transition: 'none',
+    },
+  }),
+  visible: css({
+    opacity: 1,
+  }),
 };
 
 const Background: React.FC = () => {
   const { index } = usePage();
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const starfieldRef = useRef<Starfield | null>(null);
+  const indexRef = useRef(index);
+  indexRef.current = index;
+  // 'loading' until the 3D starfield is ready; the gradient alone shows meanwhile, and the stars brighten in.
+  // 'failed' (no WebGL, the catalog didn't load, or the WebGL context was lost) falls back to the static star images.
+  const [status, setStatus] = useState<'loading' | 'ready' | 'failed'>(
+    'loading',
+  );
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return undefined;
+    let cancelled = false;
+
+    // three.js loads in its own chunk, after the prerendered page is on screen.
+    import('~/animation/starfield')
+      .then(async ({ default: StarfieldClass, loadStarCatalog }) => {
+        const catalog = await loadStarCatalog();
+        if (cancelled) return;
+        starfieldRef.current = new StarfieldClass(
+          canvas,
+          catalog,
+          indexRef.current,
+          () => setStatus('failed'),
+        );
+        setStatus('ready');
+      })
+      .catch(() => {
+        if (!cancelled) setStatus('failed');
+      });
+
+    return () => {
+      cancelled = true;
+      starfieldRef.current?.destroy();
+      starfieldRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (status === 'failed') {
+      starfieldRef.current?.destroy();
+      starfieldRef.current = null;
+    }
+  }, [status]);
+
+  useEffect(() => {
+    starfieldRef.current?.setPage(index);
+  }, [index]);
+
   const backgroundStyle = css({
     top: `${index * -100}%`,
   });
   return (
     <div className={cx([styles.background, backgroundStyle])}>
-      <span className={styles.stars}>
-        <Image
-          src={stars}
-          layout="fill"
-          objectFit="cover"
-          alt="background"
-          priority
+      {status === 'failed' ? (
+        <>
+          <span className={styles.stars}>
+            <Image
+              src={stars}
+              layout="fill"
+              objectFit="cover"
+              alt="background"
+              priority
+            />
+          </span>
+          <span className={cx([styles.stars, styles.mobile])}>
+            <Image
+              src={starsMobile}
+              layout="fill"
+              objectFit="cover"
+              alt="background_mobile"
+              priority
+            />
+          </span>
+        </>
+      ) : (
+        <canvas
+          ref={canvasRef}
+          aria-hidden="true"
+          className={cx([styles.canvas, status === 'ready' && styles.visible])}
         />
-      </span>
-      <span className={cx([styles.stars, styles.mobile])}>
-        <Image
-          src={starsMobile}
-          layout="fill"
-          objectFit="cover"
-          alt="background_mobile"
-          priority
-        />
-      </span>
+      )}
     </div>
   );
 };

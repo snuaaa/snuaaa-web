@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import PhotoService, {
   CreatePhotoRequest,
   PhotoNavigationScope,
@@ -43,10 +48,18 @@ export function usePhotoList(
 }
 
 // Hook for fetching photo detail
-export function usePhotoDetail(id: number, navigation?: PhotoNavigationScope) {
+export function usePhotoDetail(
+  id: number,
+  navigation?: PhotoNavigationScope,
+  options?: {
+    /** Keep the previous photo's data while the next one loads. */
+    keepPrevious?: boolean;
+  },
+) {
   return useQuery({
     queryKey: photoKeys.detail(id, navigation),
     queryFn: () => PhotoService.retrievePhoto(id, navigation),
+    placeholderData: options?.keepPrevious ? keepPreviousData : undefined,
   });
 }
 
