@@ -388,7 +388,8 @@ class Earth {
     this.camera.updateProjectionMatrix();
     this.markerMaterial.uniforms.uSize.value =
       (width < 860 ? 22 : 28) * pixelRatio;
-    this.dotMaterial.uniforms.uSize.value = (width < 860 ? 10 : 12) * pixelRatio;
+    this.dotMaterial.uniforms.uSize.value =
+      (width < 860 ? 10 : 12) * pixelRatio;
     this.beamMaterial.uniforms.uAspect.value = this.aspect;
   }
 
