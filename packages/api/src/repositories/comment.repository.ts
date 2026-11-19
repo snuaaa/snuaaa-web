@@ -1,7 +1,7 @@
 import { and, eq, isNull } from 'drizzle-orm';
 import { database, type Executor, type Transaction } from '../db/client';
 import { board, comment, content } from '../db/schema';
-import { parseId } from './ids';
+import { parseId } from './utils';
 
 /** Adds a comment and returns its id. */
 export async function insert(

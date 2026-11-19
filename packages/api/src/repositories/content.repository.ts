@@ -1,7 +1,7 @@
 import { eq, sql } from 'drizzle-orm';
 import { database, type Executor, type Transaction } from '../db/client';
 import { content } from '../db/schema';
-import { parseId } from './ids';
+import { parseId } from './utils';
 
 /**
  * Adds `by` (negative to subtract) to one of the content's counters, without
