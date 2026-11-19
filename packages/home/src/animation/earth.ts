@@ -12,11 +12,13 @@ import {
   ShaderMaterial,
   Texture,
   TextureLoader,
+  Vector2,
   Vector3,
 } from 'three';
 import landMaskUrl from '~/assets/data/land.png?url';
 
-// The Earth the page travels towards: a far dot on the first page, a large horizon by Activity,
+// The Earth the page travels towards: a pale blue dot in a band of sunlight on the first page
+// (after Voyager 1's 1990 photo), a large horizon by Activity,
 // then it fills the view and fades out as the Dome page lands on the hill. It is drawn in its own
 // orthographic layer, so each page can place it on screen directly, whatever the camera does.
 // Land comes from Natural Earth (scripts/land-mask.js); the colors follow the site's navy-to-sky gradient.
@@ -33,6 +35,8 @@ type Pose = {
   lon: number;
   // Opacity of the gold star over Seoul.
   marker: number;
+  // 1 draws the Earth as a single pale blue point instead of a disc, with a faint band of sunlight across it.
+  dot: number;
   // Overrides for portrait screens, where the page content sits lower.
   portrait?: Partial<Omit<Pose, 'portrait'>>;
 };
@@ -47,23 +51,34 @@ const HIDDEN: Pose = {
   lat: 30,
   lon: SEOUL.lon,
   marker: 0,
+  dot: 0,
 };
 
 // One pose per page, in the order of `pages` (constants/index.ts).
 const POSES: Pose[] = [
-  // Home: a small blue dot far ahead, in the lower right.
+  // Home: the pale blue dot, a single point far ahead in the lower right.
   {
     x: 0.62,
     y: -0.62,
-    r: 0.07,
+    r: 0.01,
     opacity: 1,
     lat: 15,
     lon: 95,
     marker: 0,
-    portrait: { y: -0.8 },
+    dot: 1,
+    portrait: { x: 0.5, y: -0.8 },
   },
   // Intro: closer, under the text (on desktop the photo covers the right half, on phones all of it).
-  { x: -0.15, y: -0.76, r: 0.2, opacity: 1, lat: 22, lon: 112, marker: 0.6 },
+  {
+    x: -0.15,
+    y: -0.76,
+    r: 0.2,
+    opacity: 1,
+    lat: 22,
+    lon: 112,
+    marker: 0.6,
+    dot: 0,
+  },
   // Activity: a wide horizon along the bottom, with Seoul near the limb.
   {
     x: 0,
@@ -73,6 +88,7 @@ const POSES: Pose[] = [
     lat: -22,
     lon: SEOUL.lon,
     marker: 1,
+    dot: 0,
     // Below the activity stars' labels, which reach further down on phones.
     portrait: { y: -2.08 },
   },
@@ -177,6 +193,48 @@ const markerFragmentShader = /* glsl */ `
   }
 `;
 
+// The pale blue dot: a soft point a few pixels wide, its color the pale blue of the photo.
+const dotFragmentShader = /* glsl */ `
+  uniform float uOpacity;
+  void main() {
+    float d = length(gl_PointCoord - 0.5) * 2.0;
+    float core = 1.0 - smoothstep(0.0, 0.22, d);
+    float glow = exp(-d * d * 4.5) * 0.9;
+    vec3 color = mix(vec3(0.55, 0.78, 1.0), vec3(0.92, 0.97, 1.0), core);
+    gl_FragColor = vec4(color, min(1.0, (core * 1.4 + glow) * uOpacity));
+  }
+`;
+
+// A faint band of scattered sunlight through the dot, as in the Voyager frame. It covers the screen
+// (uAspect wide), slightly tilted, with a fainter band beside it.
+const beamVertexShader = /* glsl */ `
+  uniform float uAspect;
+  varying vec2 vPos;
+  void main() {
+    vPos = position.xy * vec2(uAspect, 1.0);
+    gl_Position = projectionMatrix * vec4(vPos, 0.0, 1.0);
+  }
+`;
+
+const beamFragmentShader = /* glsl */ `
+  uniform float uOpacity;
+  uniform vec2 uCenter;
+  varying vec2 vPos;
+  void main() {
+    vec2 p = vPos - uCenter;
+    // Distance across a band tilted about 12 degrees from vertical.
+    float across = dot(p, vec2(0.978, 0.208));
+    float along = dot(p, vec2(-0.208, 0.978));
+    float band = exp(-across * across / 0.006) * 1.0
+      + exp(-pow(across + 0.17, 2.0) / 0.0012) * 0.35
+      + exp(-pow(across - 0.31, 2.0) / 0.0009) * 0.2;
+    // Brightest around the dot, fading along its length.
+    float fade = 0.35 + 0.65 * exp(-along * along * 1.5);
+    float a = band * fade * 0.11 * uOpacity;
+    gl_FragColor = vec4(1.0, 0.8, 0.58, a);
+  }
+`;
+
 const lerpPose = (a: Pose, b: Pose, t: number): Pose => ({
   x: MathUtils.lerp(a.x, b.x, t),
   y: MathUtils.lerp(a.y, b.y, t),
@@ -190,6 +248,8 @@ const lerpPose = (a: Pose, b: Pose, t: number): Pose => ({
   lat: MathUtils.lerp(a.lat, b.lat, t),
   lon: MathUtils.lerp(a.lon, b.lon, t),
   marker: MathUtils.lerp(a.marker, b.marker, t),
+  // The dot gives way to the disc quickly, while the disc is still small.
+  dot: MathUtils.lerp(a.dot, b.dot, MathUtils.smoothstep(t, 0, 0.35)),
 });
 
 export function poseAt(page: number, portrait: boolean): Pose {
@@ -218,6 +278,14 @@ class Earth {
   private readonly haloMaterial: ShaderMaterial;
 
   private readonly markerMaterial: ShaderMaterial;
+
+  private readonly dot: Points;
+
+  private readonly dotMaterial: ShaderMaterial;
+
+  private readonly beam: Mesh;
+
+  private readonly beamMaterial: ShaderMaterial;
 
   private texture: Texture | null = null;
 
@@ -268,10 +336,40 @@ class Earth {
     this.marker = new Points(markerGeometry, this.markerMaterial);
     this.marker.frustumCulled = false;
 
+    this.dotMaterial = new ShaderMaterial({
+      vertexShader: markerVertexShader,
+      fragmentShader: dotFragmentShader,
+      transparent: true,
+      depthTest: false,
+      depthWrite: false,
+      blending: AdditiveBlending,
+      uniforms: { uOpacity: { value: 0 }, uSize: { value: 7 } },
+    });
+    this.dot = new Points(markerGeometry.clone(), this.dotMaterial);
+    this.dot.frustumCulled = false;
+
+    this.beamMaterial = new ShaderMaterial({
+      vertexShader: beamVertexShader,
+      fragmentShader: beamFragmentShader,
+      transparent: true,
+      depthTest: false,
+      depthWrite: false,
+      blending: AdditiveBlending,
+      uniforms: {
+        uOpacity: { value: 0 },
+        uAspect: { value: 1 },
+        uCenter: { value: new Vector2() },
+      },
+    });
+    this.beam = new Mesh(new PlaneGeometry(2, 2), this.beamMaterial);
+    this.beam.frustumCulled = false;
+
+    this.beam.renderOrder = -1;
     this.halo.renderOrder = 0;
     this.disc.renderOrder = 1;
-    this.marker.renderOrder = 2;
-    this.scene.add(this.halo, this.disc, this.marker);
+    this.dot.renderOrder = 2;
+    this.marker.renderOrder = 3;
+    this.scene.add(this.beam, this.halo, this.disc, this.dot, this.marker);
 
     // The disc draws as plain ocean until the land mask arrives (or if it never does).
     new TextureLoader().load(landMaskUrl, (texture) => {
@@ -290,6 +388,8 @@ class Earth {
     this.camera.updateProjectionMatrix();
     this.markerMaterial.uniforms.uSize.value =
       (width < 860 ? 22 : 28) * pixelRatio;
+    this.dotMaterial.uniforms.uSize.value = (width < 860 ? 10 : 12) * pixelRatio;
+    this.beamMaterial.uniforms.uAspect.value = this.aspect;
   }
 
   // `offsetX`/`offsetY` (in half-heights) shift the Earth for pointer parallax.
@@ -303,8 +403,12 @@ class Earth {
   ) {
     const pose = poseAt(page, this.aspect < 1);
     const visible = pose.opacity > 0.001;
-    this.disc.visible = visible;
-    this.halo.visible = visible;
+    const discOpacity = pose.opacity * (1 - pose.dot);
+    const dotOpacity = pose.opacity * pose.dot;
+    this.disc.visible = discOpacity > 0.001;
+    this.halo.visible = this.disc.visible;
+    this.dot.visible = dotOpacity > 0.001;
+    this.beam.visible = this.dot.visible;
     if (!visible) {
       this.marker.visible = false;
       return false;
@@ -319,10 +423,17 @@ class Earth {
 
     const lat = MathUtils.degToRad(pose.lat);
     const lon = MathUtils.degToRad(pose.lon);
-    this.earthMaterial.uniforms.uOpacity.value = pose.opacity;
+    this.earthMaterial.uniforms.uOpacity.value = discOpacity;
     this.earthMaterial.uniforms.uLat.value = lat;
     this.earthMaterial.uniforms.uLon.value = lon;
-    this.haloMaterial.uniforms.uOpacity.value = pose.opacity;
+    this.haloMaterial.uniforms.uOpacity.value = discOpacity;
+
+    this.dot.position.set(cx, cy, 0);
+    // A slow shimmer, like the dot catching the light.
+    this.dotMaterial.uniforms.uOpacity.value =
+      dotOpacity * (reducedMotion ? 1 : 0.85 + 0.15 * Math.sin(time * 1.3));
+    this.beamMaterial.uniforms.uOpacity.value = dotOpacity;
+    this.beamMaterial.uniforms.uCenter.value.set(cx, cy);
 
     // Seoul on the disc: the inverse of the shader's rotation.
     const sLat = MathUtils.degToRad(SEOUL.lat);
@@ -335,7 +446,7 @@ class Earth {
     this.seoul.set(gx, gy * c - gz * s, gy * s + gz * c);
     const facing = MathUtils.smoothstep(this.seoul.z, 0.05, 0.25);
     const pulse = reducedMotion ? 1 : 0.8 + 0.2 * Math.sin(time * 2.2);
-    const markerOpacity = pose.marker * pose.opacity * facing * pulse;
+    const markerOpacity = pose.marker * discOpacity * facing * pulse;
     this.marker.visible = markerOpacity > 0.001;
     this.marker.position.set(
       cx + this.seoul.x * pose.r,
@@ -350,6 +461,10 @@ class Earth {
     this.disc.geometry.dispose();
     this.halo.geometry.dispose();
     this.marker.geometry.dispose();
+    this.dot.geometry.dispose();
+    this.beam.geometry.dispose();
+    this.dotMaterial.dispose();
+    this.beamMaterial.dispose();
     this.earthMaterial.dispose();
     this.haloMaterial.dispose();
     this.markerMaterial.dispose();

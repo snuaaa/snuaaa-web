@@ -2,11 +2,13 @@ import {
   AdditiveBlending,
   BufferAttribute,
   BufferGeometry,
+  LineSegments,
   MathUtils,
   PerspectiveCamera,
   Points,
   Scene,
   ShaderMaterial,
+  Vector2,
   Vector3,
   WebGLRenderer,
 } from 'three';
@@ -38,6 +40,12 @@ const LANDING_PAGE = 3;
 const PAGE_OPACITY = [1, 1, 1, 1, 0.95, 0.7, 0];
 
 const TRANSITION_MS = 1000; // matches the background's `top` transition
+
+// Warp: while the page changes, the brighter stars stretch into streaks pointing away from where the
+// camera travels, longest halfway through. Streak length is in screen units per unit of distance from
+// the vanishing point; going back up the pages reverses them.
+const WARP_STRETCH = 0.32;
+const WARP_MAG_LIMIT = 5.2;
 
 const UP = new Vector3(0, 1, 0);
 
@@ -122,6 +130,39 @@ function hash(i: number) {
   return x - Math.floor(x);
 }
 
+// Each streaking star is a line from its point (aEnd 0) back along its direction from the vanishing
+// point (aEnd 1), done in screen space so it reads as speed regardless of the actual camera move.
+const streakVertexShader = /* glsl */ `
+  attribute float aEnd;
+  attribute float aMag;
+  attribute vec3 aColor;
+  uniform float uWarp;
+  uniform vec2 uVanish;
+  uniform float uAspect;
+  varying vec3 vColor;
+  varying float vAlpha;
+
+  void main() {
+    vec4 clip = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    vec2 ndc = clip.xy / clip.w;
+    vec2 away = (ndc - uVanish) * vec2(uAspect, 1.0);
+    vec2 tail = away * uWarp * aEnd;
+    ndc -= tail / vec2(uAspect, 1.0);
+    gl_Position = vec4(ndc * clip.w, clip.zw);
+    vColor = aColor;
+    vAlpha = clamp(1.3 - aMag * 0.18, 0.25, 1.0) * (1.0 - aEnd);
+  }
+`;
+
+const streakFragmentShader = /* glsl */ `
+  uniform float uOpacity;
+  varying vec3 vColor;
+  varying float vAlpha;
+  void main() {
+    gl_FragColor = vec4(vColor, vAlpha * uOpacity);
+  }
+`;
+
 const easeInOut = (t: number) =>
   t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
 
@@ -145,6 +186,12 @@ class Starfield {
   private geometry: BufferGeometry;
 
   private catalogCount: number;
+
+  private streakMaterial: ShaderMaterial;
+
+  private streakGeometry: BufferGeometry;
+
+  private streaks: LineSegments;
 
   private readonly lookDir = radec(LOOK_RA, LOOK_DEC);
 
@@ -275,6 +322,62 @@ class Starfield {
     points.frustumCulled = false;
     this.scene.add(points);
 
+    // The catalog is sorted brightest first, so the streaking stars are a prefix of it.
+    let streakCount = 0;
+    while (
+      streakCount < this.catalogCount &&
+      mags[streakCount] < WARP_MAG_LIMIT
+    ) {
+      streakCount += 1;
+    }
+    const streakPositions = new Float32Array(streakCount * 6);
+    const streakColors = new Float32Array(streakCount * 6);
+    const streakMags = new Float32Array(streakCount * 2);
+    const streakEnds = new Float32Array(streakCount * 2);
+    for (let i = 0; i < streakCount; i += 1) {
+      for (let e = 0; e < 2; e += 1) {
+        const v = i * 2 + e;
+        streakPositions.set(positions.subarray(i * 3, i * 3 + 3), v * 3);
+        streakColors.set(colors.subarray(i * 3, i * 3 + 3), v * 3);
+        streakMags[v] = mags[i];
+        streakEnds[v] = e;
+      }
+    }
+    this.streakGeometry = new BufferGeometry();
+    this.streakGeometry.setAttribute(
+      'position',
+      new BufferAttribute(streakPositions, 3),
+    );
+    this.streakGeometry.setAttribute(
+      'aColor',
+      new BufferAttribute(streakColors, 3),
+    );
+    this.streakGeometry.setAttribute(
+      'aMag',
+      new BufferAttribute(streakMags, 1),
+    );
+    this.streakGeometry.setAttribute(
+      'aEnd',
+      new BufferAttribute(streakEnds, 1),
+    );
+    this.streakMaterial = new ShaderMaterial({
+      vertexShader: streakVertexShader,
+      fragmentShader: streakFragmentShader,
+      transparent: true,
+      depthWrite: false,
+      blending: AdditiveBlending,
+      uniforms: {
+        uWarp: { value: 0 },
+        uVanish: { value: new Vector2() },
+        uAspect: { value: 1 },
+        uOpacity: { value: 0 },
+      },
+    });
+    this.streaks = new LineSegments(this.streakGeometry, this.streakMaterial);
+    this.streaks.frustumCulled = false;
+    this.streaks.visible = false;
+    this.scene.add(this.streaks);
+
     this.page = { from: page, to: page, start: 0, current: page };
 
     window.addEventListener('resize', this.onResize);
@@ -307,6 +410,8 @@ class Starfield {
     this.canvas.removeEventListener('webglcontextlost', this.onContextLost);
     this.geometry.dispose();
     this.material.dispose();
+    this.streakGeometry.dispose();
+    this.streakMaterial.dispose();
     this.earth.dispose();
     this.renderer.dispose();
   }
@@ -346,6 +451,7 @@ class Starfield {
     this.earth.resize(width, height, pixelRatio);
 
     this.material.uniforms.uPixelRatio.value = pixelRatio;
+    this.streakMaterial.uniforms.uAspect.value = this.camera.aspect;
     this.material.uniforms.uSizeScale.value = isMobile ? 2 : 3;
 
     // The filler stars come after the catalog, so the draw range trims only them.
@@ -358,6 +464,7 @@ class Starfield {
     this.render();
   }
 
+  // Returns the warp strength: signed (positive going down the pages), 0 when still.
   private updatePage(now: number) {
     const { from, to, start } = this.page;
     const t =
@@ -365,12 +472,22 @@ class Starfield {
         ? 1
         : MathUtils.clamp((now - start) / TRANSITION_MS, 0, 1);
     this.page.current = MathUtils.lerp(from, to, easeInOut(t));
+    // Only while there is space to travel through: no warp between the daylight pages.
+    const travel =
+      Math.min(Math.max(from, to), LANDING_PAGE + 1) -
+      Math.min(Math.min(from, to), LANDING_PAGE + 1);
+    if (t >= 1 || travel <= 0) return 0;
+    return (
+      Math.sign(to - from) *
+      Math.sin(Math.PI * t) ** 1.5 *
+      Math.min(travel, 2.5)
+    );
   }
 
   private render() {
     const now = performance.now();
     const time = (now - this.startTime) / 1000;
-    this.updatePage(now);
+    const warp = this.updatePage(now);
     const page = this.page.current;
 
     const smoothing = this.reducedMotion ? 0 : 0.04;
@@ -409,6 +526,20 @@ class Starfield {
       page - lower,
     );
     this.material.uniforms.uTime.value = time;
+
+    this.streaks.visible = warp !== 0;
+    if (warp !== 0) {
+      // Vanishing point: where the camera travels to, on screen.
+      this.camera.updateMatrixWorld();
+      this.tmp
+        .copy(this.camera.position)
+        .addScaledVector(this.lookDir, 1000)
+        .project(this.camera);
+      this.streakMaterial.uniforms.uVanish.value.set(this.tmp.x, this.tmp.y);
+      this.streakMaterial.uniforms.uWarp.value = warp * WARP_STRETCH;
+      this.streakMaterial.uniforms.uOpacity.value =
+        Math.min(1, Math.abs(warp)) * this.material.uniforms.uOpacity.value;
+    }
 
     // The Earth is nearer than the stars, so it shifts a little more with the pointer.
     const earthVisible = this.earth.update(
