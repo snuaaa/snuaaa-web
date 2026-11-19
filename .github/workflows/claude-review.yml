@@ -32,6 +32,8 @@ jobs:
         with:
           # Pro/Max 구독 토큰. 로컬에서 `claude setup-token`으로 발급해 repo secret에 등록
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          # sentry-autofix.yml이 올린 PR은 actor가 claude[bot]이라 허용해야 리뷰된다.
+          allowed_bots: 'claude'
           prompt: |
             REPO: ${{ github.repository }}
             PR NUMBER: ${{ github.event.pull_request.number }}
