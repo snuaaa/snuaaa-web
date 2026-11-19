@@ -86,9 +86,9 @@ export async function findForEdit(
 }
 
 /**
- * Locks the comment's row until `transaction` ends, so requests that change
- * the same comment run one after another. Returns whether the comment exists, deleted
- * ones included.
+ * Locks the comment's row until `transaction` ends, so like toggles on the
+ * same comment run one after another. Returns the id of the content it
+ * belongs to, or null for an unknown comment (deleted ones included).
  */
 export async function lock(
   commentId: string | number,
@@ -96,12 +96,28 @@ export async function lock(
 ) {
   const id = parseId(commentId);
   if (id === null) {
-    return false;
+    return null;
   }
-  const rows = await transaction
-    .select({ comment_id: comment.comment_id })
+  const [row] = await transaction
+    .select({ parent_id: comment.parent_id })
     .from(comment)
     .where(eq(comment.comment_id, id))
     .for('update');
-  return rows.length > 0;
+  return row?.parent_id ?? null;
+}
+
+/**
+ * The id of the content the comment belongs to, or null for an unknown
+ * comment (deleted ones included, so a reply to a deleted comment still
+ * works).
+ */
+export async function findContentId(
+  commentId: number,
+  executor: Executor = database,
+) {
+  const [row] = await executor
+    .select({ parent_id: comment.parent_id })
+    .from(comment)
+    .where(eq(comment.comment_id, commentId));
+  return row?.parent_id ?? null;
 }

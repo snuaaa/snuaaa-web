@@ -73,6 +73,37 @@ export async function contentCounters(contentId: number) {
   return row;
 }
 
+/** The content's stored row, or undefined when it is gone for good. */
+export async function contentState(contentId: number) {
+  const [row] = await query<{
+    type: string;
+    author_id: number;
+    board_id: string;
+    category_id: string | null;
+    title: string | null;
+    text: string | null;
+    view_num: number;
+    comment_num: number;
+    like_num: number;
+    updated_at: Date;
+    deleted_at: Date | null;
+  }>(
+    `SELECT type, author_id, board_id, category_id, title, text, view_num,
+            comment_num, like_num, updated_at, deleted_at
+       FROM tb_content WHERE content_id = $1`,
+    [contentId],
+  );
+  return row;
+}
+
+/** Whether the content has its `tb_post` detail row. */
+export async function hasPostRow(contentId: number) {
+  const rows = await query('SELECT 1 FROM tb_post WHERE content_id = $1', [
+    contentId,
+  ]);
+  return rows.length > 0;
+}
+
 /** The comment's text and whether it is soft-deleted. */
 export async function commentState(commentId: number) {
   const [row] = await query<{ text: string; deleted_at: Date | null }>(

@@ -16,6 +16,13 @@ import {
   withFailingWrites,
 } from './helpers/db';
 
+const FORBIDDEN = {
+  success: false,
+  error: 'FORBIDDEN',
+  message: 'Permission denied',
+  code: 4001,
+};
+
 async function setup() {
   const board = await createBoard({ lv_read: 10, lv_write: 10, lv_edit: 1 });
   const author = await createUser({ grade: 8 });
@@ -67,6 +74,68 @@ describe('POST /api/content/:content_id/comment', () => {
       expect(res.status).toBe(404);
       expect(res.body).toMatchObject({ success: false, error: 'NOT_FOUND' });
     }
+  });
+
+  it('returns 404 for a deleted content', async () => {
+    const board = await createBoard();
+    const author = await createUser({ grade: 8 });
+    const contentId = await createContent(author, board, {
+      deleted_at: new Date(),
+    });
+
+    const res = await api()
+      .post(`/api/content/${contentId}/comment`)
+      .set('Authorization', bearer(author))
+      .send({ text: 'hello' });
+
+    expect(res.status).toBe(404);
+    expect(await countComments(contentId)).toBe(0);
+  });
+
+  it('refuses a member who may not read the board with 403', async () => {
+    const board = await createBoard({ lv_read: 6 });
+    const staff = await createUser({ grade: 6 });
+    const contentId = await createContent(staff, board);
+    const member = await createUser({ grade: 8 });
+
+    const res = await api()
+      .post(`/api/content/${contentId}/comment`)
+      .set('Authorization', bearer(member))
+      .send({ text: 'hello' });
+
+    expect(res.status).toBe(403);
+    expect(res.body).toEqual(FORBIDDEN);
+    expect(await countComments(contentId)).toBe(0);
+  });
+
+  it('adds a reply to a comment on the same content', async () => {
+    const { contentId, author } = await setup();
+    const parentId = await createComment(author, contentId);
+
+    const res = await api()
+      .post(`/api/content/${contentId}/comment`)
+      .set('Authorization', bearer(author))
+      .send({ text: 'reply', parent_comment_id: parentId });
+
+    expect(res.status).toBe(200);
+    expect(await countComments(contentId)).toBe(2);
+  });
+
+  it('refuses a reply to a comment on another content with 400', async () => {
+    const { board, contentId, author } = await setup();
+    const otherId = await createContent(author, board);
+    const parentId = await createComment(author, otherId);
+
+    for (const parent of [parentId, 999999]) {
+      const res = await api()
+        .post(`/api/content/${contentId}/comment`)
+        .set('Authorization', bearer(author))
+        .send({ text: 'reply', parent_comment_id: parent });
+
+      expect(res.status).toBe(400);
+      expect(res.body).toMatchObject({ success: false, error: 'BAD_REQUEST' });
+    }
+    expect(await countComments(contentId)).toBe(0);
   });
 
   it('answers a body of the wrong shape with 400', async () => {
@@ -271,6 +340,22 @@ describe('DELETE /api/comment/:comment_id', () => {
 });
 
 describe('POST /api/comment/:comment_id/like', () => {
+  it('refuses a member who may not read the board with 403', async () => {
+    const board = await createBoard({ lv_read: 6 });
+    const staff = await createUser({ grade: 6 });
+    const contentId = await createContent(staff, board);
+    const commentId = await createComment(staff, contentId);
+    const member = await createUser({ grade: 8 });
+
+    const res = await api()
+      .post(`/api/comment/${commentId}/like`)
+      .set('Authorization', bearer(member));
+
+    expect(res.status).toBe(403);
+    expect(res.body).toEqual(FORBIDDEN);
+    expect(await hasCommentLike(member, commentId)).toBe(false);
+  });
+
   it('likes, then unlikes on the second call', async () => {
     const { contentId, author } = await setup();
     const user = await createUser({ grade: 8 });

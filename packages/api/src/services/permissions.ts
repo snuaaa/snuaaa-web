@@ -25,3 +25,33 @@ export function assertCanEdit(
     throw new AuthorizationError('Permission denied', { code: 4001 });
   }
 }
+
+type BoardLevels = { lv_read?: number | null; lv_write?: number | null };
+export type BoardPermission = 'read' | 'write';
+
+const LEVEL_FIELD = { read: 'lv_read', write: 'lv_write' } as const;
+
+/**
+ * Lower grade = more privilege, so a user can act on a board when their grade
+ * is at or below the board's level. A missing level allows nobody, matching
+ * the web's `canWrite`.
+ */
+export function canAccessBoard(
+  board: BoardLevels,
+  grade: number,
+  permission: BoardPermission,
+) {
+  const level = board[LEVEL_FIELD[permission]];
+  return typeof level === 'number' && grade <= level;
+}
+
+/** Throws 403 (code 4001) unless `grade` may read or write `board`. */
+export function assertBoardAccess(
+  board: BoardLevels,
+  grade: number,
+  permission: BoardPermission,
+) {
+  if (!canAccessBoard(board, grade, permission)) {
+    throw new AuthorizationError('Permission denied', { code: 4001 });
+  }
+}

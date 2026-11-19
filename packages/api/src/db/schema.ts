@@ -54,6 +54,10 @@ export const content = pgTable('tb_content', {
   parent_id: integer('parent_id'),
 });
 
+export const post = pgTable('tb_post', {
+  content_id: integer('content_id').primaryKey(),
+});
+
 export const comment = pgTable('tb_comment', {
   comment_id: serial('comment_id').primaryKey(),
   comment_uuid: uuid('comment_uuid'),

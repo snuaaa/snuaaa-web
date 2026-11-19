@@ -84,6 +84,15 @@ export async function createBoard(overrides: BoardOverrides = {}) {
  * Creates a `tb_content` row, without a detail row (e.g. a parent album the
  * test only needs to exist). `createPost` adds the `tb_post` row too.
  */
+export async function createCategory(board: Board) {
+  const n = next();
+  return insert<{ category_id: string }>('tb_category', {
+    category_id: `cat${n}`,
+    board_id: board.board_id,
+    category_name: `Category ${n}`,
+  });
+}
+
 export async function createContent(
   author: User,
   board: Board,
@@ -94,6 +103,9 @@ export async function createContent(
     parent_id?: number;
     comment_num?: number;
     like_num?: number;
+    category_id?: string;
+    updated_at?: Date;
+    deleted_at?: Date;
   } = {},
 ) {
   const n = next();
@@ -115,7 +127,7 @@ export async function createContent(
 export async function createPost(
   author: User,
   board: Board,
-  overrides: { title?: string; text?: string } = {},
+  overrides: Omit<Parameters<typeof createContent>[2], 'type'> = {},
 ) {
   const contentId = await createContent(author, board, {
     ...overrides,

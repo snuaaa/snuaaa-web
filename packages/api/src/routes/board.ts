@@ -9,10 +9,7 @@ import {
   retrieveBoardsCanAccess,
 } from '../controllers/board.controller';
 import { createContent } from '../controllers/content.controller';
-import {
-  retrievePostsInBoard,
-  createPost,
-} from '../controllers/post.controller';
+import { retrievePostsInBoard } from '../controllers/post.controller';
 import { retrieveTagsOnBoard } from '../controllers/tag.controller';
 import { createDocument } from '../controllers/document.controller';
 import {
@@ -108,35 +105,6 @@ router.get(
       );
       const tags = await retrieveTagsOnBoard(req.params.board_id);
       res.json(tags);
-    } catch (err) {
-      next(err);
-    }
-  },
-);
-
-router.post(
-  '/:board_id/post',
-  verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res, next) => {
-    const decodedToken = req.decodedToken;
-
-    const postData = {
-      ...req.body,
-      author_id: decodedToken._id,
-      board_id: req.params.board_id,
-    };
-
-    try {
-      await assertBoardAccessById(
-        req.params.board_id,
-        decodedToken.grade,
-        'write',
-      );
-      const content_id = await createPost(postData);
-      res.json({
-        content_id: content_id,
-        success: true,
-      });
     } catch (err) {
       next(err);
     }
