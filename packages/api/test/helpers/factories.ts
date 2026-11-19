@@ -80,10 +80,6 @@ export async function createBoard(overrides: BoardOverrides = {}) {
   });
 }
 
-/**
- * Creates a `tb_content` row, without a detail row (e.g. a parent album the
- * test only needs to exist). `createPost` adds the `tb_post` row too.
- */
 export async function createCategory(board: Board) {
   const n = next();
   return insert<{ category_id: string }>('tb_category', {
@@ -93,6 +89,10 @@ export async function createCategory(board: Board) {
   });
 }
 
+/**
+ * Creates a `tb_content` row, without a detail row (e.g. a parent album the
+ * test only needs to exist). `createPost` adds the `tb_post` row too.
+ */
 export async function createContent(
   author: User,
   board: Board,
