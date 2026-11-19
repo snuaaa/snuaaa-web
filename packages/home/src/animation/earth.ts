@@ -289,6 +289,8 @@ class Earth {
 
   private texture: Texture | null = null;
 
+  private disposed = false;
+
   private readonly seoul = new Vector3();
 
   constructor() {
@@ -373,6 +375,11 @@ class Earth {
 
     // The disc draws as plain ocean until the land mask arrives (or if it never does).
     new TextureLoader().load(landMaskUrl, (texture) => {
+      // Arrived after the page left: free it instead of keeping it.
+      if (this.disposed) {
+        texture.dispose();
+        return;
+      }
       texture.minFilter = LinearFilter;
       texture.generateMipmaps = false;
       this.texture = texture;
@@ -459,6 +466,7 @@ class Earth {
   }
 
   dispose() {
+    this.disposed = true;
     this.disc.geometry.dispose();
     this.halo.geometry.dispose();
     this.marker.geometry.dispose();
