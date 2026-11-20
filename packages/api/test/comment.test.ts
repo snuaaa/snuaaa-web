@@ -39,6 +39,23 @@ describe('POST /api/content/:content_id/comment', () => {
     expect((await contentCounters(contentId)).comment_num).toBe(2);
   });
 
+  it('stores a top-level comment for parent_comment_id 0, as the web sends', async () => {
+    const { contentId } = await setup();
+    const user = await createUser({ grade: 8 });
+
+    const res = await api()
+      .post(`/api/content/${contentId}/comment`)
+      .set('Authorization', bearer(user))
+      .send({ text: 'hello', parent_comment_id: 0 });
+
+    expect(res.status).toBe(200);
+    const list = await api()
+      .get(`/api/content/${contentId}/comments`)
+      .set('Authorization', bearer(user));
+    expect(list.status).toBe(200);
+    expect(list.body).toEqual([expect.objectContaining({ text: 'hello' })]);
+  });
+
   it('keeps neither the comment nor the count when the count fails', async () => {
     const { contentId } = await setup();
     const user = await createUser({ grade: 8 });
