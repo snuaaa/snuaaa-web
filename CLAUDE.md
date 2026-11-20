@@ -48,7 +48,7 @@ Each package has its own ESLint flat config (`eslint.config.*`) with Prettier (s
 
   `NODE_ENV=develop` switches the CORS allow-list to the dev origins, which include localhost:3000.
 
-  Optional DB timeouts, in milliseconds (`DATABASE_TIMEOUTS` in `db/timeouts.ts`, used by both the Sequelize and the Drizzle pool): `DATABASE_LOCK_TIMEOUT_MILLISECONDS` (default 5000), `DATABASE_STATEMENT_TIMEOUT_MILLISECONDS` (30000), `DATABASE_IDLE_IN_TRANSACTION_TIMEOUT_MILLISECONDS` (60000) and `DATABASE_POOL_ACQUIRE_TIMEOUT_MILLISECONDS` (10000). They make a stuck query or transaction fail with a 500 instead of hanging. Migrations (`db/migrate.ts`) use their own connection without them.
+  Optional DB timeouts, in milliseconds (`DATABASE_TIMEOUTS` in `db/timeouts.ts`, used by both the Sequelize and the Drizzle pool): `DATABASE_LOCK_TIMEOUT_MILLISECONDS` (default 5000), `DATABASE_STATEMENT_TIMEOUT_MILLISECONDS` (30000), `DATABASE_POOL_ACQUIRE_TIMEOUT_MILLISECONDS` (10000), and `DATABASE_IDLE_IN_TRANSACTION_TIMEOUT_MILLISECONDS` (off by default, because PostgreSQL before 9.6 refuses connections that set it). They make a stuck query or transaction fail with a 500 instead of hanging. Migrations (`db/migrate.ts`) use their own connection without them.
 - **Sentry (optional):** error monitoring is off unless a DSN is set.
   - Web: `REACT_APP_SENTRY_DSN`, `REACT_APP_SENTRY_ENVIRONMENT`. Source maps are uploaded at build time only when `SENTRY_AUTH_TOKEN`, `SENTRY_ORG` and `SENTRY_PROJECT` are set (see `deploy-web.yml`).
   - API: `SENTRY_DSN`, `SENTRY_ENVIRONMENT`, `SENTRY_TRACES_SAMPLE_RATE`. `src/instrument.ts` must stay the first import in `main.ts`. Only unexpected (500) errors are reported, from `middlewares/errorHandler.ts`.

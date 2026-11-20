@@ -13,7 +13,13 @@ import { toggleContentLike } from '../../services/contentLike.service';
 
 const commentBody = z.object({
   text: z.string().nullish(),
-  parent_comment_id: z.coerce.number().int().positive().nullish(),
+  // The web sends 0 for a top-level comment. Like Express did, any falsy
+  // value means "no parent" and is stored as null, which the comment list
+  // reads as top-level.
+  parent_comment_id: z.preprocess(
+    (value) => value || null,
+    z.coerce.number().int().positive().nullable(),
+  ),
 });
 
 /** `/api/comment/...` */
