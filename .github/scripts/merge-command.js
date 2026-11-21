@@ -3,8 +3,7 @@ module.exports = async ({ github, context, core }) => {
   const { owner, repo } = context.repo;
   const issue_number = context.issue.number;
 
-  // 일반 코멘트(issue_comment), 리뷰 본문(pull_request_review),
-  // 리뷰의 라인 코멘트(pull_request_review_comment) 중 어디에 달렸는지에 따라 읽을 곳이 다르다.
+  // 일반 코멘트(issue_comment)와 리뷰 본문(pull_request_review)은 읽을 곳이 다르다.
   const { comment, review } = context.payload;
   const source = comment ?? review;
   if (!source) return;
@@ -16,11 +15,8 @@ module.exports = async ({ github, context, core }) => {
 
   // 리뷰 본문에는 reaction API가 없어서 reaction을 달지 않는다 (결과는 코멘트로 알린다).
   const react = async (content) => {
-    if (context.eventName === 'issue_comment') {
-      await github.rest.reactions.createForIssueComment({ owner, repo, comment_id: comment.id, content });
-    } else if (context.eventName === 'pull_request_review_comment') {
-      await github.rest.reactions.createForPullRequestReviewComment({ owner, repo, comment_id: comment.id, content });
-    }
+    if (!comment) return;
+    await github.rest.reactions.createForIssueComment({ owner, repo, comment_id: comment.id, content });
   };
   const reply = (body) =>
     github.rest.issues.createComment({ owner, repo, issue_number, body });

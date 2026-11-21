@@ -1,6 +1,6 @@
 name: Merge Command
 
-# PR에 `/merge` 코멘트를 달면 (일반 코멘트, 리뷰 본문, 리뷰의 라인 코멘트 모두) 브랜치 규칙에 맞는 방식으로 머지한다.
+# PR에 `/merge` 코멘트를 달면 (일반 코멘트와 리뷰 본문 모두) 브랜치 규칙에 맞는 방식으로 머지한다.
 #
 #   main   <- epic/*                       : merge commit
 #   main   <- feat|fix|chore|refactor/*    : squash
@@ -19,7 +19,7 @@ name: Merge Command
 #
 # 명령 처리 로직은 .github/scripts/merge-command.js에 있고, 항상 기본 브랜치에서 checkout해 실행한다.
 # issue_comment 워크플로는 기본 브랜치의 워크플로 파일로 실행되지만,
-# pull_request_review(_comment) 워크플로는 PR의 merge ref에 있는 워크플로 파일로 실행된다.
+# pull_request_review 워크플로는 PR의 merge ref에 있는 워크플로 파일로 실행된다.
 # 그래서 PR 브랜치가 이 트리거를 추가하기 전의 main에서 갈라졌다면 리뷰 속 `/merge`는 동작하지 않는다
 # (main을 반영하거나 일반 코멘트로 달면 된다). fork PR의 리뷰 이벤트에는 secrets가 전달되지 않아서
 # 머지 봇 토큰을 만들 수 없으므로, fork PR은 일반 코멘트로 `/merge`해야 한다.
@@ -29,8 +29,6 @@ on:
     types: [created]
   pull_request_review:
     types: [submitted]
-  pull_request_review_comment:
-    types: [created]
 
 permissions:
   contents: read
