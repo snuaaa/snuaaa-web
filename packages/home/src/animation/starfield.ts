@@ -11,6 +11,8 @@ import {
   WebGLRenderer,
 } from 'three';
 import starCatalogUrl from '~/assets/data/stars.bin?url';
+import Earth from './earth';
+import WarpField from './warp';
 
 // Real stars from the Yale Bright Star Catalog (scripts/star-catalog.js): their directions and colors
 // are the real sky, their distances are spread out only so the field has depth as the camera moves.
@@ -31,6 +33,8 @@ const LOOK_DEC = 12;
 // descending from deep space towards the ground (the CSS gradient behind brightens the same way).
 const PITCH_PER_PAGE = MathUtils.degToRad(3.5);
 const FORWARD_PER_PAGE = 45;
+// The Dome page lands on the ground (earth.ts), after which the camera stops travelling.
+const LANDING_PAGE = 3;
 // Stars fade out over the last pages, where the background turns into daylight.
 const PAGE_OPACITY = [1, 1, 1, 1, 0.95, 0.7, 0];
 
@@ -143,6 +147,14 @@ class Starfield {
 
   private catalogCount: number;
 
+  private readonly warpField = new WarpField();
+
+  private lastFrame = performance.now();
+
+  private readonly up = new Vector3();
+
+  private readonly origin = new Vector3();
+
   private readonly lookDir = radec(LOOK_RA, LOOK_DEC);
 
   private readonly right = new Vector3();
@@ -158,7 +170,9 @@ class Starfield {
 
   private startTime = performance.now();
 
-  // True once a frame with no visible stars has been drawn, so the loop can skip identical frames.
+  private readonly earth = new Earth();
+
+  // True once a frame with nothing visible has been drawn, so the loop can skip identical frames.
   private blank = false;
 
   private readonly canvas: HTMLCanvasElement;
@@ -206,6 +220,8 @@ class Starfield {
       powerPreference: 'low-power',
     });
     this.renderer.setClearColor(0x000000, 0);
+    // Stars, then the Earth on top, each with its own camera.
+    this.renderer.autoClear = false;
 
     this.camera = new PerspectiveCamera(60, 1, 1, 3000);
 
@@ -268,6 +284,8 @@ class Starfield {
     points.frustumCulled = false;
     this.scene.add(points);
 
+    this.scene.add(this.warpField.object);
+
     this.page = { from: page, to: page, start: 0, current: page };
 
     window.addEventListener('resize', this.onResize);
@@ -300,6 +318,8 @@ class Starfield {
     this.canvas.removeEventListener('webglcontextlost', this.onContextLost);
     this.geometry.dispose();
     this.material.dispose();
+    this.warpField.dispose();
+    this.earth.dispose();
     this.renderer.dispose();
   }
 
@@ -335,8 +355,10 @@ class Starfield {
     // Keep roughly the same patch of sky in view on portrait screens.
     this.camera.fov = this.camera.aspect < 1 ? 75 : 60;
     this.camera.updateProjectionMatrix();
+    this.earth.resize(width, height, pixelRatio);
 
     this.material.uniforms.uPixelRatio.value = pixelRatio;
+    this.warpField.resize(pixelRatio, isMobile);
     this.material.uniforms.uSizeScale.value = isMobile ? 2 : 3;
 
     // The filler stars come after the catalog, so the draw range trims only them.
@@ -349,6 +371,7 @@ class Starfield {
     this.render();
   }
 
+  // Returns the warp strength: signed (positive going down the pages), 0 when still.
   private updatePage(now: number) {
     const { from, to, start } = this.page;
     const t =
@@ -356,12 +379,25 @@ class Starfield {
         ? 1
         : MathUtils.clamp((now - start) / TRANSITION_MS, 0, 1);
     this.page.current = MathUtils.lerp(from, to, easeInOut(t));
+    // Only while there is space to travel through: no warp between the daylight pages.
+    const travel =
+      Math.min(Math.max(from, to), LANDING_PAGE + 1) -
+      Math.min(Math.min(from, to), LANDING_PAGE + 1);
+    if (t >= 1 || travel <= 0) return 0;
+    return (
+      Math.sign(to - from) *
+      Math.sin(Math.PI * t) ** 1.5 *
+      Math.min(travel, 2.5)
+    );
   }
 
   private render() {
     const now = performance.now();
     const time = (now - this.startTime) / 1000;
-    this.updatePage(now);
+    const warp = this.updatePage(now);
+    // Capped, so a frame after the tab was in the background doesn't jump the warp field.
+    const dt = Math.min(0.05, (now - this.lastFrame) / 1000);
+    this.lastFrame = now;
     const page = this.page.current;
 
     const smoothing = this.reducedMotion ? 0 : 0.04;
@@ -383,7 +419,7 @@ class Starfield {
     // Position: move forward and sideways, so nearer stars shift more than far ones.
     this.camera.position
       .copy(this.lookDir)
-      .multiplyScalar(page * FORWARD_PER_PAGE)
+      .multiplyScalar(Math.min(page, LANDING_PAGE) * FORWARD_PER_PAGE)
       .addScaledVector(this.right, px * 12)
       .addScaledVector(UP, -py * 8);
     this.camera.lookAt(
@@ -401,14 +437,43 @@ class Starfield {
     );
     this.material.uniforms.uTime.value = time;
 
-    // On the daylight page no star is visible: draw one empty frame, then skip until something changes.
+    // The near stars follow the camera's travel but not the pointer, so they shift with it.
+    this.up.crossVectors(this.right, this.lookDir);
+    this.origin
+      .copy(this.lookDir)
+      .multiplyScalar(Math.min(page, LANDING_PAGE) * FORWARD_PER_PAGE);
+    this.warpField.update(
+      this.origin,
+      this.lookDir,
+      this.right,
+      this.up,
+      warp,
+      dt,
+      this.material.uniforms.uOpacity.value,
+    );
+
+    // The Earth is nearer than the stars, so it shifts a little more with the pointer.
+    const earthVisible = this.earth.update(
+      page,
+      time,
+      this.reducedMotion,
+      -px * 0.025,
+      py * 0.02,
+    );
+
+    // On the daylight page nothing is visible: draw one empty frame, then skip until something changes.
     const hidden =
       this.material.uniforms.uOpacity.value === 0 &&
+      !earthVisible &&
       this.page.current === this.page.to;
     if (hidden && this.blank) return;
     this.blank = hidden;
 
+    this.renderer.clear();
     this.renderer.render(this.scene, this.camera);
+    if (earthVisible) {
+      this.renderer.render(this.earth.scene, this.earth.camera);
+    }
   }
 }
 
