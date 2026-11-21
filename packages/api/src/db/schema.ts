@@ -58,8 +58,6 @@ export const post = pgTable('tb_post', {
   content_id: integer('content_id').primaryKey(),
 });
 
-// `file_path` is left out: attached files live in `tb_attached_file`, and
-// the column only keeps paths of old documents.
 export const document = pgTable('tb_document', {
   content_id: integer('content_id').primaryKey(),
   generation: integer('generation'),
