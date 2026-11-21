@@ -100,6 +100,23 @@ describe('POST /api/board/:board_id/document', () => {
     }
   });
 
+  it('returns 400 for a generation that is not a positive integer', async () => {
+    const { board, author, categoryId } = await setup();
+
+    for (const generation of ['0', -1, 1.5, 'abc']) {
+      const response = await api()
+        .post(`/api/board/${board.board_id}/document`)
+        .set('Authorization', bearer(author))
+        .send({ title: 'a', text: '', generation, category_id: categoryId });
+      expect(response.status).toBe(400);
+      expect(response.body).toMatchObject({
+        success: false,
+        error: 'BAD_REQUEST',
+      });
+    }
+    expect(await countContents({ board_id: board.board_id })).toBe(0);
+  });
+
   it('keeps no content when the document row fails', async () => {
     const { board, author, categoryId } = await setup();
 
