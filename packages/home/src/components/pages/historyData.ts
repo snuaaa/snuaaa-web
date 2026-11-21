@@ -1,5 +1,70 @@
 const historyData = [
   {
+    year: 2026,
+    details: [
+      {
+        date: '11.03~11.06',
+        name: '44회 천체 사진전 : 별일 없는 밤은 없으니까',
+      },
+      {
+        date: '09.19',
+        name: 'Home Coming Day',
+      },
+    ],
+  },
+  {
+    year: 2025,
+    details: [
+      {
+        date: '11.03~11.07',
+        name: '43회 천체 사진전 : 깊은 밤을 날아서',
+      },
+      {
+        date: '09.27',
+        name: 'Home Coming Day',
+      },
+    ],
+  },
+  {
+    year: 2024,
+    details: [
+      {
+        date: '10.30~11.02',
+        name: '42회 천체 사진전 : 별을 노래하는 마음으로',
+      },
+      {
+        date: '09.28',
+        name: 'Home Coming Day',
+      },
+    ],
+  },
+  {
+    year: 2023,
+    details: [
+      {
+        date: '10.31~11.04',
+        name: '41회 천체 사진전 : 별 볼일 있는 날',
+      },
+      {
+        date: '09.23',
+        name: 'Home Coming Day',
+      },
+    ],
+  },
+  {
+    year: 2022,
+    details: [
+      {
+        date: '11.01~11.04',
+        name: '40회 천체 사진전 : "해" 치웠나?',
+      },
+      {
+        date: '09.24',
+        name: 'Home Coming Day',
+      },
+    ],
+  },
+  {
     year: 2021,
     details: [
       {
@@ -22,6 +87,10 @@ const historyData = [
       {
         date: '11.21',
         name: 'Home Coming Day',
+      },
+      {
+        date: '04.20~05.03',
+        name: '온라인 전시 : AAA: The 40th Anniversary',
       },
     ],
   },
