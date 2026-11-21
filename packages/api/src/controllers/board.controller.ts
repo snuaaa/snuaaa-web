@@ -1,6 +1,10 @@
 import { BoardModel, CategoryModel, TagModel } from '../models';
 import { Op } from 'sequelize';
-import { AuthorizationError, BadRequestError, NotFoundError } from '../errors';
+import { BadRequestError, NotFoundError } from '../errors';
+import {
+  assertBoardAccess,
+  type BoardPermission,
+} from '../services/permissions';
 
 export async function retrieveBoard(board_id) {
   if (!board_id) {
@@ -54,35 +58,13 @@ export async function retrieveBoardsCanAccess(grade) {
   });
 }
 
-type BoardLevels = { lv_read?: number | null; lv_write?: number | null };
-export type BoardPermission = 'read' | 'write';
-
-const LEVEL_FIELD = { read: 'lv_read', write: 'lv_write' } as const;
-
-/**
- * Lower grade = more privilege, so a user can act on a board when their grade
- * is at or below the board's level. A missing level allows nobody, matching
- * the web's `canWrite`.
- */
-export function canAccessBoard(
-  board: BoardLevels,
-  grade: number,
-  permission: BoardPermission,
-) {
-  const level = board[LEVEL_FIELD[permission]];
-  return typeof level === 'number' && grade <= level;
-}
-
-/** Throws 403 (code 4001) unless `grade` may read or write `board`. */
-export function assertBoardAccess(
-  board: BoardLevels,
-  grade: number,
-  permission: BoardPermission,
-) {
-  if (!canAccessBoard(board, grade, permission)) {
-    throw new AuthorizationError('Permission denied', { code: 4001 });
-  }
-}
+// The board rules live in the services now; Express routes still import them
+// from here until their domains move (#158).
+export {
+  assertBoardAccess,
+  canAccessBoard,
+  type BoardPermission,
+} from '../services/permissions';
 
 /**
  * Loads the board by id and checks the permission. Throws 400 without an id,

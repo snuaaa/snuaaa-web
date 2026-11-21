@@ -1,4 +1,3 @@
-import ContentTypeEnum from '../enums/contentTypeEnum';
 import express from 'express';
 
 import {
@@ -6,12 +5,7 @@ import {
   verifyTokenMiddleware,
 } from '../middlewares/auth';
 
-import {
-  assertCanEditContent,
-  updateContent,
-  deleteContent,
-  increaseViewNum,
-} from '../controllers/content.controller';
+import { increaseViewNum } from '../controllers/content.controller';
 import {
   PostFilter,
   retrievePost,
@@ -76,42 +70,6 @@ router.get(
       ]);
 
       res.json({ postInfo, likeInfo });
-    } catch (err) {
-      next(err);
-    }
-  },
-);
-
-router.patch(
-  '/:post_id',
-  verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res, next) => {
-    try {
-      await assertCanEditContent(
-        req.params.post_id,
-        req.decodedToken,
-        ContentTypeEnum.POST,
-      );
-      await updateContent(req.params.post_id, req.body);
-      res.json({ success: true });
-    } catch (err) {
-      next(err);
-    }
-  },
-);
-
-router.delete(
-  '/:post_id',
-  verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res, next) => {
-    try {
-      await assertCanEditContent(
-        req.params.post_id,
-        req.decodedToken,
-        ContentTypeEnum.POST,
-      );
-      await deleteContent(req.params.post_id);
-      res.json({ success: true });
     } catch (err) {
       next(err);
     }

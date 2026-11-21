@@ -105,6 +105,36 @@ describe('POST /api/content/:content_id/like', () => {
     expect((await contentCounters(contentId)).like_num).toBe(3);
   });
 
+  it('returns 404 for a deleted content', async () => {
+    const board = await createBoard();
+    const author = await createUser({ grade: 8 });
+    const contentId = await createContent(author, board, {
+      deleted_at: new Date(),
+    });
+
+    const res = await api()
+      .post(`/api/content/${contentId}/like`)
+      .set('Authorization', bearer(author));
+
+    expect(res.status).toBe(404);
+    expect(await hasContentLike(author, contentId)).toBe(false);
+  });
+
+  it('refuses a member who may not read the board with 403', async () => {
+    const board = await createBoard({ lv_read: 6 });
+    const staff = await createUser({ grade: 6 });
+    const contentId = await createContent(staff, board);
+    const member = await createUser({ grade: 8 });
+
+    const res = await api()
+      .post(`/api/content/${contentId}/like`)
+      .set('Authorization', bearer(member));
+
+    expect(res.status).toBe(403);
+    expect(res.body).toMatchObject({ error: 'FORBIDDEN', code: 4001 });
+    expect(await hasContentLike(member, contentId)).toBe(false);
+  });
+
   it('returns 404 for an unknown content', async () => {
     const user = await createUser({ grade: 8 });
 

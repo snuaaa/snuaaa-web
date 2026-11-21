@@ -6,7 +6,6 @@ import {
   PostModel,
   UserModel,
 } from '../models';
-import uuid4 from 'uuid4';
 import { Op } from 'sequelize';
 import ContentTypeEnum from '../enums/contentTypeEnum';
 import { BASE_USER_FIELDS } from '../models/User';
@@ -444,29 +443,4 @@ export async function retrieveSoundBox() {
     order: [['updated_at', 'DESC']],
     limit: 1,
   });
-}
-
-export async function createPost(data) {
-  const content = await ContentModel.create(
-    {
-      content_uuid: uuid4(),
-      author_id: data.author_id,
-      board_id: data.board_id,
-      category_id: data.category_id,
-      title: data.title,
-      text: data.text,
-      type: 'PO',
-      post: {},
-    },
-    {
-      include: [
-        {
-          model: PostModel,
-          as: 'post',
-        },
-      ],
-    },
-  );
-
-  return content.getDataValue('content_id');
 }
