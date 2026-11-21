@@ -3,7 +3,9 @@ import { bodyLimit } from 'hono/body-limit';
 import { AppError } from '../errors';
 import { onError } from './errors';
 import { commentRoutes, contentCommentRoutes } from './routes/comment';
-import { boardPostRoutes, postRoutes } from './routes/post';
+import { boardRoutes } from './routes/board';
+import { documentRoutes } from './routes/document';
+import { postRoutes } from './routes/post';
 
 /**
  * The largest request body Hono reads, the same as the default limit of
@@ -32,9 +34,10 @@ export const honoApp = new Hono({ strict: false })
       },
     }),
   )
-  .route('/board', boardPostRoutes)
+  .route('/board', boardRoutes)
   .route('/comment', commentRoutes)
   .route('/content', contentCommentRoutes)
+  .route('/document', documentRoutes)
   .route('/post', postRoutes);
 
 honoApp.onError(onError);
