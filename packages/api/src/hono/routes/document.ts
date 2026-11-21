@@ -20,7 +20,7 @@ export const createDocumentBody = z.object({
   // null) means "no generation" and is stored as null.
   generation: z.preprocess(
     (value) => value || null,
-    z.coerce.number().int().positive().nullable(),
+    z.coerce.number().int().positive().max(2_147_483_647).nullable(),
   ),
 });
 

@@ -100,10 +100,10 @@ describe('POST /api/board/:board_id/document', () => {
     }
   });
 
-  it('returns 400 for a generation that is not a positive integer', async () => {
+  it('returns 400 for a generation that is not a positive int4', async () => {
     const { board, author, categoryId } = await setup();
 
-    for (const generation of ['0', -1, 1.5, 'abc']) {
+    for (const generation of ['0', -1, 1.5, 'abc', 2 ** 31]) {
       const response = await api()
         .post(`/api/board/${board.board_id}/document`)
         .set('Authorization', bearer(author))
