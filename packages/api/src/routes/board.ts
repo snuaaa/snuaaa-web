@@ -11,14 +11,12 @@ import {
 import { createContent } from '../controllers/content.controller';
 import { retrievePostsInBoard } from '../controllers/post.controller';
 import { retrieveTagsOnBoard } from '../controllers/tag.controller';
-import { createDocument } from '../controllers/document.controller';
 import {
   retrieveExhibitions,
   createExhibition,
 } from '../controllers/exhibition.controller';
 import { resizeImageBuffer } from '../utils/resize';
 import { uploadImageToS3 } from '../utils/upload';
-import uuid4 from 'uuid4';
 import type { AuthenticatedRequest } from '../middlewares/auth';
 import { BadRequestError } from '../errors';
 
@@ -105,42 +103,6 @@ router.get(
       );
       const tags = await retrieveTagsOnBoard(req.params.board_id);
       res.json(tags);
-    } catch (err) {
-      next(err);
-    }
-  },
-);
-
-router.post(
-  '/:board_id/document',
-  verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res, next) => {
-    const decodedToken = req.decodedToken;
-
-    try {
-      await assertBoardAccessById(
-        req.params.board_id,
-        decodedToken.grade,
-        'write',
-      );
-      const user_id = decodedToken._id;
-
-      const data = {
-        content_uuid: uuid4(),
-        author_id: user_id,
-        board_id: req.params.board_id,
-        category_id: req.body.category_id,
-        title: req.body.title,
-        text: req.body.text,
-        type: 'DO',
-        generation: req.body.generation ? req.body.generation : null,
-      };
-
-      const content_id = await createDocument(data);
-      return res.json({
-        content_id: content_id,
-        success: true,
-      });
     } catch (err) {
       next(err);
     }

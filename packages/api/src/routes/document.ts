@@ -1,4 +1,3 @@
-import ContentTypeEnum from '../enums/contentTypeEnum';
 import express from 'express';
 
 import {
@@ -11,14 +10,8 @@ import {
   retrieveDocumentCount,
   retrieveDocument,
   retrieveDocuments,
-  deleteDocument,
 } from '../controllers/document.controller';
-import {
-  assertCanEditContent,
-  updateContent,
-  deleteContent,
-  increaseViewNum,
-} from '../controllers/content.controller';
+import { increaseViewNum } from '../controllers/content.controller';
 import { checkLike } from '../controllers/contentLike.controller';
 
 const router = express.Router();
@@ -76,43 +69,6 @@ router.get(
         docuInfo: docInfo,
         likeInfo,
       });
-    } catch (err) {
-      next(err);
-    }
-  },
-);
-
-router.patch(
-  '/:doc_id',
-  verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res, next) => {
-    try {
-      await assertCanEditContent(
-        req.params.doc_id,
-        req.decodedToken,
-        ContentTypeEnum.DOCUMENT,
-      );
-      await updateContent(req.params.doc_id, req.body);
-      res.json({ success: true });
-    } catch (err) {
-      next(err);
-    }
-  },
-);
-
-router.delete(
-  '/:doc_id',
-  verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res, next) => {
-    try {
-      await assertCanEditContent(
-        req.params.doc_id,
-        req.decodedToken,
-        ContentTypeEnum.DOCUMENT,
-      );
-      await deleteDocument(req.params.doc_id);
-      await deleteContent(req.params.doc_id);
-      res.json({ success: true });
     } catch (err) {
       next(err);
     }

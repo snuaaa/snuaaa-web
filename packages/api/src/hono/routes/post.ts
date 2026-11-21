@@ -3,13 +3,9 @@ import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import { requireAuth, type AuthEnvironment } from '../auth';
 import { validationHook } from '../errors';
-import {
-  createPost,
-  deletePost,
-  updatePost,
-} from '../../services/post.service';
+import { deletePost, updatePost } from '../../services/post.service';
 
-const postBody = z.object({
+export const postBody = z.object({
   title: z.string().nullish(),
   text: z.string().nullish(),
   category_id: z.string().nullish(),
@@ -34,19 +30,3 @@ export const postRoutes = new Hono<AuthEnvironment>()
     await deletePost(context.get('actor'), context.req.param('post_id'));
     return context.json({ success: true });
   });
-
-/** The post endpoints under `/api/board/...`. */
-export const boardPostRoutes = new Hono<AuthEnvironment>()
-  .use(requireAuth)
-  .post(
-    '/:board_id/post',
-    zValidator('json', postBody, validationHook),
-    async (context) => {
-      const contentId = await createPost(
-        context.get('actor'),
-        context.req.param('board_id'),
-        context.req.valid('json'),
-      );
-      return context.json({ content_id: contentId, success: true });
-    },
-  );

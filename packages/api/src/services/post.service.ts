@@ -4,7 +4,7 @@ import { NotFoundError } from '../errors';
 import * as contents from '../repositories/content.repository';
 import * as posts from '../repositories/post.repository';
 import { loadAccessibleBoard } from './board.service';
-import { assertCanEdit } from './permissions';
+import { loadEditableContent } from './content.service';
 import type { Actor } from './types';
 
 export type PostInput = contents.ContentFields;
@@ -38,20 +38,6 @@ export async function createPost(
 }
 
 /**
- * Loads the post and checks that the actor may change it. Throws 404 for an
- * unknown or deleted post, or a content of another type, and 403 when the
- * actor is neither its author nor within the board's edit level.
- */
-async function loadEditablePost(actor: Actor, postId: string) {
-  const post = await contents.findWithBoard(postId);
-  if (!post || post.type !== ContentTypeEnum.POST) {
-    throw new NotFoundError('Content not found');
-  }
-  assertCanEdit(actor, post);
-  return post;
-}
-
-/**
  * Changes the fields the input gives. 404 when the post is deleted before the
  * change.
  */
@@ -60,7 +46,7 @@ export async function updatePost(
   postId: string,
   input: PostInput,
 ) {
-  const post = await loadEditablePost(actor, postId);
+  const post = await loadEditableContent(actor, postId, ContentTypeEnum.POST);
   if ((await contents.update(post.content_id, input)) === 0) {
     throw new NotFoundError('Content not found');
   }
@@ -68,7 +54,7 @@ export async function updatePost(
 
 /** Soft-deletes the post. 404 when another request deleted it first. */
 export async function deletePost(actor: Actor, postId: string) {
-  const post = await loadEditablePost(actor, postId);
+  const post = await loadEditableContent(actor, postId, ContentTypeEnum.POST);
   if ((await contents.softDelete(post.content_id)) === 0) {
     throw new NotFoundError('Content not found');
   }

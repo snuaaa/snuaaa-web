@@ -141,6 +141,22 @@ export async function createPost(
  * Creates a comment on the content. Like the API, it does not touch the
  * content's `comment_num`; pass `comment_num` to `createContent` for that.
  */
+export async function createDocument(
+  author: User,
+  board: Board,
+  overrides: Omit<Parameters<typeof createContent>[2], 'type'> & {
+    generation?: number;
+  } = {},
+) {
+  const { generation = 40, ...contentOverrides } = overrides;
+  const contentId = await createContent(author, board, {
+    ...contentOverrides,
+    type: 'DO',
+  });
+  await insert('tb_document', { content_id: contentId, generation });
+  return contentId;
+}
+
 export async function createComment(
   author: User,
   contentId: number,

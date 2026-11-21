@@ -104,6 +104,15 @@ export async function hasPostRow(contentId: number) {
   return rows.length > 0;
 }
 
+/** The content's `tb_document` row, or undefined when there is none. */
+export async function documentRow(contentId: number) {
+  const [row] = await query<{ generation: number | null }>(
+    'SELECT generation FROM tb_document WHERE content_id = $1',
+    [contentId],
+  );
+  return row;
+}
+
 /** The comment's text and whether it is soft-deleted. */
 export async function commentState(commentId: number) {
   const [row] = await query<{ text: string; deleted_at: Date | null }>(
