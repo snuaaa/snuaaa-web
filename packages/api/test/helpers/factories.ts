@@ -137,10 +137,7 @@ export async function createPost(
   return contentId;
 }
 
-/**
- * Creates a comment on the content. Like the API, it does not touch the
- * content's `comment_num`; pass `comment_num` to `createContent` for that.
- */
+/** Creates a document: a `tb_content` row of type DO and its `tb_document` row. */
 export async function createDocument(
   author: User,
   board: Board,
@@ -157,6 +154,10 @@ export async function createDocument(
   return contentId;
 }
 
+/**
+ * Creates a comment on the content. Like the API, it does not touch the
+ * content's `comment_num`; pass `comment_num` to `createContent` for that.
+ */
 export async function createComment(
   author: User,
   contentId: number,
