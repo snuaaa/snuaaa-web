@@ -106,7 +106,7 @@ Each package has its own ESLint flat config (`eslint.config.*`) with Prettier (s
   - `<name>` must not be `develop` or `main`, because it becomes the preview alias.
   - Each epic keeps its plan under `docs/` on the epic branch (e.g. `docs/<name>.md` on `epic/<name>`). Read it before working on that epic.
 - Branch names follow `<type>/<short-description>` (e.g. `fix/profile-path`, `feat/late-fee-management`), where `<type>` is `feat`, `fix`, `chore` or `refactor`. Commit messages and PR titles use `[feat]`, `[fix]`, `[refactor]`, `[chore]` prefixes, often written in Korean.
-- **Merging:** comment `/merge` on the PR instead of using the merge button. `.github/workflows/merge-command.yml` picks the method from the branches and titles the commit `<PR title> (#<PR number>)`:
+- **Merging:** comment `/merge` on the PR instead of using the merge button (a plain comment, a review body or a review's line comment all work; fork PRs need a plain comment, because review events from forks get no secrets). `.github/workflows/merge-command.yml` runs `.github/scripts/merge-command.js` from the default branch and picks the method from the branches and titles the commit `<PR title> (#<PR number>)`:
 
   | base ← head | method |
   | --- | --- |

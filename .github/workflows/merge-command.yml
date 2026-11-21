@@ -1,6 +1,6 @@
 name: Merge Command
 
-# PR에 `/merge` 코멘트를 달면 브랜치 규칙에 맞는 방식으로 머지한다.
+# PR에 `/merge` 코멘트를 달면 (일반 코멘트, 리뷰 본문, 리뷰의 라인 코멘트 모두) 브랜치 규칙에 맞는 방식으로 머지한다.
 #
 #   main   <- epic/*                       : merge commit
 #   main   <- feat|fix|chore|refactor/*    : squash
@@ -17,27 +17,44 @@ name: Merge Command
 # 필요한 secrets: MERGE_BOT_APP_ID, MERGE_BOT_PRIVATE_KEY
 # App 권한: Contents, Pull requests, Issues (Read & write), Checks, Commit statuses (Read)
 #
-# 주의: issue_comment 워크플로는 기본 브랜치에 있는 버전만 실행되며,
-# PR 코드를 checkout하지 않는다.
+# 명령 처리 로직은 .github/scripts/merge-command.js에 있고, 항상 기본 브랜치에서 checkout해 실행한다.
+# issue_comment 워크플로는 기본 브랜치의 워크플로 파일로 실행되지만,
+# pull_request_review(_comment) 워크플로는 PR의 merge ref에 있는 워크플로 파일로 실행된다.
+# 그래서 PR 브랜치가 이 트리거를 추가하기 전의 main에서 갈라졌다면 리뷰 속 `/merge`는 동작하지 않는다
+# (main을 반영하거나 일반 코멘트로 달면 된다). fork PR의 리뷰 이벤트에는 secrets가 전달되지 않아서
+# 머지 봇 토큰을 만들 수 없으므로, fork PR은 일반 코멘트로 `/merge`해야 한다.
 
 on:
   issue_comment:
+    types: [created]
+  pull_request_review:
+    types: [submitted]
+  pull_request_review_comment:
     types: [created]
 
 permissions:
   contents: read
 
 concurrency:
-  group: merge-command-${{ github.event.issue.number }}
+  group: merge-command-${{ github.event.issue.number || github.event.pull_request.number }}
   cancel-in-progress: false
 
 jobs:
   merge:
     if: >-
-      github.event.issue.pull_request &&
-      (startsWith(github.event.comment.body, '/merge') || startsWith(github.event.comment.body, '/sync'))
+      (github.event.issue.pull_request || github.event.pull_request) &&
+      (startsWith(github.event.comment.body || github.event.review.body, '/merge') ||
+      startsWith(github.event.comment.body || github.event.review.body, '/sync'))
     runs-on: ubuntu-latest
     steps:
+      # 리뷰 이벤트의 기본 checkout 대상은 PR 코드이므로, 명령 로직은 기본 브랜치에서 가져온다
+      - name: Checkout merge command script
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          sparse-checkout: .github/scripts
+          persist-credentials: false
+
       - name: Create merge bot token
         id: app-token
         uses: actions/create-github-app-token@v2
@@ -50,127 +67,5 @@ jobs:
         with:
           github-token: ${{ steps.app-token.outputs.token }}
           script: |
-            const { owner, repo } = context.repo;
-            const issue_number = context.issue.number;
-            const comment_id = context.payload.comment.id;
-            const commenter = context.payload.comment.user.login;
-
-            const command = context.payload.comment.body.trim();
-            if (command !== '/merge' && command !== '/sync') return;
-            const action = command === '/sync' ? '동기화' : '머지';
-
-            const react = (content) =>
-              github.rest.reactions.createForIssueComment({ owner, repo, comment_id, content });
-            const reply = (body) =>
-              github.rest.issues.createComment({ owner, repo, issue_number, body });
-            const fail = async (message) => {
-              await react('confused');
-              await reply(`❌ ${action}하지 않았습니다: ${message}`);
-              core.setFailed(message);
-            };
-
-            await react('eyes');
-
-            const { data: perm } = await github.rest.repos.getCollaboratorPermissionLevel({
-              owner,
-              repo,
-              username: commenter,
-            });
-            if (!['admin', 'write'].includes(perm.permission)) {
-              return fail(`@${commenter} 님은 이 레포에 write 권한이 없습니다.`);
-            }
-
-            const { data: pr } = await github.rest.pulls.get({ owner, repo, pull_number: issue_number });
-            if (pr.state !== 'open') return fail('열려 있는 PR이 아닙니다.');
-
-            const base = pr.base.ref;
-            const head = pr.head.ref;
-            const sameRepo = pr.head.repo?.full_name === pr.base.repo.full_name;
-            const isEpic = (ref) => /^epic\/.+/.test(ref);
-            const isWork = (ref) => /^(feat|fix|chore|refactor)\/.+/.test(ref);
-            const isSync = (ref) => /^sync\/.+/.test(ref);
-
-            if (command === '/sync') {
-              // epic 진행 상황을 추적하는 draft PR에서도 쓸 수 있도록 draft 여부는 보지 않음
-              if (base !== 'main' || !sameRepo || !isEpic(head)) {
-                return fail('`/sync`는 `epic/*` → `main` PR에서만 쓸 수 있습니다.');
-              }
-              try {
-                await github.rest.pulls.updateBranch({
-                  owner,
-                  repo,
-                  pull_number: issue_number,
-                  // 코멘트 이후 epic에 새 커밋이 들어왔으면 동기화하지 않음
-                  expected_head_sha: pr.head.sha,
-                });
-              } catch (err) {
-                if (/no new commits/i.test(err.message)) {
-                  await react('+1');
-                  await reply(`ℹ️ \`${head}\`에 이미 \`main\`의 변경이 모두 반영되어 있습니다.`);
-                  return;
-                }
-                return fail(err.message);
-              }
-              await react('rocket');
-              await reply(`✅ \`main\`을 \`${head}\`에 merge commit으로 반영하도록 요청했습니다.`);
-              return;
-            }
-
-            if (pr.draft) return fail('draft PR은 머지할 수 없습니다.');
-
-            let method;
-            if (base === 'main' && sameRepo && isEpic(head)) method = 'merge';
-            else if (base === 'main' && isWork(head)) method = 'squash';
-            else if (isEpic(base) && isWork(head)) method = 'squash';
-            else if (isEpic(base) && sameRepo && isSync(head)) method = 'merge';
-
-            if (!method) {
-              return fail(
-                `\`${base} ← ${head}\` 조합에 대한 머지 규칙이 없습니다. ` +
-                  '브랜치 이름이 `epic/*`, `sync/*`, `feat/*`, `fix/*`, `chore/*`, `refactor/*` 중 하나인지 확인해주세요.',
-              );
-            }
-
-            // ruleset 설정과 별개로, head 커밋의 체크가 모두 통과했는지 직접 확인
-            const checkRuns = await github.paginate(github.rest.checks.listForRef, {
-              owner,
-              repo,
-              ref: pr.head.sha,
-              per_page: 100,
-            });
-            if (checkRuns.length === 0) return fail('head 커밋에 CI 결과가 없습니다.');
-            const pending = checkRuns.filter((run) => run.status !== 'completed');
-            if (pending.length > 0) {
-              return fail(`아직 끝나지 않은 체크가 있습니다: ${pending.map((run) => run.name).join(', ')}`);
-            }
-            const failed = checkRuns.filter(
-              (run) => !['success', 'skipped', 'neutral'].includes(run.conclusion),
-            );
-            if (failed.length > 0) {
-              return fail(`통과하지 못한 체크가 있습니다: ${failed.map((run) => run.name).join(', ')}`);
-            }
-            const { data: status } = await github.rest.repos.getCombinedStatusForRef({
-              owner,
-              repo,
-              ref: pr.head.sha,
-            });
-            if (status.total_count > 0 && status.state !== 'success') {
-              return fail(`commit status가 \`${status.state}\` 상태입니다.`);
-            }
-
-            try {
-              await github.rest.pulls.merge({
-                owner,
-                repo,
-                pull_number: issue_number,
-                merge_method: method,
-                commit_title: `${pr.title} (#${issue_number})`,
-                // 코멘트 이후 새로 push된 커밋이 검증 없이 머지되지 않도록 고정
-                sha: pr.head.sha,
-              });
-            } catch (err) {
-              return fail(err.message);
-            }
-
-            await react('rocket');
-            await reply(`✅ \`${base} ← ${head}\`를 **${method === 'merge' ? 'merge commit' : 'squash'}** 방식으로 머지했습니다.`);
+            const run = require(`${process.env.GITHUB_WORKSPACE}/.github/scripts/merge-command.js`);
+            await run({ github, context, core });
