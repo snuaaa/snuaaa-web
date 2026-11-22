@@ -95,11 +95,12 @@ pnpm --filter @snuaaa/api test
 
 ## Deployment
 
-| Trigger | Web | API |
-| --- | --- | --- |
-| Push to `main` | Cloudflare Pages (preview) | Dev server |
-| Release tagged `WEB-*` | Cloudflare Pages (production) | - |
-| Release tagged `API-*` | - | Production server |
+| Trigger | Web | Home | API |
+| --- | --- | --- | --- |
+| Push to `main` | Cloudflare Pages (preview) | Cloudflare Pages (preview, only when `packages/home` changes) | Dev server |
+| Release tagged `WEB-*` | Cloudflare Pages (production) | - | - |
+| Release tagged `HOME-*` | - | Cloudflare Pages (production, [www.snuaaa.net](https://www.snuaaa.net/)) | - |
+| Release tagged `API-*` | - | - | Production server |
 
 ## Stacks
 
