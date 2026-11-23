@@ -1,12 +1,13 @@
 import type { CSSProperties, ReactNode } from 'react';
-import { useLocation } from '@tanstack/react-router';
+import { Link, useLocation } from '@tanstack/react-router';
 import { ExternalLink } from 'lucide-react';
 import { useBoards } from '~/hooks/queries/useBoardQueries';
+import useAuth from '~/hooks/useAuth';
 import { cn } from '~/lib/utils';
 import { Board } from '~/services/types';
 import BottomTabBar from './BottomTabBar';
 import BrandMark from './BrandMark';
-import { CLUB_INTRO_URL, OLD_SITE_URL } from './constants';
+import { CLUB_INTRO_URL, OFFICERS_READ_GRADE, OLD_SITE_URL } from './constants';
 import LegacySection from './LegacySection';
 import TopNav from './TopNav';
 
@@ -73,6 +74,7 @@ const footerLinks = [
 
 /** Shown on every desktop page, and only at the bottom of home on mobile. */
 function SiteFooter({ showOnMobile }: { showOnMobile: boolean }) {
+  const { grade } = useAuth().authInfo.user;
   return (
     <div
       role="contentinfo"
@@ -82,7 +84,18 @@ function SiteFooter({ showOnMobile }: { showOnMobile: boolean }) {
       )}
     >
       <div className="mx-auto flex max-w-page flex-col gap-3 px-4 py-6 text-caption text-fg-muted md:flex-row md:items-center md:justify-between md:px-6 md:py-8">
-        <ul className="flex gap-4">
+        <ul className="flex flex-wrap gap-x-4 gap-y-2">
+          {/* 임원진 is a members' page, not a main menu item (youngjae). */}
+          {grade <= OFFICERS_READ_GRADE && (
+            <li>
+              <Link
+                to="/officers"
+                className="text-label font-normal text-gray-700 hover:text-fg"
+              >
+                임원진
+              </Link>
+            </li>
+          )}
           {footerLinks.map((link) => (
             <li key={link.name}>
               <a

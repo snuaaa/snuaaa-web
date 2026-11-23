@@ -1,13 +1,5 @@
 import { Link } from '@tanstack/react-router';
-import {
-  Check,
-  ChevronRight,
-  FileText,
-  Image,
-  List,
-  Users,
-} from 'lucide-react';
-import { OFFICERS_READ_GRADE } from '~/components/Layout/constants';
+import { Check, ChevronRight, FileText, Image, List } from 'lucide-react';
 import { Sheet, Tag } from '~/components/ui';
 import { useNavSection } from '~/components/Layout/useNavSection';
 import useAuth from '~/hooks/useAuth';
@@ -116,31 +108,6 @@ export default function BoardSwitcher({
             </div>
           );
         })}
-        {grade <= OFFICERS_READ_GRADE && (
-          <div className="flex flex-col pt-2.5">
-            <div className="px-2 pb-1.5 text-caption font-semibold text-fg-muted">
-              동아리
-            </div>
-            <Link
-              to="/officers"
-              onClick={close}
-              className="flex min-h-13 items-center gap-3 rounded-lg px-2 py-1.5 transition-colors hover:bg-gray-50"
-            >
-              <span
-                className="flex size-9 shrink-0 items-center justify-center rounded-md bg-gray-100 text-gray-700 [&_svg]:size-[18px]"
-                aria-hidden
-              >
-                <Users />
-              </span>
-              <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                <span className="text-[15px] font-medium">임원진</span>
-                <span className="truncate text-caption text-fg-muted">
-                  역대 회장단과 임원진
-                </span>
-              </span>
-            </Link>
-          </div>
-        )}
         <Link
           to="/board/$board_id"
           params={{ board_id: destinations.photo }}

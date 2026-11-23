@@ -41,7 +41,13 @@ test.describe('임원진', () => {
       route.fulfill({ json: { success: true, generations } }),
     );
 
-    await page.goto('/officers');
+    // Reached from the footer link, not a main menu item.
+    await page.goto('/');
+    await page
+      .getByRole('contentinfo')
+      .getByRole('link', { name: '임원진' })
+      .click();
+    await expect(page).toHaveURL(/\/officers$/);
     const current = page.getByRole('region', { name: '지금 임원진, 93대' });
     await expect(current.getByText('김성윤')).toBeVisible();
     await expect(current.getByText('김민주')).toBeVisible();
