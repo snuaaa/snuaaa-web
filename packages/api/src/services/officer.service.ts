@@ -4,8 +4,6 @@ import { withTransaction } from '../db/transaction';
 import * as officers from '../repositories/officer.repository';
 import type { Actor } from './types';
 
-/** Members (해왕성, 8) and above may read the list; 비회원 and guests not. */
-export const OFFICER_READ_GRADE = 8;
 /** 운영진 (지구, 3) and above may add, change or delete any 기수. */
 export const OFFICER_MANAGER_GRADE = 3;
 /** 현 회장 (목성, 5) may only edit the current 기수, or add the next one. */
@@ -31,9 +29,9 @@ export function canSaveGeneration(
   return latest === null || generation === latest || generation === latest + 1;
 }
 
-/** Every generation's officers, newest generation first. */
-export async function listOfficers(actor: Actor) {
-  if (actor.grade > OFFICER_READ_GRADE) deny();
+/** Every generation's officers, newest generation first. Any signed-in
+ * user may read them, whatever their grade. */
+export async function listOfficers() {
   return officers.findAll();
 }
 

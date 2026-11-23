@@ -31,7 +31,7 @@ const generationParam = z.object({
 export const officerRoutes = new Hono<AuthEnvironment>()
   .use(requireAuth)
   .get('/', async (context) => {
-    const generations = await listOfficers(context.get('actor'));
+    const generations = await listOfficers();
     return context.json({ success: true, generations });
   })
   .put(

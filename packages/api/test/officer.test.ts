@@ -51,15 +51,10 @@ describe('GET /api/officers', () => {
     });
   });
 
-  it('is closed to 비회원 (9) and guests (10)', async () => {
+  it('is open to every grade, guests (10) included', async () => {
     await createOfficerGeneration(93);
     for (const grade of [9, 10]) {
-      const user = await createUser({ grade });
-      const response = await api()
-        .get('/api/officers')
-        .set('Authorization', bearer(user));
-      expect(response.status).toBe(403);
-      expect(response.body).toEqual(FORBIDDEN);
+      expect(await listGenerations(grade)).toHaveLength(1);
     }
   });
 });
