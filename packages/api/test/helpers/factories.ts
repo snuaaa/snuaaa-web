@@ -212,3 +212,16 @@ export function bearer(
   );
   return `Bearer ${token}`;
 }
+
+export type OfficerRole = { role: string; names: string[] };
+
+/** Creates a `tb_officer_generation` row (one 기수 of 임원진). */
+export async function createOfficerGeneration(
+  generation: number,
+  roles: OfficerRole[] = [{ role: '회장', names: [`회장${generation}`] }],
+) {
+  return insert('tb_officer_generation', {
+    generation,
+    roles: JSON.stringify(roles),
+  });
+}

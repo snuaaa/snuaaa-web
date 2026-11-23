@@ -98,6 +98,9 @@ const PROTECTED_ENDPOINTS = [
   'PATCH /api/equipment/rent/:rentId/penalty',
   'GET /api/equipment/:id/rents',
   'POST /api/upload/image',
+  'GET /api/officers',
+  'PUT /api/officers/:generation',
+  'DELETE /api/officers/:generation',
 ];
 
 /** Endpoints that are public on purpose. */

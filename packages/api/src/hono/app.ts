@@ -5,6 +5,7 @@ import { onError } from './errors';
 import { commentRoutes, contentCommentRoutes } from './routes/comment';
 import { boardRoutes } from './routes/board';
 import { documentRoutes } from './routes/document';
+import { officerRoutes } from './routes/officer';
 import { postRoutes } from './routes/post';
 
 /**
@@ -38,6 +39,7 @@ export const honoApp = new Hono({ strict: false })
   .route('/comment', commentRoutes)
   .route('/content', contentCommentRoutes)
   .route('/document', documentRoutes)
+  .route('/officers', officerRoutes)
   .route('/post', postRoutes);
 
 honoApp.onError(onError);

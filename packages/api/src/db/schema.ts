@@ -1,5 +1,6 @@
 import {
   integer,
+  jsonb,
   pgTable,
   primaryKey,
   serial,
@@ -92,3 +93,18 @@ export const commentLike = pgTable(
   },
   (t) => [primaryKey({ columns: [t.comment_id, t.user_id] })],
 );
+
+/** One officer role of a generation, such as 관측부장 and who held it. */
+export type OfficerRole = { role: string; names: string[] };
+
+/** 역대 회장단/임원진: one row per 기수, roles in display order. */
+export const officerGeneration = pgTable('tb_officer_generation', {
+  generation: integer('generation').primaryKey(),
+  roles: jsonb('roles').$type<OfficerRole[]>().notNull(),
+  created_at: timestamp('created_at', { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updated_at: timestamp('updated_at', { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
