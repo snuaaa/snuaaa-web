@@ -13,9 +13,6 @@ DocumentModel.init(
     generation: {
       type: DataTypes.INTEGER,
     },
-    file_path: {
-      type: DataTypes.ARRAY(DataTypes.STRING(256)),
-    },
   },
   {
     sequelize,
