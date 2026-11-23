@@ -4,10 +4,7 @@ import CurrentGenerationCard from '~/components/Officers/CurrentGenerationCard';
 import GenerationRow from '~/components/Officers/GenerationRow';
 import OfficerEditor from '~/components/Officers/OfficerEditor';
 import { filterGenerations } from '~/components/Officers/officerUtils';
-import {
-  OFFICERS_READ_GRADE,
-  canSaveOfficers,
-} from '~/components/Layout/constants';
+import { canSaveOfficers } from '~/components/Layout/constants';
 import {
   BackButton,
   Button,
@@ -21,8 +18,8 @@ import useAuth from '~/hooks/useAuth';
 import { useOfficers } from '~/hooks/queries/useOfficerQueries';
 import type { OfficerGeneration } from '~/services/types';
 
-const TITLE = '임원진';
-const DESCRIPTION = '역대 회장단과 임원진을 기수별로 모아 봐요.';
+const TITLE = '역대 임원진';
+const DESCRIPTION = '회장단과 임원진을 기수별로 모아 봐요.';
 
 type Editing = { generation?: OfficerGeneration } | null;
 
@@ -44,13 +41,7 @@ function ListSkeleton() {
 
 export default function Officers() {
   const { grade } = useAuth().authInfo.user;
-  const canRead = grade <= OFFICERS_READ_GRADE;
-  const {
-    data: generations = [],
-    isLoading,
-    isError,
-    refetch,
-  } = useOfficers(canRead);
+  const { data: generations = [], isLoading, isError, refetch } = useOfficers();
   const [query, setQuery] = useState('');
   const [openGenerations, setOpenGenerations] = useState<Set<number>>(
     () => new Set(),
@@ -91,14 +82,7 @@ export default function Officers() {
   );
 
   let body;
-  if (!canRead) {
-    body = (
-      <EmptyState
-        title="회원만 볼 수 있어요"
-        description="해왕성(8등급) 이상이면 볼 수 있어요."
-      />
-    );
-  } else if (isError) {
+  if (isError) {
     body = (
       <EmptyState
         title="임원진을 불러오지 못했어요"
@@ -128,11 +112,11 @@ export default function Officers() {
         {/* Not <section>: legacy SCSS styles bare section elements. */}
         <div
           role="region"
-          aria-label="역대 임원진"
+          aria-label="지난 기수"
           className="flex flex-col bg-surface md:rounded-lg md:shadow-sm"
         >
           <div className="flex flex-col gap-3 border-b border-gray-100 px-4 pt-4 pb-3 md:px-5">
-            <h2 className="text-heading">역대 임원진</h2>
+            <h2 className="text-heading">지난 기수</h2>
             <div className="relative">
               <Search
                 className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-gray-500"

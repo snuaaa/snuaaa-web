@@ -45,14 +45,14 @@ test.describe('임원진', () => {
     await page.goto('/');
     await page
       .getByRole('contentinfo')
-      .getByRole('link', { name: '임원진' })
+      .getByRole('link', { name: '역대 임원진' })
       .click();
     await expect(page).toHaveURL(/\/officers$/);
     const current = page.getByRole('region', { name: '지금 임원진, 93대' });
     await expect(current.getByText('김성윤')).toBeVisible();
     await expect(current.getByText('김민주')).toBeVisible();
 
-    const history = page.getByRole('region', { name: '역대 임원진' });
+    const history = page.getByRole('region', { name: '지난 기수' });
     const row = history.getByRole('button', { name: '92대 회장 박시원' });
     await expect(row).toHaveAttribute('aria-expanded', 'false');
     await row.click();
@@ -117,7 +117,7 @@ test.describe('임원진', () => {
     const current = page.getByRole('region', { name: '지금 임원진, 93대' });
     await expect(current.getByRole('button', { name: '수정' })).toBeVisible();
 
-    const history = page.getByRole('region', { name: '역대 임원진' });
+    const history = page.getByRole('region', { name: '지난 기수' });
     await history.getByRole('button', { name: '92대 회장 박시원' }).click();
     await expect(history.getByText('박현우')).toBeVisible();
     await expect(

@@ -1,8 +1,6 @@
 /** Grade that may rent equipment (lower is more privileged). */
 export const EQUIPMENT_GRADE = 7;
 
-/** Grade that may see 임원진 (해왕성 and above; not 비회원 or guests). */
-export const OFFICERS_READ_GRADE = 8;
 /** 운영진 (지구, 3) and above may add, change or delete any 기수. */
 export const OFFICERS_MANAGER_GRADE = 3;
 /** 현 회장 (목성, 5) may change only the current 기수, or add the next. */

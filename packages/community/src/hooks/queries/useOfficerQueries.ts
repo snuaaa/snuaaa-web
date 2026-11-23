@@ -7,12 +7,11 @@ export const officerKeys = {
   list: () => [...officerKeys.all, 'list'] as const,
 };
 
-export function useOfficers(enabled = true) {
+export function useOfficers() {
   return useQuery({
     queryKey: officerKeys.list(),
     queryFn: () => OfficerService.retrieveOfficers(),
     select: (data) => data.generations,
-    enabled,
   });
 }
 
