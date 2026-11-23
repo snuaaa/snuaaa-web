@@ -37,6 +37,28 @@ export const board = pgTable('tb_board', {
   lv_edit: integer('lv_edit'),
 });
 
+export const category = pgTable('tb_category', {
+  category_id: varchar('category_id', { length: 16 }).primaryKey(),
+  board_id: varchar('board_id', { length: 16 }).notNull(),
+  category_name: varchar('category_name', { length: 32 }),
+  category_color: varchar('category_color', { length: 8 }),
+});
+
+/** The columns of `tb_user` that are safe to show to other members. */
+export const user = pgTable('tb_user', {
+  user_id: serial('user_id').primaryKey(),
+  user_uuid: uuid('user_uuid'),
+  nickname: varchar('nickname', { length: 16 }),
+  introduction: text('introduction'),
+  grade: integer('grade'),
+  level: integer('level'),
+  /** @deprecated Use `profile_url`. */
+  profile_path: varchar('profile_path', { length: 256 }),
+  profile_url: varchar('profile_url', { length: 256 }),
+  ...timestamps,
+  deleted_at: timestamp('deleted_at', { withTimezone: true }),
+});
+
 export const content = pgTable('tb_content', {
   content_id: serial('content_id').primaryKey(),
   content_uuid: uuid('content_uuid'),
@@ -61,6 +83,19 @@ export const post = pgTable('tb_post', {
 export const document = pgTable('tb_document', {
   content_id: integer('content_id').primaryKey(),
   generation: integer('generation'),
+});
+
+export const attachedFile = pgTable('tb_file', {
+  file_id: serial('file_id').primaryKey(),
+  parent_id: integer('parent_id').notNull(),
+  original_name: varchar('original_name', { length: 256 }),
+  /** @deprecated Old local paths; newer files only have `file_url`. */
+  file_path: varchar('file_path', { length: 256 }),
+  file_url: varchar('file_url', { length: 256 }),
+  file_type: varchar('file_type', { length: 16 }),
+  download_count: integer('download_count').default(0),
+  ...timestamps,
+  deleted_at: timestamp('deleted_at', { withTimezone: true }),
 });
 
 export const comment = pgTable('tb_comment', {

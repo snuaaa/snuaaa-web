@@ -104,6 +104,8 @@ export async function createContent(
     comment_num?: number;
     like_num?: number;
     category_id?: string;
+    view_num?: number;
+    created_at?: Date;
     updated_at?: Date;
     deleted_at?: Date;
   } = {},
@@ -181,6 +183,38 @@ export async function createComment(
 }
 
 /** Records that the user likes the content, without touching `like_num`. */
+/**
+ * Attaches a file to the content. `file_url` is the S3 URL; `file_path` is
+ * the deprecated local path that only old files have.
+ */
+export async function createAttachedFile(
+  contentId: number,
+  overrides: {
+    original_name?: string;
+    file_path?: string | null;
+    file_url?: string | null;
+    file_type?: string;
+    download_count?: number;
+    created_at?: Date;
+    deleted_at?: Date;
+  } = {},
+) {
+  const n = next();
+  const { created_at = new Date(), ...rest } = overrides;
+  const file = await insert<{ file_id: number }>('tb_file', {
+    parent_id: contentId,
+    original_name: `file${n}.pdf`,
+    file_path: null,
+    file_url: `https://bucket.example.com/file${n}.pdf`,
+    file_type: 'application/pdf',
+    download_count: 0,
+    created_at,
+    updated_at: created_at,
+    ...rest,
+  });
+  return file.file_id;
+}
+
 export async function createContentLike(user: User, contentId: number) {
   await insert('tb_content_like', {
     content_id: contentId,

@@ -4,7 +4,8 @@ import { NotFoundError } from '../errors';
 import * as contents from '../repositories/content.repository';
 import * as posts from '../repositories/post.repository';
 import { loadAccessibleBoard } from './board.service';
-import { loadEditableContent } from './content.service';
+import * as users from '../repositories/user.repository';
+import { loadEditableContent, readContent } from './content.service';
 import type { Actor } from './types';
 
 export type PostInput = contents.ContentFields;
@@ -58,4 +59,54 @@ export async function deletePost(actor: Actor, postId: string) {
   if ((await contents.softDelete(post.content_id)) === 0) {
     throw new NotFoundError('Content not found');
   }
+}
+
+/**
+ * The post with its author, board, files and whether the actor likes it,
+ * counting the view. 404 for an unknown or deleted post, 403 above the
+ * board's read level.
+ */
+export async function retrievePost(actor: Actor, postId: string) {
+  const post = await posts.findDetail(postId);
+  if (!post) {
+    throw new NotFoundError('Post not found');
+  }
+  return readContent(actor, post);
+}
+
+export type PostListQuery = {
+  boardId?: string;
+  /** Only this member's posts; 404 when no such (current) member exists. */
+  userUuid?: string;
+  limit: number;
+  offset: number;
+  searchType?: string;
+  searchKeyword?: string;
+};
+
+/**
+ * A page of posts on the boards the actor may read, newest first, and how
+ * many there are in all.
+ */
+export async function listPosts(actor: Actor, query: PostListQuery) {
+  let authorId: number | undefined;
+  if (query.userUuid) {
+    const userId = await users.findIdByUuid(query.userUuid);
+    if (userId === null) {
+      throw new NotFoundError('User not found');
+    }
+    authorId = userId;
+  }
+  const filter: posts.PostFilter = {
+    readGrade: actor.grade,
+    boardId: query.boardId,
+    authorId,
+    searchType: query.searchType,
+    searchKeyword: query.searchKeyword,
+  };
+  const [count, rows] = await Promise.all([
+    posts.countList(filter),
+    posts.list(filter, { limit: query.limit, offset: query.offset }),
+  ]);
+  return { count, rows };
 }

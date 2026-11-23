@@ -4,7 +4,8 @@ import { NotFoundError } from '../errors';
 import * as contents from '../repositories/content.repository';
 import * as documents from '../repositories/document.repository';
 import { loadAccessibleBoard } from './board.service';
-import { loadEditableContent } from './content.service';
+import * as files from '../repositories/attachedFile.repository';
+import { loadEditableContent, readContent } from './content.service';
 import type { Actor } from './types';
 
 export type DocumentInput = contents.ContentFields & {
@@ -76,4 +77,52 @@ export function deleteDocument(actor: Actor, documentId: string) {
     }
     await documents.remove(target.content_id, transaction);
   });
+}
+
+/**
+ * The document with its author, board, files and whether the actor likes it,
+ * counting the view. 404 for an unknown or deleted document, 403 above the
+ * board's read level.
+ */
+export async function retrieveDocument(actor: Actor, documentId: string) {
+  const target = await documents.findDetail(documentId);
+  if (!target) {
+    throw new NotFoundError('Document not found');
+  }
+  return readContent(actor, target);
+}
+
+export const DOCUMENTS_PER_PAGE = 10;
+
+/**
+ * A page of documents of every board, last updated first, with their files,
+ * and how many there are in all. Like before, this does not check the
+ * boards' read levels.
+ */
+export async function listDocuments(
+  filter: documents.DocumentFilter & { page: number },
+) {
+  const { page, ...where } = filter;
+  const [count, rows] = await Promise.all([
+    documents.countList(where),
+    documents.list(where, {
+      limit: DOCUMENTS_PER_PAGE,
+      offset: DOCUMENTS_PER_PAGE * (page - 1),
+    }),
+  ]);
+  const attachedFiles = await files.listByContents(
+    rows.map((row) => row.content_id),
+  );
+  return {
+    count,
+    rows: rows.map((row) => ({
+      ...row,
+      content: {
+        ...row.content,
+        attachedFiles: attachedFiles.filter(
+          (file) => file.parent_id === row.content_id,
+        ),
+      },
+    })),
+  };
 }

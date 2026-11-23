@@ -5,14 +5,14 @@ import { requireAuth, type AuthEnvironment } from '../auth';
 import { validationHook } from '../errors';
 import {
   deleteDocument,
+  listDocuments,
+  retrieveDocument,
   updateDocument,
 } from '../../services/document.service';
+import { pageNumber } from './query';
+import { postBody } from './post';
 
-const documentFields = {
-  title: z.string().nullish(),
-  text: z.string().nullish(),
-  category_id: z.string().nullish(),
-};
+const documentFields = postBody.shape;
 
 export const createDocumentBody = z.object({
   ...documentFields,
@@ -26,9 +26,36 @@ export const createDocumentBody = z.object({
 
 const updateBody = z.object(documentFields);
 
-/** `/api/document/...`. Reading documents (`GET`) is still on Express. */
+const listQuery = z.object({
+  // Like Express did, a page that isn't a positive number is the first.
+  page: pageNumber(1),
+  category: z.string().optional(),
+  // An empty generation lists every generation.
+  generation: z.preprocess(
+    (value) => (value === '' ? undefined : value),
+    z.coerce.number().int().min(-2_147_483_648).max(2_147_483_647).optional(),
+  ),
+});
+
+/** `/api/document/...`. */
 export const documentRoutes = new Hono<AuthEnvironment>()
   .use(requireAuth)
+  .get('/', zValidator('query', listQuery, validationHook), async (context) => {
+    const query = context.req.valid('query');
+    const { count, rows } = await listDocuments({
+      page: query.page,
+      categoryId: query.category || undefined,
+      generation: query.generation,
+    });
+    return context.json({ docCount: count, docInfo: rows });
+  })
+  .get('/:doc_id', async (context) => {
+    const { content, liked } = await retrieveDocument(
+      context.get('actor'),
+      context.req.param('doc_id'),
+    );
+    return context.json({ docuInfo: content, likeInfo: liked });
+  })
   .patch(
     '/:doc_id',
     zValidator('json', updateBody, validationHook),
