@@ -3,8 +3,27 @@ export const EQUIPMENT_GRADE = 7;
 
 /** Grade that may see 임원진 (해왕성 and above; not 비회원 or guests). */
 export const OFFICERS_READ_GRADE = 8;
-/** Grade that may add, change or delete 임원진 (토성, 임원진 and above). */
-export const OFFICERS_EDIT_GRADE = 6;
+/** 운영진 (지구, 3) and above may add, change or delete any 기수. */
+export const OFFICERS_MANAGER_GRADE = 3;
+/** 현 회장 (목성, 5) may change only the current 기수, or add the next. */
+export const PRESIDENT_GRADE = 5;
+
+/**
+ * Whether `grade` may save `generation`, given the newest 기수 so far. The
+ * API (`PUT officers/:generation`) checks the same rule.
+ */
+export const canSaveOfficers = (
+  grade: number,
+  generation: number,
+  latest: number | null,
+) =>
+  grade <= OFFICERS_MANAGER_GRADE ||
+  (grade === PRESIDENT_GRADE &&
+    (latest === null || generation === latest || generation === latest + 1));
+
+/** Only 운영진 and above may delete a 기수. */
+export const canDeleteOfficers = (grade: number) =>
+  grade <= OFFICERS_MANAGER_GRADE;
 
 /** 추억 만들기, the album board shown on the home page. */
 export const MEMORY_BOARD = 'brd31';

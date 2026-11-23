@@ -5,8 +5,8 @@ import GenerationRow from '~/components/Officers/GenerationRow';
 import OfficerEditor from '~/components/Officers/OfficerEditor';
 import { filterGenerations } from '~/components/Officers/officerUtils';
 import {
-  OFFICERS_EDIT_GRADE,
   OFFICERS_READ_GRADE,
+  canSaveOfficers,
 } from '~/components/Layout/constants';
 import {
   BackButton,
@@ -45,7 +45,6 @@ function ListSkeleton() {
 export default function Officers() {
   const { grade } = useAuth().authInfo.user;
   const canRead = grade <= OFFICERS_READ_GRADE;
-  const canEdit = grade <= OFFICERS_EDIT_GRADE;
   const {
     data: generations = [],
     isLoading,
@@ -61,6 +60,13 @@ export default function Officers() {
 
   const searching = query.trim().length > 0;
   const [current, ...past] = generations;
+  const latest = current?.generation ?? null;
+  const canSave = (generation: number) =>
+    canSaveOfficers(grade, generation, latest);
+  const editor = (generation: OfficerGeneration) =>
+    canSave(generation.generation)
+      ? () => setEditing({ generation })
+      : undefined;
   const results = filterGenerations(searching ? generations : past, query);
 
   const toggle = (generation: number) =>
@@ -71,7 +77,8 @@ export default function Officers() {
       return next;
     });
 
-  const addButton = canEdit && (
+  // 현 회장 can add only the next 기수, 운영진 any.
+  const addButton = canSave((latest ?? 0) + 1) && (
     <Button
       variant="secondary"
       size="sm"
@@ -114,9 +121,7 @@ export default function Officers() {
           ) : (
             <CurrentGenerationCard
               generation={current}
-              onEdit={
-                canEdit ? () => setEditing({ generation: current }) : undefined
-              }
+              onEdit={editor(current)}
             />
           )}
         </div>
@@ -164,9 +169,7 @@ export default function Officers() {
                   open={searching || openGenerations.has(generation.generation)}
                   onToggle={() => toggle(generation.generation)}
                   query={query}
-                  onEdit={
-                    canEdit ? () => setEditing({ generation }) : undefined
-                  }
+                  onEdit={editor(generation)}
                 />
               ))}
             </ul>

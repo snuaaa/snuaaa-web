@@ -99,6 +99,30 @@ test.describe('임원진', () => {
     ]);
   });
 
+  test('현 회장은 지금 기수만 고치고 지난 기수는 고칠 수 없다', async ({
+    page,
+  }) => {
+    // The fixture's member is grade 5 (현 회장).
+    await page.route(`${API_ORIGIN}/api/officers`, (route) =>
+      route.fulfill({ json: { success: true, generations } }),
+    );
+
+    await page.goto('/officers');
+    const current = page.getByRole('region', { name: '지금 임원진, 93대' });
+    await expect(current.getByRole('button', { name: '수정' })).toBeVisible();
+
+    const history = page.getByRole('region', { name: '역대 임원진' });
+    await history.getByRole('button', { name: '92대 회장 박시원' }).click();
+    await expect(history.getByText('박현우')).toBeVisible();
+    await expect(
+      history.getByRole('button', { name: '92대 수정' }),
+    ).toHaveCount(0);
+
+    await current.getByRole('button', { name: '수정' }).click();
+    const dialog = page.getByRole('dialog', { name: '93대 수정' });
+    await expect(dialog.getByRole('button', { name: '삭제' })).toHaveCount(0);
+  });
+
   test('이름이 빈 직책은 저장하지 않는다', async ({ page, api }) => {
     await page.route(`${API_ORIGIN}/api/officers`, (route) =>
       route.fulfill({ json: { success: true, generations } }),

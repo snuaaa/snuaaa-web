@@ -5,6 +5,12 @@ import {
   useDeleteOfficers,
   useSaveOfficers,
 } from '~/hooks/queries/useOfficerQueries';
+import {
+  OFFICERS_MANAGER_GRADE,
+  canDeleteOfficers,
+  canSaveOfficers,
+} from '~/components/Layout/constants';
+import useAuth from '~/hooks/useAuth';
 import type { OfficerGeneration } from '~/services/types';
 import { PRESIDENT, parseNames } from './officerUtils';
 
@@ -52,8 +58,11 @@ function EditorForm({
   generations,
   onDone,
 }: OfficerEditorProps) {
+  const { grade } = useAuth().authInfo.user;
   const latest = generations[0];
   const isNew = !generation;
+  // 현 회장 may add only the next 기수, so the number is fixed for them.
+  const numberLocked = !isNew || grade > OFFICERS_MANAGER_GRADE;
   const [number, setNumber] = useState(
     String(generation?.generation ?? (latest ? latest.generation + 1 : '')),
   );
@@ -72,7 +81,9 @@ function EditorForm({
     ? '기수를 숫자로 적어 주세요.'
     : isNew && generations.some((g) => g.generation === parsedNumber)
       ? `${parsedNumber}대는 이미 있어요. 목록에서 수정해 주세요.`
-      : undefined;
+      : !canSaveOfficers(grade, parsedNumber, latest?.generation ?? null)
+        ? '이 기수는 운영진만 추가할 수 있어요.'
+        : undefined;
 
   // A row left fully empty is dropped; a half-filled one is an error.
   const filled = rows.filter((row) => row.role.trim() || row.names.trim());
@@ -139,7 +150,7 @@ function EditorForm({
         description="이름이 여럿이면 쉼표로 나눠 주세요."
         footer={
           <div className="flex w-full items-center gap-2">
-            {!isNew && (
+            {!isNew && canDeleteOfficers(grade) && (
               <Button
                 variant="ghost"
                 className="mr-auto text-danger"
@@ -150,7 +161,9 @@ function EditorForm({
             )}
             <Button
               variant="secondary"
-              className={isNew ? 'ml-auto' : undefined}
+              className={
+                isNew || !canDeleteOfficers(grade) ? 'ml-auto' : undefined
+              }
               onClick={() => onOpenChange(false)}
             >
               취소
@@ -180,7 +193,7 @@ function EditorForm({
               inputMode="numeric"
               value={number}
               onChange={(event) => setNumber(event.target.value.trim())}
-              disabled={!isNew}
+              disabled={numberLocked}
               className="w-28"
             />
           </Field>
