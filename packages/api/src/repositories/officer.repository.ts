@@ -44,3 +44,13 @@ export async function remove(
     .returning({ generation: officerGeneration.generation });
   return rows.length;
 }
+
+/** The newest 기수 number, or null when there is none. */
+export async function findLatestGeneration(executor: Executor = database) {
+  const [row] = await executor
+    .select({ generation: officerGeneration.generation })
+    .from(officerGeneration)
+    .orderBy(desc(officerGeneration.generation))
+    .limit(1);
+  return row?.generation ?? null;
+}

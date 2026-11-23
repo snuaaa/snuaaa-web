@@ -65,8 +65,8 @@ describe('GET /api/officers', () => {
 });
 
 describe('PUT /api/officers/:generation', () => {
-  it('lets 임원진 (6) add a generation', async () => {
-    const officer = await createUser({ grade: 6 });
+  it('lets 운영진 (3) add a generation', async () => {
+    const officer = await createUser({ grade: 3 });
 
     const response = await api()
       .put('/api/officers/94')
@@ -101,7 +101,7 @@ describe('PUT /api/officers/:generation', () => {
   });
 
   it('trims names and roles', async () => {
-    const officer = await createUser({ grade: 6 });
+    const officer = await createUser({ grade: 3 });
 
     await api()
       .put('/api/officers/94')
@@ -113,22 +113,69 @@ describe('PUT /api/officers/:generation', () => {
     ]);
   });
 
-  it('is closed to members below 임원진', async () => {
+  it('is closed to 전 회장 (4), 임원진 (6) and members', async () => {
     await createOfficerGeneration(93);
-    const member = await createUser({ grade: 7 });
-
-    const response = await api()
-      .put('/api/officers/93')
-      .set('Authorization', bearer(member))
-      .send({ roles: ROLES });
-
-    expect(response.status).toBe(403);
-    expect(response.body).toEqual(FORBIDDEN);
+    for (const grade of [4, 6, 7]) {
+      const member = await createUser({ grade });
+      const response = await api()
+        .put('/api/officers/93')
+        .set('Authorization', bearer(member))
+        .send({ roles: ROLES });
+      expect(response.status).toBe(403);
+      expect(response.body).toEqual(FORBIDDEN);
+    }
     expect((await listGenerations())[0].roles).not.toEqual(ROLES);
   });
 
+  it('lets 운영진 change a past generation', async () => {
+    await createOfficerGeneration(92);
+    await createOfficerGeneration(93);
+    const manager = await createUser({ grade: 3 });
+
+    const response = await api()
+      .put('/api/officers/92')
+      .set('Authorization', bearer(manager))
+      .send({ roles: ROLES });
+
+    expect(response.status).toBe(200);
+  });
+
+  it('lets 현 회장 (5) change the current generation or add the next', async () => {
+    await createOfficerGeneration(92);
+    await createOfficerGeneration(93);
+    const president = await createUser({ grade: 5 });
+
+    for (const generation of [93, 94]) {
+      const response = await api()
+        .put(`/api/officers/${generation}`)
+        .set('Authorization', bearer(president))
+        .send({ roles: ROLES });
+      expect(response.status).toBe(200);
+    }
+    const generations = await listGenerations();
+    expect(
+      generations.map((g: { generation: number }) => g.generation),
+    ).toEqual([94, 93, 92]);
+  });
+
+  it('keeps 현 회장 off past and skipped generations', async () => {
+    await createOfficerGeneration(92);
+    await createOfficerGeneration(93);
+    const president = await createUser({ grade: 5 });
+
+    for (const generation of [92, 95]) {
+      const response = await api()
+        .put(`/api/officers/${generation}`)
+        .set('Authorization', bearer(president))
+        .send({ roles: ROLES });
+      expect(response.status).toBe(403);
+      expect(response.body).toEqual(FORBIDDEN);
+    }
+    expect(await listGenerations()).toHaveLength(2);
+  });
+
   it('rejects a bad generation or body with 400', async () => {
-    const officer = await createUser({ grade: 6 });
+    const officer = await createUser({ grade: 3 });
     const cases: [string, unknown][] = [
       ['0', { roles: ROLES }],
       ['abc', { roles: ROLES }],
@@ -155,10 +202,10 @@ describe('PUT /api/officers/:generation', () => {
 });
 
 describe('DELETE /api/officers/:generation', () => {
-  it('lets 임원진 delete a generation', async () => {
+  it('lets 운영진 delete a generation', async () => {
     await createOfficerGeneration(92);
     await createOfficerGeneration(93);
-    const officer = await createUser({ grade: 6 });
+    const officer = await createUser({ grade: 3 });
 
     const response = await api()
       .delete('/api/officers/93')
@@ -174,7 +221,7 @@ describe('DELETE /api/officers/:generation', () => {
   });
 
   it('answers 404 for a generation that does not exist', async () => {
-    const officer = await createUser({ grade: 6 });
+    const officer = await createUser({ grade: 1 });
 
     const response = await api()
       .delete('/api/officers/93')
@@ -188,15 +235,15 @@ describe('DELETE /api/officers/:generation', () => {
     });
   });
 
-  it('is closed to members below 임원진', async () => {
+  it('is closed below 운영진, 현 회장 included', async () => {
     await createOfficerGeneration(93);
-    const member = await createUser({ grade: 7 });
-
-    const response = await api()
-      .delete('/api/officers/93')
-      .set('Authorization', bearer(member));
-
-    expect(response.status).toBe(403);
+    for (const grade of [5, 6]) {
+      const member = await createUser({ grade });
+      const response = await api()
+        .delete('/api/officers/93')
+        .set('Authorization', bearer(member));
+      expect(response.status).toBe(403);
+    }
     expect(await listGenerations()).toHaveLength(1);
   });
 });
