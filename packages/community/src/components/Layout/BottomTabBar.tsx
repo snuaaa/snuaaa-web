@@ -51,7 +51,8 @@ export default function BottomTabBar() {
         params={{ board_id: destinations.board }}
         label="게시판"
         icon={<List />}
-        active={isActive('board')}
+        // 임원진 opens from the board switcher, so it stays under 게시판.
+        active={isActive('board') || isActive('officers')}
       />
       <Tab
         to="/board/$board_id"

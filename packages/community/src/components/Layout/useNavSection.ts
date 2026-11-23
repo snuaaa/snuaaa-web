@@ -4,7 +4,8 @@ import { useBoards } from '~/hooks/queries/useBoardQueries';
 import useAuth from '~/hooks/useAuth';
 import { ASTRO_PHOTO_BOARD } from './constants';
 
-export type NavSection = 'home' | 'board' | 'photo' | 'equipment' | 'my';
+export type NavSection =
+  'home' | 'board' | 'photo' | 'equipment' | 'officers' | 'my';
 
 const LAST_BOARD_KEY = 'aaa:lastBoard';
 const LAST_PHOTO_BOARD_KEY = 'aaa:lastPhotoBoard';
@@ -35,6 +36,7 @@ const SECTION_PREFIXES: [string, NavSection][] = [
   ['/photo', 'photo'],
   ['/exhibition', 'photo'],
   ['/equipment', 'equipment'],
+  ['/officers', 'officers'],
   ['/mypage', 'my'],
   ['/userpage', 'my'],
 ];

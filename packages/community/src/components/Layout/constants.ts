@@ -1,6 +1,11 @@
 /** Grade that may rent equipment (lower is more privileged). */
 export const EQUIPMENT_GRADE = 7;
 
+/** Grade that may see 임원진 (해왕성 and above; not 비회원 or guests). */
+export const OFFICERS_READ_GRADE = 8;
+/** Grade that may add, change or delete 임원진 (토성, 임원진 and above). */
+export const OFFICERS_EDIT_GRADE = 6;
+
 /** 추억 만들기, the album board shown on the home page. */
 export const MEMORY_BOARD = 'brd31';
 /** 별사진 */

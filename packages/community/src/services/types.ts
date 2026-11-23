@@ -228,3 +228,13 @@ export type ListResponse<T = unknown> = {
   count: number;
   rows: T[];
 };
+
+/** One officer role of a 기수, such as 관측부장 and who held it. */
+export type OfficerRole = { role: string; names: string[] };
+
+/** 역대 임원진: one 기수, roles in display order (회장 first). */
+export type OfficerGeneration = {
+  generation: number;
+  roles: OfficerRole[];
+  updated_at: string;
+};

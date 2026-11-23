@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CalculatorRouteImport } from './routes/calculator'
 import { Route as EquipmentRouteRouteImport } from './routes/equipment/route'
+import { Route as OfficersRouteImport } from './routes/officers'
 import { Route as AdminUserRouteImport } from './routes/admin/user'
 import { Route as AlbumAlbum_idRouteImport } from './routes/album/$album_id'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
@@ -45,6 +46,11 @@ const CalculatorRoute = CalculatorRouteImport.update({
 const EquipmentRouteRoute = EquipmentRouteRouteImport.update({
   id: '/equipment',
   path: '/equipment',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OfficersRoute = OfficersRouteImport.update({
+  id: '/officers',
+  path: '/officers',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminUserRoute = AdminUserRouteImport.update({
@@ -148,6 +154,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/equipment': typeof EquipmentRouteRouteWithChildren
   '/calculator': typeof CalculatorRoute
+  '/officers': typeof OfficersRoute
   '/equipment/admin': typeof EquipmentAdminRouteRouteWithChildren
   '/admin/user': typeof AdminUserRoute
   '/album/$album_id': typeof AlbumAlbum_idRoute
@@ -171,6 +178,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/calculator': typeof CalculatorRoute
+  '/officers': typeof OfficersRoute
   '/admin/user': typeof AdminUserRoute
   '/album/$album_id': typeof AlbumAlbum_idRoute
   '/auth/login': typeof AuthLoginRoute
@@ -195,6 +203,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/equipment': typeof EquipmentRouteRouteWithChildren
   '/calculator': typeof CalculatorRoute
+  '/officers': typeof OfficersRoute
   '/equipment/admin': typeof EquipmentAdminRouteRouteWithChildren
   '/admin/user': typeof AdminUserRoute
   '/album/$album_id': typeof AlbumAlbum_idRoute
@@ -221,6 +230,7 @@ export interface FileRouteTypes {
     | '/'
     | '/equipment'
     | '/calculator'
+    | '/officers'
     | '/equipment/admin'
     | '/admin/user'
     | '/album/$album_id'
@@ -244,6 +254,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/calculator'
+    | '/officers'
     | '/admin/user'
     | '/album/$album_id'
     | '/auth/login'
@@ -267,6 +278,7 @@ export interface FileRouteTypes {
     | '/'
     | '/equipment'
     | '/calculator'
+    | '/officers'
     | '/equipment/admin'
     | '/admin/user'
     | '/album/$album_id'
@@ -292,6 +304,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   EquipmentRouteRoute: typeof EquipmentRouteRouteWithChildren
   CalculatorRoute: typeof CalculatorRoute
+  OfficersRoute: typeof OfficersRoute
   AdminUserRoute: typeof AdminUserRoute
   AlbumAlbum_idRoute: typeof AlbumAlbum_idRoute
   AuthLoginRoute: typeof AuthLoginRoute
@@ -329,6 +342,13 @@ declare module '@tanstack/react-router' {
       path: '/equipment'
       fullPath: '/equipment'
       preLoaderRoute: typeof EquipmentRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/officers': {
+      id: '/officers'
+      path: '/officers'
+      fullPath: '/officers'
+      preLoaderRoute: typeof OfficersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/user': {
@@ -500,6 +520,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   EquipmentRouteRoute: EquipmentRouteRouteWithChildren,
   CalculatorRoute: CalculatorRoute,
+  OfficersRoute: OfficersRoute,
   AdminUserRoute: AdminUserRoute,
   AlbumAlbum_idRoute: AlbumAlbum_idRoute,
   AuthLoginRoute: AuthLoginRoute,

@@ -1,0 +1,116 @@
+import { test, expect, setToken, VALID_TOKEN } from './fixtures';
+import { API_ORIGIN } from '../playwright.config';
+
+const generations = [
+  {
+    generation: 93,
+    roles: [
+      { role: '회장', names: ['김성윤'] },
+      { role: '부회장', names: ['박현우'] },
+      { role: '관측부장', names: ['김민성', '김민주'] },
+    ],
+    updated_at: '2026-11-23T00:00:00.000Z',
+  },
+  {
+    generation: 92,
+    roles: [
+      { role: '회장', names: ['박시원'] },
+      { role: '총무', names: ['박현우'] },
+    ],
+    updated_at: '2026-11-23T00:00:00.000Z',
+  },
+  {
+    generation: 91,
+    roles: [
+      { role: '회장', names: ['최상욱'] },
+      { role: '총무', names: ['박시원'] },
+    ],
+    updated_at: '2026-11-23T00:00:00.000Z',
+  },
+];
+
+test.describe('임원진', () => {
+  test.beforeEach(async ({ page }) => {
+    await setToken(page, VALID_TOKEN);
+  });
+
+  test('지금 기수와 역대 기수를 보여 주고 이름으로 찾는다', async ({
+    page,
+  }) => {
+    await page.route(`${API_ORIGIN}/api/officers`, (route) =>
+      route.fulfill({ json: { success: true, generations } }),
+    );
+
+    await page.goto('/officers');
+    const current = page.getByRole('region', { name: '지금 임원진, 93대' });
+    await expect(current.getByText('김성윤')).toBeVisible();
+    await expect(current.getByText('김민주')).toBeVisible();
+
+    const history = page.getByRole('region', { name: '역대 임원진' });
+    const row = history.getByRole('button', { name: '92대 회장 박시원' });
+    await expect(row).toHaveAttribute('aria-expanded', 'false');
+    await row.click();
+    await expect(row).toHaveAttribute('aria-expanded', 'true');
+    await expect(history.getByText('총무')).toBeVisible();
+
+    // 박시원: 92대 회장, 91대 총무.
+    await history.getByLabel('이름이나 직책으로 찾기').fill('박시원');
+    await expect(history.getByRole('listitem')).toHaveCount(2);
+    await expect(history.locator('mark', { hasText: '박시원' })).toHaveCount(2);
+  });
+
+  test('임원은 다음 기수를 추가한다', async ({ page }) => {
+    const saved: unknown[] = [];
+    await page.route(`${API_ORIGIN}/api/officers**`, (route) => {
+      const request = route.request();
+      if (request.method() === 'PUT') {
+        saved.push([new URL(request.url()).pathname, request.postDataJSON()]);
+        return route.fulfill({ json: { success: true } });
+      }
+      return route.fulfill({ json: { success: true, generations } });
+    });
+
+    await page.goto('/officers');
+    await page.getByRole('button', { name: '기수 추가' }).click();
+    const dialog = page.getByRole('dialog', { name: '기수 추가' });
+    // Starts from the next number and the latest 기수's roles.
+    await expect(
+      dialog.getByRole('textbox', { name: '기수', exact: true }),
+    ).toHaveValue('94');
+    await dialog.getByLabel('회장 이름', { exact: true }).fill('홍길동');
+    await dialog.getByLabel('부회장 이름', { exact: true }).fill('김철수');
+    await dialog
+      .getByLabel('관측부장 이름', { exact: true })
+      .fill('이영희, 박민수');
+    await dialog.getByRole('button', { name: '저장' }).click();
+
+    await expect(dialog).toBeHidden();
+    expect(saved).toEqual([
+      [
+        '/api/officers/94',
+        {
+          roles: [
+            { role: '회장', names: ['홍길동'] },
+            { role: '부회장', names: ['김철수'] },
+            { role: '관측부장', names: ['이영희', '박민수'] },
+          ],
+        },
+      ],
+    ]);
+  });
+
+  test('이름이 빈 직책은 저장하지 않는다', async ({ page, api }) => {
+    await page.route(`${API_ORIGIN}/api/officers`, (route) =>
+      route.fulfill({ json: { success: true, generations } }),
+    );
+
+    await page.goto('/officers');
+    await page.getByRole('button', { name: '기수 추가' }).click();
+    const dialog = page.getByRole('dialog', { name: '기수 추가' });
+    await dialog.getByLabel('회장 이름', { exact: true }).fill('홍길동');
+    await dialog.getByRole('button', { name: '저장' }).click();
+
+    await expect(dialog.getByText('이름을 적어 주세요.').first()).toBeVisible();
+    expect(api.count('PUT /officers')).toBe(0);
+  });
+});

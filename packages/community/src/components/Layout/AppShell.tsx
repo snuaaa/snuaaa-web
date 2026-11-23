@@ -24,6 +24,7 @@ const REDESIGNED_PATHS = [
   '/admin/user',
   '/posts/all',
   '/comments/all',
+  '/officers',
 ];
 /** Detail pages, edit forms included, that draw their own layout. */
 const REDESIGNED_PREFIXES = [

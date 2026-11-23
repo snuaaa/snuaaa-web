@@ -12,7 +12,12 @@ import { cn } from '~/lib/utils';
 import { Board } from '~/services/types';
 import BrandMark from './BrandMark';
 import ObservationToggle from './ObservationToggle';
-import { CLUB_INTRO_URL, EQUIPMENT_GRADE, canManageUsers } from './constants';
+import {
+  CLUB_INTRO_URL,
+  EQUIPMENT_GRADE,
+  OFFICERS_READ_GRADE,
+  canManageUsers,
+} from './constants';
 import { NavSection, useNavSection } from './useNavSection';
 
 const triggerClassName =
@@ -193,6 +198,15 @@ export default function TopNav() {
               data-active={isActive('equipment')}
             >
               장비 대여
+            </Link>
+          )}
+          {grade <= OFFICERS_READ_GRADE && (
+            <Link
+              to="/officers"
+              className={triggerClassName}
+              data-active={isActive('officers')}
+            >
+              임원진
             </Link>
           )}
           <a
