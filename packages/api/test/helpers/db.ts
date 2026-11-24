@@ -33,6 +33,13 @@ export async function deleteUser(user: Pick<User, 'user_id'>) {
   await query('DELETE FROM tb_user WHERE user_id = $1', [user.user_id]);
 }
 
+/** Soft-deletes the user, like leaving the club (`DELETE /api/userinfo`). */
+export async function softDeleteUser(user: Pick<User, 'user_id'>) {
+  await query('UPDATE tb_user SET deleted_at = now() WHERE user_id = $1', [
+    user.user_id,
+  ]);
+}
+
 /** Counts `tb_content` rows matching every given column, deleted ones included. */
 export async function countContents(where: {
   board_id?: string;

@@ -1,5 +1,4 @@
 import {
-  AttachedFileModel,
   BoardModel,
   ContentModel,
   DocumentModel,
@@ -8,8 +7,7 @@ import {
 } from '../models';
 import { Op } from 'sequelize';
 import ContentTypeEnum from '../enums/contentTypeEnum';
-import { BASE_USER_FIELDS } from '../models/User';
-import { BadRequestError, NotFoundError } from '../errors';
+import { BadRequestError } from '../errors';
 
 const SearchTypeEnum = Object.freeze({
   ALL: 'A',
@@ -17,53 +15,6 @@ const SearchTypeEnum = Object.freeze({
   TEXT: 'X',
   USER: 'U',
 });
-
-export type PostResponse = ContentModel & {
-  post: PostModel;
-  user: UserModel;
-  board: BoardModel;
-  attachedFiles: AttachedFileModel[];
-};
-
-export async function retrievePost(
-  content_id: string | number,
-): Promise<PostResponse> {
-  if (!content_id) {
-    throw new BadRequestError('id can not be null');
-  }
-
-  const post = await ContentModel.findOne({
-    include: [
-      {
-        model: PostModel,
-        as: 'post',
-        required: true,
-      },
-      {
-        model: UserModel,
-        required: true,
-        attributes: BASE_USER_FIELDS,
-        paranoid: false,
-      },
-      {
-        model: BoardModel,
-        required: true,
-        attributes: ['board_id', 'board_name', 'lv_read'],
-      },
-      {
-        model: AttachedFileModel,
-        as: 'attachedFiles',
-      },
-    ],
-    where: { content_id: content_id },
-  });
-
-  if (!post) {
-    throw new NotFoundError('Post not found');
-  }
-
-  return post as PostResponse;
-}
 
 export async function retrievePostsInBoard(board_id, rowNum, offset) {
   if (!board_id) {
@@ -91,118 +42,6 @@ export async function retrievePostsInBoard(board_id, rowNum, offset) {
 }
 
 export type SearchType = 'title' | 'text' | 'user' | 'all';
-
-export type PostFilter = {
-  board_id?: string;
-  author_id?: string;
-  read_grade: number;
-  limit?: number;
-  offset?: number;
-  search_keyword?: string;
-  search_type?: SearchType;
-};
-
-const getSearchCondition = (type?: SearchType, keyword?: string) => {
-  if (!type || !keyword || keyword.trim() === '') {
-    return {};
-  }
-  switch (type) {
-    case 'all': {
-      return {
-        content: {
-          [Op.or]: [
-            {
-              title: {
-                [Op.like]: `%${keyword}%`,
-              },
-            },
-            {
-              text: {
-                [Op.like]: `%${keyword}%`,
-              },
-            },
-          ],
-        },
-      };
-    }
-    case 'title': {
-      return {
-        content: {
-          title: {
-            [Op.like]: `%${keyword}%`,
-          },
-        },
-      };
-    }
-    case 'text': {
-      return {
-        content: {
-          text: {
-            [Op.like]: `%${keyword}%`,
-          },
-        },
-      };
-    }
-    case 'user': {
-      return {
-        user: {
-          nickname: {
-            [Op.like]: `%${keyword}%`,
-          },
-        },
-      };
-    }
-    default:
-      return {};
-  }
-};
-
-export function retrievePostsWithFilter(filter: PostFilter) {
-  const {
-    board_id,
-    author_id,
-    read_grade,
-    limit = 20,
-    offset = 0,
-    search_keyword,
-    search_type,
-  } = filter;
-  const { content, user } = getSearchCondition(search_type, search_keyword);
-  return ContentModel.findAndCountAll({
-    include: [
-      {
-        model: PostModel,
-        as: 'post',
-      },
-      {
-        model: UserModel,
-        required: true,
-        attributes: ['nickname', 'profile_path', 'profile_url'],
-        paranoid: false, // 삭제된 유저의 글도 보이도록
-        where: user,
-      },
-      {
-        model: BoardModel,
-        required: true,
-        attributes: ['board_id', 'board_name'],
-        where: {
-          lv_read: {
-            [Op.gte]: read_grade,
-          },
-        },
-      },
-    ],
-    where: {
-      type: ContentTypeEnum.POST,
-      ...content,
-      ...(board_id && { board_id }),
-      ...(author_id && { author_id }),
-    },
-    order: [['created_at', 'DESC']],
-    limit: limit,
-    offset: offset,
-  });
-}
 
 /**
  * @deprecated

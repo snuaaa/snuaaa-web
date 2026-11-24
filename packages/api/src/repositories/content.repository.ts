@@ -37,6 +37,28 @@ export async function insert(
   return row.content_id;
 }
 
+/**
+ * The content's columns in the shape the read endpoints answer, the one
+ * Sequelize used: timestamps in camelCase, which the web reads.
+ */
+export const contentJson = {
+  content_id: content.content_id,
+  content_uuid: content.content_uuid,
+  author_id: content.author_id,
+  board_id: content.board_id,
+  category_id: content.category_id,
+  type: content.type,
+  parent_id: content.parent_id,
+  title: content.title,
+  text: content.text,
+  view_num: content.view_num,
+  comment_num: content.comment_num,
+  like_num: content.like_num,
+  createdAt: content.created_at,
+  updatedAt: content.updated_at,
+  deletedAt: content.deleted_at,
+};
+
 const withBoard = {
   content_id: content.content_id,
   type: content.type,
@@ -132,7 +154,7 @@ export async function softDelete(
  */
 export async function addToCounter(
   contentId: number,
-  counter: 'comment_num' | 'like_num',
+  counter: 'comment_num' | 'like_num' | 'view_num',
   by: number,
   executor: Executor = database,
 ) {

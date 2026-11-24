@@ -114,6 +114,28 @@ describe('POST /api/board/:board_id/post', () => {
   });
 });
 
+describe('post and document title and category sizes', () => {
+  it('returns 400 for a title over 128 or a category_id over 16 characters', async () => {
+    const { board, author } = await setup();
+    const tooLong = [
+      { title: 'a'.repeat(129) },
+      { title: 'a', category_id: 'c'.repeat(17) },
+    ];
+
+    for (const body of tooLong) {
+      for (const path of ['post', 'document']) {
+        const response = await api()
+          .post(`/api/board/${board.board_id}/${path}`)
+          .set('Authorization', bearer(author))
+          .send({ text: '', ...body });
+        expect(response.status).toBe(400);
+        expect(response.body).toMatchObject({ error: 'BAD_REQUEST' });
+      }
+    }
+    expect(await countContents({ board_id: board.board_id })).toBe(0);
+  });
+});
+
 describe('PATCH /api/post/:post_id', () => {
   it('changes the title and text and keeps fields the body leaves out', async () => {
     const { board, author } = await setup();
