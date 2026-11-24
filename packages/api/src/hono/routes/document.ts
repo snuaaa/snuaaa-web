@@ -10,9 +10,13 @@ import {
   updateDocument,
 } from '../../services/document.service';
 import { pageNumber } from './query';
-import { postBody } from './post';
 
-const documentFields = postBody.shape;
+/** The columns' sizes: `tb_content.title` and `category_id` are varchars. */
+const documentFields = {
+  title: z.string().max(128).nullish(),
+  text: z.string().nullish(),
+  category_id: z.string().max(16).nullish(),
+};
 
 export const createDocumentBody = z.object({
   ...documentFields,
