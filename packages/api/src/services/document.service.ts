@@ -95,14 +95,15 @@ export async function retrieveDocument(actor: Actor, documentId: string) {
 export const DOCUMENTS_PER_PAGE = 10;
 
 /**
- * A page of documents of every board, last updated first, with their files,
- * and how many there are in all. Like before, this does not check the
- * boards' read levels.
+ * A page of documents on the boards the actor may read, last updated first,
+ * with their files, and how many there are in all.
  */
 export async function listDocuments(
-  filter: documents.DocumentFilter & { page: number },
+  actor: Actor,
+  filter: Omit<documents.DocumentFilter, 'readGrade'> & { page: number },
 ) {
-  const { page, ...where } = filter;
+  const { page, ...rest } = filter;
+  const where = { ...rest, readGrade: actor.grade };
   const [count, rows] = await Promise.all([
     documents.countList(where),
     documents.list(where, {

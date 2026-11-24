@@ -46,7 +46,7 @@ export const documentRoutes = new Hono<AuthEnvironment>()
   .use(requireAuth)
   .get('/', zValidator('query', listQuery, validationHook), async (context) => {
     const query = context.req.valid('query');
-    const { count, rows } = await listDocuments({
+    const { count, rows } = await listDocuments(context.get('actor'), {
       page: query.page,
       categoryId: query.category || undefined,
       generation: query.generation,

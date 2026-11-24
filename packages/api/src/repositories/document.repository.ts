@@ -1,4 +1,4 @@
-import { and, count, desc, eq, isNull } from 'drizzle-orm';
+import { and, count, desc, eq, gte, isNull } from 'drizzle-orm';
 import { database, type Executor } from '../db/client';
 import { board, category, content, document, user } from '../db/schema';
 import { contentJson } from './content.repository';
@@ -58,6 +58,8 @@ export async function findDetail(
 }
 
 export type DocumentFilter = {
+  /** Only boards whose read level allows this grade. */
+  readGrade: number;
   categoryId?: string;
   generation?: number;
 };
@@ -65,6 +67,7 @@ export type DocumentFilter = {
 function listWhere(filter: DocumentFilter) {
   return and(
     isNull(content.deleted_at),
+    gte(board.lv_read, filter.readGrade),
     filter.categoryId ? eq(content.category_id, filter.categoryId) : undefined,
     filter.generation !== undefined
       ? eq(document.generation, filter.generation)
@@ -73,8 +76,8 @@ function listWhere(filter: DocumentFilter) {
 }
 
 /**
- * The matching (not deleted) documents of every board, last updated first.
- * Documents without a category are left out, as they always were.
+ * The matching (not deleted) documents, last updated first. Documents
+ * without a category are left out, as they always were.
  */
 export async function list(
   filter: DocumentFilter,
@@ -95,6 +98,7 @@ export async function list(
     .innerJoin(content, eq(content.content_id, document.content_id))
     .innerJoin(user, eq(user.user_id, content.author_id))
     .innerJoin(category, eq(category.category_id, content.category_id))
+    .innerJoin(board, eq(board.board_id, content.board_id))
     .where(listWhere(filter))
     .orderBy(desc(content.updated_at), desc(content.content_id))
     .limit(page.limit)
@@ -123,6 +127,7 @@ export async function countList(
     .innerJoin(content, eq(content.content_id, document.content_id))
     .innerJoin(user, eq(user.user_id, content.author_id))
     .innerJoin(category, eq(category.category_id, content.category_id))
+    .innerJoin(board, eq(board.board_id, content.board_id))
     .where(listWhere(filter));
   return row.count;
 }

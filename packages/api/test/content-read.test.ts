@@ -301,6 +301,29 @@ describe('GET /api/document', () => {
     expect(empty.body.docCount).toBe(3);
   });
 
+  it("leaves out documents on boards above the reader's grade", async () => {
+    const { board, author, categoryId } = await setup();
+    const staffBoard = await createBoard({ lv_read: 6 });
+    const staffCategory = await createCategory(staffBoard);
+    const open = await createDocument(author, board, {
+      category_id: categoryId,
+    });
+    const staff = await createUser({ grade: 6 });
+    const hidden = await createDocument(staff, staffBoard, {
+      category_id: staffCategory.category_id,
+    });
+
+    const member = await get('/api/document', author);
+    expect(member.body.docCount).toBe(1);
+    expect(member.body.docInfo.map((d) => d.content_id)).toEqual([open]);
+
+    const staffView = await get('/api/document', staff);
+    expect(staffView.body.docCount).toBe(2);
+    expect(staffView.body.docInfo.map((d) => d.content_id).sort()).toEqual(
+      [open, hidden].sort(),
+    );
+  });
+
   it('returns 400 for a generation that is not a number', async () => {
     const { author } = await setup();
 
