@@ -9,7 +9,7 @@ import {
   retrievePost,
   updatePost,
 } from '../../services/post.service';
-import { pageNumber } from './query';
+import { pageNumber, pageSize } from './query';
 
 /** The columns' sizes: `tb_content.title` and `category_id` are varchars. */
 export const postBody = z.object({
@@ -23,7 +23,7 @@ export const postBody = z.object({
 const listQuery = z.object({
   board_id: z.string().optional(),
   user_uuid: z.string().optional(),
-  limit: pageNumber(20),
+  limit: pageSize(20),
   offset: pageNumber(0),
   search_type: z.string().optional(),
   search_keyword: z.string().optional(),
