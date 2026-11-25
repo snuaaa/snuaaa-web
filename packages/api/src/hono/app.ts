@@ -6,6 +6,7 @@ import { albumRoutes } from './routes/album';
 import { boardRoutes } from './routes/board';
 import { commentRoutes, contentCommentRoutes } from './routes/comment';
 import { documentRoutes } from './routes/document';
+import { equipmentRoutes } from './routes/equipment';
 import { exhibitionRoutes } from './routes/exhibition';
 import { exhibitPhotoRoutes } from './routes/exhibitPhoto';
 import { photoRoutes } from './routes/photo';
@@ -62,6 +63,7 @@ export const honoApp = new Hono({ strict: false })
   .route('/comment', commentRoutes)
   .route('/content', contentCommentRoutes)
   .route('/document', documentRoutes)
+  .route('/equipment', equipmentRoutes)
   .route('/exhibition', exhibitionRoutes)
   .route('/exhibitPhoto', exhibitPhotoRoutes)
   .route('/photo', photoRoutes)
