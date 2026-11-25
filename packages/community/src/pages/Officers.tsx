@@ -1,10 +1,15 @@
 import { useState } from 'react';
-import { Plus, Search } from 'lucide-react';
+import { ArrowRightLeft, Plus, Search } from 'lucide-react';
+import HandOverSheet from '~/components/Officers/HandOverSheet';
 import OfficerEditor from '~/components/Officers/OfficerEditor';
 import OfficerMatchSummary from '~/components/Officers/OfficerMatchSummary';
 import OfficerTimeline from '~/components/Officers/OfficerTimeline';
 import { findMatches } from '~/components/Officers/officerUtils';
-import { canSaveOfficers } from '~/components/Layout/constants';
+import {
+  canHandOver,
+  canSaveOfficers,
+  isOfficersManager,
+} from '~/components/Layout/constants';
 import {
   BackButton,
   Button,
@@ -49,33 +54,50 @@ function TimelineSkeleton() {
  * a constellation.
  */
 export default function Officers() {
-  const { grade } = useAuth().authInfo.user;
+  const { user } = useAuth().authInfo;
   const { data: generations = [], isLoading, isError, refetch } = useOfficers();
   const [query, setQuery] = useState('');
   const [editing, setEditing] = useState<Editing>(null);
+  const [handingOver, setHandingOver] = useState(false);
   const toast = useToast();
 
-  const latest = generations[0]?.generation ?? null;
+  const latest = generations[0];
   const canSave = (generation: number) =>
-    canSaveOfficers(grade, generation, latest);
+    canSaveOfficers(user, generation, latest);
   const editor = (generation: OfficerGeneration) =>
     canSave(generation.generation)
       ? () => setEditing({ generation })
       : undefined;
   const matches = findMatches(generations, query);
 
-  // 현 회장 can add only the next 기수, 운영진 any.
-  const addButton = canSave((latest ?? 0) + 1) && (
-    <Button
-      variant="ghost"
-      size="sm"
-      onClick={() => setEditing({})}
-      disabled={isLoading}
-      className="text-fg-on-brand hover:bg-fg-on-brand/10"
-    >
-      <Plus aria-hidden />
-      기수 추가
-    </Button>
+  // 운영진 may add any 기수 by hand; a new term starts with 회기 넘기기.
+  const actions = (
+    <>
+      {canHandOver(user, latest) && (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setHandingOver(true)}
+          disabled={isLoading}
+          className="text-fg-on-brand hover:bg-fg-on-brand/10"
+        >
+          <ArrowRightLeft aria-hidden />
+          회기 넘기기
+        </Button>
+      )}
+      {isOfficersManager(user.grade) && (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setEditing({})}
+          disabled={isLoading}
+          className="hidden text-fg-on-brand hover:bg-fg-on-brand/10 md:inline-flex"
+        >
+          <Plus aria-hidden />
+          기수 추가
+        </Button>
+      )}
+    </>
   );
 
   const search = (
@@ -151,7 +173,7 @@ export default function Officers() {
           <div className="flex h-[52px] items-center justify-between pt-safe-0 pr-3 pl-1">
             <BackButton />
             <h1 className="text-[15px] font-semibold">{TITLE}</h1>
-            <div className="flex min-w-11 justify-end">{addButton}</div>
+            <div className="flex min-w-11 justify-end">{actions}</div>
           </div>
         </div>
         <div className="hidden items-end justify-between gap-4 md:flex">
@@ -161,7 +183,7 @@ export default function Officers() {
               {DESCRIPTION}
             </p>
           </div>
-          {addButton}
+          <div className="flex gap-1">{actions}</div>
         </div>
         {body}
       </div>
@@ -170,6 +192,12 @@ export default function Officers() {
         onOpenChange={(open) => !open && setEditing(null)}
         generation={editing?.generation}
         generations={generations}
+        onDone={toast.show}
+      />
+      <HandOverSheet
+        open={handingOver}
+        onOpenChange={setHandingOver}
+        latest={latest}
         onDone={toast.show}
       />
       <Toast message={toast.message} />

@@ -6,9 +6,8 @@ import {
   useSaveOfficers,
 } from '~/hooks/queries/useOfficerQueries';
 import {
-  OFFICERS_MANAGER_GRADE,
   canDeleteOfficers,
-  canSaveOfficers,
+  isOfficersManager,
 } from '~/components/Layout/constants';
 import useAuth from '~/hooks/useAuth';
 import type { OfficerGeneration } from '~/services/types';
@@ -60,8 +59,8 @@ function EditorForm({
   const { grade } = useAuth().authInfo.user;
   const latest = generations[0];
   const isNew = !generation;
-  // 현 회장 may add only the next 기수, so the number is fixed for them.
-  const numberLocked = !isNew || grade > OFFICERS_MANAGER_GRADE;
+  // Only 운영진 add a 기수 by hand; the number of an existing one is fixed.
+  const numberLocked = !isNew || !isOfficersManager(grade);
   const [number, setNumber] = useState(
     String(generation?.generation ?? (latest ? latest.generation + 1 : '')),
   );
@@ -81,8 +80,8 @@ function EditorForm({
     ? '기수를 숫자로 적어 주세요.'
     : isNew && generations.some((g) => g.generation === parsedNumber)
       ? `${parsedNumber}대는 이미 있어요. 목록에서 수정해 주세요.`
-      : !canSaveOfficers(grade, parsedNumber, latest?.generation ?? null)
-        ? '이 기수는 운영진만 추가할 수 있어요.'
+      : isNew && !isOfficersManager(grade)
+        ? '새 기수는 운영진만 추가할 수 있어요.'
         : undefined;
 
   // A row left fully empty is dropped; a half-filled one is an error.

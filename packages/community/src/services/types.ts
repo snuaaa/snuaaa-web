@@ -236,6 +236,8 @@ export type OfficerRole = { role: string; names: string[] };
 export type OfficerGeneration = {
   generation: number;
   president: string;
+  /** The 회장's account, for a 기수 started by 회기 넘기기; null otherwise. */
+  president_uuid: string | null;
   roles: OfficerRole[];
   updated_at: string;
 };

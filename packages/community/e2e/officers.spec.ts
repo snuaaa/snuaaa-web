@@ -1,3 +1,4 @@
+import type { Page } from '@playwright/test';
 import { test, expect, setToken, VALID_TOKEN } from './fixtures';
 import { API_ORIGIN } from '../playwright.config';
 
@@ -5,6 +6,8 @@ const generations = [
   {
     generation: 93,
     president: '김성윤',
+    // The fixture's member (grade 5) started this 기수: 현 회장.
+    president_uuid: 'member-uuid',
     roles: [
       { role: '부회장', names: ['박현우'] },
       { role: '관측부장', names: ['김민성', '김민주'] },
@@ -14,16 +17,38 @@ const generations = [
   {
     generation: 92,
     president: '박시원',
+    president_uuid: null,
     roles: [{ role: '총무', names: ['박현우'] }],
     updated_at: '2026-11-23T00:00:00.000Z',
   },
   {
     generation: 91,
     president: '최상욱',
+    president_uuid: null,
     roles: [{ role: '총무', names: ['박시원'] }],
     updated_at: '2026-11-23T00:00:00.000Z',
   },
 ];
+
+/** Signs in as 운영진 (grade 3) instead of the fixture's 현 회장. */
+async function signInAsManager(page: Page) {
+  await page.route(`${API_ORIGIN}/api/auth/check**`, (route) =>
+    route.fulfill({
+      json: {
+        userInfo: {
+          user_id: 2,
+          user_uuid: 'manager-uuid',
+          nickname: 'manager',
+          grade: 3,
+          level: 1,
+          profile_path: '',
+        },
+        autoLogin: false,
+        token: VALID_TOKEN,
+      },
+    }),
+  );
+}
 
 test.describe('임원진', () => {
   test.beforeEach(async ({ page }) => {
@@ -71,7 +96,8 @@ test.describe('임원진', () => {
     await expect(timeline.locator('mark')).toHaveCount(0);
   });
 
-  test('임원은 다음 기수를 추가한다', async ({ page }) => {
+  test('운영진은 기수를 직접 추가한다', async ({ page }) => {
+    await signInAsManager(page);
     const saved: unknown[] = [];
     await page.route(`${API_ORIGIN}/api/officers**`, (route) => {
       const request = route.request();
@@ -128,12 +154,86 @@ test.describe('임원진', () => {
       0,
     );
 
+    // A new 기수 comes from 회기 넘기기, not by hand.
+    await expect(page.getByRole('button', { name: '기수 추가' })).toHaveCount(
+      0,
+    );
+
     await edit.click();
     const dialog = page.getByRole('dialog', { name: '93대 수정' });
     await expect(dialog.getByRole('button', { name: '삭제' })).toHaveCount(0);
   });
 
+  test('다른 기수의 회장 계정이면 지금 기수를 고칠 수 없다', async ({
+    page,
+  }) => {
+    const otherPresident = generations.map((g, index) =>
+      index === 0 ? { ...g, president_uuid: 'someone-else' } : g,
+    );
+    await page.route(`${API_ORIGIN}/api/officers`, (route) =>
+      route.fulfill({ json: { success: true, generations: otherPresident } }),
+    );
+
+    await page.goto('/officers');
+    await expect(
+      page.getByRole('list', { name: '기수 타임라인' }),
+    ).toBeVisible();
+    await expect(page.getByRole('button', { name: '93대 수정' })).toHaveCount(
+      0,
+    );
+    await expect(page.getByRole('button', { name: '회기 넘기기' })).toHaveCount(
+      0,
+    );
+  });
+
+  test('현 회장은 새 회장을 골라 회기를 넘긴다', async ({ page }) => {
+    const handedOver: unknown[] = [];
+    await page.route(`${API_ORIGIN}/api/officers**`, (route) => {
+      const request = route.request();
+      if (request.method() === 'POST') {
+        handedOver.push(request.postDataJSON());
+        return route.fulfill({ json: { success: true } });
+      }
+      return route.fulfill({ json: { success: true, generations } });
+    });
+    await page.route(`${API_ORIGIN}/api/userinfo/search/mini**`, (route) =>
+      route.fulfill({
+        json: {
+          success: true,
+          userList: [
+            {
+              user_uuid: 'next-uuid',
+              username: '홍길동',
+              nickname: 'gildong',
+              profile_path: '',
+            },
+          ],
+        },
+      }),
+    );
+
+    await page.goto('/officers');
+    await page.getByRole('button', { name: '회기 넘기기' }).click();
+    const dialog = page.getByRole('dialog', { name: '회기 넘기기' });
+    await expect(dialog).toContainText('93대를 마치고 94대를 시작해요.');
+    const submit = dialog.getByRole('button', { name: '94대로 넘기기' });
+    await expect(submit).toBeDisabled();
+
+    await dialog.getByPlaceholder('이름').fill('홍길');
+    await dialog
+      .getByRole('list', { name: '회원 검색 결과' })
+      .getByRole('button', { name: /홍길동/ })
+      .click();
+    await expect(dialog).toContainText('홍길동 님은 목성(현 회장)이 되고');
+    await submit.click();
+
+    await expect(dialog).toBeHidden();
+    await expect(page.getByText('94대를 시작했어요')).toBeVisible();
+    expect(handedOver).toEqual([{ president_uuid: 'next-uuid' }]);
+  });
+
   test('이름이 빈 직책은 저장하지 않는다', async ({ page, api }) => {
+    await signInAsManager(page);
     await page.route(`${API_ORIGIN}/api/officers`, (route) =>
       route.fulfill({ json: { success: true, generations } }),
     );

@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import OfficerService from '~/services/OfficerService';
+import { sessionQueryOptions } from '~/hooks/queries/useAuthQueries';
 import type { OfficerInput } from '~/services/types';
 
 export const officerKeys = {
@@ -36,6 +37,21 @@ export function useDeleteOfficers() {
       OfficerService.deleteOfficers(generation),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: officerKeys.all });
+    },
+  });
+}
+
+/** 회기 넘기기. Grades change, so the session is checked again too. */
+export function useHandOver() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (presidentUuid: string) =>
+      OfficerService.handOver(presidentUuid),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: officerKeys.all });
+      queryClient.invalidateQueries({
+        queryKey: sessionQueryOptions().queryKey,
+      });
     },
   });
 }
