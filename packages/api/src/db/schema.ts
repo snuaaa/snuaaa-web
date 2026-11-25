@@ -132,6 +132,44 @@ export const photo = pgTable('tb_photo', {
   date: timestamp('date', { withTimezone: true }),
 });
 
+export const exhibition = pgTable('tb_exhibition', {
+  content_id: integer('content_id').primaryKey(),
+  exhibition_no: integer('exhibition_no'),
+  slogan: varchar('slogan', { length: 64 }),
+  date_start: timestamp('date_start', { withTimezone: true }),
+  date_end: timestamp('date_end', { withTimezone: true }),
+  place: varchar('place', { length: 64 }),
+  /** @deprecated Holds the same URL as `poster_url` for new posters. */
+  poster_path: varchar('poster_path', { length: 256 }),
+  /** @deprecated Holds the same URL as `poster_thumbnail_url` for new posters. */
+  poster_thumbnail_path: varchar('poster_thumbnail_path', { length: 256 }),
+  poster_url: varchar('poster_url', { length: 256 }),
+  poster_thumbnail_url: varchar('poster_thumbnail_url', { length: 256 }),
+});
+
+/** `exhibition_id` is a legacy column; the exhibition is `parent_id`. */
+export const exhibitPhoto = pgTable('tb_exhibit_photo', {
+  content_id: integer('content_id').primaryKey(),
+  exhibition_id: integer('exhibition_id'),
+  order: integer('order'),
+  photographer_id: integer('photographer_id'),
+  photographer_alt: varchar('photographer_alt', { length: 32 }),
+  /** @deprecated Holds the same URL as `img_url` for new photos. */
+  file_path: varchar('file_path', { length: 256 }),
+  /** @deprecated Holds the same URL as `thumbnail_url` for new photos. */
+  thumbnail_path: varchar('thumbnail_path', { length: 256 }),
+  location: varchar('location', { length: 256 }),
+  camera: varchar('camera', { length: 256 }),
+  lens: varchar('lens', { length: 256 }),
+  exposure_time: varchar('exposure_time', { length: 256 }),
+  focal_length: varchar('focal_length', { length: 32 }),
+  f_stop: varchar('f_stop', { length: 8 }),
+  iso: varchar('iso', { length: 8 }),
+  date: timestamp('date', { withTimezone: true }),
+  img_url: varchar('img_url', { length: 256 }),
+  thumbnail_url: varchar('thumbnail_url', { length: 256 }),
+});
+
 export const contentTag = pgTable(
   'tb_content_tag',
   {

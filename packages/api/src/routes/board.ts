@@ -1,6 +1,4 @@
 import express from 'express';
-import multer from 'multer';
-import { AuthenticatedRequestWithFile } from '../middlewares/upload';
 import { verifyTokenMiddleware } from '../middlewares/auth';
 import {
   assertBoardAccess,
@@ -8,20 +6,12 @@ import {
   retrieveBoard,
   retrieveBoardsCanAccess,
 } from '../controllers/board.controller';
-import { createContent } from '../controllers/content.controller';
 import { retrievePostsInBoard } from '../controllers/post.controller';
 import { retrieveTagsOnBoard } from '../controllers/tag.controller';
-import {
-  retrieveExhibitions,
-  createExhibition,
-} from '../controllers/exhibition.controller';
-import { resizeImageBuffer } from '../utils/resize';
-import { uploadImageToS3 } from '../utils/upload';
+import { retrieveExhibitions } from '../controllers/exhibition.controller';
 import type { AuthenticatedRequest } from '../middlewares/auth';
-import { BadRequestError } from '../errors';
 
 const router = express.Router();
-const memoryUpload = multer({ storage: multer.memoryStorage() });
 
 router.get(
   '/',
@@ -121,53 +111,6 @@ router.get(
       );
       const exhibitionInfo = await retrieveExhibitions();
       res.json(exhibitionInfo);
-    } catch (err) {
-      next(err);
-    }
-  },
-);
-
-router.post(
-  '/:board_id/exhibition',
-  verifyTokenMiddleware,
-  memoryUpload.single('poster'),
-  async (req: AuthenticatedRequestWithFile, res, next) => {
-    const decodedToken = req.decodedToken;
-    const file = req.file;
-
-    if (!file) {
-      return next(new BadRequestError('POSTER IS NOT ATTACHED'));
-    }
-
-    try {
-      await assertBoardAccessById(
-        req.params.board_id,
-        decodedToken.grade,
-        'write',
-      );
-      const resizedOriginalBuffer = await resizeImageBuffer(file.buffer);
-      const resizedThumbnailBuffer = await resizeImageBuffer(file.buffer, {
-        shortSideSize: 300,
-      });
-
-      const [posterUrl, posterThumbnailUrl] = await Promise.all([
-        uploadImageToS3(resizedOriginalBuffer, 'exhibition'),
-        uploadImageToS3(resizedThumbnailBuffer, 'exhibition'),
-      ]);
-
-      req.body.poster_path = posterUrl;
-      req.body.poster_thumbnail_path = posterThumbnailUrl;
-      req.body.poster_url = posterUrl;
-      req.body.poster_thumbnail_url = posterThumbnailUrl;
-
-      const content_id = await createContent(
-        decodedToken._id,
-        req.params.board_id,
-        req.body,
-        'EH',
-      );
-      await createExhibition(content_id, req.body);
-      res.json({ success: true });
     } catch (err) {
       next(err);
     }

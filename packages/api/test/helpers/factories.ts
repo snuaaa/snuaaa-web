@@ -204,6 +204,72 @@ export async function createPhoto(
   return contentId;
 }
 
+/**
+ * Creates an exhibition: a `tb_content` row of type EH and its
+ * `tb_exhibition` row, with S3 poster URLs.
+ */
+export async function createExhibition(
+  author: User,
+  board: Board,
+  overrides: Omit<Parameters<typeof createContent>[2], 'type'> & {
+    exhibition?: Record<string, unknown>;
+  } = {},
+) {
+  const n = next();
+  const { exhibition = {}, ...contentOverrides } = overrides;
+  const contentId = await createContent(author, board, {
+    ...contentOverrides,
+    type: 'EH',
+  });
+  const posterUrl = `https://bucket.example.com/poster${n}.jpg`;
+  const posterThumbnailUrl = `https://bucket.example.com/poster${n}_thumb.jpg`;
+  await insert('tb_exhibition', {
+    content_id: contentId,
+    exhibition_no: n,
+    slogan: `Slogan ${n}`,
+    date_start: new Date('2024-03-01T00:00:00.000Z'),
+    date_end: new Date('2024-03-08T00:00:00.000Z'),
+    place: `Place ${n}`,
+    poster_path: posterUrl,
+    poster_thumbnail_path: posterThumbnailUrl,
+    poster_url: posterUrl,
+    poster_thumbnail_url: posterThumbnailUrl,
+    ...exhibition,
+  });
+  return contentId;
+}
+
+/**
+ * Creates an exhibit photo: a `tb_content` row of type EP (in the
+ * exhibition `parent_id`) and its `tb_exhibit_photo` row.
+ */
+export async function createExhibitPhoto(
+  author: User,
+  board: Board,
+  overrides: Omit<Parameters<typeof createContent>[2], 'type'> & {
+    exhibitPhoto?: Record<string, unknown>;
+  } = {},
+) {
+  const n = next();
+  const { exhibitPhoto = {}, ...contentOverrides } = overrides;
+  const contentId = await createContent(author, board, {
+    ...contentOverrides,
+    type: 'EP',
+  });
+  const imgUrl = `https://bucket.example.com/exhibit${n}.jpg`;
+  const thumbnailUrl = `https://bucket.example.com/exhibit${n}_thumb.jpg`;
+  await insert('tb_exhibit_photo', {
+    content_id: contentId,
+    order: n,
+    file_path: imgUrl,
+    thumbnail_path: thumbnailUrl,
+    img_url: imgUrl,
+    thumbnail_url: thumbnailUrl,
+    ...exhibitPhoto,
+  });
+  return contentId;
+}
+
 /** Creates a tag on the board, which photos on it can carry. */
 export async function createTag(board: Board) {
   const n = next();

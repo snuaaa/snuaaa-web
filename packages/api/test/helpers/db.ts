@@ -142,6 +142,68 @@ export async function photoRow(contentId: number) {
   return row;
 }
 
+/** The content's `tb_exhibition` row, or undefined when there is none. */
+export async function exhibitionRow(contentId: number) {
+  const [row] = await query(
+    `SELECT exhibition_no, slogan, date_start, date_end, place, poster_path,
+            poster_thumbnail_path, poster_url, poster_thumbnail_url
+       FROM tb_exhibition WHERE content_id = $1`,
+    [contentId],
+  );
+  return row;
+}
+
+/** The content's `tb_exhibit_photo` row, or undefined when there is none. */
+export async function exhibitPhotoRow(contentId: number) {
+  const [row] = await query(
+    `SELECT exhibition_id, "order", photographer_id, photographer_alt,
+            file_path, thumbnail_path, img_url, thumbnail_url, location,
+            camera, lens, exposure_time, focal_length, f_stop, iso, date
+       FROM tb_exhibit_photo WHERE content_id = $1`,
+    [contentId],
+  );
+  return row;
+}
+
+/** The board's contents, oldest first, deleted ones included. */
+export async function boardContents(boardId: string) {
+  return query<{
+    content_id: number;
+    content_uuid: string | null;
+    type: string;
+    author_id: number;
+    title: string | null;
+    text: string | null;
+    category_id: string | null;
+    deleted_at: Date | null;
+  }>(
+    `SELECT content_id, content_uuid, type, author_id, title, text,
+            category_id, deleted_at
+       FROM tb_content WHERE board_id = $1 ORDER BY content_id`,
+    [boardId],
+  );
+}
+
+/** The contents of the type in the parent, oldest first, deleted ones included. */
+export async function childContents(parentId: number, type: string) {
+  return query<{
+    content_id: number;
+    content_uuid: string | null;
+    author_id: number;
+    board_id: string;
+    category_id: string | null;
+    title: string | null;
+    text: string | null;
+    deleted_at: Date | null;
+  }>(
+    `SELECT content_id, content_uuid, author_id, board_id, category_id,
+            title, text, deleted_at
+       FROM tb_content WHERE type = $1 AND parent_id = $2
+      ORDER BY content_id`,
+    [type, parentId],
+  );
+}
+
 /** The ids of the tags on the content, sorted. */
 export async function contentTagIds(contentId: number) {
   const rows = await query<{ tag_id: string }>(
