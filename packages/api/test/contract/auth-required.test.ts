@@ -78,7 +78,6 @@ const PROTECTED_ENDPOINTS = [
   'PATCH /api/exhibitPhoto/:exhibitPhoto_id',
   'DELETE /api/exhibitPhoto/:exhibitPhoto_id',
   'DELETE /api/file/:file_id',
-  'POST /api/file/migrate',
   'GET /api/equipment',
   'GET /api/equipment/category',
   'GET /api/equipment/search',

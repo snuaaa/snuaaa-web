@@ -3,6 +3,7 @@ import { bodyLimit } from 'hono/body-limit';
 import { AppError } from '../errors';
 import { onError } from './errors';
 import { albumRoutes } from './routes/album';
+import { contentFileRoutes, fileRoutes } from './routes/attachedFile';
 import { boardRoutes } from './routes/board';
 import { commentRoutes, contentCommentRoutes } from './routes/comment';
 import { documentRoutes } from './routes/document';
@@ -61,11 +62,15 @@ export const honoApp = new Hono({ strict: false })
   .route('/album', albumRoutes)
   .route('/board', boardRoutes)
   .route('/comment', commentRoutes)
+  // Before the comment routes, whose token check covers all of `/content`,
+  // so the public file download answers first.
+  .route('/content', contentFileRoutes)
   .route('/content', contentCommentRoutes)
   .route('/document', documentRoutes)
   .route('/equipment', equipmentRoutes)
   .route('/exhibition', exhibitionRoutes)
   .route('/exhibitPhoto', exhibitPhotoRoutes)
+  .route('/file', fileRoutes)
   .route('/photo', photoRoutes)
   .route('/photoboard', photoboardRoutes)
   .route('/post', postRoutes);

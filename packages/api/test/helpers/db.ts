@@ -165,6 +165,24 @@ export async function exhibitPhotoRow(contentId: number) {
   return row;
 }
 
+/** The files attached to the content, by id, deleted ones included. */
+export async function attachedFileRows(contentId: number) {
+  return query<{
+    file_id: number;
+    original_name: string | null;
+    file_path: string | null;
+    file_url: string | null;
+    file_type: string | null;
+    download_count: number | null;
+    deleted_at: Date | null;
+  }>(
+    `SELECT file_id, original_name, file_path, file_url, file_type,
+            download_count, deleted_at
+       FROM tb_file WHERE parent_id = $1 ORDER BY file_id`,
+    [contentId],
+  );
+}
+
 /** The equipment's row, deleted or not, or undefined when there is none. */
 export async function equipmentRow(id: number) {
   const [row] = await query(
