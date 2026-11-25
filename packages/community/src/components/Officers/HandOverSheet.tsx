@@ -159,7 +159,7 @@ function HandOverForm({
             {picked?.username ? `${picked.username} 님` : '새 회장'}은 목성(현
             회장)이 되고, {next}대 임원진을 채울 수 있어요.
           </li>
-          <li>임원(토성) 등급은 회원 관리에서 따로 바꿔 주세요.</li>
+          <li>지금 임원(토성)은 모두 천왕성이 돼요.</li>
         </ul>
       </div>
     </Sheet>
