@@ -1,10 +1,13 @@
 -- Custom SQL migration file, put your code below! --
 -- 역대 임원진, one row per 기수 (generation). 회장 is required, so it has
 -- its own column; `roles` is the other roles in display order, as an array
--- of { "role": "부회장", "names": ["..."] }.
+-- of { "role": "부회장", "names": ["..."] }. `president_user_id` is the
+-- 회장's account, set when a 기수 is started by 회기 넘기기; the imported
+-- 기수 have none.
 CREATE TABLE IF NOT EXISTS tb_officer_generation (
   generation integer PRIMARY KEY CHECK (generation > 0),
   president varchar(32) NOT NULL,
+  president_user_id integer REFERENCES tb_user (user_id) ON DELETE SET NULL,
   roles jsonb NOT NULL DEFAULT '[]',
   created_at timestamp with time zone NOT NULL DEFAULT now(),
   updated_at timestamp with time zone NOT NULL DEFAULT now()

@@ -5,6 +5,7 @@ import { requireAuth, type AuthEnvironment } from '../auth';
 import { validationHook } from '../errors';
 import {
   deleteOfficers,
+  handOver,
   listOfficers,
   saveOfficers,
 } from '../../services/officer.service';
@@ -25,6 +26,11 @@ const officersBody = z.object({
     .default([]),
 });
 
+const handOverBody = z.object({
+  /** The member who becomes 회장 of the next 기수. */
+  president_uuid: z.string().uuid(),
+});
+
 const generationParam = z.object({
   generation: z.coerce.number().int().positive().max(9999),
 });
@@ -36,6 +42,18 @@ export const officerRoutes = new Hono<AuthEnvironment>()
     const generations = await listOfficers();
     return context.json({ success: true, generations });
   })
+  // 회기 넘기기: starts the next 기수 with a new 회장.
+  .post(
+    '/handover',
+    zValidator('json', handOverBody, validationHook),
+    async (context) => {
+      const generation = await handOver(
+        context.get('actor'),
+        context.req.valid('json').president_uuid,
+      );
+      return context.json({ success: true, generation });
+    },
+  )
   .put(
     '/:generation',
     zValidator('param', generationParam, validationHook),

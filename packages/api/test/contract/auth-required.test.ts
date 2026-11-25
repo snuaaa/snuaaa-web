@@ -86,6 +86,7 @@ const PROTECTED_ENDPOINTS = [
   'GET /api/equipment/:id/rents',
   'POST /api/upload/image',
   'GET /api/officers',
+  'POST /api/officers/handover',
   'PUT /api/officers/:generation',
   'DELETE /api/officers/:generation',
 ];

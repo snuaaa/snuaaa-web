@@ -5,6 +5,7 @@ import {
   createOfficerGeneration,
   createUser,
 } from './helpers/factories';
+import { gradeOf } from './helpers/db';
 
 const FORBIDDEN = {
   success: false,
@@ -49,6 +50,7 @@ describe('GET /api/officers', () => {
       generation: 93,
       president: '김성윤',
       roles: ROLES,
+      president_uuid: null,
       updated_at: expect.any(String),
     });
   });
@@ -80,7 +82,9 @@ describe('PUT /api/officers/:generation', () => {
         updated_at: expect.any(String),
       },
     });
-    expect(await listGenerations()).toEqual([response.body.generation]);
+    expect(await listGenerations()).toEqual([
+      { ...response.body.generation, president_uuid: null },
+    ]);
   });
 
   it('replaces the roles of an existing generation', async () => {
@@ -157,30 +161,77 @@ describe('PUT /api/officers/:generation', () => {
     expect(response.status).toBe(200);
   });
 
-  it('lets 현 회장 (5) change the current generation or add the next', async () => {
-    await createOfficerGeneration(92);
-    await createOfficerGeneration(93);
+  it('lets 현 회장 (5) change their own generation, the newest', async () => {
     const president = await createUser({ grade: 5 });
+    await createOfficerGeneration(92);
+    await createOfficerGeneration(93, { presidentUserId: president.user_id });
 
-    for (const generation of [93, 94]) {
-      const response = await api()
-        .put(`/api/officers/${generation}`)
-        .set('Authorization', bearer(president))
-        .send(BODY);
-      expect(response.status).toBe(200);
-    }
-    const generations = await listGenerations();
-    expect(
-      generations.map((g: { generation: number }) => g.generation),
-    ).toEqual([94, 93, 92]);
+    const response = await api()
+      .put('/api/officers/93')
+      .set('Authorization', bearer(president))
+      .send(BODY);
+
+    expect(response.status).toBe(200);
+    expect((await listGenerations())[0]).toMatchObject({
+      generation: 93,
+      ...BODY,
+    });
   });
 
-  it('keeps 현 회장 off past and skipped generations', async () => {
-    await createOfficerGeneration(92);
-    await createOfficerGeneration(93);
-    const president = await createUser({ grade: 5 });
+  it('matches the 회장 of an imported generation by name', async () => {
+    await createOfficerGeneration(93, { president: '김성윤' });
+    const president = await createUser({ grade: 5, username: '김성윤' });
+    const other = await createUser({ grade: 5, username: '박시원' });
 
-    for (const generation of [92, 95]) {
+    const own = await api()
+      .put('/api/officers/93')
+      .set('Authorization', bearer(president))
+      .send(BODY);
+    const notOwn = await api()
+      .put('/api/officers/93')
+      .set('Authorization', bearer(other))
+      .send(BODY);
+
+    expect(own.status).toBe(200);
+    expect(notOwn.status).toBe(403);
+  });
+
+  it('keeps another grade 5 member off the newest generation', async () => {
+    const president = await createUser({ grade: 5, username: '김성윤' });
+    await createOfficerGeneration(93, {
+      president: '김성윤',
+      presidentUserId: president.user_id,
+    });
+    // Same name, other account: the account decides.
+    const namesake = await createUser({ grade: 5, username: '김성윤' });
+
+    const response = await api()
+      .put('/api/officers/93')
+      .set('Authorization', bearer(namesake))
+      .send(BODY);
+
+    expect(response.status).toBe(403);
+    expect(response.body).toEqual(FORBIDDEN);
+  });
+
+  it('uses the grade in the DB, not the one in the token', async () => {
+    const former = await createUser({ grade: 4 });
+    await createOfficerGeneration(93, { presidentUserId: former.user_id });
+
+    const response = await api()
+      .put('/api/officers/93')
+      .set('Authorization', bearer({ ...former, grade: 5 }))
+      .send(BODY);
+
+    expect(response.status).toBe(403);
+  });
+
+  it('keeps 현 회장 off past and new generations', async () => {
+    const president = await createUser({ grade: 5 });
+    await createOfficerGeneration(92, { presidentUserId: president.user_id });
+    await createOfficerGeneration(93, { presidentUserId: president.user_id });
+
+    for (const generation of [92, 94, 95]) {
       const response = await api()
         .put(`/api/officers/${generation}`)
         .set('Authorization', bearer(president))
@@ -216,6 +267,120 @@ describe('PUT /api/officers/:generation', () => {
       });
     }
     expect(await listGenerations()).toEqual([]);
+  });
+});
+
+describe('POST /api/officers/handover', () => {
+  async function setUp() {
+    const president = await createUser({ grade: 5, username: '김성윤' });
+    await createOfficerGeneration(93, {
+      president: '김성윤',
+      presidentUserId: president.user_id,
+      roles: ROLES,
+    });
+    const next = await createUser({ grade: 6, username: '홍길동' });
+    return { president, next };
+  }
+
+  it('lets 현 회장 hand over to the next 회장', async () => {
+    const { president, next } = await setUp();
+
+    const response = await api()
+      .post('/api/officers/handover')
+      .set('Authorization', bearer(president))
+      .send({ president_uuid: next.user_uuid });
+
+    expect(response.status).toBe(200);
+    expect(response.body.generation).toMatchObject({
+      generation: 94,
+      president: '홍길동',
+      roles: [],
+    });
+    expect(await gradeOf(president)).toBe(4);
+    expect(await gradeOf(next)).toBe(5);
+    expect((await listGenerations())[0]).toMatchObject({
+      generation: 94,
+      president_uuid: next.user_uuid,
+    });
+  });
+
+  it('gives the new 회장 their own 기수 and the old one none', async () => {
+    const { president, next } = await setUp();
+    await api()
+      .post('/api/officers/handover')
+      .set('Authorization', bearer(president))
+      .send({ president_uuid: next.user_uuid });
+
+    const own = await api()
+      .put('/api/officers/94')
+      .set('Authorization', bearer(next))
+      .send({ president: '홍길동', roles: ROLES });
+    // The old token still says grade 5.
+    const old = await api()
+      .put('/api/officers/93')
+      .set('Authorization', bearer(president))
+      .send(BODY);
+
+    expect(own.status).toBe(200);
+    expect(old.status).toBe(403);
+  });
+
+  it('lets 운영진 hand over, and keeps a 운영진 회장 at their grade', async () => {
+    const { president } = await setUp();
+    const manager = await createUser({ grade: 3 });
+    const next = await createUser({ grade: 3, username: '이운영' });
+
+    const response = await api()
+      .post('/api/officers/handover')
+      .set('Authorization', bearer(manager))
+      .send({ president_uuid: next.user_uuid });
+
+    expect(response.status).toBe(200);
+    expect(await gradeOf(president)).toBe(4);
+    expect(await gradeOf(next)).toBe(3);
+  });
+
+  it('is closed to everyone else', async () => {
+    const { next } = await setUp();
+    // 4 is 전 회장, and a grade 5 member who is not this 기수's 회장.
+    for (const grade of [4, 5, 6, 7]) {
+      const member = await createUser({ grade });
+      const response = await api()
+        .post('/api/officers/handover')
+        .set('Authorization', bearer(member))
+        .send({ president_uuid: next.user_uuid });
+      expect(response.status).toBe(403);
+      expect(response.body).toEqual(FORBIDDEN);
+    }
+    expect(await listGenerations()).toHaveLength(1);
+    expect(await gradeOf(next)).toBe(6);
+  });
+
+  it('answers 404 for an unknown member, and changes nothing', async () => {
+    const { president } = await setUp();
+
+    const response = await api()
+      .post('/api/officers/handover')
+      .set('Authorization', bearer(president))
+      .send({ president_uuid: '00000000-0000-4000-8000-000000000000' });
+
+    expect(response.status).toBe(404);
+    expect(await gradeOf(president)).toBe(5);
+    expect(await listGenerations()).toHaveLength(1);
+  });
+
+  it('rejects a member without a name, or a bad body, with 400', async () => {
+    const { president } = await setUp();
+    const nameless = await createUser({ grade: 7, username: null });
+
+    for (const body of [{ president_uuid: nameless.user_uuid }, {}]) {
+      const response = await api()
+        .post('/api/officers/handover')
+        .set('Authorization', bearer(president))
+        .send(body);
+      expect(response.status).toBe(400);
+    }
+    expect(await gradeOf(president)).toBe(5);
   });
 });
 
