@@ -1,4 +1,9 @@
-import { AuthorizationError, BadRequestError, NotFoundError } from '../errors';
+import {
+  AuthorizationError,
+  BadRequestError,
+  ConflictError,
+  NotFoundError,
+} from '../errors';
 import { withTransaction } from '../db/transaction';
 import type { Executor } from '../db/client';
 import * as officers from '../repositories/officer.repository';
@@ -135,12 +140,15 @@ export async function handOver(actor: Actor, presidentUuid: string) {
         transaction,
       );
     }
-    return officers.insertWithPresident(
+    const started = await officers.insertWithPresident(
       latest.generation + 1,
       name.slice(0, 32),
       president.user_id,
       transaction,
     );
+    // 운영진 added the same 기수 by hand at the same moment: roll back.
+    if (!started) throw new ConflictError('The generation already exists');
+    return started;
   });
 }
 

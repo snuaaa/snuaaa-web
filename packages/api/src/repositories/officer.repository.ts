@@ -38,7 +38,8 @@ export async function upsert(
   return row;
 }
 
-/** Starts a new generation with only its 회장, linked to their account. */
+/** Starts a new generation with only its 회장, linked to their account.
+ *  Null when the generation was added in the meantime. */
 export async function insertWithPresident(
   generation: number,
   president: string,
@@ -53,8 +54,9 @@ export async function insertWithPresident(
       president_user_id: presidentUserId,
       roles: [],
     })
+    .onConflictDoNothing({ target: officerGeneration.generation })
     .returning(columns);
-  return row;
+  return row ?? null;
 }
 
 /** Deletes the generation. Returns how many rows were deleted (0 or 1). */
