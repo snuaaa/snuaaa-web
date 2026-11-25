@@ -263,3 +263,13 @@ export const rentReturn = pgTable('tb_rent_return', {
   /** `enums/penaltyStatusEnum.ts`. */
   penalty_status: varchar('penalty_status', { length: 16 }),
 });
+
+/** One row per recorded login (at most one an hour, see `auth.service`). */
+export const statsLogin = pgTable(
+  'tb_stats_login',
+  {
+    user_id: integer('user_id').notNull(),
+    login_at: timestamp('login_at', { withTimezone: true }).notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.user_id, t.login_at] })],
+);
