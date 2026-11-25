@@ -28,3 +28,24 @@ export async function largeJpegImage() {
     .jpeg({ quality: 95 })
     .toBuffer();
 }
+
+/**
+ * Runs `run` with a file in `upload/`, the legacy local-disk folder served
+ * under `/static`, and removes it afterwards.
+ */
+export async function withStaticFile<T>(
+  name: string,
+  content: Buffer,
+  run: () => Promise<T>,
+) {
+  const { mkdir, rm, writeFile } = await import('fs/promises');
+  const path = await import('path');
+  const folder = path.join(__dirname, '..', '..', 'upload', 'test');
+  await mkdir(folder, { recursive: true });
+  try {
+    await writeFile(path.join(folder, name), content);
+    return await run();
+  } finally {
+    await rm(folder, { recursive: true, force: true });
+  }
+}

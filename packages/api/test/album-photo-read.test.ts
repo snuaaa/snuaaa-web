@@ -746,11 +746,11 @@ describe('album and photo reads after the move', () => {
   });
 
   it('GET /api/photoboard/:board_id/photos is gone', async () => {
-    const { board } = await setup();
+    const { author, board } = await setup();
 
-    const response = await api().get(
-      `/api/photoboard/${board.board_id}/photos`,
-    );
+    const response = await api()
+      .get(`/api/photoboard/${board.board_id}/photos`)
+      .set('Authorization', bearer(author));
 
     expect(response.status).toBe(404);
   });

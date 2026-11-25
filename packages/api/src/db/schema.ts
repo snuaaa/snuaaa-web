@@ -53,17 +53,31 @@ export const tag = pgTable('tb_tag', {
   tag_type: varchar('tag_type', { length: 8 }),
 });
 
-/** The columns of `tb_user` that are safe to show to other members. */
+/**
+ * `tb_user`, without `password`. Only the columns in `authorJson`
+ * (`repositories/user.repository.ts`) are safe to show to every member.
+ */
 export const user = pgTable('tb_user', {
   user_id: serial('user_id').primaryKey(),
   user_uuid: uuid('user_uuid'),
+  /** The login id. */
+  id: varchar('id', { length: 16 }).notNull(),
+  /** The bcrypt hash. Never select it into a response. */
+  password: varchar('password', { length: 64 }),
+  username: varchar('username', { length: 16 }),
+  aaa_no: varchar('aaa_no', { length: 16 }),
   nickname: varchar('nickname', { length: 16 }),
+  col_no: varchar('col_no', { length: 8 }),
+  major: varchar('major', { length: 32 }),
+  email: varchar('email', { length: 64 }),
+  mobile: varchar('mobile', { length: 16 }),
   introduction: text('introduction'),
   grade: integer('grade'),
   level: integer('level'),
   /** @deprecated Use `profile_url`. */
   profile_path: varchar('profile_path', { length: 256 }),
   profile_url: varchar('profile_url', { length: 256 }),
+  login_at: timestamp('login_at', { withTimezone: true }),
   ...timestamps,
   deleted_at: timestamp('deleted_at', { withTimezone: true }),
 });
@@ -250,6 +264,16 @@ export const rentReturn = pgTable('tb_rent_return', {
   /** `enums/penaltyStatusEnum.ts`. */
   penalty_status: varchar('penalty_status', { length: 16 }),
 });
+
+/** One row per recorded login (at most one an hour, see `auth.service`). */
+export const statsLogin = pgTable(
+  'tb_stats_login',
+  {
+    user_id: integer('user_id').notNull(),
+    login_at: timestamp('login_at', { withTimezone: true }).notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.user_id, t.login_at] })],
+);
 
 /** One officer role of a generation, such as 관측부장 and who held it. */
 export type OfficerRole = { role: string; names: string[] };

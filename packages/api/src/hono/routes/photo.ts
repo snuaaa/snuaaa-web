@@ -10,7 +10,7 @@ import {
   retrievePhoto,
   updatePhoto,
 } from '../../services/photo.service';
-import { pageNumber } from './query';
+import { pageNumber, pageSize } from './query';
 
 // The web sends '' for an empty field, and leaves out an empty date.
 const shotFields = {
@@ -58,7 +58,7 @@ const updateBody = z.object({
 const listQuery = z.object({
   board_id: z.string().optional(),
   user_uuid: z.string().optional(),
-  limit: pageNumber(20),
+  limit: pageSize(20),
   offset: pageNumber(0),
   search_type: z.string().optional(),
   search_keyword: z.string().optional(),

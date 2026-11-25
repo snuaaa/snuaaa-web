@@ -26,6 +26,10 @@ export type User = {
 type UserOverrides = Partial<
   Pick<User, 'id' | 'nickname' | 'grade' | 'level'>
 > & {
+  username?: string;
+  email?: string;
+  aaa_no?: string;
+  login_at?: Date;
   /** Plain text; stored hashed, like signup. */
   password?: string;
 };
@@ -60,6 +64,7 @@ type BoardOverrides = Partial<
   Board & {
     board_name: string;
     board_type: string;
+    board_desc: string;
     menu: number;
     order: number;
   }
@@ -298,18 +303,20 @@ export async function createComment(
   overrides: {
     text?: string;
     parent_comment_id?: number;
+    created_at?: Date;
     deleted_at?: Date;
   } = {},
 ) {
   const n = next();
+  const { created_at = new Date(), ...rest } = overrides;
   const comment = await insert<{ comment_id: number }>('tb_comment', {
     comment_uuid: randomUUID(),
     parent_id: contentId,
     author_id: author.user_id,
     text: `Comment ${n}`,
-    created_at: new Date(),
-    updated_at: new Date(),
-    ...overrides,
+    created_at,
+    updated_at: created_at,
+    ...rest,
   });
   return comment.comment_id;
 }

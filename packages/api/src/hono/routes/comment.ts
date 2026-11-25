@@ -3,9 +3,12 @@ import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import { requireAuth, type AuthEnvironment } from '../auth';
 import { validationHook } from '../errors';
+import { pageNumber, pageSize } from './query';
 import {
   createComment,
   deleteComment,
+  listCommentThreads,
+  listComments,
   toggleCommentLike,
   updateComment,
 } from '../../services/comment.service';
@@ -22,9 +25,31 @@ const commentBody = z.object({
   ),
 });
 
+// Anything that isn't a positive number is the default, as before; 0 makes
+// the service use its own page size.
+const listQuery = z.object({
+  user_uuid: z.string().optional(),
+  limit: pageSize(0),
+  offset: pageNumber(0),
+});
+
 /** `/api/comment/...` */
 export const commentRoutes = new Hono<AuthEnvironment>()
   .use(requireAuth)
+  .get(
+    '/list',
+    zValidator('query', listQuery, validationHook),
+    async (context) => {
+      const query = context.req.valid('query');
+      return context.json(
+        await listComments(context.get('actor'), {
+          userUuid: query.user_uuid,
+          limit: query.limit,
+          offset: query.offset,
+        }),
+      );
+    },
+  )
   .patch(
     '/:comment_id',
     zValidator('json', commentBody, validationHook),
@@ -52,6 +77,14 @@ export const commentRoutes = new Hono<AuthEnvironment>()
 /** The comment and like endpoints under `/api/content/...`. */
 export const contentCommentRoutes = new Hono<AuthEnvironment>()
   .use(requireAuth)
+  .get('/:content_id/comments', async (context) =>
+    context.json(
+      await listCommentThreads(
+        context.get('actor'),
+        context.req.param('content_id'),
+      ),
+    ),
+  )
   .post(
     '/:content_id/comment',
     zValidator('json', commentBody, validationHook),

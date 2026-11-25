@@ -7,7 +7,7 @@ import * as contents from '../repositories/content.repository';
 import * as photos from '../repositories/photo.repository';
 import * as tags from '../repositories/tag.repository';
 import { parseId } from '../repositories/utils';
-import { loadAccessibleBoard } from './board.service';
+import { canReadBoard, loadAccessibleBoard } from './board.service';
 import { loadEditableContent } from './content.service';
 import { assertBoardAccess } from './permissions';
 import type { Actor } from './types';
@@ -186,6 +186,18 @@ export async function listAlbums(
       offset: ALBUMS_PER_PAGE * (query.page - 1),
     }),
   ]);
+  const albumInfo = await withCoverAndNewestPhoto(rows);
+  return { albumCount, albumInfo };
+}
+
+/**
+ * Adds each album's cover photo (`album.thumbnail`, null when none is set
+ * or it was deleted) and its newest photo (`children`, empty when it has
+ * none).
+ */
+async function withCoverAndNewestPhoto(
+  rows: Awaited<ReturnType<typeof albums.list>>,
+) {
   const coverIds = rows.flatMap((row) =>
     row.album.tn_photo_id === null ? [] : [row.album.tn_photo_id],
   );
@@ -197,7 +209,7 @@ export async function listAlbums(
   const latestByAlbum = new Map(
     latest.map((photo) => [photo.parent_id, photo]),
   );
-  const albumInfo = rows.map((row) => {
+  return rows.map((row) => {
     const newest = latestByAlbum.get(row.content_id);
     return {
       ...row,
@@ -211,5 +223,20 @@ export async function listAlbums(
       children: newest ? [newest] : [],
     };
   });
-  return { albumCount, albumInfo };
+}
+
+/**
+ * The board's newest albums, like a page of `listAlbums`, for the home
+ * page. Empty when the board is unknown or the actor may not read it.
+ */
+export async function listNewestAlbums(
+  actor: Actor,
+  boardId: string,
+  limit: number,
+) {
+  if (!(await canReadBoard(actor, boardId))) {
+    return [];
+  }
+  const rows = await albums.list({ boardId }, { limit, offset: 0 });
+  return withCoverAndNewestPhoto(rows);
 }
