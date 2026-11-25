@@ -5,15 +5,16 @@ import * as schema from './schema';
 import { DATABASE_TIMEOUTS } from './timeouts';
 
 /**
- * The Drizzle connection pool, used by `repositories/`. Sequelize keeps its
- * own pool (`models/sequelize.ts`) until every domain has moved (#158).
+ * The connection pool every query uses (`repositories/`). It has the 10
+ * connections the Drizzle and Sequelize pools had together (5 each) before
+ * Sequelize was removed (#158).
  */
 export const pool = new Pool({
   host: process.env.DB_HOST ?? 'localhost',
   database: process.env.POSTGRESQL_DATABASE,
   user: process.env.POSTGRESQL_USERNAME,
   password: process.env.POSTGRESQL_PASSWORD,
-  max: 5,
+  max: 10,
   connectionTimeoutMillis: DATABASE_TIMEOUTS.acquire,
   lock_timeout: DATABASE_TIMEOUTS.lock,
   statement_timeout: DATABASE_TIMEOUTS.statement,
