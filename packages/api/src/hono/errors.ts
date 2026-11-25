@@ -22,8 +22,8 @@ function postgresErrorCode(error: unknown): string | undefined {
 }
 
 /**
- * Maps known client errors to an `AppError`, like the Express error handler
- * (`middlewares/errorHandler.ts`). Returns `null` for anything unexpected.
+ * Maps known client errors to an `AppError`. Returns `null` for anything
+ * unexpected.
  */
 function toAppError(error: unknown): AppError | null {
   if (error instanceof AppError) {
@@ -40,8 +40,8 @@ function toAppError(error: unknown): AppError | null {
 }
 
 /**
- * Answers in the same `{ success: false, error, message, code? }` format as
- * Express. Only unexpected errors become a 500 and go to Sentry.
+ * Answers every error in the `{ success: false, error, message, code? }`
+ * format the web reads. Only unexpected errors become a 500 and go to Sentry.
  */
 export const onError: ErrorHandler = (error, context) => {
   const appError = toAppError(error);

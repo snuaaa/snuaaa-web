@@ -20,9 +20,8 @@ import { userRoutes } from './routes/user';
 import { userinfoReminderRoutes, userinfoRoutes } from './routes/userinfo';
 
 /**
- * The largest request body Hono reads, the same as the default limit of
- * Express's `bodyParser.json()`. The bridge hands Hono the raw request before
- * the Express body parsers run, so their limit doesn't apply here.
+ * The largest request body read, the default limit of Express's
+ * `bodyParser.json()` that the API had before (#158).
  */
 const MAXIMUM_BODY_BYTES = 100 * 1024;
 
@@ -36,7 +35,7 @@ const MAXIMUM_UPLOAD_BYTES = 100 * 1024 * 1024;
 function limitBody(maxSize: number) {
   return bodyLimit({
     maxSize,
-    // The same status and message as body-parser's limit in Express.
+    // The status and message body-parser's limit answered in Express.
     onError: () => {
       throw new AppError(413, 'BAD_REQUEST', 'request entity too large');
     },
@@ -53,14 +52,13 @@ const limitRequestBody: MiddlewareHandler = (context, next) =>
     : jsonBodyLimit(context, next);
 
 /**
- * The endpoints already moved from Express to Hono (#158). `hono/bridge.ts`
- * hands Hono the requests that match one of these routes; everything else
- * stays with the Express routers in `routes/`.
+ * Every endpoint of the API, under `/api`. `app.ts` serves it with the
+ * security headers, CORS and the access log.
  *
  * Every route here requires a token unless its router says otherwise; list
- * new ones in `test/contract/auth-required.test.ts` like Express routes.
+ * new ones in `test/contract/auth-required.test.ts`.
  */
-// `strict: false` ignores a trailing slash, like Express.
+// `strict: false` ignores a trailing slash, as Express did.
 export const honoApp = new Hono({ strict: false })
   .basePath('/api')
   .use(limitRequestBody)
