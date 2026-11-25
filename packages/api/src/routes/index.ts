@@ -8,7 +8,6 @@ import home from './home';
 import content from './content';
 import comment from './comment';
 import image from './image';
-import file from './file';
 import upload from './upload';
 // import { verifyTokenMiddleware } from '../middlewares/auth';
 
@@ -25,7 +24,6 @@ router.use('/home', home);
 router.use('/content', content);
 router.use('/comment', comment);
 router.use('/image', image);
-router.use('/file', file);
 router.use('/upload', upload);
 
 export default router;
