@@ -1,4 +1,3 @@
-import ContentTypeEnum from '../enums/contentTypeEnum';
 import express from 'express';
 
 import {
@@ -6,17 +5,7 @@ import {
   verifyTokenMiddleware,
 } from '../middlewares/auth';
 
-import {
-  assertCanEditContent,
-  updateContent,
-  deleteContent,
-} from '../controllers/content.controller';
-import {
-  retrieveAlbum,
-  updateAlbum,
-  updateAlbumThumbnail,
-  assertCanSetAlbumThumbnail,
-} from '../controllers/album.controller';
+import { retrieveAlbum } from '../controllers/album.controller';
 import { retrievePhotosInAlbum } from '../controllers/photo.controller';
 import { retrieveTagsOnBoard } from '../controllers/tag.controller';
 import { retrieveCategoryByBoard } from '../controllers/category.controller';
@@ -45,72 +34,6 @@ router.get(
         categoryInfo,
         tagInfo,
       });
-    } catch (err) {
-      next(err);
-    }
-  },
-);
-
-router.patch(
-  '/:album_id',
-  verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res, next) => {
-    try {
-      await assertCanEditContent(
-        req.params.album_id,
-        req.decodedToken,
-        ContentTypeEnum.ALBUM,
-      );
-      const contentData = {
-        title: req.body.title,
-        text: req.body.text,
-        category_id: req.body.category_id,
-      };
-      const albumData = req.body.album;
-
-      await Promise.all([
-        updateContent(req.params.album_id, contentData),
-        updateAlbum(req.params.album_id, albumData),
-      ]);
-
-      res.json({ success: true });
-    } catch (err) {
-      next(err);
-    }
-  },
-);
-
-router.patch(
-  '/:album_id/thumbnail',
-  verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res, next) => {
-    try {
-      await assertCanSetAlbumThumbnail(
-        req.params.album_id,
-        req.body.tn_photo_id,
-        req.decodedToken,
-      );
-      const tn_photo_id = req.body.tn_photo_id;
-      await updateAlbumThumbnail(req.params.album_id, tn_photo_id);
-      res.json({ success: true });
-    } catch (err) {
-      next(err);
-    }
-  },
-);
-
-router.delete(
-  '/:album_id',
-  verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res, next) => {
-    try {
-      await assertCanEditContent(
-        req.params.album_id,
-        req.decodedToken,
-        ContentTypeEnum.ALBUM,
-      );
-      await deleteContent(req.params.album_id);
-      res.json({ success: true });
     } catch (err) {
       next(err);
     }

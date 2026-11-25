@@ -16,6 +16,8 @@ export async function insert(
     author_id: number;
     board_id: string;
     type: string;
+    /** The parent content, e.g. a photo's album. */
+    parent_id?: number | null;
   },
   executor: Executor = database,
 ) {
@@ -30,6 +32,7 @@ export async function insert(
       title: values.title ?? null,
       text: values.text ?? null,
       type: values.type,
+      parent_id: values.parent_id ?? null,
       created_at: now,
       updated_at: now,
     })
