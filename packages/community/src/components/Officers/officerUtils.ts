@@ -1,15 +1,4 @@
-import type { OfficerGeneration, OfficerRole } from '~/services/types';
-
-export const PRESIDENT = '회장';
-
-/** 회장 and the rest, so the 회장 can be shown on its own. */
-export function splitPresident(roles: OfficerRole[]) {
-  const president = roles.find((role) => role.role === PRESIDENT);
-  return {
-    president: president?.names ?? [],
-    others: roles.filter((role) => role !== president),
-  };
-}
+import type { OfficerGeneration } from '~/services/types';
 
 const normalize = (value: string) => value.replace(/\s+/g, '').toLowerCase();
 
@@ -28,6 +17,7 @@ export function filterGenerations(
   return generations.filter(
     (generation) =>
       matches(`${generation.generation}대`, query) ||
+      matches(generation.president, query) ||
       generation.roles.some(
         (role) =>
           matches(role.role, query) ||

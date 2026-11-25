@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import OfficerService from '~/services/OfficerService';
-import type { OfficerRole } from '~/services/types';
+import type { OfficerInput } from '~/services/types';
 
 export const officerKeys = {
   all: ['officers'] as const,
@@ -20,11 +20,9 @@ export function useSaveOfficers() {
   return useMutation({
     mutationFn: ({
       generation,
-      roles,
-    }: {
-      generation: number;
-      roles: OfficerRole[];
-    }) => OfficerService.saveOfficers(generation, roles),
+      ...input
+    }: OfficerInput & { generation: number }) =>
+      OfficerService.saveOfficers(generation, input),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: officerKeys.all });
     },

@@ -4,8 +4,8 @@ import { API_ORIGIN } from '../playwright.config';
 const generations = [
   {
     generation: 93,
+    president: '김성윤',
     roles: [
-      { role: '회장', names: ['김성윤'] },
       { role: '부회장', names: ['박현우'] },
       { role: '관측부장', names: ['김민성', '김민주'] },
     ],
@@ -13,18 +13,14 @@ const generations = [
   },
   {
     generation: 92,
-    roles: [
-      { role: '회장', names: ['박시원'] },
-      { role: '총무', names: ['박현우'] },
-    ],
+    president: '박시원',
+    roles: [{ role: '총무', names: ['박현우'] }],
     updated_at: '2026-11-23T00:00:00.000Z',
   },
   {
     generation: 91,
-    roles: [
-      { role: '회장', names: ['최상욱'] },
-      { role: '총무', names: ['박시원'] },
-    ],
+    president: '최상욱',
+    roles: [{ role: '총무', names: ['박시원'] }],
     updated_at: '2026-11-23T00:00:00.000Z',
   },
 ];
@@ -83,7 +79,9 @@ test.describe('임원진', () => {
     await expect(
       dialog.getByRole('textbox', { name: '기수', exact: true }),
     ).toHaveValue('94');
-    await dialog.getByLabel('회장 이름', { exact: true }).fill('홍길동');
+    await dialog
+      .getByRole('textbox', { name: '회장', exact: true })
+      .fill('홍길동');
     await dialog.getByLabel('부회장 이름', { exact: true }).fill('김철수');
     await dialog
       .getByLabel('관측부장 이름', { exact: true })
@@ -95,8 +93,8 @@ test.describe('임원진', () => {
       [
         '/api/officers/94',
         {
+          president: '홍길동',
           roles: [
-            { role: '회장', names: ['홍길동'] },
             { role: '부회장', names: ['김철수'] },
             { role: '관측부장', names: ['이영희', '박민수'] },
           ],
@@ -137,7 +135,9 @@ test.describe('임원진', () => {
     await page.goto('/officers');
     await page.getByRole('button', { name: '기수 추가' }).click();
     const dialog = page.getByRole('dialog', { name: '기수 추가' });
-    await dialog.getByLabel('회장 이름', { exact: true }).fill('홍길동');
+    await dialog
+      .getByRole('textbox', { name: '회장', exact: true })
+      .fill('홍길동');
     await dialog.getByRole('button', { name: '저장' }).click();
 
     await expect(dialog.getByText('이름을 적어 주세요.').first()).toBeVisible();

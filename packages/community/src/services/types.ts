@@ -232,9 +232,13 @@ export type ListResponse<T = unknown> = {
 /** One officer role of a 기수, such as 관측부장 and who held it. */
 export type OfficerRole = { role: string; names: string[] };
 
-/** 역대 임원진: one 기수, roles in display order (회장 first). */
+/** 역대 임원진: one 기수, its 회장 and the other roles in display order. */
 export type OfficerGeneration = {
   generation: number;
+  president: string;
   roles: OfficerRole[];
   updated_at: string;
 };
+
+/** The body of `PUT officers/:generation`. */
+export type OfficerInput = Pick<OfficerGeneration, 'president' | 'roles'>;

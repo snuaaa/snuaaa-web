@@ -12,7 +12,7 @@ import {
 } from '~/components/Layout/constants';
 import useAuth from '~/hooks/useAuth';
 import type { OfficerGeneration } from '~/services/types';
-import { PRESIDENT, parseNames } from './officerUtils';
+import { parseNames } from './officerUtils';
 
 type Row = { key: number; role: string; names: string };
 
@@ -26,7 +26,6 @@ const toRow = (role: string, names: string[] = []): Row => ({
 /** The roles a new 기수 starts with: the latest 기수's, without names. */
 function templateRows(latest?: OfficerGeneration) {
   const roles = latest?.roles.map((role) => role.role) ?? [
-    PRESIDENT,
     '부회장',
     '총무',
     '회계',
@@ -66,6 +65,7 @@ function EditorForm({
   const [number, setNumber] = useState(
     String(generation?.generation ?? (latest ? latest.generation + 1 : '')),
   );
+  const [president, setPresident] = useState(generation?.president ?? '');
   const [rows, setRows] = useState<Row[]>(() =>
     generation
       ? generation.roles.map((role) => toRow(role.role, role.names))
@@ -95,10 +95,11 @@ function EditorForm({
         : parseNames(row.names).length === 0
           ? '이름을 적어 주세요.'
           : undefined;
-  const formError =
-    filled.length === 0 ? '직책을 하나 이상 적어 주세요.' : undefined;
+  const presidentError = president.trim()
+    ? undefined
+    : '회장 이름을 적어 주세요.';
   const invalid =
-    Boolean(numberError) || Boolean(formError) || filled.some(rowError);
+    Boolean(numberError) || Boolean(presidentError) || filled.some(rowError);
 
   const updateRow = (key: number, change: Partial<Row>) =>
     setRows((current) =>
@@ -112,6 +113,7 @@ function EditorForm({
     save.mutate(
       {
         generation: parsedNumber,
+        president: president.trim(),
         roles: filled.map((row) => ({
           role: row.role.trim(),
           names: parseNames(row.names),
@@ -184,21 +186,36 @@ function EditorForm({
           noValidate
           className="flex flex-col gap-5 px-2 pb-2"
         >
-          <Field
-            label="기수"
-            required
-            error={submitted ? numberError : undefined}
-          >
-            <Input
-              inputMode="numeric"
-              value={number}
-              onChange={(event) => setNumber(event.target.value.trim())}
-              disabled={numberLocked}
-              className="w-28"
-            />
-          </Field>
+          <div className="flex gap-3">
+            <Field
+              label="기수"
+              required
+              error={submitted ? numberError : undefined}
+              className="w-28 shrink-0"
+            >
+              <Input
+                inputMode="numeric"
+                value={number}
+                onChange={(event) => setNumber(event.target.value.trim())}
+                disabled={numberLocked}
+              />
+            </Field>
+            {/* 회장 is required, so it has its own field and column. */}
+            <Field
+              label="회장"
+              required
+              error={submitted ? presidentError : undefined}
+              className="min-w-0 flex-1"
+            >
+              <Input
+                value={president}
+                onChange={(event) => setPresident(event.target.value)}
+                placeholder="이름"
+              />
+            </Field>
+          </div>
           <fieldset className="flex flex-col gap-3">
-            <legend className="mb-1.5 text-label text-fg">직책과 이름</legend>
+            <legend className="mb-1.5 text-label text-fg">다른 임원</legend>
             {rows.map((row, index) => {
               const error = submitted ? rowError(row) : undefined;
               return (
@@ -241,9 +258,6 @@ function EditorForm({
                 </div>
               );
             })}
-            {submitted && formError && (
-              <p className="text-caption text-danger">{formError}</p>
-            )}
             <Button
               variant="secondary"
               size="sm"

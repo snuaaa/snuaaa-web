@@ -3,7 +3,6 @@ import { Button } from '~/components/ui';
 import { cn } from '~/lib/utils';
 import type { OfficerGeneration } from '~/services/types';
 import OfficerRoleList, { Highlight } from './OfficerRoleList';
-import { splitPresident } from './officerUtils';
 
 type GenerationRowProps = {
   generation: OfficerGeneration;
@@ -21,7 +20,7 @@ export default function GenerationRow({
   query,
   onEdit,
 }: GenerationRowProps) {
-  const { president, others } = splitPresident(generation.roles);
+  const { president, roles } = generation;
   const panelId = `generation-${generation.generation}`;
   return (
     <li className="border-b border-gray-100 last:border-b-0">
@@ -38,14 +37,7 @@ export default function GenerationRow({
         <span className="flex min-w-0 flex-1 items-baseline gap-2">
           <span className="text-label font-normal text-fg-muted">회장</span>
           <span className="truncate text-body">
-            {president.length === 0
-              ? '—'
-              : president.map((name, index) => (
-                  <span key={`${name}-${index}`}>
-                    {index > 0 && ', '}
-                    <Highlight text={name} query={query} />
-                  </span>
-                ))}
+            <Highlight text={president} query={query} />
           </span>
         </span>
         <ChevronDown
@@ -61,8 +53,8 @@ export default function GenerationRow({
           id={panelId}
           className="flex flex-col gap-3 px-4 pt-1 pb-4 animate-light-in motion-reduce:animate-none md:px-5 md:pl-[76px]"
         >
-          {others.length > 0 ? (
-            <OfficerRoleList roles={others} query={query} />
+          {roles.length > 0 ? (
+            <OfficerRoleList roles={roles} query={query} />
           ) : (
             <p className="text-label font-normal text-fg-muted">
               다른 임원 기록이 없어요.

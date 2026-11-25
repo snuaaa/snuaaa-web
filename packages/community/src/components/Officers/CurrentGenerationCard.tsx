@@ -3,7 +3,6 @@ import { Button } from '~/components/ui';
 import { cn } from '~/lib/utils';
 import type { OfficerGeneration } from '~/services/types';
 import OfficerRoleList from './OfficerRoleList';
-import { splitPresident } from './officerUtils';
 
 type CurrentGenerationCardProps = {
   generation: OfficerGeneration;
@@ -17,7 +16,7 @@ export default function CurrentGenerationCard({
   onEdit,
   className,
 }: CurrentGenerationCardProps) {
-  const { president, others } = splitPresident(generation.roles);
+  const { president, roles } = generation;
   return (
     <div
       role="region"
@@ -49,17 +48,15 @@ export default function CurrentGenerationCard({
           </Button>
         )}
       </div>
-      {president.length > 0 && (
-        <div className="flex flex-col gap-0.5">
-          <span className="text-label font-normal text-fg-on-brand-muted">
-            회장
-          </span>
-          <span className="text-display">{president.join(', ')}</span>
-        </div>
-      )}
-      {others.length > 0 && (
+      <div className="flex flex-col gap-0.5">
+        <span className="text-label font-normal text-fg-on-brand-muted">
+          회장
+        </span>
+        <span className="text-display">{president}</span>
+      </div>
+      {roles.length > 0 && (
         <OfficerRoleList
-          roles={others}
+          roles={roles}
           onBrand
           className="border-t border-white/10 pt-4"
         />
