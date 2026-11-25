@@ -298,18 +298,20 @@ export async function createComment(
   overrides: {
     text?: string;
     parent_comment_id?: number;
+    created_at?: Date;
     deleted_at?: Date;
   } = {},
 ) {
   const n = next();
+  const { created_at = new Date(), ...rest } = overrides;
   const comment = await insert<{ comment_id: number }>('tb_comment', {
     comment_uuid: randomUUID(),
     parent_id: contentId,
     author_id: author.user_id,
     text: `Comment ${n}`,
-    created_at: new Date(),
-    updated_at: new Date(),
-    ...overrides,
+    created_at,
+    updated_at: created_at,
+    ...rest,
   });
   return comment.comment_id;
 }

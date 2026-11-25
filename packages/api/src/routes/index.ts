@@ -5,8 +5,6 @@ import user from './user';
 import userinfo from './userinfo';
 import board from './board';
 import home from './home';
-import content from './content';
-import comment from './comment';
 import image from './image';
 import upload from './upload';
 // import { verifyTokenMiddleware } from '../middlewares/auth';
@@ -21,8 +19,6 @@ router.use('/userinfo', userinfo);
 router.use('/user', user);
 router.use('/board', board);
 router.use('/home', home);
-router.use('/content', content);
-router.use('/comment', comment);
 router.use('/image', image);
 router.use('/upload', upload);
 

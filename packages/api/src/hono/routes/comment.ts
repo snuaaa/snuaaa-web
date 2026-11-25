@@ -6,6 +6,8 @@ import { validationHook } from '../errors';
 import {
   createComment,
   deleteComment,
+  listCommentThreads,
+  listComments,
   toggleCommentLike,
   updateComment,
 } from '../../services/comment.service';
@@ -25,6 +27,16 @@ const commentBody = z.object({
 /** `/api/comment/...` */
 export const commentRoutes = new Hono<AuthEnvironment>()
   .use(requireAuth)
+  .get('/list', async (context) =>
+    context.json(
+      await listComments(context.get('actor'), {
+        userUuid: context.req.query('user_uuid'),
+        // Anything that isn't a positive number is the default, as before.
+        limit: Number(context.req.query('limit')) || undefined,
+        offset: Number(context.req.query('offset')) || undefined,
+      }),
+    ),
+  )
   .patch(
     '/:comment_id',
     zValidator('json', commentBody, validationHook),
@@ -52,6 +64,14 @@ export const commentRoutes = new Hono<AuthEnvironment>()
 /** The comment and like endpoints under `/api/content/...`. */
 export const contentCommentRoutes = new Hono<AuthEnvironment>()
   .use(requireAuth)
+  .get('/:content_id/comments', async (context) =>
+    context.json(
+      await listCommentThreads(
+        context.get('actor'),
+        context.req.param('content_id'),
+      ),
+    ),
+  )
   .post(
     '/:content_id/comment',
     zValidator('json', commentBody, validationHook),

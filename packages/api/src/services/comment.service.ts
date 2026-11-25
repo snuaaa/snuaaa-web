@@ -3,6 +3,7 @@ import { BadRequestError, NotFoundError } from '../errors';
 import * as comments from '../repositories/comment.repository';
 import * as contents from '../repositories/content.repository';
 import * as likes from '../repositories/like.repository';
+import * as users from '../repositories/user.repository';
 import { assertBoardAccess, assertCanEdit } from './permissions';
 import type { Actor } from './types';
 
@@ -125,4 +126,65 @@ export function toggleCommentLike(actor: Actor, commentId: string) {
       await likes.insertCommentLike(id, actor._id, transaction);
     }
   });
+}
+
+/**
+ * The content's comment threads, oldest first: each top-level comment with
+ * its author, who likes it, and its replies (oldest first, with theirs).
+ * The actor must be allowed to read the content's board (404 for an unknown
+ * content, 403 otherwise).
+ */
+export async function listCommentThreads(actor: Actor, contentId: string) {
+  const target = await contents.findWithBoard(contentId);
+  if (!target) {
+    throw new NotFoundError('Content not found');
+  }
+  assertBoardAccess(target, actor.grade, 'read');
+  const threads = await comments.listOnContent({
+    contentId: target.content_id,
+  });
+  const replies = await comments.listOnContent({
+    parentCommentIds: threads.map((thread) => thread.comment_id),
+  });
+  const likers = await comments.listLikers([
+    ...threads.map((thread) => thread.comment_id),
+    ...replies.map((reply) => reply.comment_id),
+  ]);
+  const likersOf = (commentId: number) =>
+    likers.filter((liker) => liker.commentLike.comment_id === commentId);
+  return threads.map((thread) => ({
+    ...thread,
+    likeUsers: likersOf(thread.comment_id),
+    children: replies
+      .filter((reply) => reply.parent_comment_id === thread.comment_id)
+      .map((reply) => ({ ...reply, likeUsers: likersOf(reply.comment_id) })),
+  }));
+}
+
+/** The profile page asks 20 at a time unless it says otherwise. */
+const DEFAULT_COMMENT_LIMIT = 20;
+
+/**
+ * A page of the comments on contents the actor may read, newest first,
+ * only the member's when `userUuid` is given (404 for an unknown member).
+ */
+export async function listComments(
+  actor: Actor,
+  query: { userUuid?: string; limit?: number; offset?: number },
+) {
+  let authorId: number | undefined;
+  if (query.userUuid) {
+    const id = await users.findIdByUuid(query.userUuid);
+    if (id === null) {
+      throw new NotFoundError('User not found');
+    }
+    authorId = id;
+  }
+  return comments.list(
+    { readGrade: actor.grade, authorId },
+    {
+      limit: query.limit || DEFAULT_COMMENT_LIMIT,
+      offset: query.offset || 0,
+    },
+  );
 }
