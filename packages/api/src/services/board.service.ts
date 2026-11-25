@@ -1,7 +1,11 @@
 import type { Executor } from '../db/client';
 import { NotFoundError } from '../errors';
 import * as boards from '../repositories/board.repository';
-import { assertBoardAccess, type BoardPermission } from './permissions';
+import {
+  assertBoardAccess,
+  canAccessBoard,
+  type BoardPermission,
+} from './permissions';
 import type { Actor } from './types';
 
 /**
@@ -38,4 +42,10 @@ export async function retrieveBoard(actor: Actor, boardId: string) {
   }
   assertBoardAccess(board, actor.grade, 'read');
   return board;
+}
+
+/** Whether the board exists and the actor may read it. */
+export async function canReadBoard(actor: Actor, boardId: string) {
+  const board = await boards.findLevels(boardId);
+  return board !== null && canAccessBoard(board, actor.grade, 'read');
 }

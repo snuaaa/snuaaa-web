@@ -183,6 +183,28 @@ export async function listInAlbum(
 }
 
 /**
+ * The board's newest (not deleted) photos, with the author's name, for the
+ * home page.
+ */
+export async function listNewestOnBoard(
+  boardId: string,
+  limit: number,
+  executor: Executor = database,
+) {
+  return executor
+    .select({
+      ...photoContentJson,
+      user: { nickname: user.nickname, deleted_at: user.deleted_at },
+    })
+    .from(content)
+    .innerJoin(photo, eq(photo.content_id, content.content_id))
+    .innerJoin(user, eq(user.user_id, content.author_id))
+    .where(and(eq(content.board_id, boardId), isNull(content.deleted_at)))
+    .orderBy(desc(content.created_at), desc(content.content_id))
+    .limit(limit);
+}
+
+/**
  * The nearest (not deleted) photo before or after the photo in the same
  * album, or, for a photo outside any album, among the board's photos
  * outside any album. Null at either end.

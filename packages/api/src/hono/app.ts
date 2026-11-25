@@ -10,6 +10,7 @@ import { documentRoutes } from './routes/document';
 import { equipmentRoutes } from './routes/equipment';
 import { exhibitionRoutes } from './routes/exhibition';
 import { exhibitPhotoRoutes } from './routes/exhibitPhoto';
+import { homeRoutes } from './routes/home';
 import { photoRoutes } from './routes/photo';
 import { photoboardRoutes } from './routes/photoboard';
 import { postRoutes } from './routes/post';
@@ -71,6 +72,7 @@ export const honoApp = new Hono({ strict: false })
   .route('/exhibition', exhibitionRoutes)
   .route('/exhibitPhoto', exhibitPhotoRoutes)
   .route('/file', fileRoutes)
+  .route('/home', homeRoutes)
   .route('/photo', photoRoutes)
   .route('/photoboard', photoboardRoutes)
   .route('/post', postRoutes);
