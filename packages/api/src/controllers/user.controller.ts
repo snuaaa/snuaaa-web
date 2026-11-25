@@ -1,6 +1,5 @@
 import { UserModel } from '../models';
 import uuid4 from 'uuid4';
-import { Op } from 'sequelize';
 import { BadRequestError, ConflictError, NotFoundError } from '../errors';
 
 export async function createUser(userData) {
@@ -74,49 +73,6 @@ export async function retrieveUserPw(user_id) {
   return user;
 }
 
-export async function retrieveUserByUserUuid(user_uuid: string) {
-  if (!user_uuid) {
-    throw new BadRequestError('user_uuid can not be null');
-  }
-
-  return UserModel.findOne({
-    attributes: [
-      'user_id',
-      'id',
-      'username',
-      'nickname',
-      'aaa_no',
-      'col_no',
-      'major',
-      'introduction',
-      'grade',
-      'level',
-      'profile_path',
-      'profile_url',
-    ],
-    where: { user_uuid: user_uuid },
-  });
-}
-
-export async function retrieveUsers(sort, order, rowNum, offset) {
-  return UserModel.findAndCountAll({
-    attributes: [
-      'user_uuid',
-      'id',
-      'username',
-      'nickname',
-      'aaa_no',
-      'grade',
-      'level',
-      'login_at',
-      'created_at',
-    ],
-    order: [[sort ? sort : 'user_id', order === 'ASC' ? 'ASC' : 'DESC']],
-    limit: rowNum,
-    offset: offset,
-  });
-}
-
 export async function retrieveUsersByEmailAndName(email, username) {
   if (!email) {
     throw new BadRequestError('email can not be null');
@@ -125,14 +81,6 @@ export async function retrieveUsersByEmailAndName(email, username) {
   return UserModel.findAll({
     attributes: ['id'],
     where: { email: email, username: username },
-  });
-}
-
-export async function retrieveUsersByName(username) {
-  return UserModel.findAll({
-    attributes: ['user_uuid', 'username', 'nickname', 'profile_path'],
-    where: { username: { [Op.like]: `%${username}%` } },
-    limit: 5,
   });
 }
 
@@ -163,32 +111,6 @@ export async function retrieveUserById(id) {
   }
 
   return user;
-}
-
-export async function updateUser(user_id, data) {
-  if (!user_id) {
-    throw new BadRequestError('user_id can not be null');
-  }
-
-  await UserModel.update(
-    {
-      username: data.username,
-      nickname: data.nickname,
-      aaa_no: data.aaa_no,
-      col_no: data.col_no,
-      major: data.major,
-      email: data.email,
-      mobile: data.mobile,
-      introduction: data.introduction,
-      grade: data.grade,
-      level: data.level,
-      profile_path: data.profile_path,
-      profile_url: data.profile_url,
-    },
-    {
-      where: { user_id: user_id },
-    },
-  );
 }
 
 export async function updateUserPw(user_id, password) {

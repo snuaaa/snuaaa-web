@@ -15,7 +15,6 @@ import { api } from '../helpers/request';
 const PROTECTED_ENDPOINTS = [
   'GET /api/auth/check',
   'GET /api/userinfo',
-  'PATCH /api/userinfo',
   'PATCH /api/userinfo/password',
   'DELETE /api/userinfo',
   'GET /api/userinfo/all',

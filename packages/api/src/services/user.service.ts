@@ -98,3 +98,58 @@ export async function changeGrade(
     await users.updateProfile(target.user_id, { grade }, transaction);
   });
 }
+
+/** The least privileged grade that may see the member list. */
+const MEMBER_LIST_GRADE = 6;
+const MEMBERS_PER_PAGE = 20;
+const SEARCH_RESULT_COUNT = 5;
+
+/** The actor's own info. Throws 404 when they left. */
+export async function retrieveMyInfo(actor: Actor) {
+  const info = await users.findOwnInfo(actor._id);
+  if (!info) {
+    throw new NotFoundError('id is not correct');
+  }
+  return info;
+}
+
+/** Another member's profile, or null for an unknown member. */
+export async function retrieveMemberProfile(userUuid: string) {
+  return users.findProfileByUuid(userUuid);
+}
+
+export type MemberListQuery = {
+  /** A column the list can sort by; anything else sorts by `user_id`. */
+  sort?: string;
+  /** 'ASC', or anything else for descending. */
+  order?: string;
+  limit?: number;
+  offset?: number;
+};
+
+/** A page of the members, and how many there are, for staff (grade 1–6). */
+export async function listMembers(actor: Actor, query: MemberListQuery) {
+  if (actor.grade > MEMBER_LIST_GRADE) {
+    throw new AuthorizationError();
+  }
+  const column =
+    query.sort && Object.hasOwn(users.MEMBER_SORT_COLUMNS, query.sort)
+      ? (query.sort as users.MemberSort)
+      : 'user_id';
+  const [count, rows] = await Promise.all([
+    users.countAll(),
+    users.list(
+      { column, ascending: query.order === 'ASC' },
+      {
+        limit: query.limit ?? MEMBERS_PER_PAGE,
+        offset: query.offset ?? 0,
+      },
+    ),
+  ]);
+  return { userInfo: rows, count };
+}
+
+/** The first few members whose name contains the text. */
+export async function searchMembers(name: string) {
+  return users.searchByName(name, SEARCH_RESULT_COUNT);
+}
