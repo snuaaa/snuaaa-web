@@ -53,13 +53,14 @@ export const tag = pgTable('tb_tag', {
 });
 
 /**
- * `tb_user`, without the login columns (`id`, `password`, `login_at`). Only
- * the columns in `authorJson` (`repositories/user.repository.ts`) are safe
- * to show to other members.
+ * `tb_user`, without `password`. Only the columns in `authorJson`
+ * (`repositories/user.repository.ts`) are safe to show to every member.
  */
 export const user = pgTable('tb_user', {
   user_id: serial('user_id').primaryKey(),
   user_uuid: uuid('user_uuid'),
+  /** The login id. */
+  id: varchar('id', { length: 16 }).notNull(),
   username: varchar('username', { length: 16 }),
   aaa_no: varchar('aaa_no', { length: 16 }),
   nickname: varchar('nickname', { length: 16 }),
@@ -73,6 +74,7 @@ export const user = pgTable('tb_user', {
   /** @deprecated Use `profile_url`. */
   profile_path: varchar('profile_path', { length: 256 }),
   profile_url: varchar('profile_url', { length: 256 }),
+  login_at: timestamp('login_at', { withTimezone: true }),
   ...timestamps,
   deleted_at: timestamp('deleted_at', { withTimezone: true }),
 });
