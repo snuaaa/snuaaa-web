@@ -26,8 +26,6 @@ const PROTECTED_ENDPOINTS = [
   'POST /api/user/migrate',
   'GET /api/board',
   'GET /api/board/:board_id',
-  'GET /api/board/:board_id/posts',
-  'GET /api/board/:board_id/tags',
   'POST /api/board/:board_id/post',
   'POST /api/board/:board_id/document',
   'GET /api/board/:board_id/exhibitions',

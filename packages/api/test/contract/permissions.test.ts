@@ -75,10 +75,9 @@ describe('board read level (lv_read)', () => {
     });
   });
 
-  // Every route that lists a board's contents checks lv_read.
+  // Every route that reads a board or lists its contents checks lv_read.
   const BOARD_READ_ROUTES = [
-    '/api/board/:board_id/posts',
-    '/api/board/:board_id/tags',
+    '/api/board/:board_id',
     '/api/board/:board_id/exhibitions',
     '/api/photoboard/:board_id/albums',
   ];
@@ -112,11 +111,11 @@ describe('board read level (lv_read)', () => {
     },
   );
 
-  it('GET /api/board/:board_id/posts returns 404 for an unknown board', async () => {
+  it('GET /api/board/:board_id/exhibitions returns 404 for an unknown board', async () => {
     const member = await createUser({ grade: 8 });
 
     const res = await api()
-      .get('/api/board/b_missing/posts')
+      .get('/api/board/b_missing/exhibitions')
       .set('Authorization', bearer(member));
 
     expect(res.status).toBe(404);
