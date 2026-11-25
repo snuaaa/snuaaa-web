@@ -3,8 +3,6 @@ import express from 'express';
 import auth from './auth';
 import user from './user';
 import userinfo from './userinfo';
-import image from './image';
-import upload from './upload';
 // import { verifyTokenMiddleware } from '../middlewares/auth';
 
 const router = express.Router();
@@ -15,7 +13,5 @@ router.use('/auth', auth);
 // router.use(verifyTokenMiddleware);
 router.use('/userinfo', userinfo);
 router.use('/user', user);
-router.use('/image', image);
-router.use('/upload', upload);
 
 export default router;

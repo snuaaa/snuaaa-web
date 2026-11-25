@@ -14,6 +14,7 @@ import { homeRoutes } from './routes/home';
 import { photoRoutes } from './routes/photo';
 import { photoboardRoutes } from './routes/photoboard';
 import { postRoutes } from './routes/post';
+import { uploadRoutes } from './routes/upload';
 
 /**
  * The largest request body Hono reads, the same as the default limit of
@@ -75,6 +76,7 @@ export const honoApp = new Hono({ strict: false })
   .route('/home', homeRoutes)
   .route('/photo', photoRoutes)
   .route('/photoboard', photoboardRoutes)
-  .route('/post', postRoutes);
+  .route('/post', postRoutes)
+  .route('/upload', uploadRoutes);
 
 honoApp.onError(onError);
