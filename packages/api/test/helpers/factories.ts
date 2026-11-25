@@ -60,6 +60,7 @@ type BoardOverrides = Partial<
   Board & {
     board_name: string;
     board_type: string;
+    board_desc: string;
     menu: number;
     order: number;
   }

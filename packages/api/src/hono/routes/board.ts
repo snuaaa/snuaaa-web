@@ -3,6 +3,10 @@ import { zValidator } from '@hono/zod-validator';
 import { requireAuth, type AuthEnvironment } from '../auth';
 import { validationHook } from '../errors';
 import { z } from 'zod';
+import {
+  listReadableBoards,
+  retrieveBoard,
+} from '../../services/board.service';
 import { createDocument } from '../../services/document.service';
 import {
   createExhibition,
@@ -18,13 +22,20 @@ const createExhibitionForm = z.object({
   poster: z.instanceof(File, { message: 'POSTER IS NOT ATTACHED' }),
 });
 
-/**
- * The endpoints under `/api/board/...` that moved to Hono: creating a post,
- * a document or an exhibition on a board, and listing exhibitions. The rest
- * of `/api/board` is still on Express.
- */
+/** `/api/board/...` */
 export const boardRoutes = new Hono<AuthEnvironment>()
   .use(requireAuth)
+  .get('/', async (context) =>
+    context.json(await listReadableBoards(context.get('actor'))),
+  )
+  .get('/:board_id', async (context) =>
+    context.json({
+      boardInfo: await retrieveBoard(
+        context.get('actor'),
+        context.req.param('board_id'),
+      ),
+    }),
+  )
   .post(
     '/:board_id/post',
     zValidator('json', postBody, validationHook),

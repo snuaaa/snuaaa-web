@@ -21,3 +21,21 @@ export async function loadAccessibleBoard(
   assertBoardAccess(board, actor.grade, permission);
   return board;
 }
+
+/** The boards the actor may read, with their tags and categories. */
+export async function listReadableBoards(actor: Actor) {
+  return boards.listReadable(actor.grade);
+}
+
+/**
+ * The board with its tags and categories. Throws 404 for an unknown board
+ * and 403 when the actor may not read it.
+ */
+export async function retrieveBoard(actor: Actor, boardId: string) {
+  const board = await boards.findWithTagsAndCategories(boardId);
+  if (!board) {
+    throw new NotFoundError('id is not correct');
+  }
+  assertBoardAccess(board, actor.grade, 'read');
+  return board;
+}

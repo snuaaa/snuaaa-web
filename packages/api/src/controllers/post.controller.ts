@@ -16,31 +16,6 @@ const SearchTypeEnum = Object.freeze({
   USER: 'U',
 });
 
-export async function retrievePostsInBoard(board_id, rowNum, offset) {
-  if (!board_id) {
-    throw new BadRequestError('id can not be null');
-  }
-
-  return ContentModel.findAndCountAll({
-    include: [
-      {
-        model: PostModel,
-        as: 'post',
-      },
-      {
-        model: UserModel,
-        required: true,
-        attributes: ['nickname', 'profile_path', 'profile_url'],
-        paranoid: false,
-      },
-    ],
-    where: { board_id: board_id },
-    order: [['created_at', 'DESC']],
-    limit: rowNum,
-    offset: offset,
-  });
-}
-
 export type SearchType = 'title' | 'text' | 'user' | 'all';
 
 /**
