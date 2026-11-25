@@ -208,3 +208,36 @@ export const commentLike = pgTable(
   },
   (t) => [primaryKey({ columns: [t.comment_id, t.user_id] })],
 );
+
+export const equipmentCategory = pgTable('tb_equipment_category', {
+  id: serial('id').primaryKey(),
+  name: varchar('name', { length: 256 }),
+  ...timestamps,
+  deleted_at: timestamp('deleted_at', { withTimezone: true }),
+});
+
+export const equipment = pgTable('tb_equipment', {
+  id: serial('id').primaryKey(),
+  category_id: integer('category_id'),
+  name: varchar('name', { length: 256 }),
+  nickname: varchar('nickname', { length: 256 }),
+  description: text('description'),
+  location: varchar('location', { length: 64 }),
+  maker: varchar('maker', { length: 64 }),
+  /** `enums/equipmentStatusEnum.ts`. */
+  status: varchar('status', { length: 16 }),
+  /** `enums/equipmentRentEnum.ts`; kept in step with the status and rents. */
+  rent_status: varchar('rent_status', { length: 16 }).default('RENTABLE'),
+  img_path: varchar('img_path', { length: 256 }),
+  ...timestamps,
+  deleted_at: timestamp('deleted_at', { withTimezone: true }),
+});
+
+export const rent = pgTable('tb_rent', {
+  id: serial('id').primaryKey(),
+  user_id: integer('user_id').notNull(),
+  equipment_id: integer('equipment_id').notNull(),
+  start_date: timestamp('start_date', { withTimezone: true }).notNull(),
+  end_date: timestamp('end_date', { withTimezone: true }),
+  returned: boolean('returned').default(false),
+});

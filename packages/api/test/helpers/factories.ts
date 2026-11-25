@@ -362,6 +362,83 @@ export async function createCommentLike(user: User, commentId: number) {
   });
 }
 
+export type EquipmentCategory = { id: number; name: string };
+
+/** An equipment category, as the admin page creates it. */
+export async function createEquipmentCategory(
+  overrides: { name?: string; deleted_at?: Date } = {},
+) {
+  const n = next();
+  const now = new Date();
+  return insert<EquipmentCategory>('tb_equipment_category', {
+    name: `Category ${n}`,
+    created_at: now,
+    updated_at: now,
+    ...overrides,
+  });
+}
+
+export type Equipment = {
+  id: number;
+  category_id: number | null;
+  name: string;
+  nickname: string | null;
+  description: string | null;
+  location: string | null;
+  maker: string | null;
+  status: string | null;
+  rent_status: string | null;
+  img_path: string | null;
+};
+
+/** A rentable equipment in the category, unless overridden. */
+export async function createEquipment(
+  category: EquipmentCategory | null,
+  overrides: Partial<Omit<Equipment, 'id'>> & {
+    created_at?: Date;
+    deleted_at?: Date;
+  } = {},
+) {
+  const n = next();
+  const now = new Date();
+  return insert<Equipment>('tb_equipment', {
+    category_id: category?.id ?? null,
+    name: `Telescope ${n}`,
+    nickname: `scope${n}`,
+    description: 'A telescope',
+    location: 'Club room',
+    maker: 'Maker',
+    status: 'OK',
+    rent_status: 'RENTABLE',
+    img_path: `https://bucket.example.com/equipment${n}.jpg`,
+    created_at: now,
+    updated_at: now,
+    ...overrides,
+  });
+}
+
+/** A rent of the equipment by the user, not returned unless overridden. */
+export async function createRent(
+  user: User,
+  equipment: Equipment,
+  overrides: {
+    start_date?: Date;
+    end_date?: Date | null;
+    returned?: boolean;
+  } = {},
+) {
+  const start_date = overrides.start_date ?? new Date();
+  const rent = await insert<{ id: number }>('tb_rent', {
+    user_id: user.user_id,
+    equipment_id: equipment.id,
+    start_date,
+    end_date: new Date(start_date.getTime() + 2 * 24 * 60 * 60 * 1000),
+    returned: false,
+    ...overrides,
+  });
+  return rent.id;
+}
+
 /**
  * An `Authorization` header value for the user, as the web sends it.
  * The token is signed here instead of with the app's helper, because its

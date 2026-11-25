@@ -165,6 +165,33 @@ export async function exhibitPhotoRow(contentId: number) {
   return row;
 }
 
+/** The equipment's row, deleted or not, or undefined when there is none. */
+export async function equipmentRow(id: number) {
+  const [row] = await query(
+    `SELECT id, category_id, name, nickname, description, location, maker,
+            status, rent_status, img_path, created_at, updated_at, deleted_at
+       FROM tb_equipment WHERE id = $1`,
+    [id],
+  );
+  return row;
+}
+
+/** Every equipment row, by id, deleted ones included. */
+export async function equipmentRows() {
+  return query(
+    `SELECT id, category_id, name, nickname, description, location, maker,
+            status, rent_status, img_path, deleted_at
+       FROM tb_equipment ORDER BY id`,
+  );
+}
+
+/** Every equipment category row, by id, deleted ones included. */
+export async function equipmentCategoryRows() {
+  return query<{ id: number; name: string; deleted_at: Date | null }>(
+    'SELECT id, name, deleted_at FROM tb_equipment_category ORDER BY id',
+  );
+}
+
 /** The board's contents, oldest first, deleted ones included. */
 export async function boardContents(boardId: string) {
   return query<{
