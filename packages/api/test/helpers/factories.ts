@@ -439,6 +439,24 @@ export async function createRent(
   return rent.id;
 }
 
+/** Records the return of the rent, by default on time with no penalty. */
+export async function createRentReturn(
+  rentId: number,
+  overrides: {
+    photo_path?: string | null;
+    return_date?: Date;
+    penalty_status?: string;
+  } = {},
+) {
+  await insert('tb_rent_return', {
+    rent_id: rentId,
+    photo_path: 'https://bucket.example.com/return.jpg',
+    return_date: new Date(),
+    penalty_status: 'NOPENALTY',
+    ...overrides,
+  });
+}
+
 /**
  * An `Authorization` header value for the user, as the web sends it.
  * The token is signed here instead of with the app's helper, because its

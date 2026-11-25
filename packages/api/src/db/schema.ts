@@ -241,3 +241,11 @@ export const rent = pgTable('tb_rent', {
   end_date: timestamp('end_date', { withTimezone: true }),
   returned: boolean('returned').default(false),
 });
+
+export const rentReturn = pgTable('tb_rent_return', {
+  rent_id: integer('rent_id').primaryKey(),
+  photo_path: varchar('photo_path', { length: 256 }),
+  return_date: timestamp('return_date', { withTimezone: true }),
+  /** `enums/penaltyStatusEnum.ts`. */
+  penalty_status: varchar('penalty_status', { length: 16 }),
+});
