@@ -7,6 +7,7 @@ import {
   deleteOfficers,
   handOver,
   listOfficers,
+  MAX_GENERATION,
   saveOfficers,
 } from '../../services/officer.service';
 
@@ -32,7 +33,7 @@ const handOverBody = z.object({
 });
 
 const generationParam = z.object({
-  generation: z.coerce.number().int().positive().max(9999),
+  generation: z.coerce.number().int().positive().max(MAX_GENERATION),
 });
 
 /** `/api/officers`: 역대 회장단/임원진, one entry per 기수. */

@@ -374,11 +374,16 @@ describe('POST /api/officers/handover', () => {
     expect(await listGenerations()).toHaveLength(1);
   });
 
-  it('rejects a member without a name, or a bad body, with 400', async () => {
+  it('rejects a member without a name or club number, or a bad body, with 400', async () => {
     const { president } = await setUp();
     const nameless = await createUser({ grade: 7, username: null });
+    const waiting = await createUser({ grade: 9, username: '대기중' });
 
-    for (const body of [{ president_uuid: nameless.user_uuid }, {}]) {
+    for (const body of [
+      { president_uuid: nameless.user_uuid },
+      { president_uuid: waiting.user_uuid },
+      {},
+    ]) {
       const response = await api()
         .post('/api/officers/handover')
         .set('Authorization', bearer(president))
@@ -386,6 +391,21 @@ describe('POST /api/officers/handover', () => {
       expect(response.status).toBe(400);
     }
     expect(await gradeOf(president)).toBe(5);
+  });
+
+  it('needs a generation to hand over, below the largest number', async () => {
+    const manager = await createUser({ grade: 3 });
+    const next = await createUser({ grade: 7 });
+    const handOver = () =>
+      api()
+        .post('/api/officers/handover')
+        .set('Authorization', bearer(manager))
+        .send({ president_uuid: next.user_uuid });
+
+    expect((await handOver()).status).toBe(400);
+    await createOfficerGeneration(9999);
+    expect((await handOver()).status).toBe(400);
+    expect(await gradeOf(next)).toBe(7);
   });
 });
 

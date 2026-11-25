@@ -14,6 +14,11 @@ export const FORMER_PRESIDENT_GRADE = 4;
 /** 임원진 (토성, 6): every one of them becomes 천왕성 (7) after 회기 넘기기. */
 export const OFFICER_GRADE = 6;
 export const MEMBER_GRADE_AFTER_TERM = 7;
+/** The least privileged grade that may become 회장: 해왕성 (8), a member
+ *  with a club number. 명왕성 (9) is waiting for one. */
+const LOWEST_PRESIDENT_CANDIDATE_GRADE = 8;
+/** The largest 기수 number the routes accept. */
+export const MAX_GENERATION = 9999;
 
 type Latest = Awaited<ReturnType<typeof officers.findLatest>>;
 type Member = NonNullable<Awaited<ReturnType<typeof users.findNameAndGrade>>>;
@@ -91,12 +96,20 @@ export async function handOver(actor: Actor, presidentUuid: string) {
     const member = await currentMember(actor, transaction);
     const latest = await officers.findLatest({ lock: true }, transaction);
     if (!isManager(member) && !isCurrentPresident(member, latest)) deny();
+    // A first 기수 is added by hand, so there is always a row to lock.
+    if (!latest) throw new BadRequestError('There is no generation yet');
+    if (latest.generation >= MAX_GENERATION) {
+      throw new BadRequestError('The generation number is too large');
+    }
 
     const president = await users.findNameAndGradeByUuid(
       presidentUuid,
       transaction,
     );
     if (!president) throw new NotFoundError('Member not found');
+    if ((president.grade ?? Infinity) > LOWEST_PRESIDENT_CANDIDATE_GRADE) {
+      throw new BadRequestError('The member is not a regular member');
+    }
     const name = president.username?.trim();
     if (!name) throw new BadRequestError('The member has no name');
 
@@ -118,7 +131,7 @@ export async function handOver(actor: Actor, presidentUuid: string) {
       );
     }
     return officers.insertWithPresident(
-      (latest?.generation ?? 0) + 1,
+      latest.generation + 1,
       name.slice(0, 32),
       president.user_id,
       transaction,
