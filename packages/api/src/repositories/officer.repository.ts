@@ -2,8 +2,11 @@ import { desc, eq, sql } from 'drizzle-orm';
 import { database, type Executor } from '../db/client';
 import { officerGeneration, type OfficerRole } from '../db/schema';
 
+export type OfficerInput = { president: string; roles: OfficerRole[] };
+
 const columns = {
   generation: officerGeneration.generation,
+  president: officerGeneration.president,
   roles: officerGeneration.roles,
   updated_at: officerGeneration.updated_at,
 };
@@ -16,18 +19,18 @@ export async function findAll(executor: Executor = database) {
     .orderBy(desc(officerGeneration.generation));
 }
 
-/** Creates the generation, or replaces its roles when it exists. */
+/** Creates the generation, or replaces its 회장 and roles when it exists. */
 export async function upsert(
   generation: number,
-  roles: OfficerRole[],
+  { president, roles }: OfficerInput,
   executor: Executor = database,
 ) {
   const [row] = await executor
     .insert(officerGeneration)
-    .values({ generation, roles })
+    .values({ generation, president, roles })
     .onConflictDoUpdate({
       target: officerGeneration.generation,
-      set: { roles, updated_at: sql`now()` },
+      set: { president, roles, updated_at: sql`now()` },
     })
     .returning(columns);
   return row;

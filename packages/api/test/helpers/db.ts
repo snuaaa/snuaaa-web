@@ -33,6 +33,13 @@ export async function deleteUser(user: Pick<User, 'user_id'>) {
   await query('DELETE FROM tb_user WHERE user_id = $1', [user.user_id]);
 }
 
+/** Soft-deletes the user, like leaving the club (`DELETE /api/userinfo`). */
+export async function softDeleteUser(user: Pick<User, 'user_id'>) {
+  await query('UPDATE tb_user SET deleted_at = now() WHERE user_id = $1', [
+    user.user_id,
+  ]);
+}
+
 /** Counts `tb_content` rows matching every given column, deleted ones included. */
 export async function countContents(where: {
   board_id?: string;
@@ -111,6 +118,193 @@ export async function documentRow(contentId: number) {
     [contentId],
   );
   return row;
+}
+
+/** The content's `tb_album` row, or undefined when there is none. */
+export async function albumRow(contentId: number) {
+  const [row] = await query<{
+    is_private: boolean | null;
+    tn_photo_id: number | null;
+  }>('SELECT is_private, tn_photo_id FROM tb_album WHERE content_id = $1', [
+    contentId,
+  ]);
+  return row;
+}
+
+/** The content's `tb_photo` row, or undefined when there is none. */
+export async function photoRow(contentId: number) {
+  const [row] = await query(
+    `SELECT img_url, thumbnail_url, location, camera, lens, exposure_time,
+            focal_length, f_stop, iso, date
+       FROM tb_photo WHERE content_id = $1`,
+    [contentId],
+  );
+  return row;
+}
+
+/** The content's `tb_exhibition` row, or undefined when there is none. */
+export async function exhibitionRow(contentId: number) {
+  const [row] = await query(
+    `SELECT exhibition_no, slogan, date_start, date_end, place, poster_path,
+            poster_thumbnail_path, poster_url, poster_thumbnail_url
+       FROM tb_exhibition WHERE content_id = $1`,
+    [contentId],
+  );
+  return row;
+}
+
+/** The content's `tb_exhibit_photo` row, or undefined when there is none. */
+export async function exhibitPhotoRow(contentId: number) {
+  const [row] = await query(
+    `SELECT exhibition_id, "order", photographer_id, photographer_alt,
+            file_path, thumbnail_path, img_url, thumbnail_url, location,
+            camera, lens, exposure_time, focal_length, f_stop, iso, date
+       FROM tb_exhibit_photo WHERE content_id = $1`,
+    [contentId],
+  );
+  return row;
+}
+
+/** The files attached to the content, by id, deleted ones included. */
+export async function attachedFileRows(contentId: number) {
+  return query<{
+    file_id: number;
+    original_name: string | null;
+    file_path: string | null;
+    file_url: string | null;
+    file_type: string | null;
+    download_count: number | null;
+    deleted_at: Date | null;
+  }>(
+    `SELECT file_id, original_name, file_path, file_url, file_type,
+            download_count, deleted_at
+       FROM tb_file WHERE parent_id = $1 ORDER BY file_id`,
+    [contentId],
+  );
+}
+
+/** The equipment's row, deleted or not, or undefined when there is none. */
+export async function equipmentRow(id: number) {
+  const [row] = await query(
+    `SELECT id, category_id, name, nickname, description, location, maker,
+            status, rent_status, img_path, created_at, updated_at, deleted_at
+       FROM tb_equipment WHERE id = $1`,
+    [id],
+  );
+  return row;
+}
+
+/** Every equipment row, by id, deleted ones included. */
+export async function equipmentRows() {
+  return query(
+    `SELECT id, category_id, name, nickname, description, location, maker,
+            status, rent_status, img_path, deleted_at
+       FROM tb_equipment ORDER BY id`,
+  );
+}
+
+/** Every rent of the equipment, oldest first, with its return (or nulls). */
+export async function rentsOf(equipmentId: number) {
+  return query<{
+    id: number;
+    user_id: number;
+    start_date: Date;
+    end_date: Date | null;
+    returned: boolean;
+    photo_path: string | null;
+    return_date: Date | null;
+    penalty_status: string | null;
+  }>(
+    `SELECT r.id, r.user_id, r.start_date, r.end_date, r.returned,
+            rr.photo_path, rr.return_date, rr.penalty_status
+       FROM tb_rent r LEFT JOIN tb_rent_return rr ON rr.rent_id = r.id
+      WHERE r.equipment_id = $1 ORDER BY r.id`,
+    [equipmentId],
+  );
+}
+
+/** The rent's penalty status, or undefined when it has no return. */
+export async function penaltyStatusOf(rentId: number) {
+  const [row] = await query<{ penalty_status: string }>(
+    'SELECT penalty_status FROM tb_rent_return WHERE rent_id = $1',
+    [rentId],
+  );
+  return row?.penalty_status;
+}
+
+/** Every equipment category row, by id, deleted ones included. */
+export async function equipmentCategoryRows() {
+  return query<{ id: number; name: string; deleted_at: Date | null }>(
+    'SELECT id, name, deleted_at FROM tb_equipment_category ORDER BY id',
+  );
+}
+
+/** The board's contents, oldest first, deleted ones included. */
+export async function boardContents(boardId: string) {
+  return query<{
+    content_id: number;
+    content_uuid: string | null;
+    type: string;
+    author_id: number;
+    title: string | null;
+    text: string | null;
+    category_id: string | null;
+    deleted_at: Date | null;
+  }>(
+    `SELECT content_id, content_uuid, type, author_id, title, text,
+            category_id, deleted_at
+       FROM tb_content WHERE board_id = $1 ORDER BY content_id`,
+    [boardId],
+  );
+}
+
+/** The contents of the type in the parent, oldest first, deleted ones included. */
+export async function childContents(parentId: number, type: string) {
+  return query<{
+    content_id: number;
+    content_uuid: string | null;
+    author_id: number;
+    board_id: string;
+    category_id: string | null;
+    title: string | null;
+    text: string | null;
+    deleted_at: Date | null;
+  }>(
+    `SELECT content_id, content_uuid, author_id, board_id, category_id,
+            title, text, deleted_at
+       FROM tb_content WHERE type = $1 AND parent_id = $2
+      ORDER BY content_id`,
+    [type, parentId],
+  );
+}
+
+/** The ids of the tags on the content, sorted. */
+export async function contentTagIds(contentId: number) {
+  const rows = await query<{ tag_id: string }>(
+    'SELECT tag_id FROM tb_content_tag WHERE content_id = $1 ORDER BY tag_id',
+    [contentId],
+  );
+  return rows.map((row) => row.tag_id);
+}
+
+/** The photo contents in the album, oldest first, deleted ones included. */
+export async function photosInAlbum(albumId: number) {
+  return query<{
+    content_id: number;
+    content_uuid: string | null;
+    author_id: number;
+    board_id: string;
+    category_id: string | null;
+    title: string | null;
+    text: string | null;
+    deleted_at: Date | null;
+  }>(
+    `SELECT content_id, content_uuid, author_id, board_id, category_id,
+            title, text, deleted_at
+       FROM tb_content WHERE type = 'PH' AND parent_id = $1
+      ORDER BY content_id`,
+    [albumId],
+  );
 }
 
 /** The comment's text and whether it is soft-deleted. */

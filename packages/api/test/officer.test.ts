@@ -14,9 +14,10 @@ const FORBIDDEN = {
 };
 
 const ROLES = [
-  { role: '회장', names: ['김성윤'] },
+  { role: '부회장', names: ['박현우'] },
   { role: '관측부장', names: ['김민성', '김민주'] },
 ];
+const BODY = { president: '김성윤', roles: ROLES };
 
 async function listGenerations(grade = 8) {
   const member = await createUser({ grade });
@@ -29,7 +30,7 @@ async function listGenerations(grade = 8) {
 describe('GET /api/officers', () => {
   it('lists every generation newest first, roles in order', async () => {
     await createOfficerGeneration(91);
-    await createOfficerGeneration(93, ROLES);
+    await createOfficerGeneration(93, BODY);
     await createOfficerGeneration(92);
     const member = await createUser({ grade: 8 });
 
@@ -46,6 +47,7 @@ describe('GET /api/officers', () => {
     ).toEqual([93, 92, 91]);
     expect(response.body.generations[0]).toEqual({
       generation: 93,
+      president: '김성윤',
       roles: ROLES,
       updated_at: expect.any(String),
     });
@@ -66,13 +68,14 @@ describe('PUT /api/officers/:generation', () => {
     const response = await api()
       .put('/api/officers/94')
       .set('Authorization', bearer(officer))
-      .send({ roles: ROLES });
+      .send(BODY);
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual({
       success: true,
       generation: {
         generation: 94,
+        president: '김성윤',
         roles: ROLES,
         updated_at: expect.any(String),
       },
@@ -87,12 +90,12 @@ describe('PUT /api/officers/:generation', () => {
     const response = await api()
       .put('/api/officers/93')
       .set('Authorization', bearer(officer))
-      .send({ roles: ROLES });
+      .send(BODY);
 
     expect(response.status).toBe(200);
     const generations = await listGenerations();
     expect(generations).toHaveLength(1);
-    expect(generations[0].roles).toEqual(ROLES);
+    expect(generations[0]).toMatchObject(BODY);
   });
 
   it('trims names and roles', async () => {
@@ -101,11 +104,30 @@ describe('PUT /api/officers/:generation', () => {
     await api()
       .put('/api/officers/94')
       .set('Authorization', bearer(officer))
-      .send({ roles: [{ role: ' 회장 ', names: [' 김성윤'] }] });
+      .send({
+        president: ' 김성윤 ',
+        roles: [{ role: ' 관측부장 ', names: [' 김민성'] }],
+      });
 
-    expect((await listGenerations())[0].roles).toEqual([
-      { role: '회장', names: ['김성윤'] },
-    ]);
+    expect((await listGenerations())[0]).toMatchObject({
+      president: '김성윤',
+      roles: [{ role: '관측부장', names: ['김민성'] }],
+    });
+  });
+
+  it('saves a generation with only its 회장', async () => {
+    const officer = await createUser({ grade: 3 });
+
+    const response = await api()
+      .put('/api/officers/94')
+      .set('Authorization', bearer(officer))
+      .send({ president: '김성윤' });
+
+    expect(response.status).toBe(200);
+    expect(response.body.generation).toMatchObject({
+      president: '김성윤',
+      roles: [],
+    });
   });
 
   it('is closed to 전 회장 (4), 임원진 (6) and members', async () => {
@@ -115,11 +137,11 @@ describe('PUT /api/officers/:generation', () => {
       const response = await api()
         .put('/api/officers/93')
         .set('Authorization', bearer(member))
-        .send({ roles: ROLES });
+        .send(BODY);
       expect(response.status).toBe(403);
       expect(response.body).toEqual(FORBIDDEN);
     }
-    expect((await listGenerations())[0].roles).not.toEqual(ROLES);
+    expect((await listGenerations())[0].president).toBe('회장93');
   });
 
   it('lets 운영진 change a past generation', async () => {
@@ -130,7 +152,7 @@ describe('PUT /api/officers/:generation', () => {
     const response = await api()
       .put('/api/officers/92')
       .set('Authorization', bearer(manager))
-      .send({ roles: ROLES });
+      .send(BODY);
 
     expect(response.status).toBe(200);
   });
@@ -144,7 +166,7 @@ describe('PUT /api/officers/:generation', () => {
       const response = await api()
         .put(`/api/officers/${generation}`)
         .set('Authorization', bearer(president))
-        .send({ roles: ROLES });
+        .send(BODY);
       expect(response.status).toBe(200);
     }
     const generations = await listGenerations();
@@ -162,7 +184,7 @@ describe('PUT /api/officers/:generation', () => {
       const response = await api()
         .put(`/api/officers/${generation}`)
         .set('Authorization', bearer(president))
-        .send({ roles: ROLES });
+        .send(BODY);
       expect(response.status).toBe(403);
       expect(response.body).toEqual(FORBIDDEN);
     }
@@ -172,14 +194,15 @@ describe('PUT /api/officers/:generation', () => {
   it('rejects a bad generation or body with 400', async () => {
     const officer = await createUser({ grade: 3 });
     const cases: [string, unknown][] = [
-      ['0', { roles: ROLES }],
-      ['abc', { roles: ROLES }],
-      ['1.5', { roles: ROLES }],
+      ['0', BODY],
+      ['abc', BODY],
+      ['1.5', BODY],
       ['94', {}],
-      ['94', { roles: [] }],
-      ['94', { roles: [{ role: '회장', names: [] }] }],
-      ['94', { roles: [{ role: '', names: ['김성윤'] }] }],
-      ['94', { roles: [{ role: '회장', names: ['  '] }] }],
+      ['94', { roles: ROLES }],
+      ['94', { president: '  ', roles: ROLES }],
+      ['94', { president: '김성윤', roles: [{ role: '총무', names: [] }] }],
+      ['94', { president: '김성윤', roles: [{ role: '', names: ['박현우'] }] }],
+      ['94', { president: '김성윤', roles: [{ role: '총무', names: ['  '] }] }],
     ];
     for (const [generation, body] of cases) {
       const response = await api()

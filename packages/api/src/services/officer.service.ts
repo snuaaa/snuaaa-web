@@ -1,5 +1,4 @@
 import { AuthorizationError, NotFoundError } from '../errors';
-import type { OfficerRole } from '../db/schema';
 import { withTransaction } from '../db/transaction';
 import * as officers from '../repositories/officer.repository';
 import type { Actor } from './types';
@@ -35,11 +34,11 @@ export async function listOfficers() {
   return officers.findAll();
 }
 
-/** Creates the generation, or replaces all of its roles. */
+/** Creates the generation, or replaces its 회장 and all of its roles. */
 export async function saveOfficers(
   actor: Actor,
   generation: number,
-  roles: OfficerRole[],
+  input: officers.OfficerInput,
 ) {
   if (actor.grade > OFFICER_MANAGER_GRADE && actor.grade !== PRESIDENT_GRADE) {
     deny();
@@ -47,7 +46,7 @@ export async function saveOfficers(
   return withTransaction(async (transaction) => {
     const latest = await officers.findLatestGeneration(transaction);
     if (!canSaveGeneration(actor.grade, generation, latest)) deny();
-    return officers.upsert(generation, roles, transaction);
+    return officers.upsert(generation, input, transaction);
   });
 }
 

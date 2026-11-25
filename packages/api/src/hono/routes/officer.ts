@@ -12,6 +12,8 @@ import {
 const name = z.string().trim().min(1).max(32);
 
 const officersBody = z.object({
+  // 회장 is required; the other roles may be left out.
+  president: name,
   roles: z
     .array(
       z.object({
@@ -19,8 +21,8 @@ const officersBody = z.object({
         names: z.array(name).min(1).max(30),
       }),
     )
-    .min(1)
-    .max(50),
+    .max(50)
+    .default([]),
 });
 
 const generationParam = z.object({
@@ -42,7 +44,7 @@ export const officerRoutes = new Hono<AuthEnvironment>()
       const generation = await saveOfficers(
         context.get('actor'),
         context.req.valid('param').generation,
-        context.req.valid('json').roles,
+        context.req.valid('json'),
       );
       return context.json({ success: true, generation });
     },
