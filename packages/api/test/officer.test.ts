@@ -284,6 +284,8 @@ describe('POST /api/officers/handover', () => {
 
   it('lets 현 회장 hand over to the next 회장', async () => {
     const { president, next } = await setUp();
+    const officer = await createUser({ grade: 6 });
+    const member = await createUser({ grade: 8 });
 
     const response = await api()
       .post('/api/officers/handover')
@@ -297,7 +299,10 @@ describe('POST /api/officers/handover', () => {
       roles: [],
     });
     expect(await gradeOf(president)).toBe(4);
+    // A 토성 picked as 회장 skips 천왕성; the other 임원 go there.
     expect(await gradeOf(next)).toBe(5);
+    expect(await gradeOf(officer)).toBe(7);
+    expect(await gradeOf(member)).toBe(8);
     expect((await listGenerations())[0]).toMatchObject({
       generation: 94,
       president_uuid: next.user_uuid,

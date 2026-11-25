@@ -11,6 +11,9 @@ export const OFFICER_MANAGER_GRADE = 3;
 export const PRESIDENT_GRADE = 5;
 /** 전 회장 (화성, 4): what 현 회장 becomes after 회기 넘기기. */
 export const FORMER_PRESIDENT_GRADE = 4;
+/** 임원진 (토성, 6): every one of them becomes 천왕성 (7) after 회기 넘기기. */
+export const OFFICER_GRADE = 6;
+export const MEMBER_GRADE_AFTER_TERM = 7;
 
 type Latest = Awaited<ReturnType<typeof officers.findLatest>>;
 type Member = NonNullable<Awaited<ReturnType<typeof users.findNameAndGrade>>>;
@@ -77,8 +80,9 @@ export async function saveOfficers(
 
 /**
  * 회기 넘기기: ends the newest 기수 and starts the next one with the given
- * member as 회장. 현 회장 (grade 5) becomes 전 회장 (4) and the new 회장
- * becomes 현 회장 (5), unless they are 운영진, whose grade stays. The new
+ * member as 회장. 임원진 (토성, 6) become 천왕성 (7), 현 회장 (5) becomes
+ * 전 회장 (4), and the new 회장 becomes 현 회장 (5), unless they are
+ * 운영진, whose grade stays. The new
  * 기수 starts with no other roles; its 회장 fills them in. 운영진 or the
  * current 회장 may do it.
  */
@@ -96,6 +100,11 @@ export async function handOver(actor: Actor, presidentUuid: string) {
     const name = president.username?.trim();
     if (!name) throw new BadRequestError('The member has no name');
 
+    await users.changeGradeOfAll(
+      OFFICER_GRADE,
+      MEMBER_GRADE_AFTER_TERM,
+      transaction,
+    );
     await users.changeGradeOfAll(
       PRESIDENT_GRADE,
       FORMER_PRESIDENT_GRADE,
