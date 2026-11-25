@@ -94,8 +94,13 @@ export async function saveOfficers(
 export async function handOver(actor: Actor, presidentUuid: string) {
   return withTransaction(async (transaction) => {
     const member = await currentMember(actor, transaction);
+    // Check without the lock first, so a member who may not hand over
+    // can't hold the row; then lock it and check again.
+    const allowed = (latest: Latest) =>
+      isManager(member) || isCurrentPresident(member, latest);
+    if (!allowed(await officers.findLatest({}, transaction))) deny();
     const latest = await officers.findLatest({ lock: true }, transaction);
-    if (!isManager(member) && !isCurrentPresident(member, latest)) deny();
+    if (!allowed(latest)) deny();
     // A first 기수 is added by hand, so there is always a row to lock.
     if (!latest) throw new BadRequestError('There is no generation yet');
     if (latest.generation >= MAX_GENERATION) {
