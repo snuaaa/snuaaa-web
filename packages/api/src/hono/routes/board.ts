@@ -4,7 +4,10 @@ import { requireAuth, type AuthEnvironment } from '../auth';
 import { validationHook } from '../errors';
 import { z } from 'zod';
 import { createDocument } from '../../services/document.service';
-import { createExhibition } from '../../services/exhibition.service';
+import {
+  createExhibition,
+  listExhibitions,
+} from '../../services/exhibition.service';
 import { createPost } from '../../services/post.service';
 import { createDocumentBody } from './document';
 import { exhibitionFields, readFile } from './exhibition';
@@ -17,8 +20,8 @@ const createExhibitionForm = z.object({
 
 /**
  * The endpoints under `/api/board/...` that moved to Hono: creating a post,
- * a document or an exhibition on a board. The rest of `/api/board` is still
- * on Express.
+ * a document or an exhibition on a board, and listing exhibitions. The rest
+ * of `/api/board` is still on Express.
  */
 export const boardRoutes = new Hono<AuthEnvironment>()
   .use(requireAuth)
@@ -45,6 +48,14 @@ export const boardRoutes = new Hono<AuthEnvironment>()
       );
       return context.json({ content_id: contentId, success: true });
     },
+  )
+  .get('/:board_id/exhibitions', async (context) =>
+    context.json(
+      await listExhibitions(
+        context.get('actor'),
+        context.req.param('board_id'),
+      ),
+    ),
   )
   .post(
     '/:board_id/exhibition',

@@ -5,6 +5,7 @@ import { requireAuth, type AuthEnvironment } from '../auth';
 import { validationHook } from '../errors';
 import {
   deleteExhibitPhoto,
+  retrieveExhibitPhoto,
   updateExhibitPhoto,
 } from '../../services/exhibitPhoto.service';
 
@@ -32,9 +33,17 @@ export const exhibitPhotoFields = {
   ),
 };
 
-/** `/api/exhibitPhoto/...`. Reading exhibit photos (`GET`) is still on Express. */
+/** `/api/exhibitPhoto/...`. */
 export const exhibitPhotoRoutes = new Hono<AuthEnvironment>()
   .use(requireAuth)
+  .get('/:exhibitPhoto_id', async (context) =>
+    context.json(
+      await retrieveExhibitPhoto(
+        context.get('actor'),
+        context.req.param('exhibitPhoto_id'),
+      ),
+    ),
+  )
   .patch(
     '/:exhibitPhoto_id',
     zValidator('json', z.object(exhibitPhotoFields), validationHook),
