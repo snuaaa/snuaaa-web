@@ -1,4 +1,4 @@
-import { and, asc, count, desc, eq, isNull, like } from 'drizzle-orm';
+import { and, asc, count, desc, eq, isNull, like, or } from 'drizzle-orm';
 import { database, type Executor } from '../db/client';
 import { statsLogin, user } from '../db/schema';
 
@@ -41,19 +41,37 @@ export async function findGrade(userId: number, executor: Executor = database) {
   return row ?? null;
 }
 
-/** The (not deleted) user with the uuid, with their grade, or null. */
-export async function findGradeByUuid(
-  userUuid: string,
-  executor: Executor = database,
+/**
+ * Locks the rows of a grade change, the manager's and the target's, in
+ * `user_id` order so two changes can't deadlock, and answers their grades.
+ * A user who left or a malformed uuid is left out.
+ */
+export async function lockGradesForChange(
+  managerId: number,
+  targetUuid: string,
+  executor: Executor,
 ) {
-  if (!UUID.test(userUuid)) {
-    return null;
-  }
-  const [row] = await executor
-    .select({ user_id: user.user_id, grade: user.grade })
+  const rows = await executor
+    .select({
+      user_id: user.user_id,
+      user_uuid: user.user_uuid,
+      grade: user.grade,
+    })
     .from(user)
-    .where(and(eq(user.user_uuid, userUuid), isNull(user.deleted_at)));
-  return row ?? null;
+    .where(
+      and(
+        UUID.test(targetUuid)
+          ? or(eq(user.user_id, managerId), eq(user.user_uuid, targetUuid))
+          : eq(user.user_id, managerId),
+        isNull(user.deleted_at),
+      ),
+    )
+    .orderBy(asc(user.user_id))
+    .for('update');
+  return {
+    manager: rows.find((row) => row.user_id === managerId) ?? null,
+    target: rows.find((row) => row.user_uuid === targetUuid) ?? null,
+  };
 }
 
 export type ProfileFields = Partial<
