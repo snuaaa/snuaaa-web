@@ -48,7 +48,6 @@ const PROTECTED_ENDPOINTS = [
   'POST /api/photo',
   'PATCH /api/photo/:photo_id',
   'DELETE /api/photo/:photo_id',
-  'POST /api/photo/migrate',
   'GET /api/document',
   'GET /api/document/:doc_id',
   'PATCH /api/document/:doc_id',
@@ -109,7 +108,6 @@ const PUBLIC_ENDPOINTS = [
   'POST /api/userinfo/find/id',
   'POST /api/userinfo/find/pw',
   // Photos of a public photo board are shown before login.
-  'GET /api/photoboard/:board_id/photos',
   // File downloads are plain links, so they can't send the header.
   'GET /api/content/:content_id/file/:file_id',
 ];

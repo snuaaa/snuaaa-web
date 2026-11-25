@@ -2,11 +2,14 @@ import { withTransaction } from '../db/transaction';
 import ContentTypeEnum from '../enums/contentTypeEnum';
 import { BadRequestError, NotFoundError } from '../errors';
 import * as albums from '../repositories/album.repository';
+import * as categories from '../repositories/category.repository';
 import * as contents from '../repositories/content.repository';
 import * as photos from '../repositories/photo.repository';
+import * as tags from '../repositories/tag.repository';
 import { parseId } from '../repositories/utils';
 import { loadAccessibleBoard } from './board.service';
 import { loadEditableContent } from './content.service';
+import { assertBoardAccess } from './permissions';
 import type { Actor } from './types';
 
 export type AlbumInput = contents.ContentFields & {
@@ -87,7 +90,13 @@ export async function setAlbumThumbnail(
   if (!photo) {
     throw new NotFoundError('Photo not found in album');
   }
-  if (photo.author_id !== actor._id) {
+  if (photo.author_id === actor._id) {
+    // The photo's author skips the edit check, but not a deleted album.
+    const target = await contents.findWithBoard(albumNumber);
+    if (!target || target.type !== ContentTypeEnum.ALBUM) {
+      throw new NotFoundError('Content not found');
+    }
+  } else {
     await loadEditableContent(actor, albumId, ContentTypeEnum.ALBUM);
   }
   await albums.setThumbnail(albumNumber, photo.content_id);
@@ -106,4 +115,101 @@ export async function deleteAlbum(actor: Actor, albumId: string) {
   if ((await contents.softDelete(target.content_id)) === 0) {
     throw new NotFoundError('Content not found');
   }
+}
+
+/**
+ * Loads the (not deleted) album and checks that the actor may read its
+ * board. Throws 404 for an unknown album and 403 above the read level.
+ */
+async function loadReadableAlbum(actor: Actor, albumId: string) {
+  const target = await albums.findDetail(albumId);
+  if (!target) {
+    throw new NotFoundError('Album not found');
+  }
+  assertBoardAccess(target.board, actor.grade, 'read');
+  return target;
+}
+
+/**
+ * The album with its author and board, and its board's categories and tags.
+ * Reading an album doesn't count a view.
+ */
+export async function retrieveAlbum(actor: Actor, albumId: string) {
+  const target = await loadReadableAlbum(actor, albumId);
+  const [categoryInfo, tagInfo] = await Promise.all([
+    categories.listOnBoard(target.board.board_id),
+    tags.listOnBoard(target.board.board_id),
+  ]);
+  return { albumInfo: target, categoryInfo, tagInfo };
+}
+
+/** The album's photos, newest first. */
+export async function listAlbumPhotos(actor: Actor, albumId: string) {
+  const target = await loadReadableAlbum(actor, albumId);
+  return photos.listInAlbum(target.content_id);
+}
+
+/** The web shows 12 albums a page. */
+const ALBUMS_PER_PAGE = 12;
+
+export type AlbumListQuery = {
+  /** From 1. */
+  page: number;
+  categoryId?: string;
+  searchType?: string;
+  searchKeyword?: string;
+};
+
+/**
+ * A page of the board's albums, newest first, and how many there are in
+ * all. The actor must be allowed to read the board (404 for an unknown
+ * board, 403 otherwise). Each album carries its cover photo
+ * (`album.thumbnail`, null when none is set or it was deleted) and its
+ * newest photo (`children`, empty when it has none).
+ */
+export async function listAlbums(
+  actor: Actor,
+  boardId: string,
+  query: AlbumListQuery,
+) {
+  await loadAccessibleBoard(actor, boardId, 'read');
+  const filter: albums.AlbumFilter = {
+    boardId,
+    categoryId: query.categoryId,
+    searchType: query.searchType,
+    searchKeyword: query.searchKeyword,
+  };
+  const [albumCount, rows] = await Promise.all([
+    albums.countList(filter),
+    albums.list(filter, {
+      limit: ALBUMS_PER_PAGE,
+      offset: ALBUMS_PER_PAGE * (query.page - 1),
+    }),
+  ]);
+  const coverIds = rows.flatMap((row) =>
+    row.album.tn_photo_id === null ? [] : [row.album.tn_photo_id],
+  );
+  const [covers, latest] = await Promise.all([
+    photos.listByIds(coverIds),
+    photos.listLatestInAlbums(rows.map((row) => row.content_id)),
+  ]);
+  const coverById = new Map(covers.map((cover) => [cover.content_id, cover]));
+  const latestByAlbum = new Map(
+    latest.map((photo) => [photo.parent_id, photo]),
+  );
+  const albumInfo = rows.map((row) => {
+    const newest = latestByAlbum.get(row.content_id);
+    return {
+      ...row,
+      album: {
+        ...row.album,
+        thumbnail:
+          row.album.tn_photo_id === null
+            ? null
+            : (coverById.get(row.album.tn_photo_id) ?? null),
+      },
+      children: newest ? [newest] : [],
+    };
+  });
+  return { albumCount, albumInfo };
 }

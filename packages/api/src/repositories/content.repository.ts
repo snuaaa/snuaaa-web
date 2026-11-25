@@ -1,7 +1,7 @@
 import { randomUUID } from 'crypto';
-import { and, eq, isNull, sql } from 'drizzle-orm';
+import { and, eq, isNull, like, or, sql } from 'drizzle-orm';
 import { database, type Executor, type Transaction } from '../db/client';
-import { board, content } from '../db/schema';
+import { board, content, user } from '../db/schema';
 import { parseId } from './utils';
 
 export type ContentFields = {
@@ -165,4 +165,28 @@ export async function addToCounter(
     .update(content)
     .set({ [counter]: sql`coalesce(${content[counter]}, 0) + ${by}` })
     .where(eq(content.content_id, contentId));
+}
+
+/**
+ * A case-sensitive LIKE on the field the search type names: 'title',
+ * 'text', 'all' (title or text) or 'user' (the author nickname, so the
+ * query must join `user`). Undefined when not searching.
+ */
+export function searchCondition(type?: string, keyword?: string) {
+  if (!keyword || keyword.trim() === '') {
+    return undefined;
+  }
+  const pattern = `%${keyword}%`;
+  switch (type) {
+    case 'all':
+      return or(like(content.title, pattern), like(content.text, pattern));
+    case 'title':
+      return like(content.title, pattern);
+    case 'text':
+      return like(content.text, pattern);
+    case 'user':
+      return like(user.nickname, pattern);
+    default:
+      return undefined;
+  }
 }

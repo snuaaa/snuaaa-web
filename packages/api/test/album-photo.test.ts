@@ -306,6 +306,21 @@ describe('PATCH /api/album/:album_id/thumbnail', () => {
     expect((await albumRow(albumId)).tn_photo_id).toBeNull();
   });
 
+  it("returns 404 to a photo's author once the album is deleted", async () => {
+    const { author, albumId, photographer, photoId } = await albumWithPhoto();
+    await api()
+      .delete(`/api/album/${albumId}`)
+      .set('Authorization', bearer(author));
+
+    const response = await api()
+      .patch(`/api/album/${albumId}/thumbnail`)
+      .set('Authorization', bearer(photographer))
+      .send({ tn_photo_id: photoId });
+
+    expect(response.status).toBe(404);
+    expect((await albumRow(albumId)).tn_photo_id).toBeNull();
+  });
+
   it('returns 400 without tn_photo_id', async () => {
     const { author, albumId } = await albumWithPhoto();
 

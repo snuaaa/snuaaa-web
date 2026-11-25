@@ -6,8 +6,11 @@ import { validationHook } from '../errors';
 import {
   createPhotos,
   deletePhoto,
+  listPhotos,
+  retrievePhoto,
   updatePhoto,
 } from '../../services/photo.service';
+import { pageNumber } from './query';
 
 // The web sends '' for an empty field, and leaves out an empty date.
 const shotFields = {
@@ -50,9 +53,50 @@ const updateBody = z.object({
   tags: tagIds,
 });
 
-/** `/api/photo/...`. Reading photos (`GET`) is still on Express. */
+// Like Express did, a limit or offset that isn't a positive number falls
+// back to the default. `tags` is read separately: it is a list.
+const listQuery = z.object({
+  board_id: z.string().optional(),
+  user_uuid: z.string().optional(),
+  limit: pageNumber(20),
+  offset: pageNumber(0),
+  search_type: z.string().optional(),
+  search_keyword: z.string().optional(),
+});
+
+/** `/api/photo/...`. */
 export const photoRoutes = new Hono<AuthEnvironment>()
   .use(requireAuth)
+  .get(
+    '/list',
+    zValidator('query', listQuery, validationHook),
+    async (context) => {
+      const query = context.req.valid('query');
+      // axios sends a list as `tags[]=a&tags[]=b`; one tag may come as `tags=a`.
+      const tagIds = [
+        ...(context.req.queries('tags[]') ?? []),
+        ...(context.req.queries('tags') ?? []),
+      ];
+      return context.json(
+        await listPhotos(context.get('actor'), {
+          boardId: query.board_id || undefined,
+          userUuid: query.user_uuid || undefined,
+          tagIds: tagIds.length > 0 ? tagIds : undefined,
+          limit: query.limit,
+          offset: query.offset,
+          searchType: query.search_type,
+          searchKeyword: query.search_keyword,
+        }),
+      );
+    },
+  )
+  .get('/:photo_id', async (context) => {
+    return context.json(
+      await retrievePhoto(context.get('actor'), context.req.param('photo_id'), {
+        byAuthor: context.req.query('navigation') === 'user',
+      }),
+    );
+  })
   .post(
     '/',
     zValidator('json', createBody, validationHook),

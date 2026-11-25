@@ -5,6 +5,8 @@ import { requireAuth, type AuthEnvironment } from '../auth';
 import { validationHook } from '../errors';
 import {
   deleteAlbum,
+  listAlbumPhotos,
+  retrieveAlbum,
   setAlbumThumbnail,
   updateAlbum,
 } from '../../services/album.service';
@@ -31,9 +33,22 @@ const thumbnailBody = z.object({
   tn_photo_id: z.union([z.number(), z.string()]).nullish(),
 });
 
-/** `/api/album/...`. Reading albums (`GET`) is still on Express. */
+/** `/api/album/...`. */
 export const albumRoutes = new Hono<AuthEnvironment>()
   .use(requireAuth)
+  .get('/:album_id', async (context) => {
+    return context.json(
+      await retrieveAlbum(context.get('actor'), context.req.param('album_id')),
+    );
+  })
+  .get('/:album_id/photos', async (context) => {
+    return context.json(
+      await listAlbumPhotos(
+        context.get('actor'),
+        context.req.param('album_id'),
+      ),
+    );
+  })
   .patch(
     '/:album_id',
     zValidator('json', updateBody, validationHook),
