@@ -4,6 +4,7 @@ import { AppError } from '../errors';
 import { onError } from './errors';
 import { albumRoutes } from './routes/album';
 import { contentFileRoutes, fileRoutes } from './routes/attachedFile';
+import { authRoutes } from './routes/auth';
 import { boardRoutes } from './routes/board';
 import { commentRoutes, contentCommentRoutes } from './routes/comment';
 import { documentRoutes } from './routes/document';
@@ -64,6 +65,7 @@ export const honoApp = new Hono({ strict: false })
   .basePath('/api')
   .use(limitRequestBody)
   .route('/album', albumRoutes)
+  .route('/auth', authRoutes)
   .route('/board', boardRoutes)
   .route('/comment', commentRoutes)
   // Before the comment routes, whose token check covers all of `/content`,

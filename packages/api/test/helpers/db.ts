@@ -53,6 +53,34 @@ export async function deletedAtOf(user: Pick<User, 'user_id'>) {
   return row?.deleted_at;
 }
 
+/**
+ * The user's last login (`login_at`), their row's `updated_at`, and the
+ * logins recorded in `tb_stats_login`, oldest first.
+ */
+export async function loginHistoryOf(user: Pick<User, 'user_id'>) {
+  const [row] = await query<{ login_at: Date | null; updated_at: Date }>(
+    'SELECT login_at, updated_at FROM tb_user WHERE user_id = $1',
+    [user.user_id],
+  );
+  const stats = await query<{ login_at: Date }>(
+    'SELECT login_at FROM tb_stats_login WHERE user_id = $1 ORDER BY login_at',
+    [user.user_id],
+  );
+  return { ...row, stats: stats.map((stat) => stat.login_at) };
+}
+
+/** The (not deleted) users with the login id, without their password. */
+export async function usersWithLoginId(id: string) {
+  return query<Record<string, unknown>>(
+    `SELECT user_id, user_uuid, id, username, nickname, aaa_no, col_no, major,
+            email, mobile, introduction, grade, level, profile_path,
+            profile_url, login_at, created_at, updated_at, deleted_at,
+            password IS NOT NULL AS has_password
+       FROM tb_user WHERE id = $1 AND deleted_at IS NULL ORDER BY user_id`,
+    [id],
+  );
+}
+
 /** Soft-deletes the user, like leaving the club (`DELETE /api/userinfo`). */
 export async function softDeleteUser(user: Pick<User, 'user_id'>) {
   await query('UPDATE tb_user SET deleted_at = now() WHERE user_id = $1', [

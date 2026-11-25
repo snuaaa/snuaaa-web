@@ -28,6 +28,8 @@ type UserOverrides = Partial<
 > & {
   username?: string;
   email?: string;
+  aaa_no?: string;
+  login_at?: Date;
   /** Plain text; stored hashed, like signup. */
   password?: string;
 };

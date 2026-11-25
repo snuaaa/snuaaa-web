@@ -1,6 +1,6 @@
 import { and, asc, count, desc, eq, isNull, like } from 'drizzle-orm';
 import { database, type Executor } from '../db/client';
-import { user } from '../db/schema';
+import { statsLogin, user } from '../db/schema';
 
 /** The author fields a content's detail shows (Sequelize's BASE_USER_FIELDS). */
 export const authorJson = {
@@ -287,4 +287,75 @@ export async function findByLoginIdForUpdate(
     .limit(1)
     .for('update');
   return row ?? null;
+}
+
+/**
+ * The (not deleted) member with the login id, with their password hash and
+ * the fields the login answers, or null.
+ */
+export async function findForLogin(
+  loginId: string,
+  executor: Executor = database,
+) {
+  const [row] = await executor
+    .select({
+      user_id: user.user_id,
+      user_uuid: user.user_uuid,
+      id: user.id,
+      password: user.password,
+      username: user.username,
+      nickname: user.nickname,
+      grade: user.grade,
+      level: user.level,
+      email: user.email,
+      profile_path: user.profile_path,
+      login_at: user.login_at,
+    })
+    .from(user)
+    .where(and(eq(user.id, loginId), isNull(user.deleted_at)))
+    .orderBy(asc(user.user_id))
+    .limit(1);
+  return row ?? null;
+}
+
+/**
+ * Records a login: sets `login_at` (leaving `updated_at`, since the profile
+ * didn't change) and adds a `tb_stats_login` row.
+ */
+export async function recordLogin(
+  userId: number,
+  at: Date,
+  executor: Executor = database,
+) {
+  await executor
+    .update(user)
+    .set({ login_at: at })
+    .where(eq(user.user_id, userId));
+  await executor.insert(statsLogin).values({ user_id: userId, login_at: at });
+}
+
+/** Whether a (not deleted) member has the login id. */
+export async function isLoginIdTaken(
+  loginId: string,
+  executor: Executor = database,
+) {
+  const [row] = await executor
+    .select({ user_id: user.user_id })
+    .from(user)
+    .where(and(eq(user.id, loginId), isNull(user.deleted_at)))
+    .limit(1);
+  return Boolean(row);
+}
+
+export type NewUser = Omit<
+  typeof user.$inferInsert,
+  'user_id' | 'created_at' | 'updated_at' | 'deleted_at' | 'login_at'
+>;
+
+/** Creates a member. */
+export async function create(fields: NewUser, executor: Executor = database) {
+  const now = new Date();
+  await executor
+    .insert(user)
+    .values({ ...fields, created_at: now, updated_at: now });
 }

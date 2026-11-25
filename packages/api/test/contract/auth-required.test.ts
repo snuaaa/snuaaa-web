@@ -1,8 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import jwt from 'jsonwebtoken';
-import app from '../../src/app';
 import { honoApp } from '../../src/hono/app';
-import { verifyTokenMiddleware } from '../../src/middlewares/auth';
 import { api } from '../helpers/request';
 
 /**
@@ -161,50 +159,4 @@ it('lists every Hono endpoint above', () => {
         !PUBLIC_ENDPOINTS.includes(endpoint),
     ),
   ).toEqual([]);
-});
-
-/**
- * Keeps the lists above in sync with the Express routes, so a new endpoint
- * can't skip this test. It reads Express internals, so it only sees routes
- * still served by Express: drop it once every router has moved.
- */
-it('lists every Express endpoint above', () => {
-  type Layer = {
-    route?: {
-      path: string;
-      methods: Record<string, boolean>;
-      stack: { handle: unknown }[];
-    };
-    handle?: { stack?: Layer[] };
-    regexp: RegExp;
-  };
-  const found = { protected: [] as string[], public: [] as string[] };
-
-  const walk = (stack: Layer[], prefix: string) => {
-    for (const layer of stack) {
-      if (layer.route) {
-        const path = (prefix + layer.route.path).replace(/\/$/, '');
-        const isProtected = layer.route.stack.some(
-          (s) => s.handle === verifyTokenMiddleware,
-        );
-        for (const method of Object.keys(layer.route.methods)) {
-          const key = `${method.toUpperCase()} ${path}`;
-          found[isProtected ? 'protected' : 'public'].push(key);
-        }
-      } else if (layer.handle?.stack) {
-        const match = layer.regexp.source.match(/^\^\\\/(.*?)\\\/\?/);
-        const mount = match ? '/' + match[1].replace(/\\\//g, '/') : '';
-        walk(layer.handle.stack, prefix + mount);
-      }
-    }
-  };
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  walk((app as any)._router.stack, '');
-
-  // A protected route missing from PROTECTED_ENDPOINTS, or a route without
-  // the token check that isn't in PUBLIC_ENDPOINTS, shows up here.
-  expect(
-    found.protected.filter((e) => !PROTECTED_ENDPOINTS.includes(e)),
-  ).toEqual([]);
-  expect(found.public.filter((e) => !PUBLIC_ENDPOINTS.includes(e))).toEqual([]);
 });

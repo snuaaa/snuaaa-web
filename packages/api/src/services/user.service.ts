@@ -10,24 +10,32 @@ export const USER_GRADES = [1, 3, 4, 5, 6, 7, 8, 9] as const;
 export const GRADE_MANAGER_GRADE = 3;
 
 /** A new member's grade, until they give a club number. */
-const NEW_MEMBER_GRADE = 9;
+export const NEW_MEMBER_GRADE = 9;
 /** A member's grade once they gave a club number. */
-const MEMBER_GRADE = 8;
+export const MEMBER_GRADE = 8;
 
-const NICKNAME_MAX_LENGTH = 16;
+export const NICKNAME_MAX_LENGTH = 16;
+
+/**
+ * The two digits of the generation in a club number (`23AAA-12` or
+ * `AAA23-12`), or null when it isn't one.
+ */
+export function generationOf(clubNumber: string | null | undefined) {
+  if (clubNumber && /^[0-9]{2}[Aa]{3}-[0-9]{1,3}$/.test(clubNumber)) {
+    return clubNumber.slice(0, 2);
+  }
+  if (clubNumber && /^[Aa]{3}[0-9]{2}-[0-9]{1,3}$/.test(clubNumber)) {
+    return clubNumber.slice(3, 5);
+  }
+  return null;
+}
 
 /**
  * The name shown to other members: the name, after the two digits of the
- * generation when the club number has one (`23AAA-12` or `AAA23-12`).
+ * generation when the club number has one.
  */
 function nicknameOf(clubNumber: string | null | undefined, name: string) {
-  if (clubNumber && /^[0-9]{2}[Aa]{3}-[0-9]{1,3}$/.test(clubNumber)) {
-    return clubNumber.slice(0, 2) + name;
-  }
-  if (clubNumber && /^[Aa]{3}[0-9]{2}-[0-9]{1,3}$/.test(clubNumber)) {
-    return clubNumber.slice(3, 5) + name;
-  }
-  return name;
+  return (generationOf(clubNumber) ?? '') + name;
 }
 
 export type ProfileInput = Omit<users.ProfileFields, 'nickname' | 'grade'>;
