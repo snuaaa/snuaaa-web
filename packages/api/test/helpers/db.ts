@@ -44,6 +44,15 @@ export async function deleteUser(user: Pick<User, 'user_id'>) {
   await query('DELETE FROM tb_user WHERE user_id = $1', [user.user_id]);
 }
 
+/** When the user left (`deleted_at`), or null; undefined when the row is gone. */
+export async function deletedAtOf(user: Pick<User, 'user_id'>) {
+  const [row] = await query<{ deleted_at: Date | null }>(
+    'SELECT deleted_at FROM tb_user WHERE user_id = $1',
+    [user.user_id],
+  );
+  return row?.deleted_at;
+}
+
 /** Soft-deletes the user, like leaving the club (`DELETE /api/userinfo`). */
 export async function softDeleteUser(user: Pick<User, 'user_id'>) {
   await query('UPDATE tb_user SET deleted_at = now() WHERE user_id = $1', [

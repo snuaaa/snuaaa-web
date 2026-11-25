@@ -56,34 +56,6 @@ export async function retrieveUser(user_id) {
   return user;
 }
 
-export async function retrieveUserPw(user_id) {
-  if (!user_id) {
-    throw new BadRequestError('user_id can not be null');
-  }
-
-  const user = await UserModel.findOne({
-    attributes: ['password'],
-    where: { user_id: user_id },
-  });
-
-  if (!user) {
-    throw new NotFoundError('id is not correct');
-  }
-
-  return user;
-}
-
-export async function retrieveUsersByEmailAndName(email, username) {
-  if (!email) {
-    throw new BadRequestError('email can not be null');
-  }
-
-  return UserModel.findAll({
-    attributes: ['id'],
-    where: { email: email, username: username },
-  });
-}
-
 export async function retrieveUserById(id) {
   if (!id) {
     throw new BadRequestError('id can not be null');
@@ -111,36 +83,6 @@ export async function retrieveUserById(id) {
   }
 
   return user;
-}
-
-export async function updateUserPw(user_id, password) {
-  if (!user_id) {
-    throw new BadRequestError('user_id can not be null');
-  }
-  if (!password) {
-    throw new BadRequestError('password can not be null');
-  }
-
-  await UserModel.update(
-    {
-      password: password,
-    },
-    {
-      where: { user_id: user_id },
-    },
-  );
-}
-
-export async function deleteUser(user_id) {
-  if (!user_id) {
-    throw new BadRequestError('id can not be null');
-  }
-
-  await UserModel.destroy({
-    where: {
-      user_id: user_id,
-    },
-  });
 }
 
 export async function updateLoginDate(user_id) {

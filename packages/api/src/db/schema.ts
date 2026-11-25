@@ -61,6 +61,8 @@ export const user = pgTable('tb_user', {
   user_uuid: uuid('user_uuid'),
   /** The login id. */
   id: varchar('id', { length: 16 }).notNull(),
+  /** The bcrypt hash. Never select it into a response. */
+  password: varchar('password', { length: 64 }),
   username: varchar('username', { length: 16 }),
   aaa_no: varchar('aaa_no', { length: 16 }),
   nickname: varchar('nickname', { length: 16 }),

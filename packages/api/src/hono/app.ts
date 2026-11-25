@@ -16,7 +16,7 @@ import { photoboardRoutes } from './routes/photoboard';
 import { postRoutes } from './routes/post';
 import { uploadRoutes } from './routes/upload';
 import { userRoutes } from './routes/user';
-import { userinfoRoutes } from './routes/userinfo';
+import { userinfoReminderRoutes, userinfoRoutes } from './routes/userinfo';
 
 /**
  * The largest request body Hono reads, the same as the default limit of
@@ -81,6 +81,9 @@ export const honoApp = new Hono({ strict: false })
   .route('/post', postRoutes)
   .route('/upload', uploadRoutes)
   .route('/user', userRoutes)
+  // Before the member routes, whose token check covers all of `/userinfo`,
+  // so the reminders on the login page answer first.
+  .route('/userinfo', userinfoReminderRoutes)
   .route('/userinfo', userinfoRoutes);
 
 honoApp.onError(onError);
