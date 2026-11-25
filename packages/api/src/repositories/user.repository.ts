@@ -70,7 +70,9 @@ export async function lockGradesForChange(
     .for('update');
   return {
     manager: rows.find((row) => row.user_id === managerId) ?? null,
-    target: rows.find((row) => row.user_uuid === targetUuid) ?? null,
+    // PostgreSQL answers uuids in lowercase, whatever case was asked.
+    target:
+      rows.find((row) => row.user_uuid === targetUuid.toLowerCase()) ?? null,
   };
 }
 

@@ -203,6 +203,18 @@ describe('member edits after the move', () => {
     expect(response.status).toBe(404);
   });
 
+  it('finds the member by an uppercase uuid', async () => {
+    const member = await createUser({ grade: 9 });
+
+    const response = await api()
+      .patch(`/api/user/${member.user_uuid.toUpperCase()}/grade`)
+      .set('Authorization', bearer(await createUser({ grade: 1 })))
+      .send({ grade: 8 });
+
+    expect(response.status).toBe(200);
+    expect(await gradeOf(member)).toBe(8);
+  });
+
   it('no longer serves the profile photo migration', async () => {
     const response = await api()
       .post('/api/user/migrate')
