@@ -55,8 +55,6 @@ const PROTECTED_ENDPOINTS = [
   'GET /api/home/posts/all',
   'GET /api/home/memory',
   'GET /api/home/astrophoto',
-  'GET /api/home/comments',
-  'GET /api/home/comments/all',
   'GET /api/home/riseset',
   'GET /api/content/:content_id/comments',
   'POST /api/content/:content_id/file',

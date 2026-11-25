@@ -3,7 +3,6 @@ import express from 'express';
 import auth from './auth';
 import user from './user';
 import userinfo from './userinfo';
-import home from './home';
 import image from './image';
 import upload from './upload';
 // import { verifyTokenMiddleware } from '../middlewares/auth';
@@ -16,7 +15,6 @@ router.use('/auth', auth);
 // router.use(verifyTokenMiddleware);
 router.use('/userinfo', userinfo);
 router.use('/user', user);
-router.use('/home', home);
 router.use('/image', image);
 router.use('/upload', upload);
 
