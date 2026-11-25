@@ -23,7 +23,6 @@ const PROTECTED_ENDPOINTS = [
   'GET /api/userinfo/search/mini',
   'PATCH /api/user',
   'PATCH /api/user/:user_uuid/grade',
-  'POST /api/user/migrate',
   'GET /api/board',
   'GET /api/board/:board_id',
   'POST /api/board/:board_id/post',

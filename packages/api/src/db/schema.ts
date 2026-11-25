@@ -52,11 +52,21 @@ export const tag = pgTable('tb_tag', {
   tag_type: varchar('tag_type', { length: 8 }),
 });
 
-/** The columns of `tb_user` that are safe to show to other members. */
+/**
+ * `tb_user`, without the login columns (`id`, `password`, `login_at`). Only
+ * the columns in `authorJson` (`repositories/user.repository.ts`) are safe
+ * to show to other members.
+ */
 export const user = pgTable('tb_user', {
   user_id: serial('user_id').primaryKey(),
   user_uuid: uuid('user_uuid'),
+  username: varchar('username', { length: 16 }),
+  aaa_no: varchar('aaa_no', { length: 16 }),
   nickname: varchar('nickname', { length: 16 }),
+  col_no: varchar('col_no', { length: 8 }),
+  major: varchar('major', { length: 32 }),
+  email: varchar('email', { length: 64 }),
+  mobile: varchar('mobile', { length: 16 }),
   introduction: text('introduction'),
   grade: integer('grade'),
   level: integer('level'),
