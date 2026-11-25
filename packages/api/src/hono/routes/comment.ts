@@ -3,6 +3,7 @@ import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import { requireAuth, type AuthEnvironment } from '../auth';
 import { validationHook } from '../errors';
+import { pageNumber, pageSize } from './query';
 import {
   createComment,
   deleteComment,
@@ -24,18 +25,30 @@ const commentBody = z.object({
   ),
 });
 
+// Anything that isn't a positive number is the default, as before; 0 makes
+// the service use its own page size.
+const listQuery = z.object({
+  user_uuid: z.string().optional(),
+  limit: pageSize(0),
+  offset: pageNumber(0),
+});
+
 /** `/api/comment/...` */
 export const commentRoutes = new Hono<AuthEnvironment>()
   .use(requireAuth)
-  .get('/list', async (context) =>
-    context.json(
-      await listComments(context.get('actor'), {
-        userUuid: context.req.query('user_uuid'),
-        // Anything that isn't a positive number is the default, as before.
-        limit: Number(context.req.query('limit')) || undefined,
-        offset: Number(context.req.query('offset')) || undefined,
-      }),
-    ),
+  .get(
+    '/list',
+    zValidator('query', listQuery, validationHook),
+    async (context) => {
+      const query = context.req.valid('query');
+      return context.json(
+        await listComments(context.get('actor'), {
+          userUuid: query.user_uuid,
+          limit: query.limit,
+          offset: query.offset,
+        }),
+      );
+    },
   )
   .patch(
     '/:comment_id',

@@ -16,12 +16,12 @@ import {
   retrieveMyInfo,
   searchMembers,
 } from '../../services/user.service';
-import { pageNumber } from './query';
+import { pageSize } from './query';
 
 const memberListQuery = z.object({
   sort: z.string().optional(),
   order: z.string().optional(),
-  limit: pageNumber(20),
+  limit: pageSize(20),
   // Like `pageNumber`, but 0 is a valid offset.
   offset: z
     .string()
