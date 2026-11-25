@@ -28,6 +28,17 @@ export async function gradeOf(user: Pick<User, 'user_id'>) {
   return row.grade;
 }
 
+/** The profile fields a member edits on the profile page, as stored now. */
+export async function profileOf(user: Pick<User, 'user_id'>) {
+  const [row] = await query<Record<string, unknown>>(
+    `SELECT username, nickname, aaa_no, col_no, major, email, mobile,
+            introduction, grade, level, profile_path, profile_url
+       FROM tb_user WHERE user_id = $1`,
+    [user.user_id],
+  );
+  return row;
+}
+
 /** Removes the user's row, as if the account were gone for good. */
 export async function deleteUser(user: Pick<User, 'user_id'>) {
   await query('DELETE FROM tb_user WHERE user_id = $1', [user.user_id]);

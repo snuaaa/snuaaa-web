@@ -379,7 +379,4 @@ describe('equipment admin endpoints', () => {
       message: 'PERMISSION DENIED',
     });
   });
-
-  // Any logged-in member can start these S3 migrations today.
-  it.todo('POST /api/*/migrate endpoints are limited to admins');
 });
