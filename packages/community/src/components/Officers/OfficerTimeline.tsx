@@ -150,11 +150,6 @@ export default function OfficerTimeline({
                 <span className="text-label font-normal text-fg-on-brand-muted">
                   회장
                 </span>
-                {isLatest && (
-                  <span className="text-caption font-semibold text-accent">
-                    지금
-                  </span>
-                )}
               </p>
               {generation.roles.length > 0 && (
                 <p className="flex flex-wrap gap-x-3.5 gap-y-1 text-label font-normal">
