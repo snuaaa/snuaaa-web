@@ -156,6 +156,72 @@ export async function createDocument(
   return contentId;
 }
 
+/** Creates an album: a `tb_content` row of type AL and its `tb_album` row. */
+export async function createAlbum(
+  author: User,
+  board: Board,
+  overrides: Omit<Parameters<typeof createContent>[2], 'type'> & {
+    is_private?: boolean | null;
+    tn_photo_id?: number | null;
+  } = {},
+) {
+  const {
+    is_private = false,
+    tn_photo_id = null,
+    ...contentOverrides
+  } = overrides;
+  const contentId = await createContent(author, board, {
+    ...contentOverrides,
+    type: 'AL',
+  });
+  await insert('tb_album', { content_id: contentId, is_private, tn_photo_id });
+  return contentId;
+}
+
+/**
+ * Creates a photo: a `tb_content` row of type PH (in the album, when
+ * `parent_id` is given) and its `tb_photo` row.
+ */
+export async function createPhoto(
+  author: User,
+  board: Board,
+  overrides: Omit<Parameters<typeof createContent>[2], 'type'> & {
+    photo?: Record<string, unknown>;
+  } = {},
+) {
+  const n = next();
+  const { photo = {}, ...contentOverrides } = overrides;
+  const contentId = await createContent(author, board, {
+    ...contentOverrides,
+    type: 'PH',
+  });
+  await insert('tb_photo', {
+    content_id: contentId,
+    img_url: `https://bucket.example.com/photo${n}.jpg`,
+    thumbnail_url: `https://bucket.example.com/photo${n}_thumb.jpg`,
+    ...photo,
+  });
+  return contentId;
+}
+
+/** Creates a tag on the board, which photos on it can carry. */
+export async function createTag(board: Board) {
+  const n = next();
+  return insert<{ tag_id: string }>('tb_tag', {
+    tag_id: `tag${n}`,
+    board_id: board.board_id,
+    tag_name: `Tag ${n}`,
+    tag_type: 'M',
+  });
+}
+
+/** Puts the tags on the content. */
+export async function tagContent(contentId: number, tagIds: string[]) {
+  for (const tag_id of tagIds) {
+    await insert('tb_content_tag', { content_id: contentId, tag_id });
+  }
+}
+
 /**
  * Creates a comment on the content. Like the API, it does not touch the
  * content's `comment_num`; pass `comment_num` to `createContent` for that.

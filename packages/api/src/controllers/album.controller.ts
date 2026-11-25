@@ -8,10 +8,7 @@ import {
 } from '../models';
 import { Op } from 'sequelize';
 import { BASE_USER_FIELDS } from '../models/User';
-import { AuthorizationError, BadRequestError, NotFoundError } from '../errors';
-import { JWTPayload } from '../utils/token';
-import { canEditContent } from './content.controller';
-import ContentTypeEnum from '../enums/contentTypeEnum';
+import { BadRequestError, NotFoundError } from '../errors';
 import { SearchType } from './post.controller';
 import { getSearchCondition } from '../utils/searchCondition';
 
@@ -214,79 +211,4 @@ export async function retrieveAlbumsInBoard(
     limit: rowNum,
     offset: offset,
   });
-}
-
-export async function createAlbum(content_id, data) {
-  if (!content_id) {
-    throw new BadRequestError('id can not be null');
-  }
-
-  await AlbumModel.create({
-    content_id: content_id,
-    is_private: data.is_private,
-  });
-}
-
-export async function updateAlbum(album_id, data) {
-  if (!album_id) {
-    throw new BadRequestError('album_id can not be null');
-  }
-
-  await AlbumModel.update(
-    {
-      is_private: data.is_private,
-    },
-    {
-      where: {
-        content_id: album_id,
-      },
-    },
-  );
-}
-
-/**
- * The photo must be in the album, or it's not found. Whoever can edit the
- * album may pick any of its photos as the cover. The author of a photo in the
- * album may also pick that photo, as the web has always allowed.
- */
-export async function assertCanSetAlbumThumbnail(
-  album_id,
-  photo_id,
-  user: JWTPayload,
-) {
-  if (!photo_id) {
-    throw new BadRequestError('tn_photo_id can not be null');
-  }
-  const photo = await ContentModel.findOne({
-    attributes: ['content_id', 'author_id'],
-    where: {
-      content_id: photo_id,
-      parent_id: album_id,
-      type: ContentTypeEnum.PHOTO,
-    },
-  });
-  if (!photo) {
-    throw new NotFoundError('Photo not found in album');
-  }
-  if (photo.getDataValue('author_id') === user._id) return;
-  if (!(await canEditContent(album_id, user, ContentTypeEnum.ALBUM))) {
-    throw new AuthorizationError('Permission denied', { code: 4001 });
-  }
-}
-
-export async function updateAlbumThumbnail(album_id, photo_id) {
-  if (!album_id) {
-    throw new BadRequestError('album_id can not be null');
-  }
-
-  await AlbumModel.update(
-    {
-      tn_photo_id: photo_id,
-    },
-    {
-      where: {
-        content_id: album_id,
-      },
-    },
-  );
 }

@@ -1,4 +1,3 @@
-import ContentTypeEnum from '../enums/contentTypeEnum';
 import express from 'express';
 
 import {
@@ -8,38 +7,22 @@ import {
 
 import {
   retrievePhoto,
-  updatePhoto,
-  deletePhoto,
   retrieveNextPhoto,
   retrievePrevPhoto,
   retrieveAdjacentPhotoByAuthor,
   retrievePrevAlbumPhoto,
   retrieveNextAlbumPhoto,
-  createPhoto,
   migratePhotos,
   retrievePhotosWithFilter,
   PhotoFilter,
 } from '../controllers/photo.controller';
 import { checkLike } from '../controllers/contentLike.controller';
-import {
-  assertCanEditContent,
-  assertContentInBoard,
-  updateContent,
-  deleteContent,
-  increaseViewNum,
-} from '../controllers/content.controller';
+import { increaseViewNum } from '../controllers/content.controller';
 import { retrieveTagsOnBoard } from '../controllers/tag.controller';
-import {
-  createContentTag,
-  updateContentTag,
-} from '../controllers/contentTag.controller';
 import { retrieveUserByUserUuid } from '../controllers/user.controller';
 import { SearchType } from '../controllers/post.controller';
-import { BadRequestError, NotFoundError } from '../errors';
-import {
-  assertBoardAccess,
-  assertBoardAccessById,
-} from '../controllers/board.controller';
+import { NotFoundError } from '../errors';
+import { assertBoardAccess } from '../controllers/board.controller';
 
 const router = express.Router();
 
@@ -132,97 +115,6 @@ router.get(
         prevAlbumPhoto,
         nextAlbumPhoto,
       });
-    } catch (err) {
-      next(err);
-    }
-  },
-);
-
-router.post(
-  '/',
-  verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res, next) => {
-    const decodedToken = req.decodedToken;
-    const list = req.body.list;
-    const boardId = req.body.board_id;
-    const albumId = req.body.album_id;
-
-    try {
-      await assertBoardAccessById(boardId, decodedToken.grade, 'write');
-      if (albumId) {
-        await assertContentInBoard(albumId, boardId, ContentTypeEnum.ALBUM);
-      }
-      const contentIdList = await Promise.all(
-        list.map(async (photo: Record<string, unknown>) => {
-          const contentId = await createPhoto({
-            ...photo,
-            author_id: decodedToken._id,
-            board_id: boardId,
-            album_id: albumId,
-          });
-          const tags = photo.tags as string[];
-          await Promise.all(
-            tags.map((tag) => createContentTag(contentId, tag)),
-          );
-          return contentId;
-        }),
-      );
-      return res.json({
-        success: true,
-        list: contentIdList,
-      });
-    } catch (err) {
-      next(err);
-    }
-  },
-);
-
-router.patch(
-  '/:photo_id',
-  verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res, next) => {
-    try {
-      await assertCanEditContent(
-        req.params.photo_id,
-        req.decodedToken,
-        ContentTypeEnum.PHOTO,
-      );
-      const contentData = {
-        title: req.body.title,
-        text: req.body.text,
-      };
-      const photoData = req.body.photo;
-      const tagData = req.body.tags;
-
-      if (!req.params.photo_id || !contentData || !photoData || !tagData) {
-        return next(new BadRequestError('bad request'));
-      }
-
-      await Promise.all([
-        updateContent(req.params.photo_id, contentData),
-        updatePhoto(req.params.photo_id, photoData),
-        updateContentTag(Number(req.params.photo_id), tagData),
-      ]);
-      res.json({ success: true });
-    } catch (err) {
-      next(err);
-    }
-  },
-);
-
-router.delete(
-  '/:photo_id',
-  verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res, next) => {
-    try {
-      await assertCanEditContent(
-        req.params.photo_id,
-        req.decodedToken,
-        ContentTypeEnum.PHOTO,
-      );
-      await deletePhoto(req.params.photo_id);
-      await deleteContent(req.params.photo_id);
-      res.json({ success: true });
     } catch (err) {
       next(err);
     }

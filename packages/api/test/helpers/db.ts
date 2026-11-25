@@ -120,6 +120,57 @@ export async function documentRow(contentId: number) {
   return row;
 }
 
+/** The content's `tb_album` row, or undefined when there is none. */
+export async function albumRow(contentId: number) {
+  const [row] = await query<{
+    is_private: boolean | null;
+    tn_photo_id: number | null;
+  }>('SELECT is_private, tn_photo_id FROM tb_album WHERE content_id = $1', [
+    contentId,
+  ]);
+  return row;
+}
+
+/** The content's `tb_photo` row, or undefined when there is none. */
+export async function photoRow(contentId: number) {
+  const [row] = await query(
+    `SELECT img_url, thumbnail_url, location, camera, lens, exposure_time,
+            focal_length, f_stop, iso, date
+       FROM tb_photo WHERE content_id = $1`,
+    [contentId],
+  );
+  return row;
+}
+
+/** The ids of the tags on the content, sorted. */
+export async function contentTagIds(contentId: number) {
+  const rows = await query<{ tag_id: string }>(
+    'SELECT tag_id FROM tb_content_tag WHERE content_id = $1 ORDER BY tag_id',
+    [contentId],
+  );
+  return rows.map((row) => row.tag_id);
+}
+
+/** The photo contents in the album, oldest first, deleted ones included. */
+export async function photosInAlbum(albumId: number) {
+  return query<{
+    content_id: number;
+    content_uuid: string | null;
+    author_id: number;
+    board_id: string;
+    category_id: string | null;
+    title: string | null;
+    text: string | null;
+    deleted_at: Date | null;
+  }>(
+    `SELECT content_id, content_uuid, author_id, board_id, category_id,
+            title, text, deleted_at
+       FROM tb_content WHERE type = 'PH' AND parent_id = $1
+      ORDER BY content_id`,
+    [albumId],
+  );
+}
+
 /** The comment's text and whether it is soft-deleted. */
 export async function commentState(commentId: number) {
   const [row] = await query<{ text: string; deleted_at: Date | null }>(

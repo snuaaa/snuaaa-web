@@ -1,4 +1,5 @@
 import {
+  boolean,
   integer,
   pgTable,
   primaryKey,
@@ -97,6 +98,41 @@ export const attachedFile = pgTable('tb_file', {
   ...timestamps,
   deleted_at: timestamp('deleted_at', { withTimezone: true }),
 });
+
+export const album = pgTable('tb_album', {
+  content_id: integer('content_id').primaryKey(),
+  is_private: boolean('is_private'),
+  /** The cover photo's content id. */
+  tn_photo_id: integer('tn_photo_id'),
+});
+
+/** `album_id` is left out: it is a legacy column, the album is `parent_id`. */
+export const photo = pgTable('tb_photo', {
+  content_id: integer('content_id').primaryKey(),
+  /** @deprecated Old local paths; newer photos only have `img_url`. */
+  file_path: varchar('file_path', { length: 256 }),
+  /** @deprecated Old local paths; newer photos only have `thumbnail_url`. */
+  thumbnail_path: varchar('thumbnail_path', { length: 256 }),
+  img_url: varchar('img_url', { length: 256 }).notNull(),
+  thumbnail_url: varchar('thumbnail_url', { length: 256 }).notNull(),
+  location: varchar('location', { length: 256 }),
+  camera: varchar('camera', { length: 256 }),
+  lens: varchar('lens', { length: 256 }),
+  exposure_time: varchar('exposure_time', { length: 256 }),
+  focal_length: varchar('focal_length', { length: 64 }),
+  f_stop: varchar('f_stop', { length: 64 }),
+  iso: varchar('iso', { length: 64 }),
+  date: timestamp('date', { withTimezone: true }),
+});
+
+export const contentTag = pgTable(
+  'tb_content_tag',
+  {
+    content_id: integer('content_id').notNull(),
+    tag_id: varchar('tag_id', { length: 16 }).notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.content_id, t.tag_id] })],
+);
 
 export const comment = pgTable('tb_comment', {
   comment_id: serial('comment_id').primaryKey(),

@@ -6,9 +6,7 @@ import {
 } from '../middlewares/auth';
 
 import { assertBoardAccessById } from '../controllers/board.controller';
-import { createContent } from '../controllers/content.controller';
 import {
-  createAlbum,
   retrieveAlbumsInBoard,
   retrieveAlbumCount,
   AlbumSearch,
@@ -93,33 +91,6 @@ router.get(
         );
         res.json({ photoCount, photoInfo });
       }
-    } catch (err) {
-      next(err);
-    }
-  },
-);
-
-router.post(
-  '/:board_id/album',
-  verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res, next) => {
-    const decodedToken = req.decodedToken;
-    const user_id = decodedToken._id;
-
-    try {
-      await assertBoardAccessById(
-        req.params.board_id,
-        decodedToken.grade,
-        'write',
-      );
-      const content_id = await createContent(
-        user_id,
-        req.params.board_id,
-        req.body,
-        'AL',
-      );
-      await createAlbum(content_id, req.body);
-      res.json({ success: true });
     } catch (err) {
       next(err);
     }

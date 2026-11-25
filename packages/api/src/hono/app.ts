@@ -2,9 +2,12 @@ import { Hono } from 'hono';
 import { bodyLimit } from 'hono/body-limit';
 import { AppError } from '../errors';
 import { onError } from './errors';
-import { commentRoutes, contentCommentRoutes } from './routes/comment';
+import { albumRoutes } from './routes/album';
 import { boardRoutes } from './routes/board';
+import { commentRoutes, contentCommentRoutes } from './routes/comment';
 import { documentRoutes } from './routes/document';
+import { photoRoutes } from './routes/photo';
+import { photoboardRoutes } from './routes/photoboard';
 import { postRoutes } from './routes/post';
 
 /**
@@ -34,10 +37,13 @@ export const honoApp = new Hono({ strict: false })
       },
     }),
   )
+  .route('/album', albumRoutes)
   .route('/board', boardRoutes)
   .route('/comment', commentRoutes)
   .route('/content', contentCommentRoutes)
   .route('/document', documentRoutes)
+  .route('/photo', photoRoutes)
+  .route('/photoboard', photoboardRoutes)
   .route('/post', postRoutes);
 
 honoApp.onError(onError);
