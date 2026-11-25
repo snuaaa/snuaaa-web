@@ -8,7 +8,6 @@ import {
 } from '../controllers/board.controller';
 import { retrievePostsInBoard } from '../controllers/post.controller';
 import { retrieveTagsOnBoard } from '../controllers/tag.controller';
-import { retrieveExhibitions } from '../controllers/exhibition.controller';
 import type { AuthenticatedRequest } from '../middlewares/auth';
 
 const router = express.Router();
@@ -93,24 +92,6 @@ router.get(
       );
       const tags = await retrieveTagsOnBoard(req.params.board_id);
       res.json(tags);
-    } catch (err) {
-      next(err);
-    }
-  },
-);
-
-router.get(
-  '/:board_id/exhibitions',
-  verifyTokenMiddleware,
-  async (req: AuthenticatedRequest, res, next) => {
-    try {
-      await assertBoardAccessById(
-        req.params.board_id,
-        req.decodedToken.grade,
-        'read',
-      );
-      const exhibitionInfo = await retrieveExhibitions();
-      res.json(exhibitionInfo);
     } catch (err) {
       next(err);
     }

@@ -4,11 +4,14 @@ import ContentTypeEnum from '../enums/contentTypeEnum';
 import { BadRequestError, NotFoundError } from '../errors';
 import * as contents from '../repositories/content.repository';
 import * as exhibitPhotos from '../repositories/exhibitPhoto.repository';
+import * as exhibitions from '../repositories/exhibition.repository';
+import * as likes from '../repositories/like.repository';
 import * as users from '../repositories/user.repository';
 import { resizeImageBuffer } from '../utils/resize';
 import { uploadImageToS3 } from '../utils/upload';
 import { loadAccessibleBoard } from './board.service';
 import { loadEditableContent } from './content.service';
+import { assertBoardAccess } from './permissions';
 import type { Actor } from './types';
 
 /** An exhibit photo's details as the web sends them. */
@@ -159,4 +162,42 @@ export function deleteExhibitPhoto(actor: Actor, photoId: string) {
     }
     await exhibitPhotos.remove(target.content_id, transaction);
   });
+}
+
+/**
+ * The exhibit photo with its photographer (null for a typed name), its
+ * exhibition (`parent`, null once deleted) and author; whether the actor
+ * likes it; and the exhibition's photos. The actor must be allowed to read
+ * its board (404 for an unknown photo, 403 otherwise). Counts a view, which
+ * the answer doesn't include yet.
+ */
+export async function retrieveExhibitPhoto(actor: Actor, photoId: string) {
+  const target = await exhibitPhotos.findDetail(photoId);
+  if (!target) {
+    throw new NotFoundError('Exhibit photo not found');
+  }
+  assertBoardAccess(target.board, actor.grade, 'read');
+  const {
+    board: _board,
+    photographer,
+    exhibitPhoto: details,
+    ...rest
+  } = target;
+  const [parent, likeInfo, exhibitPhotosInfo] = await Promise.all([
+    rest.parent_id === null ? null : exhibitions.find(rest.parent_id),
+    likes.hasContentLike(rest.content_id, actor._id),
+    rest.parent_id === null
+      ? []
+      : exhibitPhotos.listInExhibition(rest.parent_id),
+    contents.addToCounter(rest.content_id, 'view_num', 1),
+  ]);
+  return {
+    exhibitPhotoInfo: {
+      ...rest,
+      exhibitPhoto: { ...details, photographer },
+      parent,
+    },
+    likeInfo,
+    exhibitPhotosInfo,
+  };
 }
