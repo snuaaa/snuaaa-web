@@ -26,6 +26,8 @@ export type User = {
 type UserOverrides = Partial<
   Pick<User, 'id' | 'nickname' | 'grade' | 'level'>
 > & {
+  username?: string;
+  email?: string;
   /** Plain text; stored hashed, like signup. */
   password?: string;
 };

@@ -5,6 +5,12 @@ import { requireAuth, type AuthEnvironment } from '../auth';
 import { validationHook } from '../errors';
 import { BadRequestError } from '../../errors';
 import {
+  changeMyPassword,
+  leave,
+  remindLoginIds,
+  resetPassword,
+} from '../../services/account.service';
+import {
   listMembers,
   retrieveMemberProfile,
   retrieveMyInfo,
@@ -26,12 +32,61 @@ const memberListQuery = z.object({
     }),
 });
 
+// The services check each field, so the codes and messages stay the ones
+// the web reads; the schemas only pick the fields.
+const passwordChangeBody = z.object({
+  password: z.unknown().optional(),
+  newPassword: z.unknown().optional(),
+  newPasswordCf: z.unknown().optional(),
+});
+
+const reminderBody = z.object({
+  id: z.unknown().optional(),
+  name: z.unknown().optional(),
+  email: z.unknown().optional(),
+});
+
 /**
- * The member reads under `/api/userinfo/...`. The password change, leaving
- * and the id and password reminders are still on Express.
+ * The id and password reminders on the login page, without a token. Mount
+ * before `userinfoRoutes`, whose token check covers all of `/userinfo`.
+ */
+export const userinfoReminderRoutes = new Hono()
+  .post(
+    '/find/id',
+    zValidator('json', reminderBody, validationHook),
+    async (context) => {
+      const { name, email } = context.req.valid('json');
+      await remindLoginIds(name, email);
+      return context.json({ success: true });
+    },
+  )
+  .post(
+    '/find/pw',
+    zValidator('json', reminderBody, validationHook),
+    async (context) => {
+      const { id, name, email } = context.req.valid('json');
+      await resetPassword(id, name, email);
+      return context.json({ success: true });
+    },
+  );
+
+/**
+ * A member's own account and the member reads under `/api/userinfo/...`.
  */
 export const userinfoRoutes = new Hono<AuthEnvironment>()
   .use(requireAuth)
+  .patch(
+    '/password',
+    zValidator('json', passwordChangeBody, validationHook),
+    async (context) => {
+      await changeMyPassword(context.get('actor'), context.req.valid('json'));
+      return context.json({ success: true });
+    },
+  )
+  .delete('/', async (context) => {
+    await leave(context.get('actor'));
+    return context.json({ success: true });
+  })
   .get('/', async (context) =>
     context.json({
       success: true,

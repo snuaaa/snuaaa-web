@@ -211,3 +211,80 @@ export async function searchByName(
     .orderBy(asc(user.user_id))
     .limit(limit);
 }
+
+/** The (not deleted) user's password hash, or null when they left. */
+export async function findPasswordHash(
+  userId: number,
+  executor: Executor = database,
+) {
+  const [row] = await executor
+    .select({ password: user.password })
+    .from(user)
+    .where(and(eq(user.user_id, userId), isNull(user.deleted_at)));
+  return row ?? null;
+}
+
+/** Stores a new password hash. */
+export async function updatePassword(
+  userId: number,
+  passwordHash: string,
+  executor: Executor = database,
+) {
+  await executor
+    .update(user)
+    .set({ password: passwordHash, updated_at: new Date() })
+    .where(eq(user.user_id, userId));
+}
+
+/** Marks the user as left, unless they already left. */
+export async function softDelete(
+  userId: number,
+  executor: Executor = database,
+) {
+  await executor
+    .update(user)
+    .set({ deleted_at: new Date() })
+    .where(and(eq(user.user_id, userId), isNull(user.deleted_at)));
+}
+
+/** The login ids of the (not deleted) members with the name and email. */
+export async function listLoginIdsByNameAndEmail(
+  name: string,
+  email: string,
+  executor: Executor = database,
+) {
+  const rows = await executor
+    .select({ id: user.id })
+    .from(user)
+    .where(
+      and(
+        eq(user.username, name),
+        eq(user.email, email),
+        isNull(user.deleted_at),
+      ),
+    )
+    .orderBy(asc(user.user_id));
+  return rows.map((row) => row.id);
+}
+
+/**
+ * The (not deleted) member with the login id, with the name and email a
+ * password reminder checks, or null. Locks the row until the transaction
+ * ends.
+ */
+export async function findByLoginIdForUpdate(
+  loginId: string,
+  executor: Executor,
+) {
+  const [row] = await executor
+    .select({
+      user_id: user.user_id,
+      username: user.username,
+      email: user.email,
+    })
+    .from(user)
+    .where(and(eq(user.id, loginId), isNull(user.deleted_at)))
+    .limit(1)
+    .for('update');
+  return row ?? null;
+}
