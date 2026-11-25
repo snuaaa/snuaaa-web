@@ -1,11 +1,16 @@
 import { withTransaction } from '../db/transaction';
 import ContentTypeEnum from '../enums/contentTypeEnum';
 import { BadRequestError, NotFoundError } from '../errors';
+import * as albums from '../repositories/album.repository';
 import * as contents from '../repositories/content.repository';
 import * as contentTags from '../repositories/contentTag.repository';
+import * as likes from '../repositories/like.repository';
 import * as photos from '../repositories/photo.repository';
+import * as tags from '../repositories/tag.repository';
+import * as users from '../repositories/user.repository';
 import { loadAccessibleBoard } from './board.service';
 import { loadEditableContent } from './content.service';
+import { assertBoardAccess } from './permissions';
 import type { Actor } from './types';
 
 export type NewPhoto = contents.ContentFields &
@@ -123,4 +128,127 @@ export function deletePhoto(actor: Actor, photoId: string) {
     }
     await photos.remove(target.content_id, transaction);
   });
+}
+
+/**
+ * The photo the web opens, with its album (`parent`, null when it has none
+ * or the album was deleted), author, board and tags, plus:
+ * - whether the actor likes it, and the board's tags;
+ * - the photos before and after it (`prevPhoto`, `nextPhoto`): in its album,
+ *   or, outside an album, among the board's photos outside one; with
+ *   `byAuthor`, among the author's photos on the boards the actor may read;
+ * - the newest photo of the board's albums before and after its album
+ *   (`prevAlbumPhoto`, `nextAlbumPhoto`).
+ *
+ * Throws 404 for an unknown or deleted photo and 403 when the actor may not
+ * read its board. Counts the view; the answer shows the count before it.
+ */
+export async function retrievePhoto(
+  actor: Actor,
+  photoId: string,
+  { byAuthor = false } = {},
+) {
+  const target = await photos.findDetail(photoId);
+  if (!target) {
+    throw new NotFoundError('Photo not found');
+  }
+  assertBoardAccess(target.board, actor.grade, 'read');
+  const neighbour = (direction: photos.Direction) =>
+    byAuthor
+      ? photos.findNeighbourByAuthor(
+          target.content_id,
+          target.author_id,
+          actor.grade,
+          direction,
+        )
+      : photos.findNeighbourInAlbum(target, direction);
+  const albumNeighbour = (direction: photos.Direction) =>
+    target.parent_id === null
+      ? null
+      : photos.findInNeighbourAlbum(
+          target.parent_id,
+          target.board.board_id,
+          direction,
+        );
+  const [
+    parent,
+    photoTags,
+    likeInfo,
+    boardTagInfo,
+    prevPhoto,
+    nextPhoto,
+    prevAlbumPhoto,
+    nextAlbumPhoto,
+  ] = await Promise.all([
+    target.parent_id === null ? null : albums.findParent(target.parent_id),
+    tags.listByContents([target.content_id]),
+    likes.hasContentLike(target.content_id, actor._id),
+    tags.listOnBoard(target.board.board_id),
+    neighbour('prev'),
+    neighbour('next'),
+    albumNeighbour('prev'),
+    albumNeighbour('next'),
+    contents.addToCounter(target.content_id, 'view_num', 1),
+  ]);
+  return {
+    photoInfo: { ...target, parent, tags: photoTags },
+    likeInfo,
+    boardTagInfo,
+    prevPhoto,
+    nextPhoto,
+    prevAlbumPhoto,
+    nextAlbumPhoto,
+  };
+}
+
+export type PhotoListQuery = {
+  boardId?: string;
+  /** Only this member's photos; 404 when no such (current) member exists. */
+  userUuid?: string;
+  /** Photos with any of these tags; each lists only these of its tags. */
+  tagIds?: string[];
+  limit: number;
+  offset: number;
+  searchType?: string;
+  searchKeyword?: string;
+};
+
+/**
+ * A page of photos on the boards the actor may read, newest first, with
+ * their tags, and how many there are in all.
+ */
+export async function listPhotos(actor: Actor, query: PhotoListQuery) {
+  let authorId: number | undefined;
+  if (query.userUuid) {
+    const userId = await users.findIdByUuid(query.userUuid);
+    if (userId === null) {
+      throw new NotFoundError('User not found');
+    }
+    authorId = userId;
+  }
+  const filter: photos.PhotoFilter = {
+    readGrade: actor.grade,
+    boardId: query.boardId,
+    authorId,
+    tagIds: query.tagIds,
+    searchType: query.searchType,
+    searchKeyword: query.searchKeyword,
+  };
+  const [count, rows] = await Promise.all([
+    photos.countList(filter),
+    photos.list(filter, { limit: query.limit, offset: query.offset }),
+  ]);
+  const photoTags = await tags.listByContents(
+    rows.map((row) => row.content_id),
+    query.tagIds,
+  );
+  return {
+    count,
+    rows: rows.map((row) => ({
+      ...row,
+      tags: photoTags.filter(
+        (photoTag) => photoTag.contentTag.content_id === row.content_id,
+      ),
+    })),
+  };
 }

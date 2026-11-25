@@ -1,8 +1,8 @@
-import { and, count, desc, eq, gte, isNull, like, or } from 'drizzle-orm';
+import { and, count, desc, eq, gte, isNull } from 'drizzle-orm';
 import { database, type Executor } from '../db/client';
 import { board, content, post, user } from '../db/schema';
 import ContentTypeEnum from '../enums/contentTypeEnum';
-import { contentJson } from './content.repository';
+import { contentJson, searchCondition } from './content.repository';
 import { authorJson } from './user.repository';
 import { parseId } from './utils';
 
@@ -52,26 +52,6 @@ export type PostFilter = {
   searchType?: string;
   searchKeyword?: string;
 };
-
-/** A case-sensitive LIKE on the field the search type names. */
-function searchCondition(type?: string, keyword?: string) {
-  if (!keyword || keyword.trim() === '') {
-    return undefined;
-  }
-  const pattern = `%${keyword}%`;
-  switch (type) {
-    case 'all':
-      return or(like(content.title, pattern), like(content.text, pattern));
-    case 'title':
-      return like(content.title, pattern);
-    case 'text':
-      return like(content.text, pattern);
-    case 'user':
-      return like(user.nickname, pattern);
-    default:
-      return undefined;
-  }
-}
 
 function listWhere(filter: PostFilter) {
   return and(

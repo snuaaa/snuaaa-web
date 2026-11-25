@@ -45,6 +45,13 @@ export const category = pgTable('tb_category', {
   category_color: varchar('category_color', { length: 8 }),
 });
 
+export const tag = pgTable('tb_tag', {
+  tag_id: varchar('tag_id', { length: 16 }).primaryKey(),
+  board_id: varchar('board_id', { length: 16 }).notNull(),
+  tag_name: varchar('tag_name', { length: 32 }),
+  tag_type: varchar('tag_type', { length: 8 }),
+});
+
 /** The columns of `tb_user` that are safe to show to other members. */
 export const user = pgTable('tb_user', {
   user_id: serial('user_id').primaryKey(),
