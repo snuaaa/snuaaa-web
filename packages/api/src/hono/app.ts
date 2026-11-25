@@ -1,4 +1,4 @@
-import { Hono } from 'hono';
+import { Hono, type MiddlewareHandler } from 'hono';
 import { bodyLimit } from 'hono/body-limit';
 import { AppError } from '../errors';
 import { onError } from './errors';
@@ -6,6 +6,8 @@ import { albumRoutes } from './routes/album';
 import { boardRoutes } from './routes/board';
 import { commentRoutes, contentCommentRoutes } from './routes/comment';
 import { documentRoutes } from './routes/document';
+import { exhibitionRoutes } from './routes/exhibition';
+import { exhibitPhotoRoutes } from './routes/exhibitPhoto';
 import { photoRoutes } from './routes/photo';
 import { photoboardRoutes } from './routes/photoboard';
 import { postRoutes } from './routes/post';
@@ -18,6 +20,32 @@ import { postRoutes } from './routes/post';
 const MAXIMUM_BODY_BYTES = 100 * 1024;
 
 /**
+ * The largest multipart body (an exhibition poster or an exhibit photo).
+ * Express's multer had no limit; this matches the 100MB the web lets one
+ * photo upload batch reach.
+ */
+const MAXIMUM_UPLOAD_BYTES = 100 * 1024 * 1024;
+
+function limitBody(maxSize: number) {
+  return bodyLimit({
+    maxSize,
+    // The same status and message as body-parser's limit in Express.
+    onError: () => {
+      throw new AppError(413, 'BAD_REQUEST', 'request entity too large');
+    },
+  });
+}
+
+const jsonBodyLimit = limitBody(MAXIMUM_BODY_BYTES);
+const uploadBodyLimit = limitBody(MAXIMUM_UPLOAD_BYTES);
+
+/** Multipart uploads get the larger limit, every other body the JSON one. */
+const limitRequestBody: MiddlewareHandler = (context, next) =>
+  context.req.header('content-type')?.startsWith('multipart/form-data')
+    ? uploadBodyLimit(context, next)
+    : jsonBodyLimit(context, next);
+
+/**
  * The endpoints already moved from Express to Hono (#158). `hono/bridge.ts`
  * hands Hono the requests that match one of these routes; everything else
  * stays with the Express routers in `routes/`.
@@ -28,20 +56,14 @@ const MAXIMUM_BODY_BYTES = 100 * 1024;
 // `strict: false` ignores a trailing slash, like Express.
 export const honoApp = new Hono({ strict: false })
   .basePath('/api')
-  .use(
-    bodyLimit({
-      maxSize: MAXIMUM_BODY_BYTES,
-      // The same status and message as body-parser's limit in Express.
-      onError: () => {
-        throw new AppError(413, 'BAD_REQUEST', 'request entity too large');
-      },
-    }),
-  )
+  .use(limitRequestBody)
   .route('/album', albumRoutes)
   .route('/board', boardRoutes)
   .route('/comment', commentRoutes)
   .route('/content', contentCommentRoutes)
   .route('/document', documentRoutes)
+  .route('/exhibition', exhibitionRoutes)
+  .route('/exhibitPhoto', exhibitPhotoRoutes)
   .route('/photo', photoRoutes)
   .route('/photoboard', photoboardRoutes)
   .route('/post', postRoutes);
