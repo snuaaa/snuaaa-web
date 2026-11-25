@@ -15,6 +15,15 @@ import {
   renameCategory,
   updateEquipment,
 } from '../../services/equipment.service';
+import {
+  assertCanRent,
+  listMyRents,
+  listRentRecords,
+  listRentsOfEquipment,
+  rentEquipments,
+  returnEquipment,
+  updatePenaltyStatus,
+} from '../../services/rent.service';
 
 const ID = z.number().int().positive().max(2_147_483_647);
 
@@ -61,10 +70,25 @@ const adminOnly: MiddlewareHandler<AuthEnvironment> = async (context, next) => {
   await next();
 };
 
-/**
- * `/api/equipment/...`: the equipment and its categories. Rents (`/rent...`,
- * `/:id/rents`) are still on Express.
- */
+/** Like `adminOnly`, for renting and returning. */
+const rentersOnly: MiddlewareHandler<AuthEnvironment> = async (
+  context,
+  next,
+) => {
+  assertCanRent(context.get('actor'));
+  await next();
+};
+
+/** Ids that aren't numbers fail like unknown ones, as they always have. */
+const rentBody = z.object({
+  equipmentIds: z.array(z.unknown(), {
+    message: 'equipmentIds must be an array',
+  }),
+});
+
+const returnBody = z.object({ photo_path: z.string().max(256).nullish() });
+
+/** `/api/equipment/...`: the equipment, its categories and its rents. */
 export const equipmentRoutes = new Hono<AuthEnvironment>()
   .use(requireAuth)
   .get('/', async (context) => context.json(await listEquipment()))
@@ -143,4 +167,63 @@ export const equipmentRoutes = new Hono<AuthEnvironment>()
       context.req.param('categoryId'),
     );
     return context.json({ success: true, id });
-  });
+  })
+  .post(
+    '/rent',
+    rentersOnly,
+    zValidator('json', rentBody, validationHook),
+    async (context) =>
+      context.json(
+        await rentEquipments(
+          context.get('actor'),
+          context.req.valid('json').equipmentIds,
+        ),
+      ),
+  )
+  .post(
+    '/rent/:rentId/return',
+    rentersOnly,
+    zValidator('json', returnBody, validationHook),
+    async (context) =>
+      context.json(
+        await returnEquipment(
+          context.get('actor'),
+          context.req.param('rentId'),
+          context.req.valid('json').photo_path,
+        ),
+      ),
+  )
+  .get('/rent/me', async (context) =>
+    context.json(await listMyRents(context.get('actor'))),
+  )
+  .get('/rent/records', async (context) =>
+    context.json(
+      await listRentRecords(context.get('actor'), context.req.query()),
+    ),
+  )
+  .patch(
+    '/rent/:rentId/penalty',
+    adminOnly,
+    zValidator(
+      'json',
+      z.object({ penalty_status: z.unknown() }),
+      validationHook,
+    ),
+    async (context) =>
+      context.json(
+        await updatePenaltyStatus(
+          context.get('actor'),
+          context.req.param('rentId'),
+          context.req.valid('json').penalty_status,
+        ),
+      ),
+  )
+  .get('/:id/rents', async (context) =>
+    context.json(
+      await listRentsOfEquipment(
+        context.get('actor'),
+        context.req.param('id'),
+        context.req.query('page'),
+      ),
+    ),
+  );

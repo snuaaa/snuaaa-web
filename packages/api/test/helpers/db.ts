@@ -185,6 +185,35 @@ export async function equipmentRows() {
   );
 }
 
+/** Every rent of the equipment, oldest first, with its return (or nulls). */
+export async function rentsOf(equipmentId: number) {
+  return query<{
+    id: number;
+    user_id: number;
+    start_date: Date;
+    end_date: Date | null;
+    returned: boolean;
+    photo_path: string | null;
+    return_date: Date | null;
+    penalty_status: string | null;
+  }>(
+    `SELECT r.id, r.user_id, r.start_date, r.end_date, r.returned,
+            rr.photo_path, rr.return_date, rr.penalty_status
+       FROM tb_rent r LEFT JOIN tb_rent_return rr ON rr.rent_id = r.id
+      WHERE r.equipment_id = $1 ORDER BY r.id`,
+    [equipmentId],
+  );
+}
+
+/** The rent's penalty status, or undefined when it has no return. */
+export async function penaltyStatusOf(rentId: number) {
+  const [row] = await query<{ penalty_status: string }>(
+    'SELECT penalty_status FROM tb_rent_return WHERE rent_id = $1',
+    [rentId],
+  );
+  return row?.penalty_status;
+}
+
 /** Every equipment category row, by id, deleted ones included. */
 export async function equipmentCategoryRows() {
   return query<{ id: number; name: string; deleted_at: Date | null }>(

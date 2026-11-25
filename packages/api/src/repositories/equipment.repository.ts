@@ -15,7 +15,7 @@ export type EquipmentFields = {
 };
 
 /** The equipment as the web reads it, with Sequelize's timestamp names. */
-const equipmentJson = {
+export const equipmentJson = {
   id: equipment.id,
   category_id: equipment.category_id,
   name: equipment.name,
@@ -76,6 +76,39 @@ export async function findId(
     .where(and(eq(equipment.id, id), isNull(equipment.deleted_at)));
   const [row] = await (lock ? query.for('update') : query);
   return row?.id ?? null;
+}
+
+/**
+ * The (not deleted) equipment's rent status, or null when there is none.
+ * Its row stays locked until the transaction ends.
+ */
+export async function lockRentStatus(id: number, executor: Executor) {
+  const [row] = await executor
+    .select({ rent_status: equipment.rent_status })
+    .from(equipment)
+    .where(and(eq(equipment.id, id), isNull(equipment.deleted_at)))
+    .for('update');
+  return row ? row.rent_status : null;
+}
+
+/**
+ * Sets the rent status, only while it is `from` when that is given.
+ */
+export async function setRentStatus(
+  id: number,
+  rentStatus: string,
+  { from }: { from?: string } = {},
+  executor: Executor = database,
+) {
+  await executor
+    .update(equipment)
+    .set({ rent_status: rentStatus, updated_at: new Date() })
+    .where(
+      and(
+        eq(equipment.id, id),
+        from === undefined ? undefined : eq(equipment.rent_status, from),
+      ),
+    );
 }
 
 /** Adds an equipment and returns it. */
