@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Plus, Search } from 'lucide-react';
-import CurrentGenerationCard from '~/components/Officers/CurrentGenerationCard';
-import GenerationRow from '~/components/Officers/GenerationRow';
 import OfficerEditor from '~/components/Officers/OfficerEditor';
-import { filterGenerations } from '~/components/Officers/officerUtils';
+import OfficerMatchSummary from '~/components/Officers/OfficerMatchSummary';
+import OfficerTimeline from '~/components/Officers/OfficerTimeline';
+import { findMatches } from '~/components/Officers/officerUtils';
 import { canSaveOfficers } from '~/components/Layout/constants';
 import {
   BackButton,
@@ -23,62 +23,85 @@ const DESCRIPTION = '회장단과 임원진을 기수별로 모아 봐요.';
 
 type Editing = { generation?: OfficerGeneration } | null;
 
-function ListSkeleton() {
+function TimelineSkeleton() {
   return (
-    <ul aria-hidden>
+    <ul aria-hidden className="flex flex-col">
       {Array.from({ length: 8 }, (_, index) => (
         <li
           key={index}
-          className="flex min-h-13 items-center gap-3 border-b border-gray-100 px-4 md:px-5"
+          className="grid grid-cols-[2.75rem_2.5rem_minmax(0,1fr)] gap-x-1.5 py-3"
         >
-          <Skeleton className="h-4 w-10" />
-          <Skeleton className="h-4 w-28" />
+          <Skeleton className="mt-1 ml-auto h-4 w-8 bg-fg-on-brand/10" />
+          <span />
+          <div className="flex flex-col gap-2">
+            <Skeleton className="h-5 w-20 bg-fg-on-brand/10" />
+            <Skeleton className="h-4 w-4/5 bg-fg-on-brand/10" />
+          </div>
         </li>
       ))}
     </ul>
   );
 }
 
+/**
+ * 역대 임원진 as a night sky: one star per 기수 down a timeline. Tapping a
+ * name searches for it, and the 기수 that person served in are joined into
+ * a constellation.
+ */
 export default function Officers() {
   const { grade } = useAuth().authInfo.user;
   const { data: generations = [], isLoading, isError, refetch } = useOfficers();
   const [query, setQuery] = useState('');
-  const [openGenerations, setOpenGenerations] = useState<Set<number>>(
-    () => new Set(),
-  );
   const [editing, setEditing] = useState<Editing>(null);
   const toast = useToast();
 
-  const searching = query.trim().length > 0;
-  const [current, ...past] = generations;
-  const latest = current?.generation ?? null;
+  const latest = generations[0]?.generation ?? null;
   const canSave = (generation: number) =>
     canSaveOfficers(grade, generation, latest);
   const editor = (generation: OfficerGeneration) =>
     canSave(generation.generation)
       ? () => setEditing({ generation })
       : undefined;
-  const results = filterGenerations(searching ? generations : past, query);
-
-  const toggle = (generation: number) =>
-    setOpenGenerations((opened) => {
-      const next = new Set(opened);
-      if (next.has(generation)) next.delete(generation);
-      else next.add(generation);
-      return next;
-    });
+  const matches = findMatches(generations, query);
 
   // 현 회장 can add only the next 기수, 운영진 any.
   const addButton = canSave((latest ?? 0) + 1) && (
     <Button
-      variant="secondary"
+      variant="ghost"
       size="sm"
       onClick={() => setEditing({})}
       disabled={isLoading}
+      className="text-fg-on-brand hover:bg-fg-on-brand/10"
     >
       <Plus aria-hidden />
       기수 추가
     </Button>
+  );
+
+  const search = (
+    <div className="relative">
+      <Search
+        className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-fg-on-brand-muted"
+        aria-hidden
+      />
+      <Input
+        type="search"
+        value={query}
+        onChange={(event) => setQuery(event.target.value)}
+        placeholder="이름이나 직책으로 찾기"
+        aria-label="이름이나 직책으로 찾기"
+        className="border-fg-on-brand/15 bg-surface-brand-raised pl-9 text-fg-on-brand placeholder:text-fg-on-brand-muted focus:border-accent focus:shadow-none"
+      />
+    </div>
+  );
+
+  const summary = (
+    <OfficerMatchSummary
+      generations={generations}
+      query={query}
+      matches={matches}
+      onClear={() => setQuery('')}
+    />
   );
 
   let body;
@@ -98,65 +121,23 @@ export default function Officers() {
     body = <EmptyState title="아직 임원진 기록이 없어요" />;
   } else {
     body = (
-      <div className="flex flex-col gap-4 md:grid md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:items-start md:gap-6">
-        <div className="px-4 md:sticky md:top-22 md:px-0">
-          {isLoading || !current ? (
-            <Skeleton className="h-72 rounded-xl" />
-          ) : (
-            <CurrentGenerationCard
-              generation={current}
-              onEdit={editor(current)}
-            />
-          )}
+      <div className="flex flex-col md:grid md:grid-cols-[minmax(0,1fr)_18rem] md:items-start md:gap-10">
+        {/* Search and summary stay in view while the timeline scrolls. */}
+        <div className="sticky top-[calc(52px+env(safe-area-inset-top))] z-10 flex flex-col gap-3 bg-surface-brand px-4 pt-1 pb-3 md:top-22 md:order-2 md:px-0 md:pt-0">
+          {search}
+          {!isLoading && summary}
         </div>
-        {/* Not <section>: legacy SCSS styles bare section elements. */}
-        <div
-          role="region"
-          aria-label="지난 기수"
-          className="flex flex-col bg-surface md:rounded-lg md:shadow-sm"
-        >
-          <div className="flex flex-col gap-3 border-b border-gray-100 px-4 pt-4 pb-3 md:px-5">
-            <h2 className="text-heading">지난 기수</h2>
-            <div className="relative">
-              <Search
-                className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-gray-500"
-                aria-hidden
-              />
-              <Input
-                type="search"
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="이름이나 직책으로 찾기"
-                aria-label="이름이나 직책으로 찾기"
-                className="pl-9"
-              />
-            </div>
-          </div>
+        <div className="px-3 md:order-1 md:px-0">
           {isLoading ? (
-            <ListSkeleton />
-          ) : results.length === 0 ? (
-            <EmptyState
-              title={
-                searching ? '찾는 임원이 없어요' : '이전 기수 기록이 없어요'
-              }
-              description={
-                searching ? '이름이나 직책을 다시 확인해 주세요.' : undefined
-              }
-            />
+            <TimelineSkeleton />
           ) : (
-            <ul>
-              {results.map((generation) => (
-                <GenerationRow
-                  key={generation.generation}
-                  generation={generation}
-                  // Search results open, so the matching role shows.
-                  open={searching || openGenerations.has(generation.generation)}
-                  onToggle={() => toggle(generation.generation)}
-                  query={query}
-                  onEdit={editor(generation)}
-                />
-              ))}
-            </ul>
+            <OfficerTimeline
+              generations={generations}
+              query={query}
+              matches={matches}
+              onSelectName={setQuery}
+              editor={editor}
+            />
           )}
         </div>
       </div>
@@ -164,22 +145,26 @@ export default function Officers() {
   }
 
   return (
-    <div className="flex flex-col pb-10 md:mx-auto md:w-full md:max-w-page md:gap-6 md:px-6 md:py-6">
-      <div className="sticky top-0 z-20 mb-4 bg-surface md:hidden">
-        <div className="flex h-[52px] items-center justify-between border-b border-gray-100 pt-safe-0 pr-3 pl-1">
-          <BackButton />
-          <h1 className="text-[15px] font-semibold">{TITLE}</h1>
-          <div className="flex min-w-11 justify-end">{addButton}</div>
+    <div className="flex flex-col md:mx-auto md:w-full md:max-w-page md:px-6 md:py-6">
+      <div className="flex min-h-dvh flex-col bg-surface-brand pb-10 text-fg-on-brand md:min-h-0 md:gap-6 md:rounded-xl md:p-8">
+        <div className="sticky top-0 z-20 bg-surface-brand md:hidden">
+          <div className="flex h-[52px] items-center justify-between pt-safe-0 pr-3 pl-1">
+            <BackButton />
+            <h1 className="text-[15px] font-semibold">{TITLE}</h1>
+            <div className="flex min-w-11 justify-end">{addButton}</div>
+          </div>
         </div>
-      </div>
-      <div className="hidden items-end justify-between gap-4 md:flex">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-display">{TITLE}</h1>
-          <p className="text-label font-normal text-fg-muted">{DESCRIPTION}</p>
+        <div className="hidden items-end justify-between gap-4 md:flex">
+          <div className="flex flex-col gap-1">
+            <h1 className="text-display">{TITLE}</h1>
+            <p className="text-label font-normal text-fg-on-brand-muted">
+              {DESCRIPTION}
+            </p>
+          </div>
+          {addButton}
         </div>
-        {addButton}
+        {body}
       </div>
-      {body}
       <OfficerEditor
         open={editing !== null}
         onOpenChange={(open) => !open && setEditing(null)}

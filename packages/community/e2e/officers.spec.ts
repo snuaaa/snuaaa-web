@@ -30,7 +30,7 @@ test.describe('임원진', () => {
     await setToken(page, VALID_TOKEN);
   });
 
-  test('지금 기수와 역대 기수를 보여 주고 이름으로 찾는다', async ({
+  test('기수를 별로 보여 주고 이름을 누르면 그 사람의 기수를 찾는다', async ({
     page,
   }) => {
     await page.route(`${API_ORIGIN}/api/officers`, (route) =>
@@ -44,21 +44,31 @@ test.describe('임원진', () => {
       .getByRole('link', { name: '역대 임원진' })
       .click();
     await expect(page).toHaveURL(/\/officers$/);
-    const current = page.getByRole('region', { name: '지금 임원진, 93대' });
-    await expect(current.getByText('김성윤')).toBeVisible();
-    await expect(current.getByText('김민주')).toBeVisible();
+    const timeline = page.getByRole('list', { name: '기수 타임라인' });
+    await expect(timeline.getByRole('listitem')).toHaveCount(3);
+    await expect(timeline.getByText('김민주')).toBeVisible();
 
-    const history = page.getByRole('region', { name: '지난 기수' });
-    const row = history.getByRole('button', { name: '92대 회장 박시원' });
-    await expect(row).toHaveAttribute('aria-expanded', 'false');
-    await row.click();
-    await expect(row).toHaveAttribute('aria-expanded', 'true');
-    await expect(history.getByText('총무')).toBeVisible();
+    // Tapping a name finds every 기수 that person served in:
+    // 박시원 was 92대 회장 and 91대 총무.
+    await timeline.getByRole('button', { name: '박시원' }).first().click();
+    await expect(page.getByLabel('이름이나 직책으로 찾기')).toHaveValue(
+      '박시원',
+    );
+    const found = page.getByRole('region', { name: '찾은 기록' });
+    await expect(found).toContainText('2개 기수에서 찾았어요');
+    await expect(
+      found.getByRole('button', { name: '92대 회장' }),
+    ).toBeVisible();
+    await expect(
+      found.getByRole('button', { name: '91대 총무' }),
+    ).toBeVisible();
+    await expect(timeline.locator('mark', { hasText: '박시원' })).toHaveCount(
+      2,
+    );
 
-    // 박시원: 92대 회장, 91대 총무.
-    await history.getByLabel('이름이나 직책으로 찾기').fill('박시원');
-    await expect(history.getByRole('listitem')).toHaveCount(2);
-    await expect(history.locator('mark', { hasText: '박시원' })).toHaveCount(2);
+    await found.getByRole('button', { name: '지우기' }).click();
+    await expect(page.getByLabel('이름이나 직책으로 찾기')).toHaveValue('');
+    await expect(timeline.locator('mark')).toHaveCount(0);
   });
 
   test('임원은 다음 기수를 추가한다', async ({ page }) => {
@@ -112,17 +122,13 @@ test.describe('임원진', () => {
     );
 
     await page.goto('/officers');
-    const current = page.getByRole('region', { name: '지금 임원진, 93대' });
-    await expect(current.getByRole('button', { name: '수정' })).toBeVisible();
+    const edit = page.getByRole('button', { name: '93대 수정' });
+    await expect(edit).toBeVisible();
+    await expect(page.getByRole('button', { name: '92대 수정' })).toHaveCount(
+      0,
+    );
 
-    const history = page.getByRole('region', { name: '지난 기수' });
-    await history.getByRole('button', { name: '92대 회장 박시원' }).click();
-    await expect(history.getByText('박현우')).toBeVisible();
-    await expect(
-      history.getByRole('button', { name: '92대 수정' }),
-    ).toHaveCount(0);
-
-    await current.getByRole('button', { name: '수정' }).click();
+    await edit.click();
     const dialog = page.getByRole('dialog', { name: '93대 수정' });
     await expect(dialog.getByRole('button', { name: '삭제' })).toHaveCount(0);
   });
