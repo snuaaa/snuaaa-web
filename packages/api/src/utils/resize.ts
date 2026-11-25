@@ -105,27 +105,6 @@ export async function resize(file_path) {
   }
 }
 
-export async function resizeAttatchedImg(file_path) {
-  const data = await fs.promises.readFile(file_path);
-  const image = sharp(data);
-  const metadata = await image.rotate().metadata();
-
-  // resizing by minor axis
-  if (metadata.orientation >= 5 && metadata.orientation <= 8) {
-    if (metadata.height > metadata.width) {
-      return image.resize({ height: 720 }).toFile(file_path);
-    } else {
-      return image.resize({ width: 720 }).toFile(file_path);
-    }
-  } else {
-    if (metadata.height > metadata.width) {
-      return image.resize({ width: 720 }).toFile(file_path);
-    } else {
-      return image.resize({ height: 720 }).toFile(file_path);
-    }
-  }
-}
-
 type Metadata = { orientation: number; height: number; width: number };
 type SizeOption = { longSideSize: number } | { shortSideSize: number };
 const DEFAULT_SIZE_OPTION: SizeOption = { longSideSize: 1920 };

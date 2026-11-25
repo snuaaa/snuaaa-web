@@ -64,7 +64,6 @@ const PROTECTED_ENDPOINTS = [
   'PATCH /api/comment/:comment_id',
   'DELETE /api/comment/:comment_id',
   'POST /api/comment/:comment_id/like',
-  'POST /api/image',
   'GET /api/exhibition/:exhibition_id',
   'PATCH /api/exhibition/:exhibition_id',
   'DELETE /api/exhibition/:exhibition_id',
