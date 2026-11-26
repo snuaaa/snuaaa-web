@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # 릴리즈 태그의 패키지 경로를 바꾼 PR만 모아 릴리즈 노트(마크다운)를 출력한다.
-#   WEB-* -> packages/community, API-* -> packages/api
+#   WEB-* -> packages/community, API-* -> packages/api, HOME-* -> packages/home
 # 같은 접두사의 직전 태그와 비교하고, PR은 squash 머지되므로 커밋 하나가 PR 하나다.
 # 사용법: release-notes.sh <tag> [repo(owner/name)]
 set -euo pipefail
@@ -11,7 +11,8 @@ repo=${2:-}
 case "$tag" in
   WEB-*) prefix=WEB- path=packages/community ;;
   API-*) prefix=API- path=packages/api ;;
-  *) echo "Unsupported tag: $tag (expected WEB-* or API-*)" >&2; exit 1 ;;
+  HOME-*) prefix=HOME- path=packages/home ;;
+  *) echo "Unsupported tag: $tag (expected WEB-*, API-* or HOME-*)" >&2; exit 1 ;;
 esac
 
 git rev-parse -q --verify "refs/tags/$tag" >/dev/null || { echo "Tag not found: $tag" >&2; exit 1; }
