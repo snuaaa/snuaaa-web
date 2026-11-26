@@ -1,24 +1,13 @@
-import express from 'express';
-import api from './routes';
-import cors from 'cors';
-import cookieParser from 'cookie-parser';
-import * as bodyParser from 'body-parser';
-import { errorHandler } from './middlewares/errorHandler';
-import logger from './middlewares/logger';
-import helmet from 'helmet';
-import { honoBridge } from './hono/bridge';
+import path from 'path';
+import { Hono } from 'hono';
+import { cors } from 'hono/cors';
+import { secureHeaders } from 'hono/secure-headers';
+import { getRequestListener } from '@hono/node-server';
+import { serveStatic } from '@hono/node-server/serve-static';
+import { NotFoundError } from './errors';
+import { accessLog } from './hono/accessLog';
 import { honoApp } from './hono/app';
-
-const app = express();
-
-// [CONFIGURE APP TO USE bodyParser]
-// The web client is served from a different origin and loads `/static` images,
-// so allow cross-origin embedding (helmet defaults to same-origin since v5).
-app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
-// Tests make many requests; keep their access logs out of `log/`.
-if (process.env.NODE_ENV !== 'test') {
-  app.use(logger);
-}
+import { onError } from './hono/errors';
 
 const devServerOrigins = [
   'https://dev.snuaaa.net',
@@ -29,23 +18,79 @@ const devServerOrigins = [
 ];
 const prodServerOrigins = ['https://www.snuaaa.net', 'https://our.snuaaa.net'];
 
-const origin =
+const allowedOrigins =
   process.env.NODE_ENV == 'develop' ? devServerOrigins : prodServerOrigins;
 
-app.use(cors({ origin, optionsSuccessStatus: 200 }));
+/** The request's origin when it is allowed, so CORS echoes it back. */
+function allowedOrigin(origin: string) {
+  return allowedOrigins.some((allowed) =>
+    typeof allowed === 'string' ? allowed === origin : allowed.test(origin),
+  )
+    ? origin
+    : null;
+}
 
-// Endpoints moved to Hono (#158). Before the body parsers, so Hono reads the
-// raw body; after helmet, the access log and CORS, so those still apply.
-app.use(honoBridge(honoApp));
+/** Legacy local-disk files (`profile_path` and the like), under `/static`. */
+const uploadFolder = path.relative(
+  process.cwd(),
+  path.join(__dirname, '..', 'upload'),
+);
 
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-app.use(cookieParser());
+/** The headers helmet set by default, which the web has relied on. */
+const securityHeaders = secureHeaders({
+  contentSecurityPolicy: {
+    defaultSrc: ["'self'"],
+    baseUri: ["'self'"],
+    fontSrc: ["'self'", 'https:', 'data:'],
+    formAction: ["'self'"],
+    frameAncestors: ["'self'"],
+    imgSrc: ["'self'", 'data:'],
+    objectSrc: ["'none'"],
+    scriptSrc: ["'self'"],
+    scriptSrcAttr: ["'none'"],
+    styleSrc: ["'self'", 'https:', "'unsafe-inline'"],
+    upgradeInsecureRequests: [],
+  },
+  // The web is served from another origin and loads `/static` images.
+  crossOriginResourcePolicy: 'cross-origin',
+  crossOriginOpenerPolicy: 'same-origin',
+  originAgentCluster: '?1',
+  referrerPolicy: 'no-referrer',
+  strictTransportSecurity: 'max-age=31536000; includeSubDomains',
+  xContentTypeOptions: 'nosniff',
+  xDnsPrefetchControl: 'off',
+  xDownloadOptions: 'noopen',
+  xFrameOptions: 'SAMEORIGIN',
+  xPermittedCrossDomainPolicies: 'none',
+  xXssProtection: '0',
+});
 
-app.use('/static', express.static(__dirname + '/../upload'));
+/**
+ * The whole server: security headers, the access log, CORS, the legacy
+ * `/static` files, and the API (`hono/app.ts`).
+ */
+export const server = new Hono({ strict: false });
 
-// [CONFIGURE ROUTER]
-app.use('/api', api);
-app.use(errorHandler);
+server.use(securityHeaders);
+// Tests make many requests; keep their access logs out of `log/`.
+if (process.env.NODE_ENV !== 'test') {
+  server.use(accessLog);
+}
+server.use(cors({ origin: allowedOrigin }));
+server.use(
+  '/static/*',
+  serveStatic({
+    root: uploadFolder,
+    rewriteRequestPath: (requestPath) => requestPath.replace(/^\/static/, ''),
+  }),
+);
+server.route('/', honoApp);
+server.notFound(() => {
+  throw new NotFoundError();
+});
+server.onError(onError);
+
+/** The server as a Node request listener, for `http.createServer` and tests. */
+const app = getRequestListener(server.fetch);
 
 export default app;

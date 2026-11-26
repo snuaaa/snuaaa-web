@@ -1,4 +1,4 @@
-// Sentry must be initialized before any other module (express, pg, ...) is
+// Sentry must be initialized before any other module (http, pg, ...) is
 // imported so that its auto-instrumentation can hook into them.
 // Keep this as the very first import in `main.ts`.
 import 'dotenv/config';
@@ -10,10 +10,7 @@ if (process.env.SENTRY_DSN) {
     environment: process.env.SENTRY_ENVIRONMENT || process.env.NODE_ENV,
     release: process.env.SENTRY_RELEASE,
     tracesSampleRate: Number(process.env.SENTRY_TRACES_SAMPLE_RATE ?? 0.1),
-    integrations: [
-      // Errors are reported from `middlewares/errorHandler.ts`, which knows
-      // which ones are expected 4xx (`AppError`) and which are real 500s.
-      Sentry.expressIntegration({ shouldHandleError: false }),
-    ],
+    // Errors are reported from `hono/errors.ts`, which knows which ones are
+    // expected 4xx (`AppError`) and which are real 500s.
   });
 }

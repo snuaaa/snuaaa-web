@@ -1,9 +1,10 @@
 import { withTransaction, type Transaction } from '../db/transaction';
-import { NotFoundError } from '../errors';
+import { BadRequestError, NotFoundError } from '../errors';
 import * as comments from '../repositories/comment.repository';
 import * as contents from '../repositories/content.repository';
 import * as likes from '../repositories/like.repository';
-import { assertCanEdit } from './permissions';
+import * as users from '../repositories/user.repository';
+import { assertBoardAccess, assertCanEdit } from './permissions';
 import type { Actor } from './types';
 
 export type CommentInput = {
@@ -13,7 +14,9 @@ export type CommentInput = {
 
 /**
  * Adds a comment to the content and counts it in `comment_num`. The content
- * row is locked first, which also checks that it exists (404 otherwise).
+ * row is locked first, which also checks that it exists and isn't deleted
+ * (404 otherwise). The actor must be allowed to read the content's board
+ * (403), and a reply must answer a comment on the same content (400).
  */
 export function createComment(
   actor: Actor,
@@ -21,10 +24,21 @@ export function createComment(
   input: CommentInput,
 ) {
   return withTransaction(async (transaction) => {
-    if (!(await contents.lock(contentId, transaction))) {
+    const target = await contents.lock(contentId, transaction);
+    if (!target) {
       throw new NotFoundError('Content not found');
     }
-    const id = Number(contentId);
+    assertBoardAccess(target, actor.grade, 'read');
+    const id = target.content_id;
+    if (
+      input.parent_comment_id != null &&
+      (await comments.findContentId(input.parent_comment_id, transaction)) !==
+        id
+    ) {
+      throw new BadRequestError(
+        'parent_comment_id is not a comment on this content',
+      );
+    }
     const commentId = await comments.insert(
       {
         parent_id: id,
@@ -91,13 +105,20 @@ export function deleteComment(actor: Actor, commentId: string) {
 /**
  * Likes the comment, or takes the like back if the actor already likes it.
  * The comment's row is locked first, so two toggles at once run one after
- * the other instead of both inserting. 404 for an unknown comment.
+ * the other instead of both inserting. 404 for an unknown comment or one on
+ * a deleted content, 403 when the actor may not read the content's board.
  */
 export function toggleCommentLike(actor: Actor, commentId: string) {
   return withTransaction(async (transaction) => {
-    if (!(await comments.lock(commentId, transaction))) {
+    const contentId = await comments.lock(commentId, transaction);
+    const target =
+      contentId === null
+        ? null
+        : await contents.findWithBoard(contentId, transaction);
+    if (!target) {
       throw new NotFoundError('Comment not found');
     }
+    assertBoardAccess(target, actor.grade, 'read');
     const id = Number(commentId);
     if (await likes.hasCommentLike(id, actor._id, transaction)) {
       await likes.deleteCommentLike(id, actor._id, transaction);
@@ -105,4 +126,65 @@ export function toggleCommentLike(actor: Actor, commentId: string) {
       await likes.insertCommentLike(id, actor._id, transaction);
     }
   });
+}
+
+/**
+ * The content's comment threads, oldest first: each top-level comment with
+ * its author, who likes it, and its replies (oldest first, with theirs).
+ * The actor must be allowed to read the content's board (404 for an unknown
+ * content, 403 otherwise).
+ */
+export async function listCommentThreads(actor: Actor, contentId: string) {
+  const target = await contents.findWithBoard(contentId);
+  if (!target) {
+    throw new NotFoundError('Content not found');
+  }
+  assertBoardAccess(target, actor.grade, 'read');
+  const threads = await comments.listOnContent({
+    contentId: target.content_id,
+  });
+  const replies = await comments.listOnContent({
+    parentCommentIds: threads.map((thread) => thread.comment_id),
+  });
+  const likers = await comments.listLikers([
+    ...threads.map((thread) => thread.comment_id),
+    ...replies.map((reply) => reply.comment_id),
+  ]);
+  const likersOf = (commentId: number) =>
+    likers.filter((liker) => liker.commentLike.comment_id === commentId);
+  return threads.map((thread) => ({
+    ...thread,
+    likeUsers: likersOf(thread.comment_id),
+    children: replies
+      .filter((reply) => reply.parent_comment_id === thread.comment_id)
+      .map((reply) => ({ ...reply, likeUsers: likersOf(reply.comment_id) })),
+  }));
+}
+
+/** The profile page asks 20 at a time unless it says otherwise. */
+const DEFAULT_COMMENT_LIMIT = 20;
+
+/**
+ * A page of the comments on contents the actor may read, newest first,
+ * only the member's when `userUuid` is given (404 for an unknown member).
+ */
+export async function listComments(
+  actor: Actor,
+  query: { userUuid?: string; limit?: number; offset?: number },
+) {
+  let authorId: number | undefined;
+  if (query.userUuid) {
+    const id = await users.findIdByUuid(query.userUuid);
+    if (id === null) {
+      throw new NotFoundError('User not found');
+    }
+    authorId = id;
+  }
+  return comments.list(
+    { readGrade: actor.grade, authorId },
+    {
+      limit: query.limit || DEFAULT_COMMENT_LIMIT,
+      offset: query.offset || 0,
+    },
+  );
 }
