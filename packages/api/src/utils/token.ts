@@ -17,10 +17,10 @@ export function createToken(payload: JWTPayload) {
 
   const jwtOption = { expiresIn };
 
-  return new Promise((resolve, reject) => {
+  return new Promise<string>((resolve, reject) => {
     jwt.sign(payload, process.env.JWT_SECRET, jwtOption, (error, token) => {
       if (error) reject(error);
-      resolve(token);
+      resolve(token as string);
     });
   });
 }

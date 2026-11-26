@@ -1,7 +1,7 @@
 import { randomUUID } from 'crypto';
-import { and, eq, isNull, sql } from 'drizzle-orm';
+import { and, eq, isNull, like, or, sql } from 'drizzle-orm';
 import { database, type Executor, type Transaction } from '../db/client';
-import { board, content } from '../db/schema';
+import { board, content, user } from '../db/schema';
 import { parseId } from './utils';
 
 export type ContentFields = {
@@ -16,6 +16,8 @@ export async function insert(
     author_id: number;
     board_id: string;
     type: string;
+    /** The parent content, e.g. a photo's album. */
+    parent_id?: number | null;
   },
   executor: Executor = database,
 ) {
@@ -30,12 +32,35 @@ export async function insert(
       title: values.title ?? null,
       text: values.text ?? null,
       type: values.type,
+      parent_id: values.parent_id ?? null,
       created_at: now,
       updated_at: now,
     })
     .returning({ content_id: content.content_id });
   return row.content_id;
 }
+
+/**
+ * The content's columns in the shape the read endpoints answer, the one
+ * Sequelize used: timestamps in camelCase, which the web reads.
+ */
+export const contentJson = {
+  content_id: content.content_id,
+  content_uuid: content.content_uuid,
+  author_id: content.author_id,
+  board_id: content.board_id,
+  category_id: content.category_id,
+  type: content.type,
+  parent_id: content.parent_id,
+  title: content.title,
+  text: content.text,
+  view_num: content.view_num,
+  comment_num: content.comment_num,
+  like_num: content.like_num,
+  createdAt: content.created_at,
+  updatedAt: content.updated_at,
+  deletedAt: content.deleted_at,
+};
 
 const withBoard = {
   content_id: content.content_id,
@@ -132,7 +157,7 @@ export async function softDelete(
  */
 export async function addToCounter(
   contentId: number,
-  counter: 'comment_num' | 'like_num',
+  counter: 'comment_num' | 'like_num' | 'view_num',
   by: number,
   executor: Executor = database,
 ) {
@@ -140,4 +165,28 @@ export async function addToCounter(
     .update(content)
     .set({ [counter]: sql`coalesce(${content[counter]}, 0) + ${by}` })
     .where(eq(content.content_id, contentId));
+}
+
+/**
+ * A case-sensitive LIKE on the field the search type names: 'title',
+ * 'text', 'all' (title or text) or 'user' (the author nickname, so the
+ * query must join `user`). Undefined when not searching.
+ */
+export function searchCondition(type?: string, keyword?: string) {
+  if (!keyword || keyword.trim() === '') {
+    return undefined;
+  }
+  const pattern = `%${keyword}%`;
+  switch (type) {
+    case 'all':
+      return or(like(content.title, pattern), like(content.text, pattern));
+    case 'title':
+      return like(content.title, pattern);
+    case 'text':
+      return like(content.text, pattern);
+    case 'user':
+      return like(user.nickname, pattern);
+    default:
+      return undefined;
+  }
 }

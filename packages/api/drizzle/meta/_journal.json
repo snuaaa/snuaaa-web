@@ -15,6 +15,13 @@
       "when": 1793768576485,
       "tag": "0001_comment_like_num_default",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1795248506949,
+      "tag": "0002_drop_document_file_path",
+      "breakpoints": true
     }
   ]
 }

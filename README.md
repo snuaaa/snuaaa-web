@@ -11,7 +11,7 @@ It is a [pnpm](https://pnpm.io/) workspace monorepo with three packages:
 | Package | Path | Description |
 | --- | --- | --- |
 | `@snuaaa/community-web` | `packages/community` | Community web app (React SPA) |
-| `@snuaaa/api` | `packages/api` | REST API server (Express + PostgreSQL) |
+| `@snuaaa/api` | `packages/api` | REST API server (Hono + PostgreSQL) |
 | `@snuaaa/home-web` | `packages/home` | Club intro site ([www.snuaaa.net](https://www.snuaaa.net/), prerendered static page) |
 
 # Getting Started
@@ -116,8 +116,8 @@ pnpm --filter @snuaaa/api test
 
 ### API
 
-- [Express](https://expressjs.com/)
-- [Sequelize](https://sequelize.org/) + [PostgreSQL](https://www.postgresql.org/)
+- [Hono](https://hono.dev/) on Node.js
+- [Drizzle ORM](https://orm.drizzle.team/) + [PostgreSQL](https://www.postgresql.org/)
 - [drizzle-kit](https://orm.drizzle.team/docs/kit-overview) migrations
 - [JWT](https://jwt.io/)
 - [AWS S3](https://aws.amazon.com/s3/)

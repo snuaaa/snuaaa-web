@@ -1,8 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import jwt from 'jsonwebtoken';
-import app from '../../src/app';
 import { honoApp } from '../../src/hono/app';
-import { verifyTokenMiddleware } from '../../src/middlewares/auth';
 import { api } from '../helpers/request';
 
 /**
@@ -15,7 +13,6 @@ import { api } from '../helpers/request';
 const PROTECTED_ENDPOINTS = [
   'GET /api/auth/check',
   'GET /api/userinfo',
-  'PATCH /api/userinfo',
   'PATCH /api/userinfo/password',
   'DELETE /api/userinfo',
   'GET /api/userinfo/all',
@@ -23,11 +20,8 @@ const PROTECTED_ENDPOINTS = [
   'GET /api/userinfo/search/mini',
   'PATCH /api/user',
   'PATCH /api/user/:user_uuid/grade',
-  'POST /api/user/migrate',
   'GET /api/board',
   'GET /api/board/:board_id',
-  'GET /api/board/:board_id/posts',
-  'GET /api/board/:board_id/tags',
   'POST /api/board/:board_id/post',
   'POST /api/board/:board_id/document',
   'GET /api/board/:board_id/exhibitions',
@@ -48,7 +42,6 @@ const PROTECTED_ENDPOINTS = [
   'POST /api/photo',
   'PATCH /api/photo/:photo_id',
   'DELETE /api/photo/:photo_id',
-  'POST /api/photo/migrate',
   'GET /api/document',
   'GET /api/document/:doc_id',
   'PATCH /api/document/:doc_id',
@@ -58,8 +51,6 @@ const PROTECTED_ENDPOINTS = [
   'GET /api/home/posts/all',
   'GET /api/home/memory',
   'GET /api/home/astrophoto',
-  'GET /api/home/comments',
-  'GET /api/home/comments/all',
   'GET /api/home/riseset',
   'GET /api/content/:content_id/comments',
   'POST /api/content/:content_id/file',
@@ -69,19 +60,15 @@ const PROTECTED_ENDPOINTS = [
   'PATCH /api/comment/:comment_id',
   'DELETE /api/comment/:comment_id',
   'POST /api/comment/:comment_id/like',
-  'POST /api/image',
   'GET /api/exhibition/:exhibition_id',
   'PATCH /api/exhibition/:exhibition_id',
   'DELETE /api/exhibition/:exhibition_id',
   'GET /api/exhibition/:exhibition_id/exhibitPhotos',
   'POST /api/exhibition/:exhibition_id/exhibitPhoto',
-  'POST /api/exhibition/migrate',
   'GET /api/exhibitPhoto/:exhibitPhoto_id',
   'PATCH /api/exhibitPhoto/:exhibitPhoto_id',
   'DELETE /api/exhibitPhoto/:exhibitPhoto_id',
-  'POST /api/exhibitPhoto/migrate',
   'DELETE /api/file/:file_id',
-  'POST /api/file/migrate',
   'GET /api/equipment',
   'GET /api/equipment/category',
   'GET /api/equipment/search',
@@ -109,7 +96,6 @@ const PUBLIC_ENDPOINTS = [
   'POST /api/userinfo/find/id',
   'POST /api/userinfo/find/pw',
   // Photos of a public photo board are shown before login.
-  'GET /api/photoboard/:board_id/photos',
   // File downloads are plain links, so they can't send the header.
   'GET /api/content/:content_id/file/:file_id',
 ];
@@ -173,50 +159,4 @@ it('lists every Hono endpoint above', () => {
         !PUBLIC_ENDPOINTS.includes(endpoint),
     ),
   ).toEqual([]);
-});
-
-/**
- * Keeps the lists above in sync with the Express routes, so a new endpoint
- * can't skip this test. It reads Express internals, so it only sees routes
- * still served by Express: drop it once every router has moved.
- */
-it('lists every Express endpoint above', () => {
-  type Layer = {
-    route?: {
-      path: string;
-      methods: Record<string, boolean>;
-      stack: { handle: unknown }[];
-    };
-    handle?: { stack?: Layer[] };
-    regexp: RegExp;
-  };
-  const found = { protected: [] as string[], public: [] as string[] };
-
-  const walk = (stack: Layer[], prefix: string) => {
-    for (const layer of stack) {
-      if (layer.route) {
-        const path = (prefix + layer.route.path).replace(/\/$/, '');
-        const isProtected = layer.route.stack.some(
-          (s) => s.handle === verifyTokenMiddleware,
-        );
-        for (const method of Object.keys(layer.route.methods)) {
-          const key = `${method.toUpperCase()} ${path}`;
-          found[isProtected ? 'protected' : 'public'].push(key);
-        }
-      } else if (layer.handle?.stack) {
-        const match = layer.regexp.source.match(/^\^\\\/(.*?)\\\/\?/);
-        const mount = match ? '/' + match[1].replace(/\\\//g, '/') : '';
-        walk(layer.handle.stack, prefix + mount);
-      }
-    }
-  };
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  walk((app as any)._router.stack, '');
-
-  // A protected route missing from PROTECTED_ENDPOINTS, or a route without
-  // the token check that isn't in PUBLIC_ENDPOINTS, shows up here.
-  expect(
-    found.protected.filter((e) => !PROTECTED_ENDPOINTS.includes(e)),
-  ).toEqual([]);
-  expect(found.public.filter((e) => !PUBLIC_ENDPOINTS.includes(e))).toEqual([]);
 });
