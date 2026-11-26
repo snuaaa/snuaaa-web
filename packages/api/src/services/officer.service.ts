@@ -46,13 +46,26 @@ const isManager = (member: Member) =>
 /**
  * Whether the member is the 회장 of the newest 기수: grade 5, and the
  * account the 기수 was started with. A 기수 imported from the old site has
- * no account, so its 회장 is matched by name.
+ * no account, so its 회장 is matched by name, and only while that name
+ * belongs to one grade 5 member.
  */
-export function isCurrentPresident(member: Member, latest: Latest) {
+export async function isCurrentPresident(
+  member: Member,
+  latest: Latest,
+  executor?: Executor,
+) {
   if (member.grade !== PRESIDENT_GRADE || !latest) return false;
-  return latest.president_user_id !== null
-    ? latest.president_user_id === member.user_id
-    : latest.president === member.username;
+  if (latest.president_user_id !== null) {
+    return latest.president_user_id === member.user_id;
+  }
+  return (
+    latest.president === member.username &&
+    (await users.countByNameAndGrade(
+      latest.president,
+      PRESIDENT_GRADE,
+      executor,
+    )) === 1
+  );
 }
 
 /** Every generation's officers, newest generation first. Any signed-in
@@ -78,10 +91,14 @@ export async function saveOfficers(
       // edit lands on the 기수 that was theirs a moment ago.
       const latest = await officers.findLatest({}, transaction);
       if (
-        !isCurrentPresident(member, latest) ||
+        !(await isCurrentPresident(member, latest, transaction)) ||
         generation !== latest?.generation
       ) {
         deny();
+      }
+      // The 회장 is who the 기수 is matched by, so only 운영진 rename them.
+      if (input.president !== latest.president) {
+        throw new BadRequestError('Only 운영진 may change the 회장');
       }
     }
     return officers.upsert(generation, input, transaction);
@@ -101,11 +118,12 @@ export async function handOver(actor: Actor, presidentUuid: string) {
     const member = await currentMember(actor, transaction);
     // Check without the lock first, so a member who may not hand over
     // can't hold the row; then lock it and check again.
-    const allowed = (latest: Latest) =>
-      isManager(member) || isCurrentPresident(member, latest);
-    if (!allowed(await officers.findLatest({}, transaction))) deny();
+    const allowed = async (latest: Latest) =>
+      isManager(member) ||
+      (await isCurrentPresident(member, latest, transaction));
+    if (!(await allowed(await officers.findLatest({}, transaction)))) deny();
     const latest = await officers.findLatest({ lock: true }, transaction);
-    if (!allowed(latest)) deny();
+    if (!(await allowed(latest))) deny();
     // A first 기수 is added by hand, so there is always a row to lock.
     if (!latest) throw new BadRequestError('There is no generation yet');
     if (latest.generation >= MAX_GENERATION) {

@@ -164,7 +164,10 @@ describe('PUT /api/officers/:generation', () => {
   it('lets 현 회장 (5) change their own generation, the newest', async () => {
     const president = await createUser({ grade: 5 });
     await createOfficerGeneration(92);
-    await createOfficerGeneration(93, { presidentUserId: president.user_id });
+    await createOfficerGeneration(93, {
+      president: '김성윤',
+      presidentUserId: president.user_id,
+    });
 
     const response = await api()
       .put('/api/officers/93')
@@ -176,6 +179,22 @@ describe('PUT /api/officers/:generation', () => {
       generation: 93,
       ...BODY,
     });
+  });
+
+  it('leaves renaming the 회장 to 운영진', async () => {
+    const president = await createUser({ grade: 5 });
+    await createOfficerGeneration(93, {
+      president: '김성윤',
+      presidentUserId: president.user_id,
+    });
+
+    const response = await api()
+      .put('/api/officers/93')
+      .set('Authorization', bearer(president))
+      .send({ ...BODY, president: '다른사람' });
+
+    expect(response.status).toBe(400);
+    expect((await listGenerations())[0].president).toBe('김성윤');
   });
 
   it('matches the 회장 of an imported generation by name', async () => {
@@ -194,6 +213,19 @@ describe('PUT /api/officers/:generation', () => {
 
     expect(own.status).toBe(200);
     expect(notOwn.status).toBe(403);
+  });
+
+  it('matches by name only while one grade 5 member has it', async () => {
+    await createOfficerGeneration(93, { president: '김성윤' });
+    const president = await createUser({ grade: 5, username: '김성윤' });
+    await createUser({ grade: 5, username: '김성윤' });
+
+    const response = await api()
+      .put('/api/officers/93')
+      .set('Authorization', bearer(president))
+      .send(BODY);
+
+    expect(response.status).toBe(403);
   });
 
   it('keeps another grade 5 member off the newest generation', async () => {

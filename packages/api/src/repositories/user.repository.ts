@@ -91,6 +91,25 @@ export async function findNameAndGradeByUuid(
   return row ?? null;
 }
 
+/** How many (not deleted) members of the grade have the name. */
+export async function countByNameAndGrade(
+  username: string,
+  grade: number,
+  executor: Executor = database,
+) {
+  const [row] = await executor
+    .select({ count: count() })
+    .from(user)
+    .where(
+      and(
+        eq(user.username, username),
+        eq(user.grade, grade),
+        isNull(user.deleted_at),
+      ),
+    );
+  return row?.count ?? 0;
+}
+
 /** Moves every member of grade `from` to grade `to`. */
 export async function changeGradeOfAll(
   from: number,
