@@ -6,8 +6,8 @@ import AdminPage from '~/components/Admin/AdminPage';
 import GradeSheet from '~/components/Admin/GradeSheet';
 import {
   canChangeGrade,
+  canChangeGrades,
   canManageUsers,
-  GRADE_MANAGER_GRADE,
 } from '~/components/Layout/constants';
 import { Avatar, Pagination, Skeleton, Toast, useToast } from '~/components/ui';
 import useAuth from '~/hooks/useAuth';
@@ -122,7 +122,7 @@ function UserManagement() {
   const { authInfo } = useAuth();
   const myGrade = authInfo.user.grade;
   const allowed = canManageUsers(myGrade);
-  const canAdjust = myGrade <= GRADE_MANAGER_GRADE;
+  const canAdjust = canChangeGrades(myGrade);
   const [adjusting, setAdjusting] = useState<User | null>(null);
   const toast = useToast();
   const gradeChip = (user: User) => (
