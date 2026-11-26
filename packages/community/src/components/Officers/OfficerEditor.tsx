@@ -210,6 +210,8 @@ function EditorForm({
                 value={president}
                 onChange={(event) => setPresident(event.target.value)}
                 placeholder="이름"
+                // The 회장 is who the 기수 is matched by: 운영진 rename them.
+                disabled={!isOfficersManager(grade)}
               />
             </Field>
           </div>
