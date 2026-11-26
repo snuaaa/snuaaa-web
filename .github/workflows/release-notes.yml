@@ -1,7 +1,7 @@
 name: Release notes
 
-# WEB-*/API-* 릴리즈 노트를 해당 패키지 경로를 바꾼 PR만으로 채운다.
-# GitHub 자동 생성은 경로를 구분하지 않아 web/api 변경이 섞이므로 대신 사용한다.
+# WEB-*/API-*/HOME-* 릴리즈 노트를 해당 패키지 경로를 바꾼 PR만으로 채운다.
+# GitHub 자동 생성은 경로를 구분하지 않아 패키지별 변경이 섞이므로 대신 사용한다.
 on:
   release:
     types: [published]
@@ -16,7 +16,7 @@ permissions:
 
 jobs:
   notes:
-    if: startsWith(github.event.release.tag_name || inputs.tag, 'WEB-') || startsWith(github.event.release.tag_name || inputs.tag, 'API-')
+    if: startsWith(github.event.release.tag_name || inputs.tag, 'WEB-') || startsWith(github.event.release.tag_name || inputs.tag, 'API-') || startsWith(github.event.release.tag_name || inputs.tag, 'HOME-')
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
