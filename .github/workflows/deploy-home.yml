@@ -1,0 +1,103 @@
+name: Deploy Home to Cloudflare Pages
+
+# 소개 페이지(packages/home, https://www.snuaaa.net)를 Cloudflare Pages `snuaaa-home` 프로젝트에 배포한다.
+# 빌드 결과(packages/home/build)는 prerender된 정적 파일이라 서버가 필요 없다.
+#   main 푸시     -> develop 별칭 (https://develop.snuaaa-home.pages.dev)
+#   epic/<name>   -> <name> 별칭 (https://<name>.snuaaa-home.pages.dev)
+#   HOME-* 릴리즈 -> 프로덕션 (www.snuaaa.net, Pages 프로젝트에 커스텀 도메인으로 연결)
+# 미리보기는 소개 페이지가 바뀐 푸시에서만 배포한다.
+# 필요한 secrets: CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID (deploy-web.yml과 공유)
+
+on:
+  push:
+    branches:
+      - main
+      - 'epic/**'
+    paths:
+      - 'packages/home/**'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/deploy-home.yml'
+  release:
+    types: [published]
+
+concurrency:
+  group: deploy-home-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  deploy-preview:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve preview alias
+        run: |
+          if [ "$GITHUB_REF_NAME" = "main" ]; then
+            alias=develop
+          else
+            alias=$(echo "${GITHUB_REF_NAME#epic/}" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+/-/g; s/^-+|-+$//g')
+            if [ -z "$alias" ] || [ "$alias" = "develop" ] || [ "$alias" = "main" ]; then
+              echo "Invalid epic branch name for a preview alias: $GITHUB_REF_NAME" >&2
+              exit 1
+            fi
+          fi
+          echo "PREVIEW_ALIAS=$alias" >> "$GITHUB_ENV"
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build (prerender)
+        run: pnpm --filter @snuaaa/home-web build
+
+      - name: Check prerendered HTML
+        run: grep -q '<div id="root"><' packages/home/build/index.html
+
+      - name: Deploy to Cloudflare Pages (Preview)
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy ./build --project-name=snuaaa-home --branch=${{ env.PREVIEW_ALIAS }}
+          workingDirectory: packages/home
+          packageManager: pnpm
+
+  deploy-production:
+    if: github.event_name == 'release' && github.event.action == 'published' && startsWith(github.event.release.tag_name, 'HOME-')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build (prerender)
+        run: pnpm --filter @snuaaa/home-web build
+
+      - name: Check prerendered HTML
+        run: grep -q '<div id="root"><' packages/home/build/index.html
+
+      - name: Deploy to Cloudflare Pages (Production)
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy ./build --project-name=snuaaa-home --branch=main
+          workingDirectory: packages/home
+          packageManager: pnpm

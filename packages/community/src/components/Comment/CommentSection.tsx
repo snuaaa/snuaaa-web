@@ -410,7 +410,7 @@ export default function CommentSection({
       await createComment({
         parentId: contentId,
         data: {
-          parent_comment_id: replyTo?.commentId ?? 0,
+          parent_comment_id: replyTo?.commentId,
           text: draft.trim(),
         },
       });
