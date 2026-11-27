@@ -58,7 +58,7 @@ const UserService = {
     });
   },
 
-  /** Grade 1–3 only; see `canChangeGrade`. */
+  /** Grade 1–3 and 현 회장 (5); see `canChangeGrade`. */
   updateUserGrade: function (user_uuid: string, grade: number) {
     return API.patch(`user/${user_uuid}/grade`, { grade });
   },

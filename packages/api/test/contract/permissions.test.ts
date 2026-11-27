@@ -335,8 +335,22 @@ describe('PATCH /api/user/:user_uuid/grade', () => {
     expect(await gradeOf(member)).toBe(8);
   });
 
+  it('lets 현 회장 (5) appoint 임원진 (6) and lower them again', async () => {
+    const president = await createUser({ grade: 5 });
+    const member = await createUser({ grade: 7 });
+
+    expect((await change(president, member, 6)).status).toBe(200);
+    expect(await gradeOf(member)).toBe(6);
+    expect((await change(president, member, 7)).status).toBe(200);
+    expect(await gradeOf(member)).toBe(7);
+  });
+
   it.each([
     ['a regular member', 8, 9, 9],
+    ['전 회장 (4)', 4, 9, 8],
+    ['임원진 (6)', 6, 9, 8],
+    ['현 회장, on 전 회장', 5, 4, 7],
+    ['현 회장, to their own grade', 5, 7, 5],
     ['a manager, on a member of the same grade', 3, 3, 9],
     ['a manager, to a grade at or above their own', 3, 9, 3],
   ])('rejects %s with 403', async (_case, actorGrade, targetGrade, grade) => {
