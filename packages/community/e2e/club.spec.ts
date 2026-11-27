@@ -63,6 +63,15 @@ test.describe('동아리', () => {
       page.getByRole('heading', { name: '제1조(명칭)' }),
     ).toHaveCount(0);
 
+    // Spaces don't matter, in the search or in the marks.
+    await page
+      .getByLabel('조문 찾기')
+      .locator('visible=true')
+      .fill('임원 모임');
+    await expect(
+      page.locator('mark').filter({ hasText: '임원모임' }).first(),
+    ).toBeVisible();
+
     await page
       .getByLabel('조문 찾기')
       .locator('visible=true')

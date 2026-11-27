@@ -31,6 +31,19 @@ const articleText = (article: RuleArticle) =>
     article.article_text ?? '',
   ].join(' ');
 
+/**
+ * Where `query` appears in a text, the way the search matches it: ignoring
+ * case and spaces, so "임원 모임" also marks "임원모임". Null when empty.
+ */
+export function matchPattern(query: string) {
+  const chars = Array.from(query.replace(/\s+/g, ''));
+  if (!chars.length) return null;
+  const escaped = chars.map((char) =>
+    char.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
+  );
+  return new RegExp(escaped.join('\\s*'), 'gi');
+}
+
 export const articleMatches = (article: RuleArticle, query: string) => {
   const needle = normalize(query);
   return !needle || normalize(articleText(article)).includes(needle);

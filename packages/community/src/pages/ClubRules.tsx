@@ -11,6 +11,7 @@ import {
   clauseMark,
   filterRules,
   linesOf,
+  matchPattern,
   splitNotes,
 } from '~/components/Club/rulesUtils';
 import { BackButton, Chip, EmptyState, Input } from '~/components/ui';
@@ -29,22 +30,16 @@ function scrollToId(id: string) {
   });
 }
 
-/** Marks every place `query` appears in `text`, ignoring case. */
+/** Marks every place `query` appears in `text`, as the search finds it. */
 function Marked({ text, query }: { text: string; query: string }) {
-  const needle = query.trim();
-  if (!needle) return <>{text}</>;
-  const lower = text.toLowerCase();
-  const target = needle.toLowerCase();
+  const pattern = matchPattern(query);
+  if (!pattern) return <>{text}</>;
   const parts: { text: string; hit: boolean }[] = [];
   let from = 0;
-  for (
-    let at = lower.indexOf(target);
-    at !== -1;
-    at = lower.indexOf(target, from)
-  ) {
-    if (at > from) parts.push({ text: text.slice(from, at), hit: false });
-    parts.push({ text: text.slice(at, at + target.length), hit: true });
-    from = at + target.length;
+  for (let match = pattern.exec(text); match; match = pattern.exec(text)) {
+    parts.push({ text: text.slice(from, match.index), hit: false });
+    parts.push({ text: match[0], hit: true });
+    from = match.index + match[0].length;
   }
   if (from < text.length) parts.push({ text: text.slice(from), hit: false });
   return (
