@@ -1,5 +1,50 @@
+import type { OfficerGeneration, User } from '~/services/types';
+
 /** Grade that may rent equipment (lower is more privileged). */
 export const EQUIPMENT_GRADE = 7;
+
+/** 운영진 (지구, 3) and above may add, change or delete any 기수. */
+export const OFFICERS_MANAGER_GRADE = 3;
+/** 현 회장 (목성, 5) may change their own 기수 and hand it over. */
+export const PRESIDENT_GRADE = 5;
+
+type OfficerActor = Pick<User, 'grade' | 'user_uuid' | 'username'>;
+
+export const isOfficersManager = (grade: number) =>
+  grade <= OFFICERS_MANAGER_GRADE;
+
+/**
+ * Whether `actor` is the 회장 of the newest 기수: grade 5, and the account
+ * it was started with. An imported 기수 has none, so its 회장 is matched by
+ * name. The API (`services/officer.service.ts`) checks the same rule.
+ */
+export const isCurrentPresident = (
+  actor: OfficerActor,
+  latest: OfficerGeneration | undefined,
+) =>
+  actor.grade === PRESIDENT_GRADE &&
+  !!latest &&
+  (latest.president_uuid
+    ? latest.president_uuid === actor.user_uuid
+    : latest.president === actor.username);
+
+/** 운영진 save any 기수; 현 회장 only their own, the newest. */
+export const canSaveOfficers = (
+  actor: OfficerActor,
+  generation: number,
+  latest: OfficerGeneration | undefined,
+) =>
+  isOfficersManager(actor.grade) ||
+  (isCurrentPresident(actor, latest) && generation === latest?.generation);
+
+/** 회기 넘기기: 운영진, or 현 회장 of the newest 기수. */
+export const canHandOver = (
+  actor: OfficerActor,
+  latest: OfficerGeneration | undefined,
+) => isOfficersManager(actor.grade) || isCurrentPresident(actor, latest);
+
+/** Only 운영진 and above may delete a 기수. */
+export const canDeleteOfficers = (grade: number) => isOfficersManager(grade);
 
 /** 추억 만들기, the album board shown on the home page. */
 export const MEMORY_BOARD = 'brd31';

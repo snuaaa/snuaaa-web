@@ -228,3 +228,19 @@ export type ListResponse<T = unknown> = {
   count: number;
   rows: T[];
 };
+
+/** One officer role of a 기수, such as 관측부장 and who held it. */
+export type OfficerRole = { role: string; names: string[] };
+
+/** 역대 임원진: one 기수, its 회장 and the other roles in display order. */
+export type OfficerGeneration = {
+  generation: number;
+  president: string;
+  /** The 회장's account, for a 기수 started by 회기 넘기기; null otherwise. */
+  president_uuid: string | null;
+  roles: OfficerRole[];
+  updated_at: string;
+};
+
+/** The body of `PUT officers/:generation`. */
+export type OfficerInput = Pick<OfficerGeneration, 'president' | 'roles'>;

@@ -39,6 +39,10 @@ export const API = {
     return axiosInstance.patch<T>(url, data);
   },
 
+  put: function <T = unknown>(url: string, data: unknown) {
+    return axiosInstance.put<T>(url, data);
+  },
+
   delete: function (url: string) {
     return axiosInstance.delete(url);
   },
