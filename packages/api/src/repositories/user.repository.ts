@@ -56,6 +56,72 @@ export async function findGradeByUuid(
   return row ?? null;
 }
 
+/** The (not deleted) user's name and grade, or null. */
+export async function findNameAndGrade(
+  userId: number,
+  executor: Executor = database,
+) {
+  const [row] = await executor
+    .select({
+      user_id: user.user_id,
+      username: user.username,
+      grade: user.grade,
+    })
+    .from(user)
+    .where(and(eq(user.user_id, userId), isNull(user.deleted_at)));
+  return row ?? null;
+}
+
+/** The (not deleted) user with the uuid, with their name and grade, or null. */
+export async function findNameAndGradeByUuid(
+  userUuid: string,
+  executor: Executor = database,
+) {
+  if (!UUID.test(userUuid)) {
+    return null;
+  }
+  const [row] = await executor
+    .select({
+      user_id: user.user_id,
+      username: user.username,
+      grade: user.grade,
+    })
+    .from(user)
+    .where(and(eq(user.user_uuid, userUuid), isNull(user.deleted_at)));
+  return row ?? null;
+}
+
+/** How many (not deleted) members of the grade have the name. */
+export async function countByNameAndGrade(
+  username: string,
+  grade: number,
+  executor: Executor = database,
+) {
+  const [row] = await executor
+    .select({ count: count() })
+    .from(user)
+    .where(
+      and(
+        eq(user.username, username),
+        eq(user.grade, grade),
+        isNull(user.deleted_at),
+      ),
+    );
+  return row?.count ?? 0;
+}
+
+/** Moves every member of grade `from` to grade `to`. */
+export async function changeGradeOfAll(
+  from: number,
+  to: number,
+  executor: Executor = database,
+) {
+  await executor
+    .update(user)
+    .set({ grade: to, updated_at: new Date() })
+    .where(eq(user.grade, from));
+}
+
 export type ProfileFields = Partial<
   Pick<
     typeof user.$inferInsert,

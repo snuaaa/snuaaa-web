@@ -26,7 +26,7 @@ export type User = {
 type UserOverrides = Partial<
   Pick<User, 'id' | 'nickname' | 'grade' | 'level'>
 > & {
-  username?: string;
+  username?: string | null;
   email?: string;
   aaa_no?: string;
   login_at?: Date;
@@ -479,4 +479,23 @@ export function bearer(
     { expiresIn: autoLogin ? '14d' : '1d' },
   );
   return `Bearer ${token}`;
+}
+
+export type OfficerRole = { role: string; names: string[] };
+
+/** Creates a `tb_officer_generation` row (one 기수 of 임원진). */
+export async function createOfficerGeneration(
+  generation: number,
+  {
+    president = `회장${generation}`,
+    roles = [] as OfficerRole[],
+    presidentUserId = null as number | null,
+  } = {},
+) {
+  return insert('tb_officer_generation', {
+    generation,
+    president,
+    president_user_id: presidentUserId,
+    roles: JSON.stringify(roles),
+  });
 }

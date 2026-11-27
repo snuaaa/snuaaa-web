@@ -1,6 +1,7 @@
 import {
   boolean,
   integer,
+  jsonb,
   pgTable,
   primaryKey,
   serial,
@@ -273,3 +274,24 @@ export const statsLogin = pgTable(
   },
   (t) => [primaryKey({ columns: [t.user_id, t.login_at] })],
 );
+
+/** One officer role of a generation, such as 관측부장 and who held it. */
+export type OfficerRole = { role: string; names: string[] };
+
+/**
+ * 역대 임원진: one row per 기수 (a 기수 is one semester). 회장 is required,
+ * so it has its own column; the other roles are in display order.
+ */
+export const officerGeneration = pgTable('tb_officer_generation', {
+  generation: integer('generation').primaryKey(),
+  president: varchar('president', { length: 32 }).notNull(),
+  /** The 회장's account; null for the 기수 imported from the old site. */
+  president_user_id: integer('president_user_id'),
+  roles: jsonb('roles').$type<OfficerRole[]>().notNull().default([]),
+  created_at: timestamp('created_at', { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updated_at: timestamp('updated_at', { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
