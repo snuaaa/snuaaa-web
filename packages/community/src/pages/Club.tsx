@@ -70,25 +70,10 @@ function EntryRow({ entry }: { entry: Entry }) {
   );
 }
 
-function Group({
-  title,
-  badge,
-  entries,
-}: {
-  title: string;
-  badge?: string;
-  entries: Entry[];
-}) {
+function Group({ title, entries }: { title: string; entries: Entry[] }) {
   return (
     <div role="region" aria-label={title} className="flex flex-col gap-2">
-      <div className="flex items-center gap-2 px-4 md:px-0">
-        <h2 className="text-label text-fg-muted">{title}</h2>
-        {badge && (
-          <span className="rounded-full bg-info-soft px-2 py-0.5 text-caption font-semibold text-navy-700">
-            {badge}
-          </span>
-        )}
-      </div>
+      <h2 className="px-4 text-label text-fg-muted md:px-0">{title}</h2>
       <ul className="flex flex-col divide-y divide-gray-100 bg-surface md:overflow-hidden md:rounded-xl md:border md:border-border">
         {entries.map((entry) => (
           <li key={entry.title}>
@@ -178,9 +163,7 @@ export default function Club() {
       <div className="flex flex-col gap-6 pt-4 md:pt-0">
         {activity.length > 0 && <Group title="활동" entries={activity} />}
         <Group title="기록" entries={record} />
-        {manage.length > 0 && (
-          <Group title="운영" badge="토성(6등급) 이상" entries={manage} />
-        )}
+        {manage.length > 0 && <Group title="운영" entries={manage} />}
         <Group title="외부 링크" entries={outside} />
       </div>
     </div>
