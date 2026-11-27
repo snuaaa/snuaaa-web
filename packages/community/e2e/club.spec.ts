@@ -26,10 +26,15 @@ test.describe('동아리', () => {
     await setToken(page, VALID_TOKEN);
   });
 
-  test('푸터에서 동아리로 가서 회칙을 찾아 본다', async ({ page }) => {
+  test('동아리에서 회칙을 찾아 본다', async ({ page }) => {
     await page.goto('/');
+    // The footer only holds the copyright; 동아리 is in the main menu.
+    await expect(page.getByRole('contentinfo').getByRole('link')).toHaveCount(
+      0,
+    );
     await page
-      .getByRole('contentinfo')
+      .getByRole('navigation', { name: '주 메뉴' })
+      .first()
       .getByRole('link', { name: '동아리', exact: true })
       .click();
     await expect(page).toHaveURL(/\/club$/);

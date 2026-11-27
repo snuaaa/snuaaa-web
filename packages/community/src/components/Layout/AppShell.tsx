@@ -1,13 +1,10 @@
 import type { CSSProperties, ReactNode } from 'react';
-import { Link, useLocation } from '@tanstack/react-router';
-import { ExternalLink } from 'lucide-react';
+import { useLocation } from '@tanstack/react-router';
 import { useBoards } from '~/hooks/queries/useBoardQueries';
-import useAuth from '~/hooks/useAuth';
 import { cn } from '~/lib/utils';
 import { Board } from '~/services/types';
 import BottomTabBar from './BottomTabBar';
 import BrandMark from './BrandMark';
-import { CLUB_INTRO_URL, OLD_SITE_URL } from './constants';
 import LegacySection from './LegacySection';
 import TopNav from './TopNav';
 
@@ -69,14 +66,9 @@ function MobileHeader() {
   );
 }
 
-const footerLinks = [
-  { name: '동아리 소개', url: CLUB_INTRO_URL },
-  { name: '옛 홈페이지', url: OLD_SITE_URL },
-];
-
-/** Shown on every desktop page, and only at the bottom of home on mobile. */
+/** Shown on every desktop page, and only at the bottom of home on mobile.
+ *  Only the copyright: 동아리 and the outside sites are in the 동아리 tab. */
 function SiteFooter({ showOnMobile }: { showOnMobile: boolean }) {
-  const { isLoggedIn } = useAuth().authInfo;
   return (
     <div
       role="contentinfo"
@@ -85,36 +77,7 @@ function SiteFooter({ showOnMobile }: { showOnMobile: boolean }) {
         showOnMobile ? 'pb-tab-bar md:pb-0' : 'hidden md:block',
       )}
     >
-      <div className="mx-auto flex max-w-page flex-col gap-3 px-4 py-6 text-caption text-fg-muted md:flex-row md:items-center md:justify-between md:px-6 md:py-8">
-        <ul className="flex flex-wrap gap-x-4 gap-y-2">
-          {/* 동아리 (회칙, 역대 임원진, 운영) is for signed-in users. */}
-          {isLoggedIn && (
-            <li>
-              <Link
-                to="/club"
-                className="text-label font-normal text-gray-700 hover:text-fg"
-              >
-                동아리
-              </Link>
-            </li>
-          )}
-          {footerLinks.map((link) => (
-            <li key={link.name}>
-              <a
-                href={link.url}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-1 text-label font-normal text-gray-700 hover:text-fg"
-              >
-                {link.name}
-                <ExternalLink
-                  className="size-3.5"
-                  aria-label="새 탭에서 열림"
-                />
-              </a>
-            </li>
-          ))}
-        </ul>
+      <div className="mx-auto max-w-page px-4 py-6 text-caption text-fg-muted md:px-6 md:py-8">
         <p>
           ⓒ 서울대학교 아마추어 천문회 · Amateur Astronomy Association, Since
           1980
@@ -124,7 +87,6 @@ function SiteFooter({ showOnMobile }: { showOnMobile: boolean }) {
   );
 }
 
-/** Site chrome: top navigation on desktop, bottom tab bar below it. */
 export default function AppShell({ children }: { children: ReactNode }) {
   const { pathname } = useLocation();
   const isRedesigned = useIsRedesigned();
