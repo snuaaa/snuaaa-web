@@ -1,0 +1,171 @@
+import type { ReactNode } from 'react';
+import { Link, type LinkProps } from '@tanstack/react-router';
+import {
+  Archive,
+  ChevronRight,
+  ExternalLink,
+  Globe,
+  ScrollText,
+  Sparkles,
+  Telescope,
+  UsersRound,
+} from 'lucide-react';
+import {
+  CLUB_INTRO_URL,
+  EQUIPMENT_GRADE,
+  OLD_SITE_URL,
+  canManageUsers,
+} from '~/components/Layout/constants';
+import useAuth from '~/hooks/useAuth';
+
+const TITLE = '동아리';
+
+type Entry = {
+  title: string;
+  description: string;
+  icon: ReactNode;
+} & ({ to: LinkProps['to']; href?: never } | { href: string; to?: never });
+
+const rowClassName =
+  'flex min-h-16 items-center gap-3 px-4 py-3 hover:bg-gray-50 md:px-5';
+
+function EntryRow({ entry }: { entry: Entry }) {
+  const body = (
+    <>
+      <span
+        className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-surface-sunken text-navy-700 [&_svg]:size-5"
+        aria-hidden
+      >
+        {entry.icon}
+      </span>
+      <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+        <span className="text-body font-semibold">{entry.title}</span>
+        <span className="truncate text-label font-normal text-fg-muted">
+          {entry.description}
+        </span>
+      </span>
+      {entry.href ? (
+        <ExternalLink
+          className="size-4 shrink-0 text-fg-muted"
+          aria-label="새 탭에서 열림"
+        />
+      ) : (
+        <ChevronRight className="size-4 shrink-0 text-fg-muted" aria-hidden />
+      )}
+    </>
+  );
+  return entry.href ? (
+    <a
+      href={entry.href}
+      target="_blank"
+      rel="noreferrer"
+      className={rowClassName}
+    >
+      {body}
+    </a>
+  ) : (
+    <Link to={entry.to} className={rowClassName}>
+      {body}
+    </Link>
+  );
+}
+
+function Group({ title, entries }: { title: string; entries: Entry[] }) {
+  return (
+    <div role="region" aria-label={title} className="flex flex-col gap-2">
+      <h2 className="px-4 text-label text-fg-muted md:px-0">{title}</h2>
+      <ul className="flex flex-col divide-y divide-gray-100 bg-surface md:overflow-hidden md:rounded-xl md:border md:border-border">
+        {entries.map((entry) => (
+          <li key={entry.title}>
+            <EntryRow entry={entry} />
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+/**
+ * 동아리 탭: the club's own pages in one place. 활동 (장비 대여; 관측 일지
+ * later), 기록 (회칙, 역대 임원진), 운영 for the grades that may use it, and
+ * the outside sites. 장비 관리 is reached from 장비 대여.
+ */
+export default function Club() {
+  const { grade } = useAuth().authInfo.user;
+
+  const activity: Entry[] =
+    grade <= EQUIPMENT_GRADE
+      ? [
+          {
+            title: '장비 대여',
+            description: '빌린 장비와 장비 빌리기',
+            icon: <Telescope />,
+            to: '/equipment',
+          },
+        ]
+      : [];
+
+  const record: Entry[] = [
+    {
+      title: '회칙',
+      description: '서울대학교 아마추어 천문회 회칙',
+      icon: <ScrollText />,
+      to: '/club/rules',
+    },
+    {
+      title: '역대 임원진',
+      description: '기수별 회장단과 임원진',
+      icon: <Sparkles />,
+      to: '/officers',
+    },
+  ];
+
+  const outside: Entry[] = [
+    {
+      title: '동아리 소개',
+      description: 'snuaaa.net',
+      icon: <Globe />,
+      href: CLUB_INTRO_URL,
+    },
+    {
+      title: '옛 홈페이지',
+      description: '예전 사이트의 기록 보관소',
+      icon: <Archive />,
+      href: OLD_SITE_URL,
+    },
+  ];
+
+  const manage: Entry[] = canManageUsers(grade)
+    ? [
+        {
+          title: '회원 관리',
+          description: '회원 목록과 등급',
+          icon: <UsersRound />,
+          to: '/admin/user',
+        },
+      ]
+    : [];
+
+  return (
+    <div className="flex flex-col pb-10 md:mx-auto md:w-full md:max-w-2xl md:gap-6 md:px-6 md:py-6">
+      <div className="sticky top-0 z-20 border-b border-gray-100 bg-surface md:hidden">
+        {/* A tab's first screen: no 뒤로. */}
+        <div className="flex h-[52px] items-center justify-center pt-safe-0">
+          <h1 className="text-[15px] font-semibold">{TITLE}</h1>
+        </div>
+      </div>
+      <div className="hidden flex-col gap-1 md:flex">
+        <h1 className="text-display">{TITLE}</h1>
+        <p className="text-label font-normal text-fg-muted">
+          장비 대여, 회칙, 역대 임원진과 운영 메뉴를 모았어요.
+        </p>
+      </div>
+      <div className="flex flex-col gap-6 pt-4 md:pt-0">
+        {activity.length > 0 && <Group title="활동" entries={activity} />}
+        <Group title="기록" entries={record} />
+        {manage.length > 0 && <Group title="운영" entries={manage} />}
+        <Group title="외부 링크" entries={outside} />
+      </div>
+    </div>
+  );
+}

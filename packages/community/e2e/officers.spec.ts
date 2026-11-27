@@ -62,12 +62,9 @@ test.describe('임원진', () => {
       route.fulfill({ json: { success: true, generations } }),
     );
 
-    // Reached from the footer link, not a main menu item.
-    await page.goto('/');
-    await page
-      .getByRole('contentinfo')
-      .getByRole('link', { name: '역대 임원진' })
-      .click();
+    // Reached from 동아리, not a main menu item.
+    await page.goto('/club');
+    await page.getByRole('link', { name: /역대 임원진/ }).click();
     await expect(page).toHaveURL(/\/officers$/);
     const timeline = page.getByRole('list', { name: '기수 타임라인' });
     await expect(timeline.getByRole('listitem')).toHaveCount(3);
