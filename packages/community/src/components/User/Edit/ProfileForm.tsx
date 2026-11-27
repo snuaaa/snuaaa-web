@@ -2,7 +2,6 @@ import { useState, type FormEvent, type ReactNode } from 'react';
 import { Link } from '@tanstack/react-router';
 import { Camera, ChevronRight, Loader2 } from 'lucide-react';
 
-import { canManageUsers } from '~/components/Layout/constants';
 import {
   Avatar,
   Button,
@@ -97,7 +96,7 @@ const rowClassName =
   'flex h-14 items-center justify-between border-b border-gray-100 px-4 text-[15px] last:border-b-0';
 
 function Form({ user }: { user: User }) {
-  const { authInfo, authLogout } = useAuth();
+  const { authLogout } = useAuth();
   const { mutateAsync: updateUser, isPending: saving } = useUpdateMyUserInfo();
   const toast = useToast();
 
@@ -305,12 +304,11 @@ function Form({ user }: { user: User }) {
           비밀번호 변경
           <ChevronRight className="size-4 text-fg-muted" aria-hidden />
         </Link>
-        {canManageUsers(authInfo.user.grade) && (
-          <Link to="/admin/user" className={rowClassName}>
-            회원 관리
-            <ChevronRight className="size-4 text-fg-muted" aria-hidden />
-          </Link>
-        )}
+        {/* 회칙, 역대 임원진 and the 운영 screens (회원 관리, …). */}
+        <Link to="/club" className={rowClassName}>
+          동아리
+          <ChevronRight className="size-4 text-fg-muted" aria-hidden />
+        </Link>
         <button
           type="button"
           onClick={() => authLogout()}

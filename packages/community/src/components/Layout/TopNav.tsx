@@ -12,7 +12,7 @@ import { cn } from '~/lib/utils';
 import { Board } from '~/services/types';
 import BrandMark from './BrandMark';
 import ObservationToggle from './ObservationToggle';
-import { CLUB_INTRO_URL, EQUIPMENT_GRADE, canManageUsers } from './constants';
+import { CLUB_INTRO_URL, EQUIPMENT_GRADE } from './constants';
 import { NavSection, useNavSection } from './useNavSection';
 
 const triggerClassName =
@@ -79,7 +79,6 @@ function NavMenu({
 function ProfileMenu() {
   const { authInfo, authLogout } = useAuth();
   const { data: { userInfo: myInfo } = {} } = useMyUserInfo();
-  const { grade } = authInfo.user;
 
   return (
     <DropdownMenu.Root modal={false}>
@@ -107,11 +106,10 @@ function ProfileMenu() {
               마이페이지
             </Link>
           </DropdownMenu.Item>
-          {canManageUsers(grade) && (
-            <DropdownMenu.Item asChild className={itemClassName}>
-              <Link to="/admin/user">회원 관리</Link>
-            </DropdownMenu.Item>
-          )}
+          {/* 회칙, 역대 임원진 and the 운영 screens (회원 관리, …). */}
+          <DropdownMenu.Item asChild className={itemClassName}>
+            <Link to="/club">동아리</Link>
+          </DropdownMenu.Item>
           <DropdownMenu.Separator className="my-1 h-px bg-border" />
           <DropdownMenu.Item
             className={itemClassName}

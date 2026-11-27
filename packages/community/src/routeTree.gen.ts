@@ -18,6 +18,8 @@ import { Route as AlbumAlbum_idRouteImport } from './routes/album/$album_id'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as AuthSignupRouteImport } from './routes/auth/signup'
 import { Route as BoardBoard_idRouteImport } from './routes/board/$board_id'
+import { Route as ClubIndexRouteImport } from './routes/club/index'
+import { Route as ClubRulesRouteImport } from './routes/club/rules'
 import { Route as CommentsAllRouteImport } from './routes/comments/all'
 import { Route as DocumentDoc_idRouteImport } from './routes/document/$doc_id'
 import { Route as EquipmentIndexRouteImport } from './routes/equipment/index'
@@ -76,6 +78,16 @@ const AuthSignupRoute = AuthSignupRouteImport.update({
 const BoardBoard_idRoute = BoardBoard_idRouteImport.update({
   id: '/board/$board_id',
   path: '/board/$board_id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ClubIndexRoute = ClubIndexRouteImport.update({
+  id: '/club/',
+  path: '/club/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ClubRulesRoute = ClubRulesRouteImport.update({
+  id: '/club/rules',
+  path: '/club/rules',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CommentsAllRoute = CommentsAllRouteImport.update({
@@ -161,6 +173,7 @@ export interface FileRoutesByFullPath {
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/board/$board_id': typeof BoardBoard_idRoute
+  '/club/rules': typeof ClubRulesRoute
   '/comments/all': typeof CommentsAllRoute
   '/document/$doc_id': typeof DocumentDoc_idRoute
   '/equipment/rent': typeof EquipmentRentRoute
@@ -171,6 +184,7 @@ export interface FileRoutesByFullPath {
   '/post/$post_id': typeof PostPost_idRoute
   '/posts/all': typeof PostsAllRoute
   '/userpage/$uuid': typeof UserpageUuidRoute
+  '/club/': typeof ClubIndexRoute
   '/equipment/': typeof EquipmentIndexRoute
   '/equipment/admin/fees': typeof EquipmentAdminFeesRoute
   '/equipment/admin/': typeof EquipmentAdminIndexRoute
@@ -184,6 +198,7 @@ export interface FileRoutesByTo {
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/board/$board_id': typeof BoardBoard_idRoute
+  '/club/rules': typeof ClubRulesRoute
   '/comments/all': typeof CommentsAllRoute
   '/document/$doc_id': typeof DocumentDoc_idRoute
   '/equipment/rent': typeof EquipmentRentRoute
@@ -194,6 +209,7 @@ export interface FileRoutesByTo {
   '/post/$post_id': typeof PostPost_idRoute
   '/posts/all': typeof PostsAllRoute
   '/userpage/$uuid': typeof UserpageUuidRoute
+  '/club': typeof ClubIndexRoute
   '/equipment': typeof EquipmentIndexRoute
   '/equipment/admin/fees': typeof EquipmentAdminFeesRoute
   '/equipment/admin': typeof EquipmentAdminIndexRoute
@@ -210,6 +226,7 @@ export interface FileRoutesById {
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/board/$board_id': typeof BoardBoard_idRoute
+  '/club/rules': typeof ClubRulesRoute
   '/comments/all': typeof CommentsAllRoute
   '/document/$doc_id': typeof DocumentDoc_idRoute
   '/equipment/rent': typeof EquipmentRentRoute
@@ -220,6 +237,7 @@ export interface FileRoutesById {
   '/post/$post_id': typeof PostPost_idRoute
   '/posts/all': typeof PostsAllRoute
   '/userpage/$uuid': typeof UserpageUuidRoute
+  '/club/': typeof ClubIndexRoute
   '/equipment/': typeof EquipmentIndexRoute
   '/equipment/admin/fees': typeof EquipmentAdminFeesRoute
   '/equipment/admin/': typeof EquipmentAdminIndexRoute
@@ -237,6 +255,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/signup'
     | '/board/$board_id'
+    | '/club/rules'
     | '/comments/all'
     | '/document/$doc_id'
     | '/equipment/rent'
@@ -247,6 +266,7 @@ export interface FileRouteTypes {
     | '/post/$post_id'
     | '/posts/all'
     | '/userpage/$uuid'
+    | '/club/'
     | '/equipment/'
     | '/equipment/admin/fees'
     | '/equipment/admin/'
@@ -260,6 +280,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/signup'
     | '/board/$board_id'
+    | '/club/rules'
     | '/comments/all'
     | '/document/$doc_id'
     | '/equipment/rent'
@@ -270,6 +291,7 @@ export interface FileRouteTypes {
     | '/post/$post_id'
     | '/posts/all'
     | '/userpage/$uuid'
+    | '/club'
     | '/equipment'
     | '/equipment/admin/fees'
     | '/equipment/admin'
@@ -285,6 +307,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/signup'
     | '/board/$board_id'
+    | '/club/rules'
     | '/comments/all'
     | '/document/$doc_id'
     | '/equipment/rent'
@@ -295,6 +318,7 @@ export interface FileRouteTypes {
     | '/post/$post_id'
     | '/posts/all'
     | '/userpage/$uuid'
+    | '/club/'
     | '/equipment/'
     | '/equipment/admin/fees'
     | '/equipment/admin/'
@@ -310,6 +334,7 @@ export interface RootRouteChildren {
   AuthLoginRoute: typeof AuthLoginRoute
   AuthSignupRoute: typeof AuthSignupRoute
   BoardBoard_idRoute: typeof BoardBoard_idRoute
+  ClubRulesRoute: typeof ClubRulesRoute
   CommentsAllRoute: typeof CommentsAllRoute
   DocumentDoc_idRoute: typeof DocumentDoc_idRoute
   ExhibitPhotoExhibitPhoto_idRoute: typeof ExhibitPhotoExhibitPhoto_idRoute
@@ -319,6 +344,7 @@ export interface RootRouteChildren {
   PostPost_idRoute: typeof PostPost_idRoute
   PostsAllRoute: typeof PostsAllRoute
   UserpageUuidRoute: typeof UserpageUuidRoute
+  ClubIndexRoute: typeof ClubIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -384,6 +410,20 @@ declare module '@tanstack/react-router' {
       path: '/board/$board_id'
       fullPath: '/board/$board_id'
       preLoaderRoute: typeof BoardBoard_idRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/club/': {
+      id: '/club/'
+      path: '/club'
+      fullPath: '/club/'
+      preLoaderRoute: typeof ClubIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/club/rules': {
+      id: '/club/rules'
+      path: '/club/rules'
+      fullPath: '/club/rules'
+      preLoaderRoute: typeof ClubRulesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/comments/all': {
@@ -526,6 +566,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthLoginRoute: AuthLoginRoute,
   AuthSignupRoute: AuthSignupRoute,
   BoardBoard_idRoute: BoardBoard_idRoute,
+  ClubRulesRoute: ClubRulesRoute,
   CommentsAllRoute: CommentsAllRoute,
   DocumentDoc_idRoute: DocumentDoc_idRoute,
   ExhibitPhotoExhibitPhoto_idRoute: ExhibitPhotoExhibitPhoto_idRoute,
@@ -535,6 +576,7 @@ const rootRouteChildren: RootRouteChildren = {
   PostPost_idRoute: PostPost_idRoute,
   PostsAllRoute: PostsAllRoute,
   UserpageUuidRoute: UserpageUuidRoute,
+  ClubIndexRoute: ClubIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

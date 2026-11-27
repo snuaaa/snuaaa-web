@@ -26,6 +26,8 @@ const REDESIGNED_PATHS = [
   '/posts/all',
   '/comments/all',
   '/officers',
+  '/club',
+  '/club/rules',
 ];
 /** Detail pages, edit forms included, that draw their own layout. */
 const REDESIGNED_PREFIXES = [
@@ -85,14 +87,14 @@ function SiteFooter({ showOnMobile }: { showOnMobile: boolean }) {
     >
       <div className="mx-auto flex max-w-page flex-col gap-3 px-4 py-6 text-caption text-fg-muted md:flex-row md:items-center md:justify-between md:px-6 md:py-8">
         <ul className="flex flex-wrap gap-x-4 gap-y-2">
-          {/* 역대 임원진 is for signed-in users, not a main menu item. */}
+          {/* 동아리 (회칙, 역대 임원진, 운영) is for signed-in users. */}
           {isLoggedIn && (
             <li>
               <Link
-                to="/officers"
+                to="/club"
                 className="text-label font-normal text-gray-700 hover:text-fg"
               >
-                역대 임원진
+                동아리
               </Link>
             </li>
           )}

@@ -37,6 +37,9 @@ const SECTION_PREFIXES: [string, NavSection][] = [
   ['/equipment', 'equipment'],
   ['/mypage', 'my'],
   ['/userpage', 'my'],
+  ['/club', 'my'],
+  ['/officers', 'my'],
+  ['/admin', 'my'],
 ];
 
 /**
