@@ -1,7 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { api } from './helpers/request';
 import { bearer, createUser, type User } from './helpers/factories';
-import { gradeOf, profileOf, softDeleteUser } from './helpers/db';
+import {
+  gradeOf,
+  profileOf,
+  softDeleteUser,
+  withRowsLocked,
+} from './helpers/db';
 
 /*
  * The member's own profile edit (`UserService.updateMyUserInfo`, the body of
@@ -198,11 +203,45 @@ describe('member edits after the move', () => {
     expect(response.status).toBe(404);
   });
 
+  it('finds the member by an uppercase uuid', async () => {
+    const member = await createUser({ grade: 9 });
+
+    const response = await api()
+      .patch(`/api/user/${member.user_uuid.toUpperCase()}/grade`)
+      .set('Authorization', bearer(await createUser({ grade: 1 })))
+      .send({ grade: 8 });
+
+    expect(response.status).toBe(200);
+    expect(await gradeOf(member)).toBe(8);
+  });
+
   it('no longer serves the profile photo migration', async () => {
     const response = await api()
       .post('/api/user/migrate')
       .set('Authorization', bearer(await createUser({ grade: 1 })));
 
     expect(response.status).toBe(404);
+  });
+});
+
+describe('PATCH /api/user/:user_uuid/grade after the move', () => {
+  it("waits for a change to the manager's own grade before deciding", async () => {
+    const manager = await createUser({ grade: 3 });
+    const member = await createUser({ grade: 9 });
+
+    // Another request holds the manager's row, e.g. while demoting them.
+    const response = await withRowsLocked(
+      'tb_user',
+      { user_id: manager.user_id },
+      () =>
+        api()
+          .patch(`/api/user/${member.user_uuid}/grade`)
+          .set('Authorization', bearer(manager))
+          .send({ grade: 8 }),
+    );
+
+    // The lock timeout ends the wait; nothing was changed.
+    expect(response.status).toBe(500);
+    expect(await gradeOf(member)).toBe(9);
   });
 });

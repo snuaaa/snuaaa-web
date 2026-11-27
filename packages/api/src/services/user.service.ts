@@ -91,7 +91,13 @@ export async function changeGrade(
     throw new BadRequestError('grade is not valid');
   }
   await withTransaction(async (transaction) => {
-    const manager = await users.findGrade(actor._id, transaction);
+    // Locked, so a concurrent change to either grade can't slip in between
+    // the checks and the update.
+    const { manager, target } = await users.lockGradesForChange(
+      actor._id,
+      targetUuid,
+      transaction,
+    );
     if (!manager) {
       throw new NotFoundError('user not found');
     }
@@ -99,7 +105,6 @@ export async function changeGrade(
     if (!canChangeGrades(managerGrade)) {
       throw new AuthorizationError('only grade 1-3 and 5 can change grades');
     }
-    const target = await users.findGradeByUuid(targetUuid, transaction);
     if (!target) {
       throw new NotFoundError('user not found');
     }
