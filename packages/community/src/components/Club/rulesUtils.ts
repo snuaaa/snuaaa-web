@@ -20,17 +20,6 @@ export const articleId = (chapter: RuleChapter, index: number) =>
     ? `rule-article-${chapter.articles[index].article_no}`
     : `rule-appendix-${index + 1}`;
 
-const normalize = (text: string) => text.replace(/\s+/g, '').toLowerCase();
-
-/** All the text of an article, its 제N조 and title included. */
-const articleText = (article: RuleArticle) =>
-  [
-    `제${article.article_no}조`,
-    article.article_title,
-    ...(article.clauses ?? []).map((clause) => clause.text),
-    article.article_text ?? '',
-  ].join(' ');
-
 /**
  * Where `query` appears in a text, the way the search matches it: ignoring
  * case and spaces, so "임원 모임" also marks "임원모임". Null when empty.
@@ -44,9 +33,30 @@ export function matchPattern(query: string) {
   return new RegExp(escaped.join('\\s*'), 'gi');
 }
 
+/**
+ * The pieces of an article as the page draws them: its 제N조(title), then
+ * every line of its 항 and text, with the 개정 notes apart. A match must
+ * fall inside one piece, so every article found has a mark to show.
+ */
+const articlePieces = (article: RuleArticle) => [
+  `제${article.article_no}조(${article.article_title})`,
+  ...[
+    ...(article.clauses ?? []).map((clause) => clause.text),
+    article.article_text ?? '',
+  ]
+    .flatMap(linesOf)
+    .flatMap((line) => splitNotes(line).map((part) => part.text)),
+];
+
 export const articleMatches = (article: RuleArticle, query: string) => {
-  const needle = normalize(query);
-  return !needle || normalize(articleText(article)).includes(needle);
+  const pattern = matchPattern(query);
+  return (
+    !pattern ||
+    articlePieces(article).some((piece) => {
+      pattern.lastIndex = 0;
+      return pattern.test(piece);
+    })
+  );
 };
 
 /**
