@@ -8,6 +8,13 @@ export const USER_GRADES = [1, 3, 4, 5, 6, 7, 8, 9] as const;
 
 /** The least privileged grade that may change other members' grades. */
 export const GRADE_MANAGER_GRADE = 3;
+/** 현 회장 (목성) may change grades too, below their own: they appoint the
+ *  임원진 (토성, 6) of their 기수. 전 회장 (화성, 4) may not. */
+export const PRESIDENT_GRADE = 5;
+
+/** Whether a member of `grade` may change other members' grades. */
+export const canChangeGrades = (grade: number) =>
+  grade <= GRADE_MANAGER_GRADE || grade === PRESIDENT_GRADE;
 
 /** A new member's grade, until they give a club number. */
 export const NEW_MEMBER_GRADE = 9;
@@ -69,7 +76,8 @@ export async function updateMyProfile(actor: Actor, input: ProfileInput) {
 }
 
 /**
- * Changes another member's grade. The actor must be grade 1–3, the target
+ * Changes another member's grade. The actor must be grade 1–3 or 현 회장
+ * (5), the target
  * must currently have a lower grade (a larger number) than the actor, and
  * the new grade must also be lower than the actor's. The actor's grade is
  * read from the database, since the one in the token can be stale.
@@ -88,8 +96,8 @@ export async function changeGrade(
       throw new NotFoundError('user not found');
     }
     const managerGrade = manager.grade ?? NEW_MEMBER_GRADE;
-    if (managerGrade > GRADE_MANAGER_GRADE) {
-      throw new AuthorizationError('only grade 1-3 can change grades');
+    if (!canChangeGrades(managerGrade)) {
+      throw new AuthorizationError('only grade 1-3 and 5 can change grades');
     }
     const target = await users.findGradeByUuid(targetUuid, transaction);
     if (!target) {
