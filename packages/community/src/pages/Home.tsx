@@ -1,3 +1,4 @@
+import { Link } from '@tanstack/react-router';
 import Loading from '~/components/Common/Loading';
 import {
   RecentAlbumsSection,
@@ -32,8 +33,17 @@ function Home() {
         />
         <div className="flex min-h-11 items-center justify-between gap-3">
           <BrandMark />
-          {/* 동아리 소개 is in the footer, so this corner holds 관측 모드. */}
-          <ObservationToggle className="-mr-2.5" />
+          {/* 동아리 (회칙, 역대 임원진, 운영) beside 관측 모드; mobile has no
+              top menu, and 동아리 is not part of 마이. */}
+          <div className="flex items-center gap-1">
+            <Link
+              to="/club"
+              className="flex h-9 items-center rounded-full border border-fg-on-brand/20 px-3.5 text-label text-fg-on-brand transition-colors hover:bg-fg-on-brand/10 motion-reduce:transition-none"
+            >
+              동아리
+            </Link>
+            <ObservationToggle className="-mr-2.5" />
+          </div>
         </div>
         <TonightStrip />
       </header>

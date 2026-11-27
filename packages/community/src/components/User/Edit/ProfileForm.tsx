@@ -304,11 +304,6 @@ function Form({ user }: { user: User }) {
           비밀번호 변경
           <ChevronRight className="size-4 text-fg-muted" aria-hidden />
         </Link>
-        {/* 회칙, 역대 임원진 and the 운영 screens (회원 관리, …). */}
-        <Link to="/club" className={rowClassName}>
-          동아리
-          <ChevronRight className="size-4 text-fg-muted" aria-hidden />
-        </Link>
         <button
           type="button"
           onClick={() => authLogout()}

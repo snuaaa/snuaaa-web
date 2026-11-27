@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { Link, useLocation } from '@tanstack/react-router';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
-import { ChevronDown, ExternalLink } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { skyStyle } from '~/components/Home/skyColors';
 import { Avatar } from '~/components/ui';
 import useAuth from '~/hooks/useAuth';
@@ -12,7 +12,7 @@ import { cn } from '~/lib/utils';
 import { Board } from '~/services/types';
 import BrandMark from './BrandMark';
 import ObservationToggle from './ObservationToggle';
-import { CLUB_INTRO_URL, EQUIPMENT_GRADE } from './constants';
+import { EQUIPMENT_GRADE } from './constants';
 import { NavSection, useNavSection } from './useNavSection';
 
 const triggerClassName =
@@ -106,10 +106,6 @@ function ProfileMenu() {
               마이페이지
             </Link>
           </DropdownMenu.Item>
-          {/* 회칙, 역대 임원진 and the 운영 screens (회원 관리, …). */}
-          <DropdownMenu.Item asChild className={itemClassName}>
-            <Link to="/club">동아리</Link>
-          </DropdownMenu.Item>
           <DropdownMenu.Separator className="my-1 h-px bg-border" />
           <DropdownMenu.Item
             className={itemClassName}
@@ -193,18 +189,14 @@ export default function TopNav() {
               장비 대여
             </Link>
           )}
-          <a
-            href={CLUB_INTRO_URL}
-            target="_blank"
-            rel="noreferrer"
+          {/* 회칙, 역대 임원진, 운영 screens; 동아리 소개 is linked inside. */}
+          <Link
+            to="/club"
             className={triggerClassName}
+            data-active={isActive('club')}
           >
-            동아리 소개
-            <ExternalLink
-              className="size-3.5 opacity-70"
-              aria-label="새 탭에서 열림"
-            />
-          </a>
+            동아리
+          </Link>
         </nav>
         <div className="flex items-center gap-2">
           <ObservationToggle />

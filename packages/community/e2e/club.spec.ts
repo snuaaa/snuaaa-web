@@ -74,10 +74,29 @@ test.describe('동아리', () => {
     await expect(page.getByRole('region', { name: '운영' })).toHaveCount(0);
   });
 
-  test('모바일 마이 탭의 프로필에서 동아리로 간다', async ({ page }) => {
+  test('모바일은 홈 상단에서 동아리로 간다', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/mypage/profile');
-    await page.getByRole('link', { name: '동아리', exact: true }).click();
+    await page.goto('/');
+    // The desktop top nav is in the page too, hidden.
+    await page
+      .getByRole('link', { name: '동아리', exact: true })
+      .locator('visible=true')
+      .first()
+      .click();
     await expect(page).toHaveURL(/\/club$/);
+  });
+
+  test('데스크톱은 주 메뉴에서 동아리로 간다', async ({ page }) => {
+    await page.goto('/posts/all');
+    await page
+      .getByRole('navigation', { name: '주 메뉴' })
+      .getByRole('link', { name: '동아리', exact: true })
+      .click();
+    await expect(page).toHaveURL(/\/club$/);
+    await expect(
+      page
+        .getByRole('navigation', { name: '주 메뉴' })
+        .getByRole('link', { name: '동아리', exact: true }),
+    ).toHaveAttribute('data-active', 'true');
   });
 });
