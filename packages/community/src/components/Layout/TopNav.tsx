@@ -12,7 +12,6 @@ import { cn } from '~/lib/utils';
 import { Board } from '~/services/types';
 import BrandMark from './BrandMark';
 import ObservationToggle from './ObservationToggle';
-import { EQUIPMENT_GRADE } from './constants';
 import { NavSection, useNavSection } from './useNavSection';
 
 const triggerClassName =
@@ -180,16 +179,7 @@ export default function TopNav() {
           <NavMenu label="사진" active={isActive('photo')}>
             <BoardItems boards={readable(photoBoards)} />
           </NavMenu>
-          {grade <= EQUIPMENT_GRADE && (
-            <Link
-              to="/equipment"
-              className={triggerClassName}
-              data-active={isActive('equipment')}
-            >
-              장비 대여
-            </Link>
-          )}
-          {/* 회칙, 역대 임원진, 운영 screens; 동아리 소개 is linked inside. */}
+          {/* 장비 대여, 회칙, 역대 임원진, 운영; 동아리 소개 is linked inside. */}
           <Link
             to="/club"
             className={triggerClassName}

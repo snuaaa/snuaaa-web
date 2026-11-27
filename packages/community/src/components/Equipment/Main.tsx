@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from '@tanstack/react-router';
 import { ChevronRight, Telescope } from 'lucide-react';
 
+import { BackButton } from '~/components/ui';
 import useAuth from '~/hooks/useAuth';
 import { ViewportSize, useViewportSize } from '~/contexts/viewportSize';
 import { useMyRentList } from '~/hooks/queries/useEquipmentQueries';
@@ -18,7 +19,11 @@ function MobileHome({ isAdmin }: { isAdmin: boolean }) {
     <div className="flex flex-1 flex-col">
       <div className="flex flex-col gap-3.5 bg-surface-brand pt-safe-2 pr-2 pb-5 pl-5 text-fg-on-brand">
         <div className="flex min-h-11 items-center justify-between">
-          <h1 className="text-title">장비 대여</h1>
+          {/* 장비 대여 is under the 동아리 tab. */}
+          <div className="-ml-4 flex items-center">
+            <BackButton />
+            <h1 className="text-title">장비 대여</h1>
+          </div>
           {isAdmin && (
             <Link
               to="/equipment/admin"

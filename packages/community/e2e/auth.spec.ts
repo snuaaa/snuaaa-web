@@ -94,8 +94,8 @@ test.describe('로그인 상태', () => {
     await page.goto('/');
     await expect(page.getByLabel('내 메뉴')).toBeVisible();
 
-    await page.locator('a[href="/equipment"]').first().click();
-    await expect(page).toHaveURL('/equipment');
+    await page.locator('a[href="/club"]').first().click();
+    await expect(page).toHaveURL('/club');
     await page.goBack();
     await expect(page).toHaveURL('/');
 
@@ -109,9 +109,9 @@ test.describe('로그인 상태', () => {
     await expect(page.getByLabel('내 메뉴')).toBeVisible();
 
     await page.context().clearCookies();
-    await page.locator('a[href="/equipment"]').first().click();
+    await page.locator('a[href="/club"]').first().click();
 
-    await expect(page).toHaveURL(loginPage('/equipment'));
+    await expect(page).toHaveURL(loginPage('/club'));
   });
 
   test('페이지에 머무는 동안 세션이 만료되면 로그인 페이지로 보낸다', async ({

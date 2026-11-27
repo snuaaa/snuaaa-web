@@ -1,9 +1,7 @@
 import type { ReactNode } from 'react';
 import { Link, type LinkProps } from '@tanstack/react-router';
 import { House, Image, List, Telescope, User } from 'lucide-react';
-import useAuth from '~/hooks/useAuth';
 import { cn } from '~/lib/utils';
-import { EQUIPMENT_GRADE } from './constants';
 import { NavSection, useNavSection } from './useNavSection';
 
 function Tab({
@@ -33,11 +31,6 @@ function Tab({
  */
 export default function BottomTabBar() {
   const { section, destinations } = useNavSection();
-  const {
-    authInfo: {
-      user: { grade },
-    },
-  } = useAuth();
   const isActive = (target: NavSection) => section === target;
 
   return (
@@ -60,14 +53,13 @@ export default function BottomTabBar() {
         icon={<Image />}
         active={isActive('photo')}
       />
-      {grade <= EQUIPMENT_GRADE && (
-        <Tab
-          to="/equipment"
-          label="장비"
-          icon={<Telescope />}
-          active={isActive('equipment')}
-        />
-      )}
+      {/* 장비 대여, 회칙, 역대 임원진 and the 운영 screens. */}
+      <Tab
+        to="/club"
+        label="동아리"
+        icon={<Telescope />}
+        active={isActive('club')}
+      />
       <Tab
         to="/mypage/$view"
         params={{ view: 'info' }}

@@ -12,11 +12,10 @@ import {
 } from 'lucide-react';
 import {
   CLUB_INTRO_URL,
+  EQUIPMENT_GRADE,
   OLD_SITE_URL,
   canManageUsers,
 } from '~/components/Layout/constants';
-import { EQUIP_ADMIN_GRADE } from '~/components/Equipment/Rental/rentUtils';
-import { BackButton } from '~/components/ui';
 import useAuth from '~/hooks/useAuth';
 
 const TITLE = '동아리';
@@ -102,11 +101,24 @@ function Group({
 }
 
 /**
- * 동아리: the club's own pages in one place. 회칙 and 역대 임원진 for every
- * member, and the 운영 screens for the grades that may use them.
+ * 동아리 탭: the club's own pages in one place. 활동 (장비 대여; 관측 일지
+ * later), 기록 (회칙, 역대 임원진), 운영 for the grades that may use it, and
+ * the outside sites. 장비 관리 is reached from 장비 대여.
  */
 export default function Club() {
   const { grade } = useAuth().authInfo.user;
+
+  const activity: Entry[] =
+    grade <= EQUIPMENT_GRADE
+      ? [
+          {
+            title: '장비 대여',
+            description: '빌린 장비와 장비 빌리기',
+            icon: <Telescope />,
+            to: '/equipment',
+          },
+        ]
+      : [];
 
   const record: Entry[] = [
     {
@@ -138,50 +150,38 @@ export default function Club() {
     },
   ];
 
-  const manage: Entry[] = [
-    ...(canManageUsers(grade)
-      ? [
-          {
-            title: '회원 관리',
-            description: '회원 목록과 등급',
-            icon: <UsersRound />,
-            to: '/admin/user' as const,
-          },
-        ]
-      : []),
-    ...(grade <= EQUIP_ADMIN_GRADE
-      ? [
-          {
-            title: '장비 관리',
-            description: '장비 목록과 연체료',
-            icon: <Telescope />,
-            to: '/equipment/admin' as const,
-          },
-        ]
-      : []),
-  ];
+  const manage: Entry[] = canManageUsers(grade)
+    ? [
+        {
+          title: '회원 관리',
+          description: '회원 목록과 등급',
+          icon: <UsersRound />,
+          to: '/admin/user',
+        },
+      ]
+    : [];
 
   return (
     <div className="flex flex-col pb-10 md:mx-auto md:w-full md:max-w-2xl md:gap-6 md:px-6 md:py-6">
       <div className="sticky top-0 z-20 border-b border-gray-100 bg-surface md:hidden">
-        <div className="flex h-[52px] items-center justify-between pt-safe-0 pr-3 pl-1">
-          <BackButton />
+        {/* A tab's first screen: no 뒤로. */}
+        <div className="flex h-[52px] items-center justify-center pt-safe-0">
           <h1 className="text-[15px] font-semibold">{TITLE}</h1>
-          <div className="min-w-11" />
         </div>
       </div>
       <div className="hidden flex-col gap-1 md:flex">
         <h1 className="text-display">{TITLE}</h1>
         <p className="text-label font-normal text-fg-muted">
-          회칙과 역대 임원진, 동아리 운영 메뉴를 모았어요.
+          장비 대여, 회칙, 역대 임원진과 운영 메뉴를 모았어요.
         </p>
       </div>
       <div className="flex flex-col gap-6 pt-4 md:pt-0">
-        <Group title="동아리 기록" entries={record} />
+        {activity.length > 0 && <Group title="활동" entries={activity} />}
+        <Group title="기록" entries={record} />
         {manage.length > 0 && (
           <Group title="운영" badge="토성(6등급) 이상" entries={manage} />
         )}
-        <Group title="바깥 링크" entries={outside} />
+        <Group title="외부 링크" entries={outside} />
       </div>
     </div>
   );
