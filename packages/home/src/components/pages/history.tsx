@@ -66,6 +66,36 @@ const VISIBLE_RANGE = 7;
 
 const clampPos = (v: number) => Math.max(0, Math.min(COUNT - 1, v));
 
+// The page changes on vertical swipes (useThrottleScroll, on the document). Over `el`, a swipe that
+// starts sideways is kept from the document until the finger lifts, however much it then drifts up or
+// down; one that starts vertically still changes the page. Returns the cleanup.
+const LOCK_DISTANCE = 10;
+function keepSidewaysSwipes(el: HTMLElement) {
+  let startX = 0;
+  let startY = 0;
+  let axis: 'x' | 'y' | null = null;
+  const start = (ev: TouchEvent) => {
+    startX = ev.touches[0].clientX;
+    startY = ev.touches[0].clientY;
+    axis = null;
+  };
+  const move = (ev: TouchEvent) => {
+    if (!axis) {
+      const dx = Math.abs(ev.touches[0].clientX - startX);
+      const dy = Math.abs(ev.touches[0].clientY - startY);
+      if (Math.max(dx, dy) < LOCK_DISTANCE) return;
+      axis = dx > dy ? 'x' : 'y';
+    }
+    if (axis === 'x') ev.stopPropagation();
+  };
+  el.addEventListener('touchstart', start);
+  el.addEventListener('touchmove', move);
+  return () => {
+    el.removeEventListener('touchstart', start);
+    el.removeEventListener('touchmove', move);
+  };
+}
+
 const glow = keyframes({
   '0%, 100%': { boxShadow: '0 0 10px 1px rgba(255,255,255,.25)' },
   '50%': { boxShadow: '0 0 42px 12px rgba(255,255,255,.8)' },
@@ -324,8 +354,8 @@ const History: React.FC = () => {
     if (!stage) return;
     const W = stage.clientWidth;
     const H = stage.clientHeight;
-    const cx = W / 2;
-    const cy = H / 2 - 10;
+    const centerX = W / 2;
+    const centerY = H / 2 - 10;
     // Smaller bubbles on small stages.
     const scale = Math.min(1, H / 340);
     const p = pos.current;
@@ -344,9 +374,9 @@ const History: React.FC = () => {
         (ad < 1 ? 1 + 0.9 * (1 - ad) : 1);
       const f = Math.max(0, 1 - ad * 2);
       size = size * (1 - f) + 156 * scale * f;
-      const x = cx + Math.sign(dx) * ad ** 0.7 * W * 0.24;
+      const x = centerX + Math.sign(dx) * ad ** 0.7 * W * 0.24;
       const yPos =
-        cy +
+        centerY +
         Math.sin(i * 1.1) * 58 * scale * Math.min(1, 0.5 + ad * 0.4) +
         Math.sin(i * 0.5) * 14 * scale;
       points.push([x, yPos]);
@@ -502,34 +532,20 @@ const History: React.FC = () => {
       wheelSettle = window.setTimeout(() => go(Math.round(pos.current)), 120);
     };
 
-    // A sideways swipe must not also change the page (useThrottleScroll listens on the document).
-    let touchX = 0;
-    let touchY = 0;
-    const touchStart = (ev: TouchEvent) => {
-      touchX = ev.touches[0].clientX;
-      touchY = ev.touches[0].clientY;
-    };
-    const touchMove = (ev: TouchEvent) => {
-      const dx = Math.abs(ev.touches[0].clientX - touchX);
-      const dy = Math.abs(ev.touches[0].clientY - touchY);
-      if (dx > dy) ev.stopPropagation();
-    };
+    const releaseSwipes = keepSidewaysSwipes(stage);
 
     stage.addEventListener('pointerdown', down);
     window.addEventListener('pointermove', move);
     window.addEventListener('pointerup', up);
     window.addEventListener('pointercancel', up);
     stage.addEventListener('wheel', wheel, { passive: false });
-    stage.addEventListener('touchstart', touchStart);
-    stage.addEventListener('touchmove', touchMove);
     return () => {
       stage.removeEventListener('pointerdown', down);
       window.removeEventListener('pointermove', move);
       window.removeEventListener('pointerup', up);
       window.removeEventListener('pointercancel', up);
       stage.removeEventListener('wheel', wheel);
-      stage.removeEventListener('touchstart', touchStart);
-      stage.removeEventListener('touchmove', touchMove);
+      releaseSwipes();
       window.clearTimeout(wheelSettle);
     };
   }, [go, layout]);
@@ -560,18 +576,17 @@ const History: React.FC = () => {
       scrubbing = false;
       go(Math.round(pos.current));
     };
-    const stopTouch = (ev: TouchEvent) => ev.stopPropagation();
+    const releaseSwipes = keepSidewaysSwipes(track);
     track.addEventListener('pointerdown', down);
     track.addEventListener('pointermove', move);
     track.addEventListener('pointerup', up);
     track.addEventListener('pointercancel', up);
-    track.addEventListener('touchmove', stopTouch);
     return () => {
       track.removeEventListener('pointerdown', down);
       track.removeEventListener('pointermove', move);
       track.removeEventListener('pointerup', up);
       track.removeEventListener('pointercancel', up);
-      track.removeEventListener('touchmove', stopTouch);
+      releaseSwipes();
     };
   }, [go, layout]);
 
