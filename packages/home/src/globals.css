@@ -51,3 +51,20 @@ button {
   background-color: #FFFFFF;
   border-radius: 1rem;
 }
+
+/* Years on the History page: 학교안심 별빛하늘, the subset embedded in the History design prototype. */
+@font-face {
+  font-family: 'SchoolSafetyStarrySky';
+  src: url('./assets/fonts/SchoolSafetyStarrySky-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'SchoolSafetyStarrySky';
+  src: url('./assets/fonts/SchoolSafetyStarrySky-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
